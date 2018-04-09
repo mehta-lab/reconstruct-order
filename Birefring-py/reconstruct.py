@@ -48,22 +48,22 @@ def loadTiffStk(ImgPath): # Load the TIFF stack format output by the acquisition
                 ImgProc = np.concatenate((ImgProc, img), axis=2)
             else:
                 ImgProc = img
-    Iextiction = ImgRaw[:,:,0] # Sigma0 in Fig.2
-    IalphaPlusChi = ImgRaw[:,:,1] # Sigma2 in Fig.2
-    IbetaPlusChi = ImgRaw[:,:,2] # Sigma4 in Fig.2
-    IbetaMinusChi = ImgRaw[:,:,3] # Sigma3 in Fig.2
+    Iext = ImgRaw[:,:,0] # Sigma0 in Fig.2
+    I90 = ImgRaw[:,:,1] # Sigma2 in Fig.2
+    I135 = ImgRaw[:,:,2] # Sigma4 in Fig.2
+    I45 = ImgRaw[:,:,3] # Sigma3 in Fig.2
     retardMM = ImgProc[:,:,0]
     azimuthMM = ImgProc[:,:,1]    
     
-    return Iextiction, IalphaPlusChi, IbetaPlusChi, IbetaMinusChi , retardMM, azimuthMM          
+    return Iext, I90, I135, I45 , retardMM, azimuthMM          
 #%%               
-def computeAB(Iextiction, IalphaPlusChi, IbetaPlusChi, IbetaMinusChi,Chi): # output numerators and denominators of A, B along with to retain the phase info   
-    nB = (IbetaPlusChi-IbetaMinusChi)*np.tan(Chi/2)
-    nA = (IbetaMinusChi+IbetaPlusChi -2*IalphaPlusChi)*np.tan(Chi/2)   # Eq. 10 in reference
-    dAB = IbetaMinusChi+IbetaPlusChi-2*Iextiction
+def computeAB(Iext, I90, I135, I45,Chi): # output numerators and denominators of A, B along with to retain the phase info   
+    nB = (I135-I45)*np.tan(Chi/2)
+    nA = (I45+I135 -2*I90)*np.tan(Chi/2)   # Eq. 10 in reference
+    dAB = I45+I135-2*Iext
     A = nA/dAB
     B = nB/dAB   
-    IAbs = IbetaMinusChi+IbetaPlusChi-2*np.cos(Chi)*Iextiction
+    IAbs = I45+I135-2*np.cos(Chi)*Iext
     return  A, B, IAbs
 
 def computeDeltaPhi(A,B):
@@ -293,23 +293,23 @@ ImgSmPath = 'C:/Google Drive/2018_04_02_Grinberg_Slice484_4x20x/SM_2018_0402_125
 ImgBgPath = 'C:/Google Drive/2018_04_02_Grinberg_Slice484_4x20x/BG_2018_0402_1246_1' # Background image folder path
 Chi = 0.1 # Swing
 spacing  = 40 # spacing for vector field map
-IextictionSm, IalphaPlusChiSm, IbetaPlusChiSm, IbetaMinusChiSm, retardMMSm, azimuthMMSm = loadTiffStk(ImgSmPath)
-IextictionBg, IalphaPlusChiBg, IbetaPlusChiBg, IbetaMinusChiBg , retardMMBg, azimuthMMBg = loadTiffStk(ImgBgPath)
-Asm, Bsm, IAbsSm = computeAB(IextictionSm, IalphaPlusChiSm, IbetaPlusChiSm, IbetaMinusChiSm,Chi)
-Abg, Bbg, IAbsBg = computeAB(IextictionBg, IalphaPlusChiBg, IbetaPlusChiBg, IbetaMinusChiBg,Chi) 
+IextSm, I90Sm, I135Sm, I45Sm, retardMMSm, azimuthMMSm = loadTiffStk(ImgSmPath)
+IextBg, I90Bg, I135Bg, I45Bg , retardMMBg, azimuthMMBg = loadTiffStk(ImgBgPath)
+Asm, Bsm, IAbsSm = computeAB(IextSm, I90Sm, I135Sm, I45Sm,Chi)
+Abg, Bbg, IAbsBg = computeAB(IextBg, I90Bg, I135Bg, I45Bg,Chi) 
 A = Asm-Abg # correct contributions from background
 B = Bsm-Bbg
 retard, azimuth = computeDeltaPhi(A,B)
 retard = removeBubbles(retard)
 retardSmooth = nanRobustBlur(retard, (spacing, spacing))
 retardBg, azimuthBg = computeDeltaPhi(Abg, Bbg)
-IextictionSm = np.squeeze(IextictionSm)
+IextSm = np.squeeze(IextSm)
 IHsv, IHv = PolColor(IAbsSm, retard, azimuth)
 titles = ['Retardance (MM)','Orientation (MM)','Retardance (Py)','Orientation (Py)']
 images = [retardMMSm, azimuthMMSm,retard, azimuth]
 plot_sub_images(images,titles)
 plt.savefig(os.path.join(ImgSmPath,'fourFrameSm.png'),dpi=300)
-#plot_sub_images(IextictionSm, retardBg, azimuthBg, retardMMBg, azimuthMMBg)
+#plot_sub_images(IextSm, retardBg, azimuthBg, retardMMBg, azimuthMMBg)
 #plt.savefig(os.path.join(ImgSmPath,'fourFrameBg.png'),dpi=300)
 plotVectorField(retard, azimuth, R=0.7*spacing*retardSmooth/np.nanmean(retardSmooth), spacing=spacing)
 plt.savefig(os.path.join(ImgSmPath,'fourFrameSmVF.png'),dpi=300)
