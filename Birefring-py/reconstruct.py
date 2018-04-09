@@ -9,12 +9,10 @@ import os
 import numpy as np
 import glob
 import seaborn as sns
-#import seaborn as sns
 import matplotlib.pyplot as plt
 import re
 import cv2
 import bisect
-import colorsys
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 sns.set_context("poster")
 plt.close("all") # close all the figures from the last run
@@ -77,11 +75,16 @@ def computeDeltaPhi(A,B):
 def plotVectorField(I, azimuth, R=40, spacing=40): # plot vector field representaiton of the orientation map,
     # Currently only plot single pixel value when spacing >0. 
     # To do: Use average pixel value to reduce noise
-    azimuthSmooth = nanRobustBlur(azimuth,(spacing,spacing)) # plot smoothed vector field
+#    retardSmooth = nanRobustBlur(retard, (spacing, spacing))
+#    retardSmooth/np.nanmean(retardSmooth)
+    R = R/np.nanmean(R)
+    U, V = R*1.5*spacing*np.cos(azimuth), R*1.5*spacing* np.sin(azimuth)
+    USmooth = nanRobustBlur(U,(spacing,spacing)) # plot smoothed vector field
+    VSmooth = nanRobustBlur(V,(spacing,spacing)) # plot smoothed vector field
 #    azimuthSmooth  = azimuth
     nY, nX = I.shape
     Y, X = np.mgrid[0:nY, 0:nX] # notice the inversed order of X and Y    
-    U, V = R * np.cos(azimuthSmooth), R * np.sin(azimuthSmooth)
+    
     I = imadjust(I,tol=0.1)
     I = histequal(I)
 #    figSize = (10,10)
@@ -89,12 +92,10 @@ def plotVectorField(I, azimuth, R=40, spacing=40): # plot vector field represent
     plt.imshow(I, cmap='gray')
     plt.title('Orientation map')                              
     plt.quiver(X[::spacing, ::spacing], Y[::spacing,::spacing], 
-               U[::spacing,::spacing], V[::spacing,::spacing],
+               USmooth[::spacing,::spacing], VSmooth[::spacing,::spacing],
                edgecolor='r',facecolor='r',units='xy', alpha=1,
                headwidth = 0, headlength = 0, headaxislength = 0,
                scale_units = 'xy',scale = 1 )  
-#    plt.xticks(())
-#    plt.yticks(())
     
     plt.show()
     
@@ -105,26 +106,17 @@ def PolColor(IAbs, retard, azimuth):
     IAbs = imadjust(IAbs,bit = 8)
     azimuth = azimuth/np.pi*180
     azimuth = azimuth.astype(np.uint8, copy=False)
-#    retard = retard.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
-#    IAbs = IAbs.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
     IHsv = np.stack([azimuth, retard, IAbs],axis=2)
     IHv = np.stack([azimuth, np.ones(retard.shape).astype(np.uint8)*255,retard],axis=2)
-
     IHsv = cv2.cvtColor(IHsv, cv2.COLOR_HSV2RGB)    
-    IHv = cv2.cvtColor(IHv, cv2.COLOR_HSV2RGB)
-#    IHv = (IHv.astype(np.float32)/255)**(1/2.2)
-#    IHv = cv2.normalize(IHv, None, 0.0, 1.0, cv2.NORM_MINMAX)
-#    IHv = (IHv*255).astype(np.uint8)
-#    IHv = IHv[:,:, [1,0,2]]
-#    
+    IHv = cv2.cvtColor(IHv, cv2.COLOR_HSV2RGB)    #    
     return IHsv,IHv 
     
 #%%
 def nanRobustBlur(I, dim):
     V=I.copy()
     V[I!=I]=0
-    VV=cv2.blur(V,dim)
-    
+    VV=cv2.blur(V,dim)    
     W=0*I.copy()+1
     W[I!=I]=0
     WW=cv2.blur(W,dim)    
@@ -243,7 +235,7 @@ def plot_sub_images(images,titles):
         plt.show()
 #        plt.axis('tight') 
 
-def plot_birefringence(IAbs,retard, retardSmooth, azimuth, IHsv, IHv, spacing=20): 
+def plot_birefringence(IAbs,retard, azimuth, IHsv, IHv, spacing=20): 
     
     figSize = (12,12)
     fig = plt.figure(figsize = figSize)                                        
@@ -266,7 +258,7 @@ def plot_birefringence(IAbs,retard, retardSmooth, azimuth, IHsv, IHv, spacing=20
     plt.show()
 
     a=fig.add_subplot(2,2,3)
-    plotVectorField(retard, azimuth, R=0.7*spacing*retardSmooth/np.nanmean(retardSmooth), spacing=spacing)
+    plotVectorField(retard, azimuth, R=retard*IAbs, spacing=spacing)
     plt.tick_params(labelbottom='off',labelleft='off') # labels along the bottom edge are off               
     plt.title('Retardance+Orientation')   
     plt.xticks([]),plt.yticks([])                                  
@@ -289,8 +281,10 @@ figPath = 'C:/Google Drive/Python/figures/'   # change 'fig_path' to the desired
 #ImgBgPath = 'C:/Google Drive/20180328_GreenbergLabBrainSlice/BG_2018_0328_1338_1' # Background image folder path
 #ImgSmPath = 'C:/Google Drive/2018_04_02_Grinberg_Slice484_4x20x/SM_2018_0402_1325_1' # Sample image folder path
 #ImgBgPath = 'C:/Google Drive/2018_04_02_Grinberg_Slice484_4x20x/BG_2018_0402_1312_1' # Background image folder path
-ImgSmPath = 'C:/Google Drive/2018_04_02_Grinberg_Slice484_4x20x/SM_2018_0402_1256_1' # Sample image folder path
-ImgBgPath = 'C:/Google Drive/2018_04_02_Grinberg_Slice484_4x20x/BG_2018_0402_1246_1' # Background image folder path
+#ImgSmPath = 'C:/Google Drive/2018_04_02_Grinberg_Slice484_4x20x/SM_2018_0402_1256_1' # Sample image folder path
+#ImgBgPath = 'C:/Google Drive/2018_04_02_Grinberg_Slice484_4x20x/BG_2018_0402_1246_1' # Background image folder path
+ImgSmPath = 'C:/Google Drive/2018_04_04_UstainedTissue_4x/SM_2018_0404_1817_1' # Sample image folder path
+ImgBgPath = 'C:/Google Drive/2018_04_04_UstainedTissue_4x/BG_2018_0404_1811_1' # Background image folder path
 Chi = 0.1 # Swing
 spacing  = 40 # spacing for vector field map
 IextSm, I90Sm, I135Sm, I45Sm, retardMMSm, azimuthMMSm = loadTiffStk(ImgSmPath)
@@ -301,7 +295,7 @@ A = Asm-Abg # correct contributions from background
 B = Bsm-Bbg
 retard, azimuth = computeDeltaPhi(A,B)
 retard = removeBubbles(retard)
-retardSmooth = nanRobustBlur(retard, (spacing, spacing))
+
 retardBg, azimuthBg = computeDeltaPhi(Abg, Bbg)
 IextSm = np.squeeze(IextSm)
 IHsv, IHv = PolColor(IAbsSm, retard, azimuth)
@@ -311,10 +305,10 @@ plot_sub_images(images,titles)
 plt.savefig(os.path.join(ImgSmPath,'fourFrameSm.png'),dpi=300)
 #plot_sub_images(IextSm, retardBg, azimuthBg, retardMMBg, azimuthMMBg)
 #plt.savefig(os.path.join(ImgSmPath,'fourFrameBg.png'),dpi=300)
-plotVectorField(retard, azimuth, R=0.7*spacing*retardSmooth/np.nanmean(retardSmooth), spacing=spacing)
+plotVectorField(retard, azimuth, R=retard*IAbsSm, spacing=spacing)
 plt.savefig(os.path.join(ImgSmPath,'fourFrameSmVF.png'),dpi=300)
 
-plot_birefringence(IAbsSm,retard, retardSmooth, azimuth, IHsv, IHv, spacing)
+plot_birefringence(IAbsSm,retard, azimuth, IHsv, IHv, spacing)
 plt.savefig(os.path.join(ImgSmPath,'fourFrame.png'),dpi=150)
 #plotVectorField(azimuthBg, azimuthBg, R=spacing*retardBg/np.nanmean(retardBg), spacing=40)
 #plt.savefig(os.path.join(ImgSmPath,'fourFrameBgVF.png'),dpi=300)
