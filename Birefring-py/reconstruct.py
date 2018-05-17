@@ -196,6 +196,9 @@ def plot_birefringence(IAbs,retard, azimuth, figPath, ind, DAPI=[], TdTomato=[],
     IHsv, IHv, IAbs= PolColor(IAbs*200, retard*1000, azimuth)
     DAPI = cv2.convertScaleAbs(DAPI*20)
     TdTomato = cv2.convertScaleAbs(TdTomato*2)
+    IFluorAbs = np.stack([DAPI+IAbs/2, IAbs/2, TdTomato+IAbs/2],axis=2)
+    
+    
     R=retard*IAbs
     R = R/np.nanmean(R) #normalization
     R=vectorScl*R
@@ -243,11 +246,13 @@ def plot_birefringence(IAbs,retard, azimuth, figPath, ind, DAPI=[], TdTomato=[],
     #%%
 #    
 
-    images = [IAbs, retard*10**4, azimuth*10**4, IHv, IHsv, DAPI, TdTomato]
-    tiffNames = ['Transmission', 'Retardance', 'Orientation', 'Retardance+Orientation', 'Transmission+Retardance+Orientation', 'DAPI', 'TdTomato']
+#    images = [IAbs, retard*10**4, azimuth*10**4, IHv, IHsv, DAPI, TdTomato]
+#    tiffNames = ['Transmission', 'Retardance', 'Orientation', 'Retardance+Orientation', 'Transmission+Retardance+Orientation', 'DAPI', 'TdTomato']
 
 #    images = [retardAzi]
-#    tiffNames = ['Retardance+Orientation_grey']    
+#    tiffNames = ['Retardance+Orientation_grey']
+    images = [IFluorAbs]
+    tiffNames = ['DAPI+Transmission+TdTomato']        
     for im, tiffName in zip(images, tiffNames):
         fileName = tiffName+'_%02d.tif'%ind
         cv2.imwrite(os.path.join(figPath, fileName), im)
