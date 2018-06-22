@@ -1,14 +1,11 @@
-import os
 import numpy as np
-import glob
 import seaborn as sns
 import matplotlib.pyplot as plt
-import re
 import cv2
 import bisect
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from matplotlib.widgets  import RectangleSelector
 import warnings
+import sys
+sys.path.append("..") # Adds higher directory to python modules path.
 sns.set_context("poster")
 plt.close("all") # close all the figures from the last run
 #%%

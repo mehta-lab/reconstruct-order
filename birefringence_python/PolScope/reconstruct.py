@@ -1,16 +1,7 @@
-import os
 import numpy as np
-import glob
-import seaborn as sns
-import matplotlib.pyplot as plt
-import re
-import cv2
-import bisect
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from matplotlib.widgets  import RectangleSelector
-import warnings
-sns.set_context("poster")
-plt.close("all") # close all the figures from the last run
+import sys
+sys.path.append("..") # Adds higher directory to python modules path.
+from utils.imgCrop import imcrop
 #%%               
 def computeAB(ImgRaw,Chi): # output numerators and denominators of A, B along with to retain the phase info   
     Iext = ImgRaw[:,:,0] # Sigma0 in Fig.2
@@ -26,8 +17,14 @@ def computeAB(ImgRaw,Chi): # output numerators and denominators of A, B along wi
         IAbs = I45+I135-2*np.cos(Chi)*Iext        
     elif ImgRaw.shape[2]==5: # 5-frame algorithm               
         I0 = ImgRaw[:,:,4] # Sigma1 in Fig.2          
-        B = (I135-I45)*np.tan(Chi/2)/(I135+I45-2*Iext)
-        A = (I0-I90)*np.tan(Chi/2)/(I0+I90-2*Iext)   # Eq. 10 in reference        
+        nB = (I135-I45)*np.tan(Chi/2)
+        dB = I135+I45-2*Iext
+        nA = (I0-I90)*np.tan(Chi/2)
+        dA = I0+I90-2*Iext   # Eq. 10 in reference 
+        dB[dB==0] = np.spacing(1.0)
+        dA[dA==0] = np.spacing(1.0)
+        A = nA/dA
+        B = nB/dB   
         IAbs = I45+I135-2*np.cos(Chi)*Iext        
     return  A, B, IAbs
 

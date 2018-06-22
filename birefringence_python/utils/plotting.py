@@ -1,16 +1,14 @@
+#%matplotlib inline
 import os
 import numpy as np
-import glob
-import seaborn as sns
 import matplotlib.pyplot as plt
-import re
 import cv2
-import bisect
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from matplotlib.widgets  import RectangleSelector
-import warnings
-sns.set_context("poster")
-plt.close("all") # close all the figures from the last run
+from utils.imgProcessing import nanRobustBlur,imadjust
+from utils.imgCrop import imcrop
+#import sys
+#sys.path.append("..") # Adds higher directory to python modules path.
+
 #%%
 def plotVectorField(I, azimuth, R=40, spacing=40): # plot vector field representaiton of the orientation map,
     # Currently only plot single pixel value when spacing >0. 
@@ -41,7 +39,7 @@ def plotVectorField(I, azimuth, R=40, spacing=40): # plot vector field represent
                headwidth = 0, headlength = 0, headaxislength = 0,
                scale_units = 'xy',scale = 1 )  
     
-    plt.show()    
+#    plt.show()    
 
 def plot_birefringence(IAbs,retard, azimuth, figPath, ind, DAPI=[], TdTomato=[], spacing=20, vectorScl=1, zoomin=False, dpi=300): 
     
@@ -60,15 +58,15 @@ def plot_birefringence(IAbs,retard, azimuth, figPath, ind, DAPI=[], TdTomato=[],
     #%%
     figSize = (12,12)
     fig = plt.figure(figsize = figSize)                                        
-    a=fig.add_subplot(2,2,1)
-    plt.tick_params(labelbottom='off',labelleft='off') # labels along the bottom edge are off          
+    plt.subplot(2,2,1)
+    plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off          
     plt.imshow(imadjust(IAbs), cmap='gray')
     plt.title('Transmission')
     plt.xticks([]),plt.yticks([])                                      
-    plt.show()
+#    plt.show()
     
-    a=fig.add_subplot(2,2,2)
-    plt.tick_params(labelbottom='off',labelleft='off') # labels along the bottom edge are off            
+    a = plt.subplot(2,2,2)
+    plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off            
     im = plt.imshow(IHv, cmap='hsv')
     plt.title('Retardance+Orientation')
     plt.xticks([]),plt.yticks([])
@@ -76,22 +74,22 @@ def plot_birefringence(IAbs,retard, azimuth, figPath, ind, DAPI=[], TdTomato=[],
     cax = divider.append_axes('right', size='5%', pad=0.05)
     cbar = fig.colorbar(im, cax=cax, orientation='vertical', ticks=np.linspace(0,255, 5))    
     cbar.ax.set_yticklabels([r'$0^o$', r'$45^o$', r'$90^o$', r'$135^o$', r'$180^o$'])  # vertically oriented colorbar                                     
-    plt.show()
+#    plt.show()
 
-    a=fig.add_subplot(2,2,3)
+    plt.subplot(2,2,3)
     plotVectorField(imadjust(retard), azimuth, R=R, spacing=spacing)
 #    plotVectorField(retard, azimuth, R=vectorScl, spacing=spacing)
-    plt.tick_params(labelbottom='off',labelleft='off') # labels along the bottom edge are off               
+    plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off               
     plt.title('Retardance+Orientation')   
     plt.xticks([]),plt.yticks([])                                  
-    plt.show()
+#    plt.show()
     
-    a=fig.add_subplot(2,2,4)
-    plt.tick_params(labelbottom='off',labelleft='off') # labels along the bottom edge are off            
+    plt.subplot(2,2,4)
+    plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off            
     plt.imshow(IHsv)
     plt.title('Transmission+Retardance\n+Orientation')  
     plt.xticks([]),plt.yticks([])                                   
-    plt.show()
+#    plt.show()
     if zoomin:
         figName = 'Transmission+Retardance+Orientation_Zoomin.png'
     else:
@@ -142,6 +140,6 @@ def plot_sub_images(images,titles):
         plt.subplot(2,2,i+1),plt.imshow(imadjust(images[i]),'gray')
         plt.title(titles[i])
         plt.xticks([]),plt.yticks([])
-        plt.show()
-#        plt.axis('tight') 
+
+
 
