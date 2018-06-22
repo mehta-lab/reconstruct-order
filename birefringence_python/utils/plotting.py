@@ -89,7 +89,7 @@ def plot_birefringence(IAbs,retard, azimuth, figPath, ind, DAPI=[], TdTomato=[],
     plt.imshow(IHsv)
     plt.title('Transmission+Retardance\n+Orientation')  
     plt.xticks([]),plt.yticks([])                                   
-#    plt.show()
+    plt.show()
     if zoomin:
         figName = 'Transmission+Retardance+Orientation_Zoomin.png'
     else:
@@ -140,6 +140,7 @@ def plot_sub_images(images,titles):
         plt.subplot(2,2,i+1),plt.imshow(imadjust(images[i]),'gray')
         plt.title(titles[i])
         plt.xticks([]),plt.yticks([])
+    plt.show()
 
 
 
