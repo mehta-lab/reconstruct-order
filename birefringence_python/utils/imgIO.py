@@ -10,8 +10,10 @@ import cv2
 #from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 def GetSubDirName(ImgPath):
+    assert os.path.exists(ImgPath), 'Input folder does not exist!' 
     subDirPath = glob.glob(os.path.join(ImgPath, '*/'))    
-    subDirName = [os.path.split(subdir[:-1])[1] for subdir in subDirPath]            
+    subDirName = [os.path.split(subdir[:-1])[1] for subdir in subDirPath]
+    assert subDirName, 'No sub directories found'            
     return subDirName
 
 def loadTiff(acquDirPath, acquFiles):   
