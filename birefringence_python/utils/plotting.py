@@ -35,19 +35,19 @@ def plotVectorField(I, azimuth, R=40, spacing=40): # plot vector field represent
     plt.title('Orientation map')                              
     plt.quiver(X[::spacing, ::spacing], Y[::spacing,::spacing], 
                USmooth[::spacing,::spacing], VSmooth[::spacing,::spacing],
-               edgecolor='g',facecolor='g',units='xy', alpha=1, width=1,
+               edgecolor='g',facecolor='g',units='xy', alpha=1, width=3,
                headwidth = 0, headlength = 0, headaxislength = 0,
                scale_units = 'xy',scale = 1 )  
     
 #    plt.show()    
 
-def plot_birefringence(IAbs,retard, azimuth, figPath, ind, DAPI=[], TdTomato=[], spacing=20, vectorScl=1, zoomin=False, dpi=300): 
+def plot_birefringence(IAbs,retard, azimuth, figPath, ind, z, DAPI=[], TdTomato=[], spacing=20, vectorScl=1, zoomin=False, dpi=300): 
     
     if zoomin:
         imList = [IAbs,retard, azimuth]
         imListCrop = imcrop(imList, IAbs)
         IAbs,retard, azimuth = imListCrop
-    IHsv, IHv, IAbs= PolColor(IAbs*200, retard*1000, azimuth)
+    IHsv, IHv= PolColor(IAbs*200, retard*1000, azimuth)
 #    DAPI = cv2.convertScaleAbs(DAPI*20)
 #    TdTomato = cv2.convertScaleAbs(TdTomato*2)
 #    IFluorAbs = np.stack([DAPI+IAbs/2, IAbs/2, TdTomato+IAbs/2],axis=2)    
@@ -67,7 +67,7 @@ def plot_birefringence(IAbs,retard, azimuth, figPath, ind, DAPI=[], TdTomato=[],
     
     a = plt.subplot(2,2,2)
     plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off            
-    im = plt.imshow(IHv, cmap='hsv')
+    im = plt.imshow(imadjust(IHv, bit=8), cmap='hsv')
     plt.title('Retardance+Orientation')
     plt.xticks([]),plt.yticks([])
     divider = make_axes_locatable(a)
@@ -86,38 +86,39 @@ def plot_birefringence(IAbs,retard, azimuth, figPath, ind, DAPI=[], TdTomato=[],
     
     plt.subplot(2,2,4)
     plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off            
-    plt.imshow(IHsv)
+    plt.imshow(imadjust(IHsv, bit=8))
     plt.title('Transmission+Retardance\n+Orientation')  
     plt.xticks([]),plt.yticks([])                                   
     plt.show()
     if zoomin:
         figName = 'Transmission+Retardance+Orientation_Zoomin.png'
     else:
-        figName = 'Transmission+Retardance+Orientation.png'
+        figName = 'Transmission+Retardance+Orientation_%03d_%03d.png'%(ind,z)
         
     plt.savefig(os.path.join(figPath, figName),dpi=dpi)
-    #%%
-#    
-
+    #%%   
 #    images = [IAbs, retard*10**4, azimuth*10**4, IHv, IHsv, DAPI, TdTomato]
 #    tiffNames = ['Transmission', 'Retardance', 'Orientation', 'Retardance+Orientation', 'Transmission+Retardance+Orientation', 'DAPI', 'TdTomato']
-
+    images = [IAbs, retard*10**4, azimuth*10**4, IHv, IHsv]
+   
 #    images = [retardAzi]
 #    tiffNames = ['Retardance+Orientation_grey']
 #    images = [IFluorAbs]
 #    tiffNames = ['DAPI+Transmission+TdTomato']        
-#    for im, tiffName in zip(images, tiffNames):
-#        fileName = tiffName+'_%02d.tif'%ind
-#        cv2.imwrite(os.path.join(figPath, fileName), im)
+    return images
+  
 
 def PolColor(IAbs, retard, azimuth):
 #    retard = imBitConvert(retard,bit = 8)
 #    retard = imBitConvert(retard,bit = 8)
-    retard = imadjust(retard)
+#    retard = imadjust(retard)
+#    IAbs = imadjust(IAbs)
    
 #    IAbs = imBitConvert(IAbs,bit = 8)
-    retard = cv2.convertScaleAbs(retard, alpha=(2**8-1)/np.max(retard))
-    IAbs = cv2.convertScaleAbs(IAbs, alpha=(2**8-1)/np.max(IAbs))
+#    retard = cv2.convertScaleAbs(retard, alpha=(2**8-1)/np.max(retard))
+#    IAbs = cv2.convertScaleAbs(IAbs, alpha=(2**8-1)/np.max(IAbs))
+    retard = cv2.convertScaleAbs(retard, alpha=1)
+    IAbs = cv2.convertScaleAbs(IAbs, alpha=1)
 #    retard = histequal(retard)
     azimuth = azimuth/np.pi*180
     azimuth = azimuth.astype(np.uint8, copy=False)
@@ -127,7 +128,7 @@ def PolColor(IAbs, retard, azimuth):
     IHsv = cv2.cvtColor(IHsv, cv2.COLOR_HSV2RGB)    
     IHv = cv2.cvtColor(IHv, cv2.COLOR_HSV2RGB)    #
 #    retardAzi = np.stack([azimuth, retard],axis=2)    
-    return IHsv,IHv, IAbs
+    return IHsv,IHv
 
 
 

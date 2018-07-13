@@ -60,10 +60,14 @@ def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
     # vout : dst image bounds
     # return : output img
     bitTemp = 16 # temporary bit depth for calculation. Convert to 32bit for calculation to minimize the info loss
-    vout=(0,2**bitTemp-1)
-    assert len(src.shape) == 2 ,'Input image should be 2-dims'
+    vout=(0,2**bitTemp-1)       
     
     src = imBitConvert(src, norm=True) # rescale to 16 bit       
+    srcOri = np.copy(src) # make a copy of source image
+    if len(src.shape) > 2:    
+        src = np.mean(src, axis=2)
+        src = imBitConvert(src, norm=True) # rescale to 16 bit                    
+    
     tol = max(0, min(100, tol))
 
     if tol > 0:
@@ -85,17 +89,31 @@ def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
     # Stretching
     if vin[1] == vin[0]:
         warnings.warn("Tolerance is too high. No contrast adjustment is perfomred")
-        dst = src
-        
+        dst = srcOri
     else:
-        scale = (vout[1] - vout[0]) / (vin[1] - vin[0])
-        vs = src-vin[0]
-        vs[src<vin[0]]=0
-        vd = vs*scale+0.5 + vout[0]
-        vd[vd>vout[1]] = vout[1]
-        dst = vd
+        if len(srcOri.shape)>2:
+            dst = np.array([])
+            for i in range(0, srcOri.shape[2]):
+                src = srcOri[:,:,i] 
+                src = src.reshape(src.shape[0], src.shape[1],1)                              
+                vd = linScale(src,vin, vout)                
+                if dst.size:            
+                    dst = np.concatenate((dst, vd), axis=2)
+                else:
+                    dst = vd      
+        else:
+            vd = linScale(src,vin, vout)
+            dst = vd
     dst = imBitConvert(dst,bit=bit, norm=True)
     return dst
+
+def linScale(src,vin, vout):
+    scale = (vout[1] - vout[0]) / (vin[1] - vin[0])
+    vs = src-vin[0]
+    vs[src<vin[0]]=0
+    vd = vs*scale + 0.5 + vout[0]
+    vd[vd>vout[1]] = vout[1]
+    return vd
 #%%
 def removeBubbles(I, kernelSize = (11,11)): # remove bright spots (mostly bubbles) in retardance images. Need to add a size filter
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,  kernelSize)
