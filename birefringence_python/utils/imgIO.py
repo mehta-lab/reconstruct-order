@@ -30,9 +30,9 @@ def ParseFileList(acquDirPath):
     FluorChan = []
     FluorZ =[]
     for fileName in acquFiles:
-        matchObjRaw = re.match( r'img_000000000_(State|PolAcquisition|Zyla_PolState)(\d+)( - Acquired Image|_Confocal40|)_(\d+).tif', fileName, re.M|re.I) # read images with "state" string in the filename
+        matchObjRaw = re.match( r'img_000000000_(State|PolAcquisition|Zyla_PolState)(\d+)( - Acquired Image|_Confocal40|_Widefield|)_(\d+).tif', fileName, re.M|re.I) # read images with "state" string in the filename
 #        matchObjProc = re.match( r'img_000000000_(.*) - Computed Image_000.tif', fileName, re.M|re.I) # read computed images 
-        matchObjFluor = re.match( r'img_000000000_Zyla_Confocal40_(.*)_(\d+).tif', fileName, re.M|re.I) # read computed images 
+        matchObjFluor = re.match( r'img_000000000_Zyla_(Confocal40|Widefield|widefield)_(.*)_(\d+).tif', fileName, re.M|re.I) # read computed images 
         if matchObjRaw:                   
             PolChan += [matchObjRaw.group(2)]
             PolZ += [matchObjRaw.group(4)]        
@@ -54,9 +54,9 @@ def ParseTiffInput(acquDirPath,z): # Load the TIFF stack format output by the ac
     ImgFluor = np.array([])
     
     for fileName in acquFiles: # load raw images with Sigma0, 1, 2, 3 states, and processed images        
-        matchObjRaw = re.match( r'img_000000000_(State|PolAcquisition|Zyla_PolState)(\d+)( - Acquired Image|_Confocal40|)_%03d.tif'%z, fileName, re.M|re.I) # read images with "state" string in the filename
+        matchObjRaw = re.match( r'img_000000000_(State|PolAcquisition|Zyla_PolState)(\d+)( - Acquired Image|_Confocal40|_Widefield|)_%03d.tif'%z, fileName, re.M|re.I) # read images with "state" string in the filename
         matchObjProc = re.match( r'img_000000000_(.*) - Computed Image_%03d.tif'%z, fileName, re.M|re.I) # read computed images 
-        matchObjFluor = re.match( r'img_000000000_Zyla_Confocal40_(.*)_%03d.tif'%z, fileName, re.M|re.I) # read computed images 
+        matchObjFluor = re.match( r'img_000000000_Zyla_(Confocal40|Widefield|widefield)_(.*)_%03d.tif'%z, fileName, re.M|re.I) # read computed images 
         if matchObjRaw:            
             img = loadTiff(acquDirPath, fileName)
             if ImgRaw.size:            
