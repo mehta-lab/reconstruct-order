@@ -25,7 +25,18 @@ def computeAB(ImgRaw,Chi): # output numerators and denominators of A, B along wi
         dA[dA==0] = np.spacing(1.0)
         A = nA/dA
         B = nB/dB   
-        IAbs = I45+I135-2*np.cos(Chi)*Iext        
+        IAbs = I45+I135-2*np.cos(Chi)*Iext
+    else: # treat anything else as 5-frame for now      
+        I0 = ImgRaw[:,:,4] # Sigma1 in Fig.2          
+        nB = (I135-I45)*np.tan(Chi/2)
+        dB = I135+I45-2*Iext
+        nA = (I0-I90)*np.tan(Chi/2)
+        dA = I0+I90-2*Iext   # Eq. 10 in reference 
+        dB[dB==0] = np.spacing(1.0)
+        dA[dA==0] = np.spacing(1.0)
+        A = nA/dA
+        B = nB/dB   
+        IAbs = I45+I135-2*np.cos(Chi)*Iext
     return  A, B, IAbs
 
 def correctBackground(ASm,BSm,Abg,Bbg,ImgRaw,extra=False):

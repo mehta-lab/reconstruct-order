@@ -79,7 +79,7 @@ def loopZ(PolZ, ind, acquDirPath, OutputPath, Chi, Abg, Bbg, IAbsBg, DAPIBg, TdT
 
         images = plot_birefringence(IAbsSm,retard, azimuth, OutputPath, ind, z, DAPI=DAPI,
                            TdTomato=TdTomato, spacing=20, vectorScl=1, zoomin=False, dpi=150)
-        tiffNames = ['Transmission', 'Retardance', 'Orientation', 'Retardance+Orientation', 'Transmission+Retardance+Orientation']
+        tiffNames = ['Transmission', 'Retardance', 'Orientation', 'Retardance+Orientation', 'Transmission+Retardance+Orientation', 'Fluor+Retardance']
         exportImg(images, tiffNames, ind, z, OutputPath)
             
 
@@ -97,11 +97,18 @@ def loopZ(PolZ, ind, acquDirPath, OutputPath, Chi, Abg, Bbg, IAbsBg, DAPIBg, TdT
 #ImgBgPath = 'C:/Google Drive/2018_04_16_unstained_brain_slice/BG_2018_0416_1745_1' # Background image folder path
 #ImgSmPath = 'C:/Users/Sam Guo/Box Sync/Data/NikonSmallWorld/someone/2018_04_25_Testing/SMS_2018_0425_1654_1' # Sample image folder path
 #ImgBgPath = 'C:/Users/Sam Guo/Box Sync/Data/NikonSmallWorld/someone/2018_04_25_Testing/BG_2018_0425_1649_1' # Background image folder path
-ImgSmPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_05_09_KindneySection/SM_2018_0509_1804_1' # Sample image folder path
-ImgBgPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_05_09_KindneySection/BG_2018_0509_1801_1' # Background image folder path
-OutputPath = os.path.join(ImgSmPath, 'processed')
-Chi = 0.25 # Swing
-#Chi = 0.1 # Swing
+#ImgSmPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_05_09_KindneySection/SM_2018_0509_1804_1' # Sample image folder path
+#ImgBgPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_05_09_KindneySection/BG_2018_0509_1801_1' # Background image folder path
+#ImgSmPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_06_20_Argolight/SM_2018_0620_1734_1' # Sample image folder path
+#ImgBgPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_06_20_Argolight/BG_2018_0620_1731_1' # Background image folder path
+#ImgSmPath = 'C:/Users/Sam Guo/Box Sync/Data/20180710_brainSlice_Tomasz/SM_2018_0710_1830_1' # Sample image folder path
+#ImgBgPath = 'C:/Users/Sam Guo/Box Sync/Data/20180710_brainSlice_Tomasz/BG_2018_0710_1820_1' # Background image folder path        
+ImgSmPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_07_03_KidneyTissueSection/SMS_2018_0703_1835_1' # Sample image folder path
+ImgBgPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_07_03_KidneyTissueSection/BG_2018_0703_1829_1' # Background image folder path                
+#OutputPath = os.path.join(ImgSmPath, 'processed_fliped')
+OutputPath = os.path.join(ImgSmPath, 'processed_flipped')
+Chi = 0.05 # Swing
+#Chi = 0.25 # Swing
 flipPol=True # flip the sign of polarization 
 processImg(ImgSmPath, ImgBgPath, OutputPath, Chi, flatField=False, flipPol=flipPol)
 

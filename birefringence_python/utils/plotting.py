@@ -35,7 +35,7 @@ def plotVectorField(I, azimuth, R=40, spacing=40): # plot vector field represent
     plt.title('Orientation map')                              
     plt.quiver(X[::spacing, ::spacing], Y[::spacing,::spacing], 
                USmooth[::spacing,::spacing], VSmooth[::spacing,::spacing],
-               edgecolor='g',facecolor='g',units='xy', alpha=1, width=3,
+               edgecolor='g',facecolor='g',units='xy', alpha=1, width=2,
                headwidth = 0, headlength = 0, headaxislength = 0,
                scale_units = 'xy',scale = 1 )  
     
@@ -47,7 +47,8 @@ def plot_birefringence(IAbs,retard, azimuth, figPath, ind, z, DAPI=[], TdTomato=
         imList = [IAbs,retard, azimuth]
         imListCrop = imcrop(imList, IAbs)
         IAbs,retard, azimuth = imListCrop
-    IHsv, IHv= PolColor(IAbs*200, retard*1000, azimuth)
+    IHsv, IHv= PolColor(IAbs*200, retard*10**4, azimuth)
+    IFluorRetard = CompositeImg([TdTomato*8, DAPI*8, retard*2*10**4])
 #    DAPI = cv2.convertScaleAbs(DAPI*20)
 #    TdTomato = cv2.convertScaleAbs(TdTomato*2)
 #    IFluorAbs = np.stack([DAPI+IAbs/2, IAbs/2, TdTomato+IAbs/2],axis=2)    
@@ -99,7 +100,7 @@ def plot_birefringence(IAbs,retard, azimuth, figPath, ind, z, DAPI=[], TdTomato=
     #%%   
 #    images = [IAbs, retard*10**4, azimuth*10**4, IHv, IHsv, DAPI, TdTomato]
 #    tiffNames = ['Transmission', 'Retardance', 'Orientation', 'Retardance+Orientation', 'Transmission+Retardance+Orientation', 'DAPI', 'TdTomato']
-    images = [IAbs, retard*10**4, azimuth*10**4, IHv, IHsv]
+    images = [IAbs*100, retard*10**4, azimuth*10**4, IHv, IHsv, IFluorRetard]
    
 #    images = [retardAzi]
 #    tiffNames = ['Retardance+Orientation_grey']
@@ -130,8 +131,14 @@ def PolColor(IAbs, retard, azimuth):
 #    retardAzi = np.stack([azimuth, retard],axis=2)    
     return IHsv,IHv
 
-
-
+def CompositeImg(images):
+    assert len(images)==3,'CompositeImg currently only supports 3-channel image'
+    ImgColor = []
+    for img in images:
+        img8bit = cv2.convertScaleAbs(img, alpha=1)    
+        ImgColor +=[img8bit]
+    ImgColor = np.stack(ImgColor,axis=2)
+    return ImgColor
     
 #%%
 def plot_sub_images(images,titles): 
