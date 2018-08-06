@@ -13,7 +13,18 @@ def ImgMin(Img, ImgBg):
     ImgArr = np.array([Img, ImgBg])
     ImgMeanArr = np.array([np.mean(Img), np.mean(ImgBg)])
     ImgBg = ImgArr[np.argmin(ImgMeanArr)]
-    return ImgBg        
+    return ImgBg
+
+def ImgLimit(imgs,imgLimits): # tracking the global image limit 
+    imgLimitsNew = []
+    for img, imgLimit in zip(imgs,imgLimits):
+        if img.size:
+            limit = [np.nanmin(img[:]), np.nanmax(img[:])]
+            imgLimitNew = [np.minimum(limit[0], imgLimit[0]), np.maximum(limit[1], imgLimit[1])]
+        else:
+            imgLimitNew = imgLimit
+        imgLimitsNew += [imgLimitNew]
+    return imgLimitsNew               
 
 def nanRobustBlur(I, dim):
     V=I.copy()
@@ -33,14 +44,16 @@ def histequal(ImgSm0): # histogram eaqualiztion for contrast enhancement
     ImgAd = clahe.apply(ImgSm0)
     return ImgAd
 
-def imBitConvert(im,bit=16, norm=False):
+def imBitConvert(im,bit=16, norm=False, limit=None):    
     im = im.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
-    if norm: # scale each image individually 
-        im = (im-np.nanmin(im[:]))/(np.nanmax(im[:])-np.nanmin(im[:]))*(2**bit-1) # rescale to 16 bit   
-    else: # scale all images globally with the same scaling factor (for tiling)
-        scale = (2**bit-1)/10
-        im = im*scale
-    if bit==8:
+    if norm: # local or global normalization (for tiling)
+        if not limit: # if lmit is not provided, perform local normalization, otherwise global (for tiling)
+            limit = [np.nanmin(im[:]), np.nanmax(im[:])] # scale each image individually based on its min and max
+            
+        im = (im-limit[0])/(limit[1]-limit[0])*(2**bit-1) 
+    else: # only clipping, no scaling        
+        im = np.clip(im, 0, 2**bit-1) # clip the values to avoid wrap-around by np.astype         
+    if bit==8:        
         im = im.astype(np.uint8, copy=False) # convert to 8 bit
     else:
         im = im.astype(np.uint16, copy=False) # convert to 16 bit
@@ -105,8 +118,16 @@ def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
             vd = linScale(src,vin, vout)
             dst = vd
     dst = imBitConvert(dst,bit=bit, norm=True)
-    return dst
+    return dst, vin
 
+def imClip(img, tol=1, bit=16,vin=[0,2**16-1]):
+    """
+    Clip the images for better visualization
+    """
+    limit = np.percentile(img, [tol, 100-tol])
+    imgClpped = np.clip(img, limit[0], limit[1])
+    return imgClpped       
+    
 def linScale(src,vin, vout):
     scale = (vout[1] - vout[0]) / (vin[1] - vin[0])
     vs = src-vin[0]

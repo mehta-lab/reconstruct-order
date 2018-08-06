@@ -33,12 +33,15 @@ def ParseFileList(acquDirPath):
         matchObjRaw = re.match( r'img_000000000_(State|PolAcquisition|Zyla_PolState)(\d+)( - Acquired Image|_Confocal40|_Widefield|)_(\d+).tif', fileName, re.M|re.I) # read images with "state" string in the filename
 #        matchObjProc = re.match( r'img_000000000_(.*) - Computed Image_000.tif', fileName, re.M|re.I) # read computed images 
         matchObjFluor = re.match( r'img_000000000_Zyla_(Confocal40|Widefield|widefield)_(.*)_(\d+).tif', fileName, re.M|re.I) # read computed images 
+        
         if matchObjRaw:                   
             PolChan += [matchObjRaw.group(2)]
             PolZ += [matchObjRaw.group(4)]        
         elif matchObjFluor:
             FluorChan += [matchObjFluor.group(1)]
             FluorZ += [matchObjFluor.group(2)]
+        
+            
     PolChan = list(set(PolChan))
     PolZ = list(set(PolZ))
     PolZ = [int(z) for z in PolZ]
@@ -52,11 +55,13 @@ def ParseTiffInput(acquDirPath,z): # Load the TIFF stack format output by the ac
     ImgRaw = np.array([])
     ImgProc = np.array([])
     ImgFluor = np.array([])
+    ImgBF = np.array([])
     
     for fileName in acquFiles: # load raw images with Sigma0, 1, 2, 3 states, and processed images        
         matchObjRaw = re.match( r'img_000000000_(State|PolAcquisition|Zyla_PolState)(\d+)( - Acquired Image|_Confocal40|_Widefield|)_%03d.tif'%z, fileName, re.M|re.I) # read images with "state" string in the filename
         matchObjProc = re.match( r'img_000000000_(.*) - Computed Image_%03d.tif'%z, fileName, re.M|re.I) # read computed images 
-        matchObjFluor = re.match( r'img_000000000_Zyla_(Confocal40|Widefield|widefield)_(.*)_%03d.tif'%z, fileName, re.M|re.I) # read computed images 
+        matchObjFluor = re.match( r'img_000000000_Zyla_(Confocal40|Widefield|widefield|BF)_(.*)_%03d.tif'%z, fileName, re.M|re.I) # read computed images 
+        matchObjBF = re.match( r'img_000000000_Zyla_(BF)_%03d.tif'%z, fileName, re.M|re.I) # read computed images 
         if matchObjRaw:            
             img = loadTiff(acquDirPath, fileName)
             if ImgRaw.size:            
@@ -74,9 +79,14 @@ def ParseTiffInput(acquDirPath,z): # Load the TIFF stack format output by the ac
             if ImgFluor.size:            
                 ImgFluor = np.concatenate((ImgFluor, img), axis=2)
             else:
-                ImgFluor = img    
-    
-    return ImgRaw, ImgProc, ImgFluor 
+                ImgFluor = img  
+        elif matchObjBF:
+            img = loadTiff(acquDirPath, fileName)
+            if ImgBF.size:            
+                ImgBF = np.concatenate((ImgBF, img), axis=2)
+            else:
+                ImgBF = img  
+    return ImgRaw, ImgProc, ImgFluor, ImgBF 
 
 def exportImg(images, tiffNames, ind, z, figPath):
     for im, tiffName in zip(images, tiffNames):

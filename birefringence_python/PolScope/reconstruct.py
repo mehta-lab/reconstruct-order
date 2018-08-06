@@ -54,10 +54,11 @@ def correctBackground(ASm,BSm,Abg,Bbg,ImgRaw,extra=False):
     B = BSm-Bbg-BSmBg    
     return A, B        
 
-def computeDeltaPhi(A,B,flipPol=False):
+def computeDeltaPhi(A,B,Lambda,flipPol=False):
     retardPos = np.arctan(np.sqrt(A**2+B**2))
     retardNeg = np.pi + np.arctan(np.sqrt(A**2+B**2)) # different from Eq. 10 due to the definition of arctan in numpy
-    retard = retardNeg*(retardPos<0)+retardPos*(retardPos>=0)        
+    retard = retardNeg*(retardPos<0)+retardPos*(retardPos>=0)
+    retard = retard/(2*np.pi)*Lambda # convert the unit to [nm]    
 #    azimuth = 0.5*((np.arctan2(A,B)+2*np.pi)%(2*np.pi)) # make azimuth fall in [0,pi]    
     if flipPol:
         azimuth = (0.5*np.arctan2(-A,B)+0.5*np.pi) # make azimuth fall in [0,pi]    
