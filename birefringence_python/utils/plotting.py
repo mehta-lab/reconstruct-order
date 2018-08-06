@@ -4,13 +4,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from utils.imgProcessing import nanRobustBlur,imadjust
+from utils.imgProcessing import nanRobustBlur,imadjust, imBitConvert, imClip
 from utils.imgCrop import imcrop
 #import sys
 #sys.path.append("..") # Adds higher directory to python modules path.
 
 #%%
-def plotVectorField(I, azimuth, R=40, spacing=40): # plot vector field representaiton of the orientation map,
+def plotVectorField(I, azimuth, R=40, spacing=40, clim=[None, None]): # plot vector field representaiton of the orientation map,
     # Currently only plot single pixel value when spacing >0. 
     # To do: Use average pixel value to reduce noise
 #    retardSmooth = nanRobustBlur(retard, (spacing, spacing))
@@ -25,34 +25,41 @@ def plotVectorField(I, azimuth, R=40, spacing=40): # plot vector field represent
    
 #    azimuthSmooth  = azimuth
     nY, nX = I.shape
-    Y, X = np.mgrid[0:nY, 0:nX] # notice the inversed order of X and Y    
-    
-    I = imadjust(I,tol=0.1)
+    Y, X = np.mgrid[0:nY, 0:nX] # notice the inversed order of X and Y        
+ 
 #    I = histequal(I)
 #    figSize = (10,10)
 #    fig = plt.figure(figsize = figSize) 
-    plt.imshow(I, cmap='gray')
+    imAx = plt.imshow(I, cmap='gray', vmin=clim[0], vmax=clim[1])
     plt.title('Orientation map')                              
     plt.quiver(X[::spacing, ::spacing], Y[::spacing,::spacing], 
                USmooth[::spacing,::spacing], VSmooth[::spacing,::spacing],
-               edgecolor='g',facecolor='g',units='xy', alpha=1, width=3,
+               edgecolor='g',facecolor='g',units='xy', alpha=1, width=2,
                headwidth = 0, headlength = 0, headaxislength = 0,
                scale_units = 'xy',scale = 1 )  
     
-#    plt.show()    
+#    plt.show()
+    return imAx    
 
-def plot_birefringence(IAbs,retard, azimuth, figPath, ind, z, DAPI=[], TdTomato=[], spacing=20, vectorScl=1, zoomin=False, dpi=300): 
+def plot_birefringence(imgs, figPath, ind, z, spacing=20, vectorScl=1, zoomin=False, dpi=300): 
+    IAbs,retard, azimuth, DAPI, TdTomato = imgs
+    ImgShape = retard.shape
     
-    if zoomin:
+    if zoomin: # crop the images
         imList = [IAbs,retard, azimuth]
         imListCrop = imcrop(imList, IAbs)
         IAbs,retard, azimuth = imListCrop
-    IHsv, IHv= PolColor(IAbs*200, retard*1000, azimuth)
+    IAbs = imBitConvert(IAbs*10**3, bit=16) #AU
+    retard = imBitConvert(retard*10**3,bit=16) # scale to pm
+    azimuth = imBitConvert(azimuth/np.pi*18000,bit=16) # scale to [0, 18000], 100*degree        
+    IHsv, IHv= PolColor(IAbs, retard, azimuth) 
+    
 #    DAPI = cv2.convertScaleAbs(DAPI*20)
 #    TdTomato = cv2.convertScaleAbs(TdTomato*2)
 #    IFluorAbs = np.stack([DAPI+IAbs/2, IAbs/2, TdTomato+IAbs/2],axis=2)    
     
-    R=retard*IAbs
+#    R=retard*IAbs
+    R=retard
     R = R/np.nanmean(R) #normalization
     R=vectorScl*R
     #%%
@@ -60,33 +67,35 @@ def plot_birefringence(IAbs,retard, azimuth, figPath, ind, z, DAPI=[], TdTomato=
     fig = plt.figure(figsize = figSize)                                        
     plt.subplot(2,2,1)
     plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off          
-    plt.imshow(imadjust(IAbs), cmap='gray')
+    plt.imshow(imadjust(IAbs)[0], cmap='gray')
     plt.title('Transmission')
     plt.xticks([]),plt.yticks([])                                      
 #    plt.show()
     
-    a = plt.subplot(2,2,2)
+    ax = plt.subplot(2,2,2)
     plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off            
-    im = plt.imshow(imadjust(IHv, bit=8), cmap='hsv')
+    imAx = plt.imshow(imadjust(IHv, bit=8)[0], cmap='hsv')
     plt.title('Retardance+Orientation')
     plt.xticks([]),plt.yticks([])
-    divider = make_axes_locatable(a)
+    divider = make_axes_locatable(ax)
     cax = divider.append_axes('right', size='5%', pad=0.05)
-    cbar = fig.colorbar(im, cax=cax, orientation='vertical', ticks=np.linspace(0,255, 5))    
+    cbar = fig.colorbar(imAx, cax=cax, orientation='vertical', ticks=np.linspace(0,255, 5))    
     cbar.ax.set_yticklabels([r'$0^o$', r'$45^o$', r'$90^o$', r'$135^o$', r'$180^o$'])  # vertically oriented colorbar                                     
 #    plt.show()
 
-    plt.subplot(2,2,3)
-    plotVectorField(imadjust(retard), azimuth, R=R, spacing=spacing)
+    ax = plt.subplot(2,2,3)    
+    imAx = plotVectorField(imClip(retard/1000,tol=1), azimuth, R=R, spacing=spacing)
 #    plotVectorField(retard, azimuth, R=vectorScl, spacing=spacing)
     plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off               
-    plt.title('Retardance+Orientation')   
-    plt.xticks([]),plt.yticks([])                                  
-#    plt.show()
-    
+    plt.title('Retardance(nm)+Orientation')   
+    plt.xticks([]),plt.yticks([]) 
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad=0.05)
+    cbar = fig.colorbar(imAx, cax=cax, orientation='vertical')    
+                                  
     plt.subplot(2,2,4)
     plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off            
-    plt.imshow(imadjust(IHsv, bit=8))
+    plt.imshow(imadjust(IHsv, bit=8)[0])
     plt.title('Transmission+Retardance\n+Orientation')  
     plt.xticks([]),plt.yticks([])                                   
     plt.show()
@@ -95,16 +104,16 @@ def plot_birefringence(IAbs,retard, azimuth, figPath, ind, z, DAPI=[], TdTomato=
     else:
         figName = 'Transmission+Retardance+Orientation_%03d_%03d.png'%(ind,z)
         
-    plt.savefig(os.path.join(figPath, figName),dpi=dpi)
-    #%%   
-#    images = [IAbs, retard*10**4, azimuth*10**4, IHv, IHsv, DAPI, TdTomato]
-#    tiffNames = ['Transmission', 'Retardance', 'Orientation', 'Retardance+Orientation', 'Transmission+Retardance+Orientation', 'DAPI', 'TdTomato']
-    images = [IAbs, retard*10**4, azimuth*10**4, IHv, IHsv]
+    plt.savefig(os.path.join(figPath, figName),dpi=dpi) 
+        
+#    DAPI = imBitConvert(DAPI*30, bit=8) #AU
+#    TdTomato = imBitConvert(TdTomato*30,bit=8) #AU
+#    IFluorRetard = CompositeImg([retard*0.1, TdTomato, DAPI])
+#    images = [IAbs, retard, azimuth, IHv, IHsv, IFluorRetard]
+    
+    images = [IAbs, retard, azimuth, IHv, IHsv]
    
-#    images = [retardAzi]
-#    tiffNames = ['Retardance+Orientation_grey']
-#    images = [IFluorAbs]
-#    tiffNames = ['DAPI+Transmission+TdTomato']        
+
     return images
   
 
@@ -117,12 +126,12 @@ def PolColor(IAbs, retard, azimuth):
 #    IAbs = imBitConvert(IAbs,bit = 8)
 #    retard = cv2.convertScaleAbs(retard, alpha=(2**8-1)/np.max(retard))
 #    IAbs = cv2.convertScaleAbs(IAbs, alpha=(2**8-1)/np.max(IAbs))
-    retard = cv2.convertScaleAbs(retard, alpha=1)
-    IAbs = cv2.convertScaleAbs(IAbs, alpha=1)
+    retard = cv2.convertScaleAbs(retard, alpha=0.1)
+    IAbs = cv2.convertScaleAbs(IAbs, alpha=0.01)
 #    retard = histequal(retard)
-    azimuth = azimuth/np.pi*180
-    azimuth = azimuth.astype(np.uint8, copy=False)
-    retardAzi = np.stack([azimuth, retard, np.ones(retard.shape).astype(np.uint8)*255],axis=2)
+    
+    azimuth = cv2.convertScaleAbs(azimuth, alpha=0.01)
+#    retardAzi = np.stack([azimuth, retard, np.ones(retard.shape).astype(np.uint8)*255],axis=2)
     IHsv = np.stack([azimuth, retard,IAbs],axis=2)
     IHv = np.stack([azimuth, np.ones(retard.shape).astype(np.uint8)*255,retard],axis=2)
     IHsv = cv2.cvtColor(IHsv, cv2.COLOR_HSV2RGB)    
@@ -130,15 +139,21 @@ def PolColor(IAbs, retard, azimuth):
 #    retardAzi = np.stack([azimuth, retard],axis=2)    
     return IHsv,IHv
 
-
-
+def CompositeImg(images):
+    assert len(images)==3,'CompositeImg currently only supports 3-channel image'
+    ImgColor = []
+    for img in images:
+        img8bit = cv2.convertScaleAbs(img, alpha=1)    
+        ImgColor +=[img8bit]
+    ImgColor = np.stack(ImgColor,axis=2)
+    return ImgColor
     
 #%%
 def plot_sub_images(images,titles): 
     figSize = (12,12)
     fig = plt.figure(figsize = figSize)            
     for i in range(4):
-        plt.subplot(2,2,i+1),plt.imshow(imadjust(images[i]),'gray')
+        plt.subplot(2,2,i+1),plt.imshow(imadjust(images[i])[0],'gray')
         plt.title(titles[i])
         plt.xticks([]),plt.yticks([])
     plt.show()
