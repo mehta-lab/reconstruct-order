@@ -88,9 +88,9 @@ def ParseTiffInput(acquDirPath,z): # Load the TIFF stack format output by the ac
                 ImgBF = img  
     return ImgRaw, ImgProc, ImgFluor, ImgBF 
 
-def exportImg(images, tiffNames, ind, z, figPath):
+def exportImg(images, tiffNames, t, ind, z, figPath):
     for im, tiffName in zip(images, tiffNames):
-        fileName = tiffName+'_%03d_%03d.tif'%(ind,z)
+        fileName = tiffName+'t%03d_p%03d_z%03d.tif'%(t,ind,z)
         if len(im.shape)<3:
             cv2.imwrite(os.path.join(figPath, fileName), im)
         else:

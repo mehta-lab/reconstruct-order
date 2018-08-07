@@ -86,6 +86,7 @@ def loopZ(PolZ, ind, acquDirPath, OutputPath, Chi,Lambda, Abg, Bbg, IAbsBg, DAPI
     @param flipPol: whether or not to flip the sign of polarization.
     @return: None
     """  
+
     for z in PolZ:
         plt.close("all") # close all the figures from the last run
         DAPI = np.array([])
@@ -130,7 +131,9 @@ def loopZ(PolZ, ind, acquDirPath, OutputPath, Chi,Lambda, Abg, Bbg, IAbsBg, DAPI
         imgs = plot_birefringence(imgs, OutputPath, ind, z,
                                   spacing=20, vectorScl=1, zoomin=False, dpi=150)
         tiffNames = ['Transmission', 'Retardance', 'Orientation', 'Retardance+Orientation', 'Transmission+Retardance+Orientation', 'Fluor+Retardance']
-        exportImg(imgs, tiffNames, ind, z, OutputPath)
+
+        exportImg(imgs, tiffNames, t=0, ind, z, OutputPath)
+
             
 
 
@@ -155,7 +158,9 @@ def loopZ(PolZ, ind, acquDirPath, OutputPath, Chi,Lambda, Abg, Bbg, IAbsBg, DAPI
 #ImgBgPath = 'C:/Users/Sam Guo/Box Sync/Data/20180710_brainSlice_Tomasz/BG_2018_0710_1820_1' # Background image folder path        
 #ImgSmPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_07_03_KidneyTissueSection/SMS_2018_0703_1835_1' # Sample image folder path
 #ImgBgPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_07_03_KidneyTissueSection/BG_2018_0703_1829_1' # Background image folder path                
-RawDataPath = '//flexo/MicroscopyData/AdvancedOpticalMicroscopy/SpinningDisk/RawData/PolScope/'
+
+RawDataPath = 'C:/Users/Sam Guo/Box Sync/Data'
+
 ProcessedPath = 'C:/Users/Sam Guo/Box Sync/Processed'
 
 ImgDir = '2018_07_03_KidneyTissueSection'
@@ -175,8 +180,10 @@ BgDir = 'BG_2018_0703_1829_1'
 #SmDir = 'SM_2018_0802_1521_1'
 #BgDir = 'BG_2018_0802_1508_1'
 
+
 ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
 ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir) # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'          
+
 #ImgSmPath ='//flexo/MicroscopyData/AdvancedOpticalMicroscopy/SpinningDisk/RawData/PolScope/2018_05_09_KindneySection/SM_2018_0509_1804_1'
 #ImgBgPath ='//flexo/MicroscopyData/AdvancedOpticalMicroscopy/SpinningDisk/RawData/PolScope/2018_05_09_KindneySection/BG_2018_0509_1801_1'
 
