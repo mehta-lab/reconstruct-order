@@ -94,7 +94,7 @@ def loopZ(PolZ, ind, acquDirPath, OutputPath, Chi,Lambda, Abg, Bbg, IAbsBg, DAPI
         imgs = plot_birefringence(imgs, OutputPath, ind, z,
                                   spacing=20, vectorScl=1, zoomin=False, dpi=150)
         tiffNames = ['Transmission', 'Retardance', 'Orientation', 'Retardance+Orientation', 'Transmission+Retardance+Orientation', 'Fluor+Retardance']
-        exportImg(imgs, tiffNames, ind, z, OutputPath)
+        exportImg(imgs, tiffNames, t=0, ind, z, OutputPath)
             
 
 
