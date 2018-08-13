@@ -3,7 +3,8 @@ import sys
 sys.path.append("..") # Adds higher directory to python modules path.
 from utils.imgCrop import imcrop
 #%%               
-def computeAB(ImgRaw,Chi): # output numerators and denominators of A, B along with to retain the phase info   
+def computeAB(ImgReader, ImgRaw): # output numerators and denominators of A, B along with to retain the phase info   
+    Chi = ImgReader.swing
     Iext = ImgRaw[:,:,0] # Sigma0 in Fig.2
     I90 = ImgRaw[:,:,1] # Sigma2 in Fig.2
     I135 = ImgRaw[:,:,2] # Sigma4 in Fig.2
@@ -39,8 +40,9 @@ def computeAB(ImgRaw,Chi): # output numerators and denominators of A, B along wi
         IAbs = I45+I135-2*np.cos(Chi)*Iext
     return  A, B, IAbs
 
-def correctBackground(ASm,BSm,Abg,Bbg,ImgRaw,extra=False):
+def correctBackground(img,ASm,BSm,ImgRaw,extra=False):
     # for low birefringence sample that requires 0 background, set extra=True to manually offset the background 
+    
     Iext = ImgRaw[:,:,0] # Sigma0 in Fig.2
     ASmBg = 0
     BSmBg = 0
@@ -50,15 +52,15 @@ def correctBackground(ASm,BSm,Abg,Bbg,ImgRaw,extra=False):
         ASmCrop,BSmCrop = imListCrop 
         ASmBg = np.nanmean(ASmCrop)
         BSmBg = np.nanmean(BSmCrop)               
-    A = ASm-Abg-ASmBg # correct contributions from background
-    B = BSm-Bbg-BSmBg    
+    A = ASm-img.Abg-ASmBg # correct contributions from background
+    B = BSm-img.Bbg-BSmBg    
     return A, B        
 
-def computeDeltaPhi(A,B,Lambda,flipPol=False):
+def computeDeltaPhi(img, A,B,flipPol=False):
     retardPos = np.arctan(np.sqrt(A**2+B**2))
     retardNeg = np.pi + np.arctan(np.sqrt(A**2+B**2)) # different from Eq. 10 due to the definition of arctan in numpy
     retard = retardNeg*(retardPos<0)+retardPos*(retardPos>=0)
-    retard = retard/(2*np.pi)*Lambda # convert the unit to [nm]    
+    retard = retard/(2*np.pi)*img.wavelength # convert the unit to [nm]    
 #    azimuth = 0.5*((np.arctan2(A,B)+2*np.pi)%(2*np.pi)) # make azimuth fall in [0,pi]    
     if flipPol:
         azimuth = (0.5*np.arctan2(-A,B)+0.5*np.pi) # make azimuth fall in [0,pi]    
