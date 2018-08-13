@@ -1,142 +1,41 @@
 
 # coding: utf-8
 
-# """
-# Reconstruct retardance and orientation maps from images taken with different polarized illumination output
-# by Open PolScope. This script using the 4- or 5-frame reconstruction algorithm described in Michael Shribak and 
-# Rudolf Oldenbourg, 2003.
-# 
-# by Syuan-Ming Guo @ CZ Biohub 2018.3.30 
-# """
+"""
+Reconstruct retardance and orientation maps from images taken with different polarized illumination output
+by Open PolScope. This script using the 4- or 5-frame reconstruction algorithm described in Michael Shribak and 
+Rudolf Oldenbourg, 2003.
+ 
+Output channels indices:
+ 0-'Transmission'
+ 1-'Retardance'
+ 2-'Orientation', 
+ 3-'Retardance+Orientation'
+ 4-'Transmission+Retardance+Orientation'
+ 5-'405'
+ 6-'488'
+ 7-'568'
+ 8-'640'
+"""
 
 # In[1]:
 
 
 #get_ipython().run_line_magic('matplotlib', 'inline')
-from PolScope.multiPos import findBackground
+from PolScope.multiDimProcess import findBackground, loopPos
 import seaborn as sns
 import os
-import numpy as np
-import matplotlib.pyplot as plt
-import re
-
-from utils.imgIO import GetSubDirName, ParseTiffInput, ParseFileList, exportImg
-from PolScope.reconstruct import computeAB, correctBackground, computeDeltaPhi
-from utils.plotting import plot_birefringence, plot_sub_images
-from utils.imgProcessing import ImgLimit
 
 sns.set_context("poster")
 
 
 # In[2]:
-
-def processImg(ImgSmPath, ImgBgPath, OutputPath, Chi,Lambda, flatField=False, bgCorrect=True, flipPol=False):
-    Abg, Bbg, IAbsBg, DAPIBg, TdTomatoBg = findBackground(ImgSmPath, ImgBgPath, Chi,flatField=flatField) # find background tile
-    loopPos(ImgSmPath, OutputPath,Chi,Lambda, Abg, Bbg, IAbsBg, DAPIBg, TdTomatoBg,flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
-
-def loopPos(ImgSmPath, OutputPath, Chi,Lambda, Abg, Bbg, IAbsBg, DAPIBg, TdTomatoBg, flatField=False, bgCorrect=True, flipPol=False): 
-    """
-    Loops through each position in the acquisition folder, and performs flat-field correction.
-    
-    @param ImgSmPath: Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
-    @param OutputPath: Output folder path
-    @param Chi: Swing
-    @param Lambda: Wavelength of polarized light.
-    @param Abg: A term in background
-    @param Bbg: B term in background
-    @param IAbsBg: another background term.
-    @param DAPIBg: another backgruond term.
-    @param TdTomatoBg: another background term.
-    @param flatField: boolean - whether flatField correction is applied.
-    @param bgCorrect: boolean - whether or not background correction is applied.
-    @param flipPol: whether or not to flip the sign of polarization.
-    @return: None
-    """       
-    subDirName = GetSubDirName(ImgSmPath)          
-    imgLimits = [[np.Inf,0]]*5
-    ## TO DO: track global image limits
-    if not os.path.exists(OutputPath): # create folder for processed images
-        os.makedirs(OutputPath)
-    ind=0
-    for subDir in subDirName:
-        plt.close("all") # close all the figures from the last run
-        acquDirPath = os.path.join(ImgSmPath, subDir) # only load the first acquisition for now  
-        if re.match( r'(\d?)-?Pos_?(\d+)_?(\d?)', subDir, re.M|re.I):                            
-            PolChan, PolZ, FluorChan, FluorZ = ParseFileList(acquDirPath)
-            loopZ(PolZ, ind, acquDirPath, OutputPath, Chi,Lambda, Abg, Bbg, IAbsBg, DAPIBg, TdTomatoBg,imgLimits, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
-            ind+=1
-def loopZ(PolZ, ind, acquDirPath, OutputPath, Chi,Lambda, Abg, Bbg, IAbsBg, DAPIBg, TdTomatoBg,imgLimits, flatField=False, bgCorrect=True, flipPol=False):
-    """
-    Loops through Z.
-    
-    @param PolZ: Polarization Z
-    @param ind:
-    @param acquDirPath
-    @param OutputPath: Output folder path
-    @param Chi: Swing
-    @param Lambda: Wavelength of polarized light.
-    @param Abg: A term in background
-    @param Bbg: B term in background
-    @param IAbsBg: another background term.
-    @param DAPIBg: another backgruond term.
-    @param TdTomatoBg: another background term.
-    @param imgLimits:
-    @param flatField: boolean - whether flatField correction is applied.
-    @param bgCorrect: boolean - whether or not background correction is applied.
-    @param flipPol: whether or not to flip the sign of polarization.
-    @return: None
-    """  
-
-    for z in PolZ:
-        plt.close("all") # close all the figures from the last run
-        DAPI = np.array([])
-        TdTomato = np.array([])
-        retardMMSm = np.array([])
-        azimuthMMSm = np.array([])     
-        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = ParseTiffInput(acquDirPath, z)            
-        ASm, BSm, IAbsSm = computeAB(ImgRawSm, Chi)
-        if bgCorrect == True:        
-            A, B = correctBackground(ASm,BSm,Abg,Bbg, ImgRawSm, extra=False) # background subtraction 
-        else:
-            A, B = ASm, BSm
-        retard, azimuth = computeDeltaPhi(A,B,Lambda,flipPol=flipPol)        
-        #retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images       
-#        retardBg, azimuthBg = computeDeltaPhi(Abg, Bbg,flipPol=flipPol)
-        if not ImgBF.size: # use brightfield calculated from pol-images if there is no brighfield data
-            ImgBF = IAbsSm
-        else:
-            ImgBF = ImgBF[:,:,0]
-            
-        if ImgFluor.size:
-            DAPI = ImgFluor[:,:,0]
-            TdTomato = ImgFluor[:,:,1]
-            DAPI = DAPI/DAPIBg # flat-field correction 
-            TdTomato = TdTomato/TdTomatoBg   #flat-field correction 
-        if ImgProcSm.size:
-            retardMMSm =  ImgProcSm[:,:,0]
-            azimuthMMSm = ImgProcSm[:,:,1]
-        if flatField:
-            ImgBF = ImgBF/IAbsBg #flat-field correction 
-                    
-            ## compare python v.s. Polacquisition output#####
-#            titles = ['Retardance (MM)','Orientation (MM)','Retardance (Py)','Orientation (Py)']
-#            images = [retardMMSm, azimuthMMSm,retard, azimuth]
-#            plot_sub_images(images,titles)
-#            plt.savefig(os.path.join(acquDirPath,'compare_MM_Py.png'),dpi=200)
-            ##################################################################
-
-        imgs = [ImgBF,retard, azimuth, DAPI, TdTomato]
-        imgLimits = ImgLimit(imgs,imgLimits)
+def processImg(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx, flatField=False, bgCorrect=True, flipPol=False):    
+    imgSm = findBackground(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx,flatField=flatField) # find background tile
+    imgSm.loopZ ='sample'
+    imgSm = loopPos(imgSm, outputChannIdx, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
         
-        imgs = plot_birefringence(imgs, OutputPath, ind, z,
-                                  spacing=20, vectorScl=1, zoomin=False, dpi=150)
-        tiffNames = ['Transmission', 'Retardance', 'Orientation', 'Retardance+Orientation', 'Transmission+Retardance+Orientation', 'Fluor+Retardance']
-
-        exportImg(imgs, tiffNames, t=0, ind, z, OutputPath)
-
             
-
-
 # In[3]:
 
 
@@ -188,9 +87,8 @@ ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir) # Background image folder p
 #ImgBgPath ='//flexo/MicroscopyData/AdvancedOpticalMicroscopy/SpinningDisk/RawData/PolScope/2018_05_09_KindneySection/BG_2018_0509_1801_1'
 
 #OutputPath = '//flexo/MicroscopyData/AdvancedOpticalMicroscopy/SpinningDisk/Processed/PolScope/2018_07_03_KidneyTissueSection/SMS_2018_0703_1835_1'
-Chi = 0.05 # Swing
-#Chi = 0.25 # Swing
-Lambda = 532 # Wavelength (nm)
+
+outputChannIdx = [0, 1, 2, 3, 4, 5, 6] # indices of channels to output, see readme for channel names
 flipPol=True # flip the sign of polarization
 bgCorrect=True
 
@@ -199,5 +97,5 @@ if bgCorrect==True:
 else:
     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir)
     
-processImg(ImgSmPath, ImgBgPath, OutputPath, Chi,Lambda, flatField=True , bgCorrect=bgCorrect, flipPol=flipPol)
+processImg(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx, flatField=True, bgCorrect=bgCorrect, flipPol=flipPol)
 

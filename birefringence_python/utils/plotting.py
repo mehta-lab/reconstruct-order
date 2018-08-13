@@ -41,10 +41,11 @@ def plotVectorField(I, azimuth, R=40, spacing=40, clim=[None, None]): # plot vec
 #    plt.show()
     return imAx    
 
-def plot_birefringence(imgs, figPath, ind, z, spacing=20, vectorScl=1, zoomin=False, dpi=300): 
-    IAbs,retard, azimuth, DAPI, TdTomato = imgs
-    ImgShape = retard.shape
-    
+def plot_birefringence(imgInput, imgs, spacing=20, vectorScl=1, zoomin=False, dpi=300): 
+    IAbs,retard, azimuth, ImgFluor = imgs    
+    tIdx = imgInput.tIdx 
+    zIdx = imgInput.zIdx
+    posIdx = imgInput.posIdx
     if zoomin: # crop the images
         imList = [IAbs,retard, azimuth]
         imListCrop = imcrop(imList, IAbs)
@@ -102,17 +103,18 @@ def plot_birefringence(imgs, figPath, ind, z, spacing=20, vectorScl=1, zoomin=Fa
     if zoomin:
         figName = 'Transmission+Retardance+Orientation_Zoomin.png'
     else:
-        figName = 'Transmission+Retardance+Orientation_%03d_%03d.png'%(ind,z)
+        figName = 'Transmission+Retardance+Orientation_t%03d_p%03d_z%03d.png'%(tIdx,posIdx,zIdx)
         
-    plt.savefig(os.path.join(figPath, figName),dpi=dpi) 
+    plt.savefig(os.path.join(imgInput.ImgOutPath, figName),dpi=dpi) 
         
 #    DAPI = imBitConvert(DAPI*30, bit=8) #AU
 #    TdTomato = imBitConvert(TdTomato*30,bit=8) #AU
 #    IFluorRetard = CompositeImg([retard*0.1, TdTomato, DAPI])
 #    images = [IAbs, retard, azimuth, IHv, IHsv, IFluorRetard]
     
-    images = [IAbs, retard, azimuth, IHv, IHsv]
-   
+    imagesTrans = [IAbs, retard, azimuth, IHv, IHsv] #trasmission channels
+    imagesFluor = [imBitConvert(ImgFluor[:,:,i]*500,bit=16) for i in range(ImgFluor.shape[2])]
+    images = imagesTrans+imagesFluor   
 
     return images
   
