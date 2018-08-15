@@ -16,7 +16,7 @@ from utils.plotting import plot_birefringence, plot_sub_images
 from utils.imgProcessing import ImgLimit
 
 
-def findBackground(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx, flatField=False, method='open'):
+def findBackground(ImgSmPath, ImgBgPath, OutputPath, outputChann, flatField=False, method='open'):
     """
     Estimate background for each channel to perform background substraction for
     birefringence and flat-field correction (division) for bright-field and 
@@ -42,7 +42,7 @@ def findBackground(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx, flatField=F
     ImgFluorBg = np.ones((imgBg.height,imgBg.width,4))
     
     if flatField: # find background flourescence for flatField corection 
-        imgSm = loopPos(imgSm, outputChannIdx, flatField=flatField)                                    
+        imgSm = loopPos(imgSm, outputChann, flatField=flatField)                                    
         imgSm.ImgFluorSum = imgSm.ImgFluorSum/imgSm.nPos # normalize the sum                     
         if method=='open':            
             ImgFluorBg = imgSm.ImgFluorSum            
@@ -62,7 +62,7 @@ def findBackground(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx, flatField=F
     imgSm.ImgFluorBg = ImgFluorBg        
     return imgSm               
     
-def loopPos(imgSm, outputChannIdx, flatField=False, bgCorrect=True, flipPol=False): 
+def loopPos(imgSm, outputChann, flatField=False, bgCorrect=True, flipPol=False): 
     """
     Loops through each position in the acquisition folder, and performs flat-field correction.
     
@@ -87,19 +87,19 @@ def loopPos(imgSm, outputChannIdx, flatField=False, bgCorrect=True, flipPol=Fals
         subDir = imgSm.metaFile['Summary']['InitialPositionList'][posIdx]['Label']     
         imgSm.ImgPosPath = os.path.join(imgSm.ImgSmPath, subDir)
         imgSm.posIdx = posIdx
-        img = loopT(imgSm, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
+        img = loopT(imgSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
     return img                
         
-def loopT(img, flatField=False, bgCorrect=True, flipPol=False):
+def loopT(img, outputChann, flatField=False, bgCorrect=True, flipPol=False):
     for tIdx in range(0,img.nTime):        
         img.tIdx = tIdx
         if img.loopZ =='sample':
-            img = loopZSm(img, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
+            img = loopZSm(img, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
         else:
             img = loopZBg(img, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
     return img        
 
-def loopZSm(img, flatField=False, bgCorrect=True, flipPol=False):
+def loopZSm(img, outputChann, flatField=False, bgCorrect=True, flipPol=False):
     """
     Loops through Z.
     
@@ -161,11 +161,11 @@ def loopZSm(img, flatField=False, bgCorrect=True, flipPol=False):
         imgs = [ImgBF,retard, azimuth, ImgFluor]
 #        imgLimits = ImgLimit(imgs,imgLimits)
         
-        imgs = plot_birefringence(img, imgs, spacing=20, vectorScl=1, zoomin=False, dpi=150)
-        img.chNames = ['Transmission', 'Retardance', 'Orientation', 
-                            'Retardance+Orientation', 'Transmission+Retardance+Orientation',
-                            '405','488','568','640']
-        img.nChann = len(img.chNames)
+        img, imgs = plot_birefringence(img, imgs,outputChann, spacing=20, vectorScl=1, zoomin=False, dpi=150)
+        
+        
+        
+        
         ##To do: add 'Fluor+Retardance' channel## 
         
         img.writeMetaData()
