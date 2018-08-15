@@ -33,6 +33,7 @@ sns.set_context("poster")
 def processImg(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx, flatField=False, bgCorrect=True, flipPol=False):    
     imgSm = findBackground(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx,flatField=flatField) # find background tile
     imgSm.loopZ ='sample'
+    print('Calculating birefringence from polarized images...')
     imgSm = loopPos(imgSm, outputChannIdx, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
         
             
