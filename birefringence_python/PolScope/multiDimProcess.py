@@ -42,6 +42,7 @@ def findBackground(ImgSmPath, ImgBgPath, OutputPath, outputChann, flatField=Fals
     ImgFluorBg = np.ones((imgBg.height,imgBg.width,4))
     
     if flatField: # find background flourescence for flatField corection 
+        print('Calculating illumination function for flatfield correction...')
         imgSm = loopPos(imgSm, outputChann, flatField=flatField)                                    
         imgSm.ImgFluorSum = imgSm.ImgFluorSum/imgSm.nPos # normalize the sum                     
         if method=='open':            
@@ -50,13 +51,14 @@ def findBackground(ImgSmPath, ImgBgPath, OutputPath, outputChann, flatField=Fals
             ImgFluorBg = imgSm.ImgFluorMin   
         
         ## compare empty v.s. open method#####
-        titles = ['Ch1 (Open)','Ch2 (Open)','Ch1 (Empty)','ch2 (Empty)']
-        images = [imgSm.ImgFluorSum[:,:,0], imgSm.ImgFluorSum[:,:,1], 
-                  imgSm.ImgFluorMin[:,:,0], imgSm.ImgFluorMin[:,:,1]]
-        plot_sub_images(images,titles)
-        plt.savefig(os.path.join(OutputPath,'compare_flat_field.png'),dpi=150)
+#        titles = ['Ch1 (Open)','Ch2 (Open)','Ch1 (Empty)','ch2 (Empty)']
+#        images = [imgSm.ImgFluorSum[:,:,0], imgSm.ImgFluorSum[:,:,1], 
+#                  imgSm.ImgFluorMin[:,:,0], imgSm.ImgFluorMin[:,:,1]]
+#        plot_sub_images(images,titles)
+        print('Exporting illumination function...')
+#        plt.savefig(os.path.join(OutputPath,'compare_flat_field.png'),dpi=150)
         ##################################################################
-    else:
+    else:        
         IAbsBg = np.ones((imgBg.height,imgBg.width))  # use uniform field if no correction
     imgSm.IAbsBg = IAbsBg
     imgSm.ImgFluorBg = ImgFluorBg        
@@ -83,6 +85,7 @@ def loopPos(imgSm, outputChann, flatField=False, bgCorrect=True, flipPol=False):
     
     
     for posIdx in range(0,37):
+        print('Processing position %03d ...' %posIdx)
         plt.close("all") # close all the figures from the last run
         subDir = imgSm.metaFile['Summary']['InitialPositionList'][posIdx]['Label']     
         imgSm.ImgPosPath = os.path.join(imgSm.ImgSmPath, subDir)
