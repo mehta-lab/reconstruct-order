@@ -58,9 +58,8 @@ def processImg(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx, flatField=False
 #ImgSmPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_07_03_KidneyTissueSection/SMS_2018_0703_1835_1' # Sample image folder path
 #ImgBgPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_07_03_KidneyTissueSection/BG_2018_0703_1829_1' # Background image folder path                
 
-RawDataPath = '~/flexo/AdvancedOpticalMicroscopy/SpinningDisk/RawData/PolScope/'
-
-ProcessedPath = 'C:/Users/Sam Guo/Box Sync/Processed'
+RawDataPath = '/data/sguo/Data'
+ProcessedPath = '/data/sguo/Processed'
 
 ImgDir = '2018_07_03_KidneyTissueSection'
 SmDir = 'SMS_2018_0703_1835_1'
@@ -82,20 +81,15 @@ BgDir = 'BG_2018_0703_1829_1'
 
 ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
 ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir) # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'          
-
-#ImgSmPath ='//flexo/MicroscopyData/AdvancedOpticalMicroscopy/SpinningDisk/RawData/PolScope/2018_05_09_KindneySection/SM_2018_0509_1804_1'
-#ImgBgPath ='//flexo/MicroscopyData/AdvancedOpticalMicroscopy/SpinningDisk/RawData/PolScope/2018_05_09_KindneySection/BG_2018_0509_1801_1'
-
-#OutputPath = '//flexo/MicroscopyData/AdvancedOpticalMicroscopy/SpinningDisk/Processed/PolScope/2018_07_03_KidneyTissueSection/SMS_2018_0703_1835_1'
-
-outputChannIdx = [0, 1, 2, 3, 4, 5, 6] # indices of channels to output, see readme for channel names
+outputChann = ['Transmission', 'Retardance', 'Orientation',                             
+                            '405','488','568']# channels to output, see readme for channel names
 flipPol=True # flip the sign of polarization
 bgCorrect=True
+flatField=True
 
 if bgCorrect==True:
     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
 else:
     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir)
     
-processImg(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx, flatField=True, bgCorrect=bgCorrect, flipPol=flipPol)
-
+processImg(ImgSmPath, ImgBgPath, OutputPath, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)

@@ -99,13 +99,13 @@ def ParseTiffInput(imgInput): # Load the TIFF stack format output by the acquisi
                 ImgBF = img  
     return ImgRaw, ImgProc, ImgFluor, ImgBF 
 
-def exportImg(imgInput,images):    
+def exportImg(imgInput,imgDict):    
     tIdx = imgInput.tIdx 
     zIdx = imgInput.zIdx
     posIdx = imgInput.posIdx
-    for im, tiffName in zip(images, imgInput.chNames):
+    for tiffName in imgInput.chNames:
         fileName = 'img_'+tiffName+'_t%03d_p%03d_z%03d.tif'%(tIdx, posIdx, zIdx)
-        if len(im.shape)<3:
-            cv2.imwrite(os.path.join(imgInput.ImgOutPath, fileName), im)
+        if len(imgDict[tiffName].shape)<3:
+            cv2.imwrite(os.path.join(imgInput.ImgOutPath, fileName), imgDict[tiffName])
         else:
-            cv2.imwrite(os.path.join(imgInput.ImgOutPath, fileName), cv2.cvtColor(im, cv2.COLOR_RGB2BGR))
+            cv2.imwrite(os.path.join(imgInput.ImgOutPath, fileName), cv2.cvtColor(imgDict[tiffName], cv2.COLOR_RGB2BGR))

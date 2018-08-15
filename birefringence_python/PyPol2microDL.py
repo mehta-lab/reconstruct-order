@@ -7,9 +7,9 @@ Created on Sat Aug 11 19:12:20 2018
 import os
 from utils.mManagerIO import mManagerReader
 
-RawDataPath = 'C:/Users/Sam Guo/Box Sync/Data'
+RawDataPath = 'C:/Data'
 
-ProcessedPath = 'C:/Users/Sam Guo/Box Sync/Processed'
+ProcessedPath = 'C:/Processed'
 
 ImgDir = '2018_07_03_KidneyTissueSection'
 SmDir = 'SMS_2018_0703_1835_1_BG_2018_0703_1829_1'

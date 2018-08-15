@@ -30,10 +30,10 @@ sns.set_context("poster")
 
 
 # In[2]:
-def processImg(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx, flatField=False, bgCorrect=True, flipPol=False):    
-    imgSm = findBackground(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx,flatField=flatField) # find background tile
+def processImg(ImgSmPath, ImgBgPath, OutputPath, outputChann, flatField=False, bgCorrect=True, flipPol=False):    
+    imgSm = findBackground(ImgSmPath, ImgBgPath, OutputPath, outputChann,flatField=flatField) # find background tile
     imgSm.loopZ ='sample'
-    imgSm = loopPos(imgSm, outputChannIdx, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
+    imgSm = loopPos(imgSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
         
             
 # In[3]:
@@ -58,9 +58,9 @@ def processImg(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx, flatField=False
 #ImgSmPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_07_03_KidneyTissueSection/SMS_2018_0703_1835_1' # Sample image folder path
 #ImgBgPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_07_03_KidneyTissueSection/BG_2018_0703_1829_1' # Background image folder path                
 
-RawDataPath = 'C:/Users/Sam Guo/Box Sync/Data'
+RawDataPath = 'C:/Data'
 
-ProcessedPath = 'C:/Users/Sam Guo/Box Sync/Processed'
+ProcessedPath = 'C:/Processed'
 
 ImgDir = '2018_07_03_KidneyTissueSection'
 SmDir = 'SMS_2018_0703_1835_1'
@@ -88,14 +88,16 @@ ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir) # Background image folder p
 
 #OutputPath = '//flexo/MicroscopyData/AdvancedOpticalMicroscopy/SpinningDisk/Processed/PolScope/2018_07_03_KidneyTissueSection/SMS_2018_0703_1835_1'
 
-outputChannIdx = [0, 1, 2, 3, 4, 5, 6] # indices of channels to output, see readme for channel names
+outputChann = ['Transmission', 'Retardance', 'Orientation',                             
+                            '405','488','568']# channels to output, see readme for channel names
 flipPol=True # flip the sign of polarization
 bgCorrect=True
+flatField=True
 
 if bgCorrect==True:
     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
 else:
     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir)
     
-processImg(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx, flatField=True, bgCorrect=bgCorrect, flipPol=flipPol)
+processImg(ImgSmPath, ImgBgPath, OutputPath, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
 

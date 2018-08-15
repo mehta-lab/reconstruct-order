@@ -8,8 +8,8 @@ import os
 from utils.mManagerIO import mManagerReader
 
 
-RawDataPath = '~/flexo/AdvancedOpticalMicroscopy/SpinningDisk/RawData/PolScope'
-ProcessedPath = '~/flexo/AdvancedOpticalMicroscopy/SpinningDisk/Processed/PolScope'
+RawDataPath = '/data/sguo/Data'
+ProcessedPath = '/data/sguo/Processed'
 
 ImgDir = '2018_07_03_KidneyTissueSection'
 SmDir = 'SMS_2018_0703_1835_1_BG_2018_0703_1829_1'
