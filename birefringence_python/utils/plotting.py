@@ -50,7 +50,8 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
         imList = [IAbs,retard, azimuth]
         imListCrop = imcrop(imList, IAbs)
         IAbs,retard, azimuth = imListCrop
-    IAbs = imBitConvert(IAbs*10**3, bit=16) #AU
+#    IAbs = imBitConvert(IAbs*10**3, bit=16) #AU
+    IAbs = imBitConvert(IAbs*10**3, bit=16) #AU    
     retard = imBitConvert(retard*10**3,bit=16) # scale to pm
     azimuth = imBitConvert(azimuth/np.pi*18000,bit=16) # scale to [0, 18000], 100*degree        
     IHsv, IHv= PolColor(IAbs, retard, azimuth) 
@@ -64,49 +65,49 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
     R = R/np.nanmean(R) #normalization
     R=vectorScl*R
     #%%
-#    figSize = (12,12)
-#    fig = plt.figure(figsize = figSize)                                        
-#    plt.subplot(2,2,1)
-#    plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off          
-#    plt.imshow(imadjust(IAbs)[0], cmap='gray')
-#    plt.title('Transmission')
-#    plt.xticks([]),plt.yticks([])                                      
-##    plt.show()
-#    
-#    ax = plt.subplot(2,2,2)
-#    plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off            
-#    imAx = plt.imshow(imadjust(IHv, bit=8)[0], cmap='hsv')
-#    plt.title('Retardance+Orientation')
-#    plt.xticks([]),plt.yticks([])
-#    divider = make_axes_locatable(ax)
-#    cax = divider.append_axes('right', size='5%', pad=0.05)
-#    cbar = fig.colorbar(imAx, cax=cax, orientation='vertical', ticks=np.linspace(0,255, 5))    
-#    cbar.ax.set_yticklabels([r'$0^o$', r'$45^o$', r'$90^o$', r'$135^o$', r'$180^o$'])  # vertically oriented colorbar                                     
-##    plt.show()
-#
-#    ax = plt.subplot(2,2,3)    
-#    imAx = plotVectorField(imClip(retard/1000,tol=1), azimuth, R=R, spacing=spacing)
-##    plotVectorField(retard, azimuth, R=vectorScl, spacing=spacing)
-#    plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off               
-#    plt.title('Retardance(nm)+Orientation')   
-#    plt.xticks([]),plt.yticks([]) 
-#    divider = make_axes_locatable(ax)
-#    cax = divider.append_axes('right', size='5%', pad=0.05)
-#    cbar = fig.colorbar(imAx, cax=cax, orientation='vertical')    
-#                                  
-#    plt.subplot(2,2,4)
-#    plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off            
-#    plt.imshow(imadjust(IHsv, bit=8)[0])
-#    plt.title('Transmission+Retardance\n+Orientation')  
-#    plt.xticks([]),plt.yticks([])                                   
+    figSize = (12,12)
+    fig = plt.figure(figsize = figSize)                                        
+    plt.subplot(2,2,1)
+    plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off          
+    plt.imshow(imadjust(IAbs)[0], cmap='gray')
+    plt.title('Transmission')
+    plt.xticks([]),plt.yticks([])                                      
 #    plt.show()
-#    if zoomin:
-#        figName = 'Transmission+Retardance+Orientation_Zoomin.png'
-#    else:
-#        figName = 'Transmission+Retardance+Orientation_t%03d_p%03d_z%03d.png'%(tIdx,posIdx,zIdx)
-#        
-#    plt.savefig(os.path.join(imgInput.ImgOutPath, figName),dpi=dpi) 
-#        
+    
+    ax = plt.subplot(2,2,2)
+    plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off            
+    imAx = plt.imshow(imadjust(IHv, bit=8)[0], cmap='hsv')
+    plt.title('Retardance+Orientation')
+    plt.xticks([]),plt.yticks([])
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad=0.05)
+    cbar = fig.colorbar(imAx, cax=cax, orientation='vertical', ticks=np.linspace(0,255, 5))    
+    cbar.ax.set_yticklabels([r'$0^o$', r'$45^o$', r'$90^o$', r'$135^o$', r'$180^o$'])  # vertically oriented colorbar                                     
+#    plt.show()
+
+    ax = plt.subplot(2,2,3)    
+    imAx = plotVectorField(imClip(retard/1000,tol=1), azimuth, R=R, spacing=spacing)
+#    plotVectorField(retard, azimuth, R=vectorScl, spacing=spacing)
+    plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off               
+    plt.title('Retardance(nm)+Orientation')   
+    plt.xticks([]),plt.yticks([]) 
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad=0.05)
+    cbar = fig.colorbar(imAx, cax=cax, orientation='vertical')    
+                                  
+    plt.subplot(2,2,4)
+    plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off            
+    plt.imshow(imadjust(IHsv, bit=8)[0])
+    plt.title('Transmission+Retardance\n+Orientation')  
+    plt.xticks([]),plt.yticks([])                                   
+    plt.show()
+    if zoomin:
+        figName = 'Transmission+Retardance+Orientation_Zoomin.png'
+    else:
+        figName = 'Transmission+Retardance+Orientation_t%03d_p%03d_z%03d.png'%(tIdx,posIdx,zIdx)
+        
+    plt.savefig(os.path.join(imgInput.ImgOutPath, figName),dpi=dpi) 
+        
 
 #    IFluorRetard = CompositeImg([retard*0.1, TdTomato, DAPI])
 #    images = [IAbs, retard, azimuth, IHv, IHsv, IFluorRetard]
@@ -136,7 +137,7 @@ def PolColor(IAbs, retard, azimuth):
 #    retard = cv2.convertScaleAbs(retard, alpha=(2**8-1)/np.max(retard))
 #    IAbs = cv2.convertScaleAbs(IAbs, alpha=(2**8-1)/np.max(IAbs))
     retard = cv2.convertScaleAbs(retard, alpha=0.1)
-    IAbs = cv2.convertScaleAbs(IAbs, alpha=0.01)
+    IAbs = cv2.convertScaleAbs(IAbs, alpha=0.1)
 #    retard = histequal(retard)
     
     azimuth = cv2.convertScaleAbs(azimuth, alpha=0.01)

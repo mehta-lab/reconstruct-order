@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Aug 11 19:12:20 2018
-
-@author: Sam Guo
+Script to covert PyPolScope output for to microDL input format 
 """
 import os
 from utils.mManagerIO import mManagerReader
