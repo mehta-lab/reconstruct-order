@@ -55,9 +55,9 @@ class mManagerReader(metaclass=ABCMeta):
         self.size_x_um = 6.5/63 # (um) for zyla at 63X
         self.size_y_um = 6.5/63 # (um) for zyla at 63X
         self.size_z_um = metaFile['Summary']['z-step_um']
-        if not os.path.exists(self.ImgOutPath): # create folder for processed images
-            os.makedirs(self.ImgOutPath)
-        self.logger = self._init_logger()
+#        if not os.path.exists(self.ImgOutPath): # create folder for processed images
+#            os.makedirs(self.ImgOutPath)
+        
 
     def _init_logger(self):
         """Initialize logger for pre-processing.
@@ -142,7 +142,7 @@ class mManagerReader(metaclass=ABCMeta):
                 "image file doesn't exist at:", self.ImgSmPath
             )
         os.makedirs(self.ImgOutPath, exist_ok=True)
-                
+        self.logger = self._init_logger()        
         records = []
         for tIdx in range(self.nTime):
             self.tIdx = tIdx

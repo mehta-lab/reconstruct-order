@@ -16,7 +16,7 @@ from utils.plotting import plot_birefringence, plot_sub_images
 from utils.imgProcessing import ImgLimit
 
 
-def findBackground(ImgSmPath, ImgBgPath, OutputPath, outputChann, flatField=False, method='open'):
+def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=False, bgCorrect='Auto', method='open'):
     """
     Estimate background for each channel to perform background substraction for
     birefringence and flat-field correction (division) for bright-field and 
@@ -24,13 +24,32 @@ def findBackground(ImgSmPath, ImgBgPath, OutputPath, outputChann, flatField=Fals
         
     """
     
+    ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'    
+    OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir) 
+    imgSm = PolAcquReader(ImgSmPath, OutputPath)
+    if bgCorrect=='None':
+        print('No background correction is performed...')           
+    elif bgCorrect=='Input':
+        OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
+        imgSm.ImgOutPath = OutputPath
+    else: #'Auto'        
+        if imgSm.bg:
+            BgDir = imgSm.bg
+        else:
+            print('Background not specified in metadata. Use user input background directory')   
+        OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
+        imgSm.ImgOutPath = OutputPath
+        
+#    imgSm = mManagerReader(ImgSmPath,OutputPath)
+    
+    ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir) # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
     imgBg = PolAcquReader(ImgBgPath, OutputPath)    
     imgBg.posIdx = 0 # assuming only single image for background 
     imgBg.tIdx = 0
     imgBg.zIdx = 0
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = ParseTiffInput(imgBg) # 0 for z-index
     Abg, Bbg, IAbsBg = computeAB(imgBg, ImgRawBg) 
-    imgSm = mManagerReader(ImgSmPath,OutputPath)
+    
     imgSm.Abg = Abg
     imgSm.Bbg = Bbg
     imgSm.swing = imgBg.swing
@@ -84,10 +103,13 @@ def loopPos(imgSm, outputChann, flatField=False, bgCorrect=True, flipPol=False):
     """       
     
     
-    for posIdx in range(0,37):
+    for posIdx in range(0,imgSm.nPos):
         print('Processing position %03d ...' %posIdx)
         plt.close("all") # close all the figures from the last run
-        subDir = imgSm.metaFile['Summary']['InitialPositionList'][posIdx]['Label']     
+        if imgSm.metaFile['Summary']['InitialPositionList']: # PolAcquisition doens't save position list
+            subDir = imgSm.metaFile['Summary']['InitialPositionList'][posIdx]['Label']   
+        else:
+            subDir = 'Pos0'
         imgSm.ImgPosPath = os.path.join(imgSm.ImgSmPath, subDir)
         imgSm.posIdx = posIdx
         img = loopT(imgSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
@@ -132,10 +154,10 @@ def loopZSm(img, outputChann, flatField=False, bgCorrect=True, flipPol=False):
         azimuthMMSm = np.array([])     
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = ParseTiffInput(img)            
         ASm, BSm, IAbsSm = computeAB(img,ImgRawSm)
-        if bgCorrect == True:        
-            A, B = correctBackground(img,ASm,BSm, ImgRawSm, extra=False) # background subtraction 
-        else:
+        if bgCorrect == 'None':                    
             A, B = ASm, BSm
+        else:
+            A, B = correctBackground(img,ASm,BSm, ImgRawSm, extra=False) # background subtraction             
         retard, azimuth = computeDeltaPhi(img,A,B,flipPol=flipPol)        
         #retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images       
 #        retardBg, azimuthBg = computeDeltaPhi(Abg, Bbg,flipPol=flipPol)
@@ -163,8 +185,9 @@ def loopZSm(img, outputChann, flatField=False, bgCorrect=True, flipPol=False):
 
         imgs = [ImgBF,retard, azimuth, ImgFluor]
 #        imgLimits = ImgLimit(imgs,imgLimits)
-        
-        img, imgs = plot_birefringence(img, imgs,outputChann, spacing=20, vectorScl=1, zoomin=False, dpi=150)
+        if not os.path.exists(img.ImgOutPath): # create folder for processed images
+            os.makedirs(img.ImgOutPath)
+        img, imgs = plot_birefringence(img, imgs,outputChann, spacing=10, vectorScl=10, zoomin=False, dpi=300)
         
         
         
