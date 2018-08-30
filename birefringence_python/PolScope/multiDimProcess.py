@@ -48,7 +48,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     imgBg.tIdx = 0
     imgBg.zIdx = 0
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = ParseTiffInput(imgBg) # 0 for z-index
-    Abg, Bbg, IAbsBg = computeAB(imgBg, ImgRawBg) 
+    Abg, Bbg, IAbsBg, DeltaMaskBg  = computeAB(imgBg, ImgRawBg) 
     
     imgSm.Abg = Abg
     imgSm.Bbg = Bbg
@@ -153,12 +153,12 @@ def loopZSm(img, outputChann, flatField=False, bgCorrect=True, flipPol=False):
         retardMMSm = np.array([])
         azimuthMMSm = np.array([])     
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = ParseTiffInput(img)            
-        ASm, BSm, IAbsSm = computeAB(img,ImgRawSm)
+        ASm, BSm, IAbsSm, DeltaMaskSM = computeAB(img,ImgRawSm)
         if bgCorrect == 'None':                    
             A, B = ASm, BSm
         else:
-            A, B = correctBackground(img,ASm,BSm, ImgRawSm, extra=False) # background subtraction             
-        retard, azimuth = computeDeltaPhi(img,A,B,flipPol=flipPol)        
+            A, B = correctBackground(img,ASm,BSm,ImgRawSm, extra=False) # background subtraction             
+        retard, azimuth = computeDeltaPhi(img,A,B,DeltaMaskSM,flipPol=flipPol)        
         #retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images       
 #        retardBg, azimuthBg = computeDeltaPhi(Abg, Bbg,flipPol=flipPol)
         if not ImgBF.size: # use brightfield calculated from pol-images if there is no brighfield data
