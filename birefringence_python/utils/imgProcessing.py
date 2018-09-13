@@ -1,12 +1,12 @@
 import numpy as np
-import seaborn as sns
+#import seaborn as sns
 import matplotlib.pyplot as plt
 import cv2
 import bisect
 import warnings
 import sys
 sys.path.append("..") # Adds higher directory to python modules path.
-sns.set_context("poster")
+#sns.set_context("poster")
 plt.close("all") # close all the figures from the last run
 #%%
 def ImgMin(Img, ImgBg):    

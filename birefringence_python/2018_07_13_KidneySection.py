@@ -33,7 +33,7 @@ from utils.imgIO import GetSubDirName
 import seaborn as sns
 import os
 
-sns.set_context("poster")
+sns.set_context("talk")
 
 
 # In[2]:
@@ -69,14 +69,14 @@ RawDataPath = 'C:/Data'
 #
 ProcessedPath = 'C:/Processed'
 #
-#ImgDir = '2018_07_03_KidneyTissueSection'
-#SmDir = 'SMS_2018_0703_1835_1'
-#BgDir = 'BG_2018_0703_1829_1'
+ImgDir = '2018_09_12_40Xobjective_test_new_40X'
+SmDir = 'SM_2018_0906_1900_1'
+BgDir = 'BG_2018_0906_1855_1'
 
-ImgDir = '20180816_Sample_Test_CUBIC'
+#ImgDir = '20180816_Sample_Test_CUBIC'
 #SmDir = 'SM_2018_0801_1313_1'
-SmDir = 'SM_2018_0816_1838_1'
-BgDir = 'BG_2018_0816_1613_1'
+#SmDir = 'SM_2018_0816_1838_1'
+#BgDir = 'BG_2018_0816_1613_1'
 
 #ImgDir = '2018_08_01_differentiation_Marius'
 #SmDir = 'SM_2018_0801_1313_1'
@@ -110,15 +110,15 @@ outputChann = ['Transmission', 'Retardance', 'Orientation', 'Retardance+Orientat
 #outputChann = ['Transmission', 'Retardance', 'Orientation',                             
 #                            '405','488','568']# channels to output, see readme for channel names
 flipPol=True # flip the sign of polarization
-bgCorrect='Auto' 
+bgCorrect='None' 
 # Auto: correct the background using background from the metadata  
-flatField=True
+flatField=False
 batchProc=True
 if batchProc:
     ImgPath = os.path.join(RawDataPath, ImgDir)
     SmDirList = GetSubDirName(ImgPath)
     for SmDir in SmDirList:
-        if 'SM' in SmDir:
+        if 'SM' in SmDir or 'BG' in SmDir :
             processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
 else:
     processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)

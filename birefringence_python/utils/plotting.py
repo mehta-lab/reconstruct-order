@@ -69,7 +69,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
     fig = plt.figure(figsize = figSize)                                        
     plt.subplot(2,2,1)
     plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off          
-    plt.imshow(imadjust(IAbs)[0], cmap='gray')
+    plt.imshow(imClip(IAbs, tol=1), cmap='gray')
     plt.title('Transmission')
     plt.xticks([]),plt.yticks([])                                      
 #    plt.show()

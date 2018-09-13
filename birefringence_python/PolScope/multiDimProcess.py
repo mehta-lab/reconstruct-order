@@ -26,21 +26,25 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     
     ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'    
     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir) 
-    imgSm = PolAcquReader(ImgSmPath, OutputPath)
+    try:
+        imgSm = PolAcquReader(ImgSmPath, OutputPath)
+    except:
+        imgSm = mManagerReader(ImgSmPath,OutputPath)
     if bgCorrect=='None':
-        print('No background correction is performed...')           
+        print('No background correction is performed...')
+        BgDir = SmDir # need smarter way to deal with different backgroud options           
     elif bgCorrect=='Input':
         OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
         imgSm.ImgOutPath = OutputPath
     else: #'Auto'        
-        if imgSm.bg:
+        if hasattr(imgSm, 'bg'):
             BgDir = imgSm.bg
         else:
             print('Background not specified in metadata. Use user input background directory')   
         OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
         imgSm.ImgOutPath = OutputPath
         
-#    imgSm = mManagerReader(ImgSmPath,OutputPath)
+
     
     ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir) # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
     imgBg = PolAcquReader(ImgBgPath, OutputPath)    

@@ -1,10 +1,10 @@
 import numpy as np
 import sys
 sys.path.append("..") # Adds higher directory to python modules path.
-from utils.imgCrop import imcrop
+#from utils.imgCrop import imcrop
 #%%               
 def computeAB(ImgReader, ImgRaw): # output numerators and denominators of A, B along with to retain the phase info   
-    Chi = ImgReader.swing
+    Chi = ImgReader.swing*2*np.pi # covert swing from fraction of wavelength to radian
     Iext = ImgRaw[:,:,0] # Sigma0 in Fig.2
     I90 = ImgRaw[:,:,1] # Sigma2 in Fig.2
     I135 = ImgRaw[:,:,2] # Sigma4 in Fig.2
