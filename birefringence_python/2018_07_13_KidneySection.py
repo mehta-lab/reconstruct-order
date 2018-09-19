@@ -69,7 +69,7 @@ RawDataPath = 'C:/Data'
 #
 ProcessedPath = 'C:/Processed'
 #
-ImgDir = '2018_09_12_40Xobjective_test_new_40X'
+ImgDir = '2018_09_12_40Xobjective_test_old_40X'
 SmDir = 'SM_2018_0906_1900_1'
 BgDir = 'BG_2018_0906_1855_1'
 

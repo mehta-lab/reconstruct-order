@@ -15,7 +15,7 @@ from utils.imgIO import GetSubDirName
 class mManagerReader(metaclass=ABCMeta):
     """General mManager Reader"""
 
-    def __init__(self, ImgSmPath, ImgOutPath, verbose=0):
+    def __init__(self, ImgSmPath, ImgOutPath, outputChann=[], verbose=0):
         """Init.
 
         :param str ImgPosPath: fname with full path of the Lif file
@@ -25,7 +25,7 @@ class mManagerReader(metaclass=ABCMeta):
          INFO:20, WARNING:30, ERROR:40, CRITICAL:50
         """
         subDirName = GetSubDirName(ImgSmPath)          
-        imgLimits = [[np.Inf,0]]*5
+        
         ## TO DO: track global image limits
         ImgPosPath = ImgSmPath #PyPol format
         if subDirName:
@@ -47,8 +47,11 @@ class mManagerReader(metaclass=ABCMeta):
             self.verbose = 10            
         self.width = metaFile['Summary']['Width']
         self.height = metaFile['Summary']['Height']
-        self.chNames = metaFile['Summary']['ChNames']
-        self.nChann = metaFile['Summary']['Channels']
+        self.chNamesIn = metaFile['Summary']['ChNames'] #input channel names
+        self.nChannIn = metaFile['Summary']['Channels']
+        self.chNamesOut = outputChann #output channel names
+        self.nChannOut = len(outputChann)
+        self.imgLimits = [[np.Inf,0]]*self.nChannOut
         self.nPos = metaFile['Summary']['Positions']
         self.nTime = metaFile['Summary']['Frames']
         self.nZ = metaFile['Summary']['Slices']
@@ -87,9 +90,9 @@ class mManagerReader(metaclass=ABCMeta):
             self.logger.info(msg)
             
     def readmManager(self):
-#        fileName = 'img_000000%03d'+self.chNames[chanIdx]+'_%03d.tif'%(timeIdx,zIdx)
+#        fileName = 'img_000000%03d'+self.chNamesIn[chanIdx]+'_%03d.tif'%(timeIdx,zIdx)
         
-        fileName = 'img_'+self.chNames[self.chanIdx]+'_t%03d_p%03d_z%03d.tif'%(self.tIdx, self.posIdx, self.zIdx)
+        fileName = 'img_'+self.chNamesIn[self.chanIdx]+'_t%03d_p%03d_z%03d.tif'%(self.tIdx, self.posIdx, self.zIdx)
         TiffFile = os.path.join(self.ImgSmPath, fileName)
         img = cv2.imread(TiffFile,-1) # flag -1 to perserve the bit dept of the raw image
 #        img = img.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
@@ -99,7 +102,7 @@ class mManagerReader(metaclass=ABCMeta):
     def writeImgPyPol(self, img, chanIdx, posIdx, zIdx, timeIdx):            
         if not os.path.exists(self.ImgOutPath): # create folder for processed images
             os.makedirs(self.ImgOutPath)
-        fileName = 'img_'+self.chNames[chanIdx]+'_t%03d_p%03d_z%03d.tif'%(timeIdx,posIdx,zIdx)
+        fileName = 'img_'+self.chNamesIn[chanIdx]+'_t%03d_p%03d_z%03d.tif'%(timeIdx,posIdx,zIdx)
         if len(img.shape)<3:
             cv2.imwrite(os.path.join(self.ImgOutPath, fileName), img)
         else:
@@ -108,8 +111,8 @@ class mManagerReader(metaclass=ABCMeta):
     def writeMetaData(self):
         if not os.path.exists(self.ImgOutPath): # create folder for processed images
             os.makedirs(self.ImgOutPath)
-        self.metaFile['Summary']['ChNames'] = self.chNames
-        self.metaFile['Summary']['Channels'] = self.nChann 
+        self.metaFile['Summary']['ChNames'] = self.chNamesIn
+        self.metaFile['Summary']['Channels'] = self.nChannIn 
         metaFileName = os.path.join(self.ImgOutPath, 'metadata.txt')
         with open(metaFileName, 'w') as f:  
             json.dump(self.metaFile, f)        
@@ -150,7 +153,7 @@ class mManagerReader(metaclass=ABCMeta):
                                          'timepoint_{}'.format(tIdx))
             os.makedirs(timepoint_dir, exist_ok=True)
 
-            for chanIdx in range(self.nChann):
+            for chanIdx in range(self.nChannIn):
                 self.chanIdx = chanIdx
                 self.channel_dir = os.path.join(timepoint_dir,
                                            'channel_{}'.format(chanIdx))

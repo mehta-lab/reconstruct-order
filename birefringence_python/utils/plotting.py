@@ -51,7 +51,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
         imListCrop = imcrop(imList, IAbs)
         IAbs,retard, azimuth = imListCrop
 #    IAbs = imBitConvert(IAbs*10**3, bit=16) #AU
-    IAbs = imBitConvert(IAbs*10**3, bit=16) #AU    
+    IAbs = imBitConvert(IAbs*10**3, bit=16, norm=True) #AU, set norm to False for tiling images    
     retard = imBitConvert(retard*10**3,bit=16) # scale to pm
     azimuth = imBitConvert(azimuth/np.pi*18000,bit=16) # scale to [0, 18000], 100*degree        
     IHsv, IHv= PolColor(IAbs, retard, azimuth) 

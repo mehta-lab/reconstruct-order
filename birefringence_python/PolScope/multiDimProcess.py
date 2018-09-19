@@ -27,67 +27,67 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'    
     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir) 
     try:
-        imgSm = PolAcquReader(ImgSmPath, OutputPath)
+        imgIOSm = PolAcquReader(ImgSmPath, OutputPath, outputChann)
     except:
-        imgSm = mManagerReader(ImgSmPath,OutputPath)
+        imgIOSm = mManagerReader(ImgSmPath,OutputPath, outputChann)
     if bgCorrect=='None':
         print('No background correction is performed...')
         BgDir = SmDir # need smarter way to deal with different backgroud options           
     elif bgCorrect=='Input':
         OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
-        imgSm.ImgOutPath = OutputPath
+        imgIOSm.ImgOutPath = OutputPath
     else: #'Auto'        
-        if hasattr(imgSm, 'bg'):
-            BgDir = imgSm.bg
+        if hasattr(imgIOSm, 'bg'):
+            BgDir = imgIOSm.bg
         else:
             print('Background not specified in metadata. Use user input background directory')   
         OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
-        imgSm.ImgOutPath = OutputPath
+        imgIOSm.ImgOutPath = OutputPath
         
 
     
     ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir) # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
-    imgBg = PolAcquReader(ImgBgPath, OutputPath)    
-    imgBg.posIdx = 0 # assuming only single image for background 
-    imgBg.tIdx = 0
-    imgBg.zIdx = 0
-    ImgRawBg, ImgProcBg, ImgFluor, ImgBF = ParseTiffInput(imgBg) # 0 for z-index
-    Abg, Bbg, IAbsBg, DeltaMaskBg  = computeAB(imgBg, ImgRawBg) 
+    imgIOBg = PolAcquReader(ImgBgPath, OutputPath)    
+    imgIOBg.posIdx = 0 # assuming only single image for background 
+    imgIOBg.tIdx = 0
+    imgIOBg.zIdx = 0
+    ImgRawBg, ImgProcBg, ImgFluor, ImgBF = ParseTiffInput(imgIOBg) # 0 for z-index
+    Abg, Bbg, IAbsBg, DeltaMaskBg  = computeAB(imgIOBg, ImgRawBg) 
     
-    imgSm.Abg = Abg
-    imgSm.Bbg = Bbg
-    imgSm.swing = imgBg.swing
-    imgSm.wavelength = imgBg.wavelength
-    imgSm.ImgFluorMin  = np.full((imgBg.height,imgBg.width,4), np.inf) # set initial min array to to be Inf     
-    imgSm.ImgFluorSum  = np.zeros((imgBg.height,imgBg.width,4)) # set the default background to be Ones (uniform field)
-    imgSm.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(100,100))  # kernel for image opening operation, 100-200 is usually good 
-    imgSm.loopZ ='background'
-    ImgFluorBg = np.ones((imgBg.height,imgBg.width,4))
+    imgIOSm.Abg = Abg
+    imgIOSm.Bbg = Bbg
+    imgIOSm.swing = imgIOBg.swing
+    imgIOSm.wavelength = imgIOBg.wavelength
+    imgIOSm.ImgFluorMin  = np.full((imgIOBg.height,imgIOBg.width,4), np.inf) # set initial min array to to be Inf     
+    imgIOSm.ImgFluorSum  = np.zeros((imgIOBg.height,imgIOBg.width,4)) # set the default background to be Ones (uniform field)
+    imgIOSm.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(100,100))  # kernel for image opening operation, 100-200 is usually good 
+    imgIOSm.loopZ ='background'
+    ImgFluorBg = np.ones((imgIOBg.height,imgIOBg.width,4))
     
     if flatField: # find background flourescence for flatField corection 
         print('Calculating illumination function for flatfield correction...')
-        imgSm = loopPos(imgSm, outputChann, flatField=flatField)                                    
-        imgSm.ImgFluorSum = imgSm.ImgFluorSum/imgSm.nPos # normalize the sum                     
+        imgIOSm = loopPos(imgIOSm, outputChann, flatField=flatField)                                    
+        imgIOSm.ImgFluorSum = imgIOSm.ImgFluorSum/imgIOSm.nPos # normalize the sum                     
         if method=='open':            
-            ImgFluorBg = imgSm.ImgFluorSum            
+            ImgFluorBg = imgIOSm.ImgFluorSum            
         elif method=='empty':
-            ImgFluorBg = imgSm.ImgFluorMin   
+            ImgFluorBg = imgIOSm.ImgFluorMin   
         
         ## compare empty v.s. open method#####
 #        titles = ['Ch1 (Open)','Ch2 (Open)','Ch1 (Empty)','ch2 (Empty)']
-#        images = [imgSm.ImgFluorSum[:,:,0], imgSm.ImgFluorSum[:,:,1], 
-#                  imgSm.ImgFluorMin[:,:,0], imgSm.ImgFluorMin[:,:,1]]
+#        images = [imgIOSm.ImgFluorSum[:,:,0], imgIOSm.ImgFluorSum[:,:,1], 
+#                  imgIOSm.ImgFluorMin[:,:,0], imgIOSm.ImgFluorMin[:,:,1]]
 #        plot_sub_images(images,titles)
         print('Exporting illumination function...')
 #        plt.savefig(os.path.join(OutputPath,'compare_flat_field.png'),dpi=150)
         ##################################################################
     else:        
-        IAbsBg = np.ones((imgBg.height,imgBg.width))  # use uniform field if no correction
-    imgSm.IAbsBg = IAbsBg
-    imgSm.ImgFluorBg = ImgFluorBg        
-    return imgSm               
+        IAbsBg = np.ones((imgIOBg.height,imgIOBg.width))  # use uniform field if no correction
+    imgIOSm.IAbsBg = IAbsBg
+    imgIOSm.ImgFluorBg = ImgFluorBg        
+    return imgIOSm               
     
-def loopPos(imgSm, outputChann, flatField=False, bgCorrect=True, flipPol=False): 
+def loopPos(imgIOSm, outputChann, flatField=False, bgCorrect=True, flipPol=False): 
     """
     Loops through each position in the acquisition folder, and performs flat-field correction.
     
@@ -107,28 +107,28 @@ def loopPos(imgSm, outputChann, flatField=False, bgCorrect=True, flipPol=False):
     """       
     
     
-    for posIdx in range(0,imgSm.nPos):
+    for posIdx in range(0,imgIOSm.nPos):
         print('Processing position %03d ...' %posIdx)
         plt.close("all") # close all the figures from the last run
-        if imgSm.metaFile['Summary']['InitialPositionList']: # PolAcquisition doens't save position list
-            subDir = imgSm.metaFile['Summary']['InitialPositionList'][posIdx]['Label']   
+        if imgIOSm.metaFile['Summary']['InitialPositionList']: # PolAcquisition doens't save position list
+            subDir = imgIOSm.metaFile['Summary']['InitialPositionList'][posIdx]['Label']   
         else:
             subDir = 'Pos0'
-        imgSm.ImgPosPath = os.path.join(imgSm.ImgSmPath, subDir)
-        imgSm.posIdx = posIdx
-        img = loopT(imgSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
-    return img                
+        imgIOSm.ImgPosPath = os.path.join(imgIOSm.ImgSmPath, subDir)
+        imgIOSm.posIdx = posIdx
+        imgIO = loopT(imgIOSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
+    return imgIO                
         
-def loopT(img, outputChann, flatField=False, bgCorrect=True, flipPol=False):
-    for tIdx in range(0,img.nTime):        
-        img.tIdx = tIdx
-        if img.loopZ =='sample':
-            img = loopZSm(img, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
+def loopT(imgIO, outputChann, flatField=False, bgCorrect=True, flipPol=False):
+    for tIdx in range(0,imgIO.nTime):        
+        imgIO.tIdx = tIdx
+        if imgIO.loopZ =='sample':
+            imgIO = loopZSm(imgIO, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
         else:
-            img = loopZBg(img, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
-    return img        
+            imgIO = loopZBg(imgIO, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
+    return imgIO        
 
-def loopZSm(img, outputChann, flatField=False, bgCorrect=True, flipPol=False):
+def loopZSm(imgIO, outputChann, flatField=False, bgCorrect=True, flipPol=False):
     """
     Loops through Z.
     
@@ -151,18 +151,18 @@ def loopZSm(img, outputChann, flatField=False, bgCorrect=True, flipPol=False):
     """  
    
     
-    for zIdx in range(0,img.nZ):
+    for zIdx in range(0,imgIO.nZ):
         plt.close("all") # close all the figures from the last run
-        img.zIdx = zIdx      
+        imgIO.zIdx = zIdx      
         retardMMSm = np.array([])
         azimuthMMSm = np.array([])     
-        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = ParseTiffInput(img)            
-        ASm, BSm, IAbsSm, DeltaMaskSM = computeAB(img,ImgRawSm)
+        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = ParseTiffInput(imgIO)            
+        ASm, BSm, IAbsSm, DeltaMaskSM = computeAB(imgIO,ImgRawSm)
         if bgCorrect == 'None':                    
             A, B = ASm, BSm
         else:
-            A, B = correctBackground(img,ASm,BSm,ImgRawSm, extra=False) # background subtraction             
-        retard, azimuth = computeDeltaPhi(img,A,B,DeltaMaskSM,flipPol=flipPol)        
+            A, B = correctBackground(imgIO,ASm,BSm,ImgRawSm, extra=False) # background subtraction             
+        retard, azimuth = computeDeltaPhi(imgIO,A,B,DeltaMaskSM,flipPol=flipPol)        
         #retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images       
 #        retardBg, azimuthBg = computeDeltaPhi(Abg, Bbg,flipPol=flipPol)
         if not ImgBF.size: # use brightfield calculated from pol-images if there is no brighfield data
@@ -172,13 +172,13 @@ def loopZSm(img, outputChann, flatField=False, bgCorrect=True, flipPol=False):
             
         for i in range(ImgFluor.shape[2]):
             if np.any(ImgFluor[:,:,i]):  # if the flour channel exists   
-                ImgFluor[:,:,i] = ImgFluor[:,:,i]/img.ImgFluorBg[:,:,i]
+                ImgFluor[:,:,i] = ImgFluor[:,:,i]/imgIO.ImgFluorBg[:,:,i]
             
         if ImgProcSm.size:
             retardMMSm =  ImgProcSm[:,:,0]
             azimuthMMSm = ImgProcSm[:,:,1]
         if flatField:
-            ImgBF = ImgBF/img.IAbsBg #flat-field correction 
+            ImgBF = ImgBF/imgIO.IAbsBg #flat-field correction 
                     
             ## compare python v.s. Polacquisition output#####
 #            titles = ['Retardance (MM)','Orientation (MM)','Retardance (Py)','Orientation (Py)']
@@ -187,28 +187,27 @@ def loopZSm(img, outputChann, flatField=False, bgCorrect=True, flipPol=False):
 #            plt.savefig(os.path.join(acquDirPath,'compare_MM_Py.png'),dpi=200)
             ##################################################################
 
-        imgs = [ImgBF,retard, azimuth, ImgFluor]
-#        imgLimits = ImgLimit(imgs,imgLimits)
-        if not os.path.exists(img.ImgOutPath): # create folder for processed images
-            os.makedirs(img.ImgOutPath)
-        img, imgs = plot_birefringence(img, imgs,outputChann, spacing=10, vectorScl=10, zoomin=False, dpi=300)
-        
+        imgs = [ImgBF,retard, azimuth, ImgFluor]        
+        if not os.path.exists(imgIO.ImgOutPath): # create folder for processed images
+            os.makedirs(imgIO.ImgOutPath)
+        imgIO, imgs = plot_birefringence(imgIO, imgs,outputChann, spacing=10, vectorScl=10, zoomin=False, dpi=200)
+        imgIO.imgLimits = ImgLimit(imgs,imgIO.imgLimits)
         
         
         
         ##To do: add 'Fluor+Retardance' channel## 
         
-        img.writeMetaData()
-        exportImg(img, imgs)
-    return img     
+        imgIO.writeMetaData()
+        exportImg(imgIO, imgs)
+    return imgIO     
 
-def loopZBg(img, flatField=False, bgCorrect=True, flipPol=False):           
+def loopZBg(imgIO, flatField=False, bgCorrect=True, flipPol=False):           
     for zIdx in range(0,1): # only use the first z 
-        img.zIdx = zIdx              
-        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = ParseTiffInput(img)            
+        imgIO.zIdx = zIdx              
+        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = ParseTiffInput(imgIO)            
         for i in range(ImgFluor.shape[2]):
             if np.any(ImgFluor[:,:,i]):  # if the flour channel exists                                      
-                img.ImgFluorSum[:,:,i] += cv2.morphologyEx(ImgFluor[:,:,i], cv2.MORPH_OPEN, img.kernel, borderType = cv2.BORDER_REPLICATE )                    
-                img.ImgFluorMin[:,:,i] = ImgMin(ImgFluor[:,:,i], img.ImgFluorMin[:,:,i]) 
-    return img                                       
+                imgIO.ImgFluorSum[:,:,i] += cv2.morphologyEx(ImgFluor[:,:,i], cv2.MORPH_OPEN, imgIO.kernel, borderType = cv2.BORDER_REPLICATE )                    
+                imgIO.ImgFluorMin[:,:,i] = ImgMin(ImgFluor[:,:,i], imgIO.ImgFluorMin[:,:,i]) 
+    return imgIO                                       
 
