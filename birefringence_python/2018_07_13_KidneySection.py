@@ -33,7 +33,7 @@ from utils.imgIO import GetSubDirName
 import seaborn as sns
 import os
 
-sns.set_context("poster")
+sns.set_context("talk")
 
 
 # In[2]:
@@ -69,14 +69,14 @@ RawDataPath = 'C:/Data'
 #
 ProcessedPath = 'C:/Processed'
 #
-#ImgDir = '2018_07_03_KidneyTissueSection'
-#SmDir = 'SMS_2018_0703_1835_1'
-#BgDir = 'BG_2018_0703_1829_1'
+ImgDir = '20180914_GW20_CUBIC_DAPI'
+SmDir = 'SMS_2018_0914_1748_1'
+BgDir = 'BG_2018_0914_1732_1'
 
-ImgDir = '20180816_Sample_Test_CUBIC'
+#ImgDir = '20180816_Sample_Test_CUBIC'
 #SmDir = 'SM_2018_0801_1313_1'
-SmDir = 'SM_2018_0816_1838_1'
-BgDir = 'BG_2018_0816_1613_1'
+#SmDir = 'SM_2018_0816_1838_1'
+#BgDir = 'BG_2018_0816_1613_1'
 
 #ImgDir = '2018_08_01_differentiation_Marius'
 #SmDir = 'SM_2018_0801_1313_1'
@@ -118,6 +118,7 @@ if batchProc:
     ImgPath = os.path.join(RawDataPath, ImgDir)
     SmDirList = GetSubDirName(ImgPath)
     for SmDir in SmDirList:
+#        if 'SM' in SmDir or 'BG' in SmDir :
         if 'SM' in SmDir:
             processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
 else:

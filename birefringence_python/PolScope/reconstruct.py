@@ -1,10 +1,10 @@
 import numpy as np
 import sys
 sys.path.append("..") # Adds higher directory to python modules path.
-from utils.imgCrop import imcrop
+#from utils.imgCrop import imcrop
 #%%               
 def computeAB(ImgReader, ImgRaw): # output numerators and denominators of A, B along with to retain the phase info   
-    Chi = ImgReader.swing
+    Chi = ImgReader.swing*2*np.pi # covert swing from fraction of wavelength to radian
     Iext = ImgRaw[:,:,0] # Sigma0 in Fig.2
     I90 = ImgRaw[:,:,1] # Sigma2 in Fig.2
     I135 = ImgRaw[:,:,2] # Sigma4 in Fig.2
@@ -15,7 +15,8 @@ def computeAB(ImgReader, ImgRaw): # output numerators and denominators of A, B a
         dAB = I45+I135-2*Iext
         A = nA/dAB
         B = nB/dAB   
-        IAbs = I45+I135-2*np.cos(Chi)*Iext        
+        IAbs = I45+I135-2*np.cos(Chi)*Iext
+        DeltaMask = dAB>=0 # Mask term in Eq. 11
     elif ImgRaw.shape[2]==5: # 5-frame algorithm               
         I0 = ImgRaw[:,:,4] # Sigma1 in Fig.2          
         nB = (I135-I45)*np.tan(Chi/2)
@@ -27,6 +28,7 @@ def computeAB(ImgReader, ImgRaw): # output numerators and denominators of A, B a
         A = nA/dA
         B = nB/dB   
         IAbs = I45+I135-2*np.cos(Chi)*Iext
+        DeltaMask = dA>=0 # Mask term in Eq. 11
     else: # treat anything else as 5-frame for now      
         I0 = ImgRaw[:,:,4] # Sigma1 in Fig.2          
         nB = (I135-I45)*np.tan(Chi/2)
@@ -38,11 +40,12 @@ def computeAB(ImgReader, ImgRaw): # output numerators and denominators of A, B a
         A = nA/dA
         B = nB/dB   
         IAbs = I45+I135-2*np.cos(Chi)*Iext
-    return  A, B, IAbs
+        DeltaMask = dA>=0 # Mask term in Eq. 11
+    return  A, B, IAbs, DeltaMask
 
 def correctBackground(img,ASm,BSm,ImgRaw,extra=False):
     # for low birefringence sample that requires 0 background, set extra=True to manually offset the background 
-    
+    # Correction based on Eq. 16 in reference using linear approximation assuming small retardance for both sample and background 
     Iext = ImgRaw[:,:,0] # Sigma0 in Fig.2
     ASmBg = 0
     BSmBg = 0
@@ -56,10 +59,10 @@ def correctBackground(img,ASm,BSm,ImgRaw,extra=False):
     B = BSm-img.Bbg-BSmBg    
     return A, B        
 
-def computeDeltaPhi(img, A,B,flipPol=False):
-    retardPos = np.arctan(np.sqrt(A**2+B**2))
+def computeDeltaPhi(img, A,B,DeltaMask, flipPol=False):
+    retard = np.arctan(np.sqrt(A**2+B**2))
     retardNeg = np.pi + np.arctan(np.sqrt(A**2+B**2)) # different from Eq. 10 due to the definition of arctan in numpy
-    retard = retardNeg*(retardPos<0)+retardPos*(retardPos>=0)
+    retard[~DeltaMask] = retardNeg[~DeltaMask] #Eq. 11
     retard = retard/(2*np.pi)*img.wavelength # convert the unit to [nm]    
 #    azimuth = 0.5*((np.arctan2(A,B)+2*np.pi)%(2*np.pi)) # make azimuth fall in [0,pi]    
     if flipPol:
