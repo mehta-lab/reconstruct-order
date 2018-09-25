@@ -5,7 +5,7 @@ import re
 import cv2
 #import sys
 #sys.path.append("..") # Adds higher directory to python modules path.
-from utils.imgIO import ParseTiffInput, exportImg
+from utils.imgIO import ParseTiffInput, exportImg, GetSubDirName, FindDirContainPos
 from .reconstruct import computeAB, correctBackground, computeDeltaPhi
 from utils.imgProcessing import ImgMin
 from utils.plotting import plot_sub_images
@@ -14,6 +14,7 @@ from utils.mManagerIO import mManagerReader, PolAcquReader
 
 from utils.plotting import plot_birefringence, plot_sub_images
 from utils.imgProcessing import ImgLimit
+
 
 
 def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=False, bgCorrect='Auto', method='open'):
@@ -25,27 +26,31 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     """
     
     ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'    
-    OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir) 
+    OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir)
+    ImgSmPath = FindDirContainPos(ImgSmPath)
     try:
         imgIOSm = PolAcquReader(ImgSmPath, OutputPath, outputChann)
     except:
         imgIOSm = mManagerReader(ImgSmPath,OutputPath, outputChann)
     if bgCorrect=='None':
         print('No background correction is performed...')
-        BgDir = SmDir # need smarter way to deal with different backgroud options           
+        BgDir = SmDir # need a smarter way to deal with different backgroud options           
     elif bgCorrect=='Input':
         OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
         imgIOSm.ImgOutPath = OutputPath
     else: #'Auto'        
         if hasattr(imgIOSm, 'bg'):
-            BgDir = imgIOSm.bg
+            if imgIOSm.bg == 'No Background':
+                bgCorrect=='None' # need to pass the flag down     
+                print('No background correction is performed for background measurments...')
+            else:
+                BgDir = imgIOSm.bg
         else:
             print('Background not specified in metadata. Use user input background directory')   
         OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
         imgIOSm.ImgOutPath = OutputPath
         
 
-    
     ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir) # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
     imgIOBg = PolAcquReader(ImgBgPath, OutputPath)    
     imgIOBg.posIdx = 0 # assuming only single image for background 
@@ -191,7 +196,7 @@ def loopZSm(imgIO, outputChann, flatField=False, bgCorrect=True, flipPol=False):
         if not os.path.exists(imgIO.ImgOutPath): # create folder for processed images
             os.makedirs(imgIO.ImgOutPath)
         imgIO, imgs = plot_birefringence(imgIO, imgs,outputChann, spacing=10, vectorScl=10, zoomin=False, dpi=200)
-        imgIO.imgLimits = ImgLimit(imgs,imgIO.imgLimits)
+        # imgIO.imgLimits = ImgLimit(imgs,imgIO.imgLimits)
         
         
         

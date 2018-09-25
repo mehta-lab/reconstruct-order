@@ -16,8 +16,23 @@ def GetSubDirName(ImgPath):
     assert os.path.exists(ImgPath), 'Input folder does not exist!' 
     subDirPath = glob.glob(os.path.join(ImgPath, '*/'))    
     subDirName = [os.path.split(subdir[:-1])[1] for subdir in subDirPath]
-#    assert subDirName, 'No sub directories found'            
+#    assert subDirName, 'No sub directories found'
     return subDirName
+
+def FindDirContainPos(ImgPath):
+    """
+    Recursively find the parent directory of "Pos#" directory
+    """
+    subDirName = GetSubDirName(ImgPath)
+    assert subDirName, 'No "Pos" directories found. Check if the input folder contains "Pos"'
+    subDir = subDirName[0]  # get pos0 if it exists
+    ImgSubPath = os.path.join(ImgPath, subDir)
+    if 'Pos' not in subDir:
+        ImgPath = FindDirContainPos(ImgSubPath)
+        return ImgPath
+    else:
+        return ImgPath
+
 
 def loadTiff(acquDirPath, acquFiles):   
     TiffFile = os.path.join(acquDirPath, acquFiles)
