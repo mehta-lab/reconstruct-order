@@ -170,7 +170,7 @@ class mManagerReader(metaclass=ABCMeta):
             records,
             columns=['timepoint', 'channel_num', 'sample_num', 'slice_num',
                      'fname', 'size_x_microns', 'size_y_microns',
-                     'size_z_microns']
+                     'size_z_microns','mean', 'std']
         )
         metadata_fname = os.path.join(self.ImgOutPath,
                                       'split_images_info.csv')
@@ -212,12 +212,15 @@ class mManagerReader(metaclass=ABCMeta):
             # image voxels are 16 bits
             
             img = self.readmManager()
+            self.mean = np.nanmean(img)
+            self.std = np.nanstd(img)
             np.save(cur_fname, img, allow_pickle=True, fix_imports=True)
             msg = 'Generated file:{}'.format(cur_fname)
             self._log_info(msg)
             # add wavelength info perhaps?
             records.append((self.tIdx, self.chanIdx, self.posIdx, zIdx,
-                            cur_fname, self.size_x_um, self.size_y_um, self.size_z_um))
+                            cur_fname, self.size_x_um, self.size_y_um, self.size_z_um
+                            self.mean, self.std))
         return records
 
 
