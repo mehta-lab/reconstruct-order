@@ -49,7 +49,6 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
             print('Background not specified in metadata. Use user input background directory')   
         OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
         imgIOSm.ImgOutPath = OutputPath
-        
 
     ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir) # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
     imgIOBg = PolAcquReader(ImgBgPath, OutputPath)    
@@ -63,11 +62,11 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     imgIOSm.Bbg = Bbg
     imgIOSm.swing = imgIOBg.swing
     imgIOSm.wavelength = imgIOBg.wavelength
-    imgIOSm.ImgFluorMin  = np.full((imgIOBg.height,imgIOBg.width,4), np.inf) # set initial min array to to be Inf     
-    imgIOSm.ImgFluorSum  = np.zeros((imgIOBg.height,imgIOBg.width,4)) # set the default background to be Ones (uniform field)
+    imgIOSm.ImgFluorMin  = np.full((4,imgIOBg.height,imgIOBg.width), np.inf) # set initial min array to to be Inf
+    imgIOSm.ImgFluorSum  = np.zeros((4,imgIOBg.height,imgIOBg.width)) # set the default background to be Ones (uniform field)
     imgIOSm.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(100,100))  # kernel for image opening operation, 100-200 is usually good 
     imgIOSm.loopZ ='background'
-    ImgFluorBg = np.ones((imgIOBg.height,imgIOBg.width,4))
+    ImgFluorBg = np.ones((4,imgIOBg.height,imgIOBg.width))
     
     if flatField: # find background flourescence for flatField corection 
         print('Calculating illumination function for flatfield correction...')
@@ -173,15 +172,15 @@ def loopZSm(imgIO, outputChann, flatField=False, bgCorrect=True, flipPol=False):
         if not ImgBF.size: # use brightfield calculated from pol-images if there is no brighfield data
             ImgBF = IAbsSm
         else:
-            ImgBF = ImgBF[:,:,0]
+            ImgBF = ImgBF[0,:,:]
             
-        for i in range(ImgFluor.shape[2]):
+        for i in range(ImgFluor.shape[0]):
             if np.any(ImgFluor[:,:,i]):  # if the flour channel exists   
                 ImgFluor[:,:,i] = ImgFluor[:,:,i]/imgIO.ImgFluorBg[:,:,i]
             
         if ImgProcSm.size:
-            retardMMSm =  ImgProcSm[:,:,0]
-            azimuthMMSm = ImgProcSm[:,:,1]
+            retardMMSm =  ImgProcSm[0,:,:]
+            azimuthMMSm = ImgProcSm[1,:,:]
         if flatField:
             ImgBF = ImgBF/imgIO.IAbsBg #flat-field correction 
                     
@@ -195,7 +194,7 @@ def loopZSm(imgIO, outputChann, flatField=False, bgCorrect=True, flipPol=False):
         imgs = [ImgBF,retard, azimuth, ImgFluor]        
         if not os.path.exists(imgIO.ImgOutPath): # create folder for processed images
             os.makedirs(imgIO.ImgOutPath)
-        imgIO, imgs = plot_birefringence(imgIO, imgs,outputChann, spacing=10, vectorScl=10, zoomin=False, dpi=200)
+        imgIO, imgs = plot_birefringence(imgIO, imgs,outputChann, spacing=10, vectorScl=2, zoomin=False, dpi=200)
         # imgIO.imgLimits = ImgLimit(imgs,imgIO.imgLimits)
         
         
@@ -210,9 +209,9 @@ def loopZBg(imgIO, flatField=False, bgCorrect=True, flipPol=False):
     for zIdx in range(0,1): # only use the first z 
         imgIO.zIdx = zIdx              
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = ParseTiffInput(imgIO)            
-        for i in range(ImgFluor.shape[2]):
-            if np.any(ImgFluor[:,:,i]):  # if the flour channel exists                                      
-                imgIO.ImgFluorSum[:,:,i] += cv2.morphologyEx(ImgFluor[:,:,i], cv2.MORPH_OPEN, imgIO.kernel, borderType = cv2.BORDER_REPLICATE )                    
-                imgIO.ImgFluorMin[:,:,i] = ImgMin(ImgFluor[:,:,i], imgIO.ImgFluorMin[:,:,i]) 
+        for i in range(ImgFluor.shape[0]):
+            if np.any(ImgFluor[i,:,:]):  # if the flour channel exists
+                imgIO.ImgFluorSum[i,:,:] += cv2.morphologyEx(ImgFluor[i,:,:], cv2.MORPH_OPEN, imgIO.kernel, borderType = cv2.BORDER_REPLICATE )
+                imgIO.ImgFluorMin[i,:,:] = ImgMin(ImgFluor[i,:,:], imgIO.ImgFluorMin[i,:,:])
     return imgIO                                       
 

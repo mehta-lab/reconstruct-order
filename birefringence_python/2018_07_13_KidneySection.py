@@ -69,9 +69,15 @@ RawDataPath = 'C:/Data'
 #
 ProcessedPath = 'C:/Processed'
 #
-ImgDir = '20180914_GW20_CUBIC_DAPI'
-SmDir = 'SMS_2018_0914_1748_1'
-BgDir = 'BG_2018_0914_1732_1'
+
+
+ImgDir = '2018_09_28_U2OS_rainbow'
+SmDir = 'SMS_2018_0928_1706_1_3'
+BgDir = 'BG_2018_0928_1654_1'
+
+#ImgDir = '20180914_GW20_CUBIC_DAPI'
+#SmDir = 'SMS_2018_0914_1748_1'
+#BgDir = 'BG_2018_0914_1732_1'
 
 #ImgDir = '20180816_Sample_Test_CUBIC'
 #SmDir = 'SM_2018_0801_1313_1'
@@ -113,7 +119,7 @@ flipPol=True # flip the sign of polarization
 bgCorrect='Auto' 
 # Auto: correct the background using background from the metadata  
 flatField=True
-batchProc=True
+batchProc=False
 if batchProc:
     ImgPath = os.path.join(RawDataPath, ImgDir)
     SmDirList = GetSubDirName(ImgPath)

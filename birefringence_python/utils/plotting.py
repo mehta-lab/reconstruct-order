@@ -52,8 +52,8 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
         IAbs,retard, azimuth = imListCrop
 #    IAbs = imBitConvert(IAbs*10**3, bit=16) #AU
     IAbs = imBitConvert(IAbs*10**3, bit=16, norm=True) #AU, set norm to False for tiling images    
-    retard = imBitConvert(retard*10**3,bit=16) # scale to pm
-    azimuth = imBitConvert(azimuth/np.pi*18000,bit=16) # scale to [0, 18000], 100*degree        
+    retard = imBitConvert(retard*10**3, bit=16) # scale to pm
+    azimuth = imBitConvert(azimuth/np.pi*18000, bit=16) # scale to [0, 18000], 100*degree
     IHsv, IHv= PolColor(IAbs, retard, azimuth) 
     
 #    DAPI = cv2.convertScaleAbs(DAPI*20)
@@ -113,7 +113,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
 #    images = [IAbs, retard, azimuth, IHv, IHsv, IFluorRetard]
     
     imagesTrans = [IAbs, retard, azimuth, IHv, IHsv] #trasmission channels
-    imagesFluor = [imBitConvert(ImgFluor[:,:,i]*500,bit=16) for i in range(ImgFluor.shape[2])]
+    imagesFluor = [imBitConvert(ImgFluor[i,:,:]*500, bit=16) for i in range(ImgFluor.shape[0])]
     
     images = imagesTrans+imagesFluor   
     chNames = ['Transmission', 'Retardance', 'Orientation', 
