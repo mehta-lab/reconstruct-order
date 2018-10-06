@@ -53,8 +53,8 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
 #    IAbs = imBitConvert(IAbs*10**3, bit=16) #AU
     IAbs = imBitConvert(IAbs*10**3, bit=16, norm=True) #AU, set norm to False for tiling images    
     retard = imBitConvert(retard*10**3,bit=16) # scale to pm
-    azimuth = imBitConvert(azimuth/np.pi*18000,bit=16) # scale to [0, 18000], 100*degree        
-    IHsv, IHv= PolColor(IAbs, retard, azimuth) 
+    azimuth_degree = imBitConvert(azimuth/np.pi*18000,bit=16) # scale to [0, 18000], 100*degree
+    IHsv, IHv= PolColor(IAbs, retard, azimuth_degree)
     
 #    DAPI = cv2.convertScaleAbs(DAPI*20)
 #    TdTomato = cv2.convertScaleAbs(TdTomato*2)
@@ -87,7 +87,6 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
 
     ax = plt.subplot(2,2,3)    
     imAx = plotVectorField(imClip(retard/1000,tol=1), azimuth, R=R, spacing=spacing)
-#    plotVectorField(retard, azimuth, R=vectorScl, spacing=spacing)
     plt.tick_params(labelbottom=False,labelleft=False) # labels along the bottom edge are off               
     plt.title('Retardance(nm)+Orientation')   
     plt.xticks([]),plt.yticks([]) 
@@ -110,9 +109,9 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
         
 
 #    IFluorRetard = CompositeImg([retard*0.1, TdTomato, DAPI])
-#    images = [IAbs, retard, azimuth, IHv, IHsv, IFluorRetard]
+#    images = [IAbs, retard, azimuth_degree, IHv, IHsv, IFluorRetard]
     
-    imagesTrans = [IAbs, retard, azimuth, IHv, IHsv] #trasmission channels
+    imagesTrans = [IAbs, retard, azimuth_degree, IHv, IHsv] #trasmission channels
     imagesFluor = [imBitConvert(ImgFluor[:,:,i]*500,bit=16) for i in range(ImgFluor.shape[2])]
     
     images = imagesTrans+imagesFluor   
