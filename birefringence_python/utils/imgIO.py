@@ -97,9 +97,9 @@ def ParseTiffInput(img_io):
         if matchObjRaw or matchObjProc or matchObjFluor or matchObjBF:
             img = loadTiff(acquDirPath, fileName)
             if matchObjRaw:
-                ImgRaw += img
+                ImgRaw += [img]
             elif matchObjProc:
-                ImgProc += img
+                ImgProc += [img]
             elif matchObjFluor:
                 FluorChannName = matchObjFluor.group(2)
                 if FluorChannName in ['DAPI','405']:
@@ -111,10 +111,13 @@ def ParseTiffInput(img_io):
                 elif FluorChannName in ['Cy5','640']:
                     ImgFluor[3,:,:] = img
             elif matchObjBF:
-                ImgBF += img
-    ImgRaw = np.stack(ImgRaw)
-    ImgProc = np.stack(ImgProc)
-    ImgBF = np.stack(ImgBF)
+                ImgBF += [img]
+    if ImgRaw:
+        ImgRaw = np.stack(ImgRaw)
+    if ImgProc:
+        ImgProc = np.stack(ImgProc)
+    if ImgBF:
+        ImgBF = np.stack(ImgBF)
     return ImgRaw, ImgProc, ImgFluor, ImgBF 
 
 def exportImg(img_io,imgDict):

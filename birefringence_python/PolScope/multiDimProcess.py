@@ -6,7 +6,7 @@ import cv2
 #import sys
 #sys.path.append("..") # Adds higher directory to python modules path.
 from utils.imgIO import ParseTiffInput, exportImg, GetSubDirName, FindDirContainPos
-from .reconstruct import computeAB, correctBackground, computeDeltaPhi
+from .reconstruct import ImgReconstructor
 from utils.imgProcessing import ImgMin
 from utils.plotting import plot_sub_images
 from utils.mManagerIO import mManagerReader, PolAcquReader
@@ -56,10 +56,12 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     imgIOBg.tIdx = 0
     imgIOBg.zIdx = 0
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = ParseTiffInput(imgIOBg) # 0 for z-index
-    Abg, Bbg, IAbsBg, DeltaMaskBg  = computeAB(imgIOBg, ImgRawBg) 
+
+    img_reconstructor = ImgReconstructor(ImgRawBg, method='Stokes', swing=imgIOBg.swing,
+                                         wavelength=imgIOBg.wavelength)
+    img_param_bg = img_reconstructor.compute_param(ImgRawBg)
     
-    imgIOSm.Abg = Abg
-    imgIOSm.Bbg = Bbg
+    imgIOSm.param_bg = img_param_bg
     imgIOSm.swing = imgIOBg.swing
     imgIOSm.wavelength = imgIOBg.wavelength
     imgIOSm.ImgFluorMin  = np.full((4,imgIOBg.height,imgIOBg.width), np.inf) # set initial min array to to be Inf
@@ -86,8 +88,8 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
 #        plt.savefig(os.path.join(OutputPath,'compare_flat_field.png'),dpi=150)
         ##################################################################
     else:        
-        IAbsBg = np.ones((imgIOBg.height,imgIOBg.width))  # use uniform field if no correction
-    imgIOSm.IAbsBg = IAbsBg
+        I_trans_Bg = np.ones((imgIOBg.height,imgIOBg.width))  # use uniform field if no correction
+    imgIOSm.I_trans_Bg = img_param_bg[0]
     imgIOSm.ImgFluorBg = ImgFluorBg        
     return imgIOSm               
     
@@ -101,7 +103,7 @@ def loopPos(imgIOSm, outputChann, flatField=False, bgCorrect=True, flipPol=False
     @param Lambda: Wavelength of polarized light.
     @param Abg: A term in background
     @param Bbg: B term in background
-    @param IAbsBg: another background term.
+    @param I_trans_Bg: another background term.
     @param DAPIBg: another backgruond term.
     @param TdTomatoBg: another background term.
     @param flatField: boolean - whether flatField correction is applied.
@@ -144,7 +146,7 @@ def loopZSm(imgIO, outputChann, flatField=False, bgCorrect=True, flipPol=False):
     @param Lambda: Wavelength of polarized light.
     @param Abg: A term in background
     @param Bbg: B term in background
-    @param IAbsBg: another background term.
+    @param I_trans_Bg: another background term.
     @param DAPIBg: another backgruond term.
     @param TdTomatoBg: another background term.
     @param imgLimits:
@@ -160,20 +162,17 @@ def loopZSm(imgIO, outputChann, flatField=False, bgCorrect=True, flipPol=False):
         imgIO.zIdx = zIdx      
         retardMMSm = np.array([])
         azimuthMMSm = np.array([])     
-        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = ParseTiffInput(imgIO)            
-        ASm, BSm, IAbsSm, DeltaMaskSM = computeAB(imgIO,ImgRawSm)
-        if bgCorrect == 'None':                    
-            A, B = ASm, BSm
-        else:
-            A, B = correctBackground(imgIO,ASm,BSm,ImgRawSm, extra=False) # background subtraction             
-        retard, azimuth = computeDeltaPhi(imgIO,A,B,DeltaMaskSM,flipPol=flipPol)        
-        #retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images       
-#        retardBg, azimuthBg = computeDeltaPhi(Abg, Bbg,flipPol=flipPol)
-        if not ImgBF.size: # use brightfield calculated from pol-images if there is no brighfield data
-            ImgBF = IAbsSm
-        else:
-            ImgBF = ImgBF[0,:,:]
-            
+        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = ParseTiffInput(imgIO)
+        img_reconstructor = ImgReconstructor(ImgRawSm, method='Stokes', swing=imgIO.swing,
+                                             wavelength=imgIO.wavelength)
+        img_param_sm = img_reconstructor.compute_param(ImgRawSm)
+        if not bgCorrect == 'None':
+            img_param_sm = img_reconstructor.correct_background(img_param_sm, imgIO.param_bg, extra=False) # background subtraction
+        I_trans_Sm = img_param_sm[0]
+        retard, azimuth, polarization = img_reconstructor.reconstruct_img(img_param_sm,flipPol=flipPol)
+        #retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images
+        if not ImgBF: # use brightfield calculated from pol-images if there is no brighfield data
+            ImgBF = I_trans_Sm
         for i in range(ImgFluor.shape[0]):
             if np.any(ImgFluor[:,:,i]):  # if the flour channel exists   
                 ImgFluor[:,:,i] = ImgFluor[:,:,i]/imgIO.ImgFluorBg[:,:,i]
@@ -182,7 +181,7 @@ def loopZSm(imgIO, outputChann, flatField=False, bgCorrect=True, flipPol=False):
             retardMMSm =  ImgProcSm[0,:,:]
             azimuthMMSm = ImgProcSm[1,:,:]
         if flatField:
-            ImgBF = ImgBF/imgIO.IAbsBg #flat-field correction 
+            ImgBF = ImgBF/imgIO.I_trans_Bg #flat-field correction
                     
             ## compare python v.s. Polacquisition output#####
 #            titles = ['Retardance (MM)','Orientation (MM)','Retardance (Py)','Orientation (Py)']
@@ -191,10 +190,10 @@ def loopZSm(imgIO, outputChann, flatField=False, bgCorrect=True, flipPol=False):
 #            plt.savefig(os.path.join(acquDirPath,'compare_MM_Py.png'),dpi=200)
             ##################################################################
 
-        imgs = [ImgBF,retard, azimuth, ImgFluor]        
+        imgs = [ImgBF,retard, azimuth, polarization, ImgFluor]
         if not os.path.exists(imgIO.ImgOutPath): # create folder for processed images
             os.makedirs(imgIO.ImgOutPath)
-        imgIO, imgs = plot_birefringence(imgIO, imgs,outputChann, spacing=10, vectorScl=2, zoomin=False, dpi=200)
+        imgIO, imgs = plot_birefringence(imgIO, imgs, outputChann, spacing=10, vectorScl=2, zoomin=False, dpi=200)
         # imgIO.imgLimits = ImgLimit(imgs,imgIO.imgLimits)
         
         

@@ -67,13 +67,20 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 
 RawDataPath = 'C:/Data'
 #
-ProcessedPath = 'C:/Processed'
-#
+ProcessedPath = 'C:/Processed/'
 
 
-ImgDir = '2018_09_28_U2OS_rainbow'
+
+ImgDir = '2018_10_02_MouseBrainSlice'
 SmDir = 'SMS_2018_0928_1706_1_3'
 BgDir = 'BG_2018_0928_1654_1'
+
+# ImgDir = '2018_09_28_U2OS_rainbow'
+# # SmDir = 'SMS_2018_0928_1706_1_3'
+# # BgDir = 'BG_2018_0928_1654_1'
+
+# SmDir = 'SM_2018_0928_1644_1'
+# BgDir = 'BG_2018_0928_1641_1'
 
 #ImgDir = '20180914_GW20_CUBIC_DAPI'
 #SmDir = 'SMS_2018_0914_1748_1'
@@ -116,10 +123,10 @@ outputChann = ['Transmission', 'Retardance', 'Orientation', 'Retardance+Orientat
 #outputChann = ['Transmission', 'Retardance', 'Orientation',                             
 #                            '405','488','568']# channels to output, see readme for channel names
 flipPol=True # flip the sign of polarization
-bgCorrect='Auto' 
+bgCorrect='Auto'
 # Auto: correct the background using background from the metadata  
-flatField=True
-batchProc=False
+flatField = True
+batchProc = True
 if batchProc:
     ImgPath = os.path.join(RawDataPath, ImgDir)
     SmDirList = GetSubDirName(ImgPath)

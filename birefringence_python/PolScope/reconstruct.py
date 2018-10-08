@@ -1,25 +1,29 @@
 import numpy as np
 import sys
-sys.path.append("..") # Adds higher directory to python modules path.
+sys.path.append("..") # Add upper level directory to python modules path.
 #from utils.imgCrop import imcrop
 #%%
 class ImgReconstructor:
-    def __init__(self, img_raw_bg, method='Stokes', swing=None):
+    def __init__(self, img_raw_bg, method='Stokes', swing=None, wavelength=532):
         self.img_raw_bg = img_raw_bg
         self.method = method
         self.swing = swing*2*np.pi # covert swing from fraction of wavelength to radian
+        self.n_chann = np.shape(img_raw_bg)[0]
+        self.height = np.shape(img_raw_bg)[1]
+        self.width = np.shape(img_raw_bg)[2]
+        self.wavelength = wavelength
 
-    def compute_background(self):
+    def compute_param(self, img_raw):
         if self.method == 'Jones':
-            Abg, Bbg, IAbsBg, DeltaMaskBg = self.computeAB(self.img_raw_bg)
+            img_param = self.compute_jones(img_raw)
         elif self.method == 'Stokes':
+            img_param = self.compute_stokes(img_raw)
+        return img_param
 
-
-
-
-    def computeAB(self, img_raw): # output numerators and denominators of A, B along with to retain the phase info
+    def compute_jones(self, img_raw): # output numerators and denominators of A, B along with to retain the phase info
+        assert self.n_chann in [4,5], \
+            'reconstruction using Jones calculus only supports 4- or 5- frame algorithm'
         chi = self.swing
-        img_raw = self.img_raw
         I_ext = img_raw[0,:,:] # Sigma0 in Fig.2
         I_90 = img_raw[1,:,:] # Sigma2 in Fig.2
         I_135 = img_raw[2,:,:] # Sigma4 in Fig.2
@@ -30,8 +34,8 @@ class ImgReconstructor:
             dAB = I_45+I_135-2*I_ext
             A = nA/dAB
             B = nB/dAB
-            IAbs = I_45+I_135-2*np.cos(chi)*I_ext
-            DeltaMask = dAB>=0 # Mask term in Eq. 11
+            I_trans = I_45+I_135-2*np.cos(chi)*I_ext
+
         elif img_raw.shape[0]==5: # 5-frame algorithm
             I_0 = img_raw[4,:,:] # Sigma1 in Fig.2
             nB = (I_135-I_45)*np.tan(chi/2)
@@ -42,52 +46,70 @@ class ImgReconstructor:
             dA[dA==0] = np.spacing(1.0)
             A = nA/dA
             B = nB/dB
-            IAbs = I_45+I_135-2*np.cos(chi)*I_ext
-            DeltaMask = dA>=0 # Mask term in Eq. 11
-        return  A, B, IAbs, DeltaMask
+            I_trans = I_45+I_135-2*np.cos(chi)*I_ext
+            dAB = (dA+dB)/2
 
+        return [I_trans, A, B, dAB]
 
-    def correctBackground(img,ASm,BSm,img_raw,extra=False):
+    def correct_background(self, img_param_sm, img_param_bg, img_crop_ref=None, extra=False):
         # for low birefringence sample that requires 0 background, set extra=True to manually offset the background
         # Correction based on Eq. 16 in reference using linear approximation assuming small retardance for both sample and background
-        I_ext = img_raw[:,:,0] # Sigma0 in Fig.2
-        ASmBg = 0
-        BSmBg = 0
-        if extra: # extra background correction to set backgorund = 0
-            imList = [ASm, BSm]
-            imListCrop = imcrop(imList, I_ext) # manually select ROI with only background retardance
-            ASmCrop,BSmCrop = imListCrop
-            ASmBg = np.nanmean(ASmCrop)
-            BSmBg = np.nanmean(BSmCrop)
-        A = ASm-img.Abg-ASmBg # correct contributions from background
-        B = BSm-img.Bbg-BSmBg
-        return A, B
 
-    def computeDeltaPhi(img, A, B, DeltaMask, flipPol=False):
-        retard = np.arctan(np.sqrt(A**2+B**2))
-        retardNeg = np.pi + np.arctan(np.sqrt(A**2+B**2)) # different from Eq. 10 due to the definition of arctan in numpy
-        retard[~DeltaMask] = retardNeg[~DeltaMask] #Eq. 11
-        retard = retard/(2*np.pi)*img.wavelength # convert the unit to [nm]
-    #    azimuth = 0.5*((np.arctan2(A,B)+2*np.pi)%(2*np.pi)) # make azimuth fall in [0,pi]
-        if flipPol:
-            azimuth = (0.5*np.arctan2(-A, B)+0.5*np.pi) # make azimuth fall in [0,pi]
-        else:
-            azimuth = (0.5*np.arctan2(A, B)+0.5*np.pi) # make azimuth fall in [0,pi]
-        return retard, azimuth
+        # ASmBg = 0
+        # BSmBg = 0
+        # if extra: # extra background correction to set backgorund = 0
+        #     imList = [ASm, BSm]
+        #     imListCrop = imcrop(imList, I_ext) # manually select ROI with only background retardance
+        #     ASmCrop,BSmCrop = imListCrop
+        #     ASmBg = np.nanmean(ASmCrop)
+        #     BSmBg = np.nanmean(BSmCrop)
+        if self.method == 'Jones':
+            img_param_bg[3] = 0 # no background correction for dAB
 
-    def calibrate_inst_mat():
+        img_param = [np.subtract(i, j) for i, j in zip(img_param_sm, img_param_bg)]  # correct contributions from background
+        # img_param = np.subtract(img_param_sm, img_param_bg)  # correct contributions from backgroundimg_param = [i - j for i, j in zip(img_param_sm, img_param_bg)]  # correct contributions from background
+        return img_param
 
-    def compute_stokes(img_io, img_raw):
-        chi = img_io.swing * 2 * np.pi  # covert swing from fraction of wavelength to radian
-        I_ext = img_raw[:, :, 0]
-        I_90 = img_raw[:, :, 1]
-        I_135 = img_raw[:, :, 2]
-        I_45 = img_raw[:, :, 3]
+    def reconstruct_img(self, img_param, flipPol=False):
+        if self.method == 'Jones':
+            [I_trans, A, B, dAB] = img_param
+            retard = np.arctan(np.sqrt(A ** 2 + B ** 2))
+            retardNeg = np.pi + np.arctan(
+                np.sqrt(A ** 2 + B ** 2))  # different from Eq. 10 due to the definition of arctan in numpy
+            DeltaMask = dAB >= 0  # Mask term in Eq. 11
+            retard[~DeltaMask] = retardNeg[~DeltaMask]  # Eq. 11
+            retard = retard / (2 * np.pi) * self.wavelength  # convert the unit to [nm]
+            #    azimuth = 0.5*((np.arctan2(A,B)+2*np.pi)%(2*np.pi)) # make azimuth fall in [0,pi]
+            if flipPol:
+                azimuth = (0.5 * np.arctan2(-A, B) + 0.5 * np.pi)  # make azimuth fall in [0,pi]
+            else:
+                azimuth = (0.5 * np.arctan2(A, B) + 0.5 * np.pi)  # make azimuth fall in [0,pi]
+            polarization = np.ones((self.height, self.width))
+        elif self.method == 'Stokes':
+            [s0, s1, s2, s3] = img_param
+            retard = np.arctan2(s3, np.sqrt(s1 ** 2 + s2 ** 2))
+            retard = (retard + np.pi) % np.pi
+            if flipPol:
+                # azimuth = (0.5 * np.arctan2(-s1, s2) + 0.5 * np.pi)  # make azimuth fall in [0,pi]
+                azimuth = 0.5 * ((np.arctan2(-s1, s2) + 2 * np.pi) % (2 * np.pi))
+            else:
+                azimuth = (0.5 * np.arctan2(s1, s2) + 0.5 * np.pi)  # make azimuth fall in [0,pi]
+            polarization = np.sqrt(s1 ** 2 + s2 ** 2 + s3 ** 2)/s0
+        return retard, azimuth, polarization
+
+    def calibrate_inst_mat(self):
+        return
+
+    def compute_stokes(self, img_raw):
+        chi = self.swing
         inst_mat = np.array([[1, 0, 0, -1],
                              [1, np.sin(chi), 0, -np.cos(chi)],
                              [1, 0, np.sin(chi), -np.cos(chi)],
                              [1, -np.sin(chi), 0, -np.cos(chi)],
                              [1, 0, -np.sin(chi), -np.cos(chi)]])
         inst_mat_inv = np.linalg.pinv(inst_mat)
-        img_io.width
-        stokes = np.dot(,
+        img_raw_flat = np.reshape(img_raw,(self.n_chann, self.height*self.width))
+        img_stokes_flat = np.dot(inst_mat_inv, img_raw_flat)
+        img_stokes = np.reshape(img_stokes_flat, (img_stokes_flat.shape[0], self.height, self.width))
+        img_stokes = [img_stokes[i, :, :] for i in range(0, img_stokes.shape[0])]
+        return img_stokes
