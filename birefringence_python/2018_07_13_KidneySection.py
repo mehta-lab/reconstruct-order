@@ -37,8 +37,9 @@ sns.set_context("talk")
 
 
 # In[2]:
-def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=False, bgCorrect=True, flipPol=False):    
-    imgSm = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,flatField=flatField,bgCorrect=bgCorrect) # find background tile
+def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=False, bgCorrect=True, flipPol=False, method='Stokes'):
+    imgSm = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,flatField=flatField,bgCorrect=bgCorrect,
+                           recon_method=method, ff_method='open') # find background tile
     imgSm.loopZ ='sample'
     imgSm = loopPos(imgSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
         
@@ -67,13 +68,15 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 
 RawDataPath = 'C:/Data'
 #
-ProcessedPath = 'C:/Processed/'
+ProcessedPath = 'C:/Processed'
 
-
-
-ImgDir = '2018_10_02_MouseBrainSlice'
+ImgDir = '2018_10_04_RSV_sarah'
 SmDir = 'SMS_2018_0928_1706_1_3'
 BgDir = 'BG_2018_0928_1654_1'
+
+# ImgDir = '2018_10_02_MouseBrainSlice'
+# SmDir = 'SMS_2018_0928_1706_1_3'
+# BgDir = 'BG_2018_0928_1654_1'
 
 # ImgDir = '2018_09_28_U2OS_rainbow'
 # # SmDir = 'SMS_2018_0928_1706_1_3'
@@ -127,15 +130,20 @@ bgCorrect='Auto'
 # Auto: correct the background using background from the metadata  
 flatField = True
 batchProc = True
+recon_method = 'Stokes'
+# recon_method = 'Jones'
+# ProcessedPath = os.path.join('C:/Processed', recon_method)
 if batchProc:
     ImgPath = os.path.join(RawDataPath, ImgDir)
     SmDirList = GetSubDirName(ImgPath)
     for SmDir in SmDirList:
 #        if 'SM' in SmDir or 'BG' in SmDir :
         if 'SM' in SmDir:
-            processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
+            processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=flatField, bgCorrect=bgCorrect,
+                       flipPol=flipPol, method=recon_method)
 else:
-    processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
+    processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=flatField, bgCorrect=bgCorrect,
+               flipPol=flipPol, method=recon_method)
 
 
 

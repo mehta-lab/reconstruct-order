@@ -17,7 +17,8 @@ from utils.imgProcessing import ImgLimit
 
 
 
-def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=False, bgCorrect='Auto', method='open'):
+def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=False, bgCorrect='Auto',
+                   recon_method='Stokes', ff_method='open'):
     """
     Estimate background for each channel to perform background substraction for
     birefringence and flat-field correction (division) for bright-field and 
@@ -55,15 +56,18 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     imgIOBg.posIdx = 0 # assuming only single image for background 
     imgIOBg.tIdx = 0
     imgIOBg.zIdx = 0
+    imgIOBg.recon_method = recon_method
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = ParseTiffInput(imgIOBg) # 0 for z-index
 
-    img_reconstructor = ImgReconstructor(ImgRawBg, method='Stokes', swing=imgIOBg.swing,
-                                         wavelength=imgIOBg.wavelength)
+    img_reconstructor = ImgReconstructor(ImgRawBg, method=recon_method, swing=imgIOBg.swing,
+                                         wavelength=imgIOBg.wavelength, black_level=imgIOBg.blackLevel)
     img_param_bg = img_reconstructor.compute_param(ImgRawBg)
     
     imgIOSm.param_bg = img_param_bg
     imgIOSm.swing = imgIOBg.swing
     imgIOSm.wavelength = imgIOBg.wavelength
+    imgIOSm.blackLevel = imgIOBg.blackLevel
+    imgIOSm.recon_method = recon_method
     imgIOSm.ImgFluorMin  = np.full((4,imgIOBg.height,imgIOBg.width), np.inf) # set initial min array to to be Inf
     imgIOSm.ImgFluorSum  = np.zeros((4,imgIOBg.height,imgIOBg.width)) # set the default background to be Ones (uniform field)
     imgIOSm.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(100,100))  # kernel for image opening operation, 100-200 is usually good 
@@ -74,9 +78,9 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
         print('Calculating illumination function for flatfield correction...')
         imgIOSm = loopPos(imgIOSm, outputChann, flatField=flatField)                                    
         imgIOSm.ImgFluorSum = imgIOSm.ImgFluorSum/imgIOSm.nPos # normalize the sum                     
-        if method=='open':            
+        if ff_method=='open':
             ImgFluorBg = imgIOSm.ImgFluorSum            
-        elif method=='empty':
+        elif ff_method=='empty':
             ImgFluorBg = imgIOSm.ImgFluorMin   
         
         ## compare empty v.s. open method#####
@@ -93,7 +97,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     imgIOSm.ImgFluorBg = ImgFluorBg        
     return imgIOSm               
     
-def loopPos(imgIOSm, outputChann, flatField=False, bgCorrect=True, flipPol=False): 
+def loopPos(imgIOSm, outputChann, flatField=False, bgCorrect=True, flipPol=False):
     """
     Loops through each position in the acquisition folder, and performs flat-field correction.
     
@@ -154,8 +158,9 @@ def loopZSm(imgIO, outputChann, flatField=False, bgCorrect=True, flipPol=False):
     @param bgCorrect: boolean - whether or not background correction is applied.
     @param flipPol: whether or not to flip the sign of polarization.
     @return: None
-    """  
-   
+    """
+    if not os.path.exists(imgIO.ImgOutPath):  # create folder for processed images
+        os.makedirs(imgIO.ImgOutPath)
     
     for zIdx in range(0,imgIO.nZ):
         plt.close("all") # close all the figures from the last run
@@ -163,16 +168,22 @@ def loopZSm(imgIO, outputChann, flatField=False, bgCorrect=True, flipPol=False):
         retardMMSm = np.array([])
         azimuthMMSm = np.array([])     
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = ParseTiffInput(imgIO)
-        img_reconstructor = ImgReconstructor(ImgRawSm, method='Stokes', swing=imgIO.swing,
-                                             wavelength=imgIO.wavelength)
+        img_reconstructor = ImgReconstructor(ImgRawSm, method=imgIO.recon_method, swing=imgIO.swing,
+                                             wavelength=imgIO.wavelength, black_level=imgIO.blackLevel)
         img_param_sm = img_reconstructor.compute_param(ImgRawSm)
+
         if not bgCorrect == 'None':
             img_param_sm = img_reconstructor.correct_background(img_param_sm, imgIO.param_bg, extra=False) # background subtraction
+        titles = ['polarization', 'A', 'B', 'dAB']
+        plot_sub_images(img_param_sm[1:], titles, imgIO)
         I_trans_Sm = img_param_sm[0]
         retard, azimuth, polarization = img_reconstructor.reconstruct_img(img_param_sm,flipPol=flipPol)
         #retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images
         if not ImgBF: # use brightfield calculated from pol-images if there is no brighfield data
             ImgBF = I_trans_Sm
+        else:
+            if flatField:
+                ImgBF = ImgBF / imgIO.param_bg[0]  # flat-field correction
         for i in range(ImgFluor.shape[0]):
             if np.any(ImgFluor[:,:,i]):  # if the flour channel exists   
                 ImgFluor[:,:,i] = ImgFluor[:,:,i]/imgIO.ImgFluorBg[:,:,i]
@@ -180,8 +191,7 @@ def loopZSm(imgIO, outputChann, flatField=False, bgCorrect=True, flipPol=False):
         if ImgProcSm.size:
             retardMMSm =  ImgProcSm[0,:,:]
             azimuthMMSm = ImgProcSm[1,:,:]
-        if flatField:
-            ImgBF = ImgBF/imgIO.I_trans_Bg #flat-field correction
+
                     
             ## compare python v.s. Polacquisition output#####
 #            titles = ['Retardance (MM)','Orientation (MM)','Retardance (Py)','Orientation (Py)']
@@ -191,9 +201,8 @@ def loopZSm(imgIO, outputChann, flatField=False, bgCorrect=True, flipPol=False):
             ##################################################################
 
         imgs = [ImgBF,retard, azimuth, polarization, ImgFluor]
-        if not os.path.exists(imgIO.ImgOutPath): # create folder for processed images
-            os.makedirs(imgIO.ImgOutPath)
-        imgIO, imgs = plot_birefringence(imgIO, imgs, outputChann, spacing=10, vectorScl=2, zoomin=False, dpi=200)
+
+        imgIO, imgs = plot_birefringence(imgIO, imgs, outputChann, spacing=20, vectorScl=2, zoomin=False, dpi=200)
         # imgIO.imgLimits = ImgLimit(imgs,imgIO.imgLimits)
         
         

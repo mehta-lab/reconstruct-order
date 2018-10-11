@@ -170,14 +170,16 @@ def CompositeImg(images):
     return ImgColor
     
 #%%
-def plot_sub_images(images,titles): 
+def plot_sub_images(images,titles,imgInput):
     figSize = (12,12)
+    figName = 'test'
     fig = plt.figure(figsize = figSize)            
     for i in range(4):
         plt.subplot(2,2,i+1),plt.imshow(imadjust(images[i])[0],'gray')
         plt.title(titles[i])
         plt.xticks([]),plt.yticks([])
     plt.show()
+    plt.savefig(os.path.join(imgInput.ImgOutPath, figName), dpi=300)
 
 
 
