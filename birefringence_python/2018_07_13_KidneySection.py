@@ -65,13 +65,18 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 #ImgSmPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_07_03_KidneyTissueSection/SMS_2018_0703_1835_1' # Sample image folder path
 #ImgBgPath = 'C:/Users/Sam Guo/Box Sync/Data/2018_07_03_KidneyTissueSection/BG_2018_0703_1829_1' # Background image folder path                
 
-RawDataPath = 'C:/Data'
+RawDataPath = 'C:/Data/2018_09_07_Optical_Nerve'
 #
 ProcessedPath = 'C:/Processed'
 #
-ImgDir = '20180914_GW20_CUBIC_DAPI'
-SmDir = 'SMS_2018_0914_1748_1'
-BgDir = 'BG_2018_0914_1732_1'
+
+ImgDir = '2018_09_07_Optical_Nerve_-5_4x'
+SmDir = 'SMS_2018_0928_1706_1_3'
+BgDir = 'BG_2018_0907_1609_1'
+
+# ImgDir = '20180914_GW20_CUBIC_DAPI'
+# SmDir = 'SMS_2018_0914_1748_1'
+# BgDir = 'BG_2018_0914_1732_1'
 
 #ImgDir = '20180816_Sample_Test_CUBIC'
 #SmDir = 'SM_2018_0801_1313_1'

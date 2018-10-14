@@ -54,7 +54,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
     IAbs = imBitConvert(IAbs*10**3, bit=16, norm=True) #AU, set norm to False for tiling images    
     retard = imBitConvert(retard*10**3,bit=16) # scale to pm
     azimuth_degree = imBitConvert(azimuth/np.pi*18000,bit=16) # scale to [0, 18000], 100*degree
-    IHsv, IHv= PolColor(IAbs, retard, azimuth_degree)
+    IHsv, IHv= PolColor(IAbs, retard, azimuth_degree, norm=True)
     
 #    DAPI = cv2.convertScaleAbs(DAPI*20)
 #    TdTomato = cv2.convertScaleAbs(TdTomato*2)
@@ -126,17 +126,19 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
     return imgInput, imgDict 
   
 
-def PolColor(IAbs, retard, azimuth):
+def PolColor(IAbs, retard, azimuth, norm=True):
 #    retard = imBitConvert(retard,bit = 8)
 #    retard = imBitConvert(retard,bit = 8)
 #    retard = imadjust(retard)
 #    IAbs = imadjust(IAbs)
    
 #    IAbs = imBitConvert(IAbs,bit = 8)
-#    retard = cv2.convertScaleAbs(retard, alpha=(2**8-1)/np.max(retard))
-#    IAbs = cv2.convertScaleAbs(IAbs, alpha=(2**8-1)/np.max(IAbs))
-    retard = cv2.convertScaleAbs(retard, alpha=0.1)
-    IAbs = cv2.convertScaleAbs(IAbs, alpha=0.1)
+    if norm:
+        retard = cv2.convertScaleAbs(retard, alpha=(2**8-1)/np.max(retard))
+        IAbs = cv2.convertScaleAbs(IAbs, alpha=(2**8-1)/np.max(IAbs))
+    else:
+        retard = cv2.convertScaleAbs(retard, alpha=0.1)
+        IAbs = cv2.convertScaleAbs(IAbs, alpha=0.1)
 #    retard = histequal(retard)
     
     azimuth = cv2.convertScaleAbs(azimuth, alpha=0.01)

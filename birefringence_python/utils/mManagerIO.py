@@ -219,7 +219,7 @@ class mManagerReader(metaclass=ABCMeta):
             self._log_info(msg)
             # add wavelength info perhaps?
             records.append((self.tIdx, self.chanIdx, self.posIdx, zIdx,
-                            cur_fname, self.size_x_um, self.size_y_um, self.size_z_um
+                            cur_fname, self.size_x_um, self.size_y_um, self.size_z_um,
                             self.mean, self.std))
         return records
 

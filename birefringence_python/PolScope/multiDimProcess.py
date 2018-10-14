@@ -195,7 +195,7 @@ def loopZSm(imgIO, outputChann, flatField=False, bgCorrect=True, flipPol=False):
         imgs = [ImgBF,retard, azimuth, ImgFluor]        
         if not os.path.exists(imgIO.ImgOutPath): # create folder for processed images
             os.makedirs(imgIO.ImgOutPath)
-        imgIO, imgs = plot_birefringence(imgIO, imgs,outputChann, spacing=10, vectorScl=10, zoomin=False, dpi=200)
+        imgIO, imgs = plot_birefringence(imgIO, imgs,outputChann, spacing=20, vectorScl=1, zoomin=False, dpi=200)
         # imgIO.imgLimits = ImgLimit(imgs,imgIO.imgLimits)
         
         
