@@ -91,24 +91,32 @@ def ParseTiffInput(img_io):
     zIdx = img_io.zIdx
     for fileName in acquFiles: # load raw images with Sigma0, 1, 2, 3 states, and processed images        
         matchObjRaw = re.match( r'img_000000%03d_(State|PolAcquisition|Zyla_PolState)(\d+)( - Acquired Image|_Confocal40|_Widefield|)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read images with "state" string in the filename
-        matchObjProc = re.match( r'img_000000%03d_(.*) - Computed Image_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read computed images 
-        matchObjFluor = re.match( r'img_000000%03d_Zyla_(Confocal40|Widefield|widefield|BF)_(.*)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read computed images 
-        matchObjBF = re.match( r'img_000000%03d_Zyla_(BF)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read computed images 
-        if matchObjRaw or matchObjProc or matchObjFluor or matchObjBF:
+        matchObjProc = re.match( r'img_000000%03d_(.*) - Computed Image_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read computed images
+        matchObjFluor1 = re.match(
+            r'img_000000%03d_(Zyla|EMCCD)_(Confocal40|Widefield|widefield|BF)_(.*)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I)
+        matchObjFluor2 = re.match(
+            r'img_000000%03d_(Zyla|EMCCD)_(.*)_(Confocal40|Widefield|widefield|BF)_%03d.tif' % (tIdx, zIdx), fileName,
+            re.M | re.I)  # read computed images
+        matchObjBF = re.match( r'img_000000%03d_(Zyla|EMCCD)_(BF)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read computed images
+        if any([matchObjRaw, matchObjProc, matchObjFluor1, matchObjFluor2, matchObjBF]):
             img = loadTiff(acquDirPath, fileName)
+            img -= img_io.blackLevel
             if matchObjRaw:
                 ImgRaw += [img]
             elif matchObjProc:
                 ImgProc += [img]
-            elif matchObjFluor:
-                FluorChannName = matchObjFluor.group(2)
-                if FluorChannName in ['DAPI','405']:
+            elif matchObjFluor1 or matchObjFluor2:
+                if matchObjFluor1:
+                    FluorChannName = matchObjFluor1.group(3)
+                elif matchObjFluor2:
+                    FluorChannName = matchObjFluor2.group(2)
+                if FluorChannName in ['DAPI','405', '405nm']:
                     ImgFluor[0,:,:] = img
-                elif FluorChannName in ['GFP','488']:
+                elif FluorChannName in ['GFP','488', '488nm']:
                     ImgFluor[1,:,:] = img
-                elif FluorChannName in ['TxR','568']:
+                elif FluorChannName in ['TxR', 'TXR', '568', '568nm']:
                     ImgFluor[2,:,:] = img
-                elif FluorChannName in ['Cy5','640']:
+                elif FluorChannName in ['Cy5', 'IFP', '640', '640nm']:
                     ImgFluor[3,:,:] = img
             elif matchObjBF:
                 ImgBF += [img]

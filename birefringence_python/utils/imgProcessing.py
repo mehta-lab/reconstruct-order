@@ -118,7 +118,7 @@ def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
             vd = linScale(src,vin, vout)
             dst = vd
     dst = imBitConvert(dst,bit=bit, norm=True)
-    return dst, vin
+    return dst
 
 def imClip(img, tol=1, bit=16,vin=[0,2**16-1]):
     """

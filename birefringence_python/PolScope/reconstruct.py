@@ -4,8 +4,7 @@ sys.path.append("..") # Add upper level directory to python modules path.
 #from utils.imgCrop import imcrop
 #%%
 class ImgReconstructor:
-    def __init__(self, img_raw_bg, method='Stokes', swing=None, wavelength=532,
-                 black_level = 100):
+    def __init__(self, img_raw_bg, method='Stokes', swing=None, wavelength=532):
         self.img_raw_bg = img_raw_bg
         self.method = method
         self.swing = swing*2*np.pi # covert swing from fraction of wavelength to radian
@@ -13,7 +12,6 @@ class ImgReconstructor:
         self.height = np.shape(img_raw_bg)[1]
         self.width = np.shape(img_raw_bg)[2]
         self.wavelength = wavelength
-        self.black_level = black_level
 
     def compute_param(self, img_raw):
         if self.method == 'Jones':
@@ -26,7 +24,6 @@ class ImgReconstructor:
         assert self.n_chann in [4,5], \
             'reconstruction using Jones calculus only supports 4- or 5- frame algorithm'
         chi = self.swing
-        img_raw = img_raw - self.black_level
         I_ext = img_raw[0,:,:] # Sigma0 in Fig.2
         I_90 = img_raw[1,:,:] # Sigma2 in Fig.2
         I_135 = img_raw[2,:,:] # Sigma4 in Fig.2
@@ -111,13 +108,25 @@ class ImgReconstructor:
 
     def compute_stokes(self, img_raw):
         chi = self.swing
-        img_raw = img_raw - self.black_level
-        img_raw = img_raw[(0, 4, 1, 3, 2), :, :] # order the channel following stokes calculus convention
-        inst_mat = np.array([[1, 0, 0, -1],
-                             [1, np.sin(chi), 0, -np.cos(chi)],
-                             [1, 0, np.sin(chi), -np.cos(chi)],
-                             [1, -np.sin(chi), 0, -np.cos(chi)],
-                             [1, 0, -np.sin(chi), -np.cos(chi)]])
+        I_ext = img_raw[0, :, :]  # Sigma0 in Fig.2
+        I_90 = img_raw[1, :, :]  # Sigma2 in Fig.2
+        I_135 = img_raw[2, :, :]  # Sigma4 in Fig.2
+        I_45 = img_raw[3, :, :]  # Sigma3 in Fig.2
+        polarization = np.ones((self.height, self.width))  # polorization is always 1 for Jones calculus
+        if img_raw.shape[0] == 4:  # if the images were taken using 4-frame scheme
+            img_raw = np.stack((I_ext, I_45, I_90, I_135))  # order the channel following stokes calculus convention
+            inst_mat = np.array([[1, 0, 0, -1],
+                                 [1, 0, np.sin(chi), -np.cos(chi)],
+                                 [1, -np.sin(chi), 0, -np.cos(chi)],
+                                 [1, 0, -np.sin(chi), -np.cos(chi)]])
+        elif img_raw.shape[0] == 5:  # if the images were taken using 5-frame scheme
+            I_0 = img_raw[4, :, :]
+            img_raw = np.stack((I_ext, I_0, I_45, I_90, I_135))  # order the channel following stokes calculus convention
+            inst_mat = np.array([[1, 0, 0, -1],
+                                 [1, np.sin(chi), 0, -np.cos(chi)],
+                                 [1, 0, np.sin(chi), -np.cos(chi)],
+                                 [1, -np.sin(chi), 0, -np.cos(chi)],
+                                 [1, 0, -np.sin(chi), -np.cos(chi)]])
         inst_mat_inv = np.linalg.pinv(inst_mat)
         img_raw_flat = np.reshape(img_raw,(self.n_chann, self.height*self.width))
         img_stokes_flat = np.dot(inst_mat_inv, img_raw_flat)
