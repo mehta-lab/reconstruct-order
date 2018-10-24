@@ -90,7 +90,7 @@ def ParseTiffInput(img_io):
     tIdx = img_io.tIdx
     zIdx = img_io.zIdx
     for fileName in acquFiles: # load raw images with Sigma0, 1, 2, 3 states, and processed images        
-        matchObjRaw = re.match( r'img_000000%03d_(State|PolAcquisition|Zyla_PolState)(\d+)( - Acquired Image|_Confocal40|_Widefield|)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read images with "state" string in the filename
+        matchObjRaw = re.match( r'img_000000%03d_(State|PolAcquisition|Zyla_PolState|EMCCD_PolState)(\d+)( - Acquired Image|_Confocal40|_Widefield|)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read images with "state" string in the filename
         matchObjProc = re.match( r'img_000000%03d_(.*) - Computed Image_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read computed images
         matchObjFluor1 = re.match(
             r'img_000000%03d_(Zyla|EMCCD)_(Confocal40|Widefield|widefield|BF)_(.*)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I)
@@ -114,7 +114,7 @@ def ParseTiffInput(img_io):
                     ImgFluor[0,:,:] = img
                 elif FluorChannName in ['GFP','488', '488nm']:
                     ImgFluor[1,:,:] = img
-                elif FluorChannName in ['TxR', 'TXR', '568', '568nm']:
+                elif FluorChannName in ['TxR', 'TXR', '568', '568nm', '560']:
                     ImgFluor[2,:,:] = img
                 elif FluorChannName in ['Cy5', 'IFP', '640', '640nm']:
                     ImgFluor[3,:,:] = img

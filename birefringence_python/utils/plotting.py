@@ -64,14 +64,14 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
 
         plt.savefig(os.path.join(imgInput.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
 
-    IFluorRetard = CompositeImg([10*retard, ImgFluor[2,:,:]*0.05, ImgFluor[0,:,:]*0.2], norm=norm)
+    IFluorRetard = CompositeImg([100*retard, ImgFluor[2,:,:]*0.05, ImgFluor[1,:,:]*0.01], norm=norm)
 #    images = [I_trans, retard, azimuth_degree, I_azi_ret, I_azi_ret_trans, IFluorRetard]
     I_trans = imBitConvert(I_trans * 10 ** 3, bit=16, norm=norm)  # AU, set norm to False for tiling images
     retard = imBitConvert(retard * 10 ** 3, bit=16)  # scale to pm
     scattering = imBitConvert(scattering * 10 ** 4, bit=16)
     azimuth_degree = imBitConvert(azimuth_degree * 100, bit=16)  # scale to [0, 18000], 100*degree
     imagesTrans = [I_trans, retard, azimuth_degree, scattering, I_azi_ret, I_azi_scat, I_azi_ret_trans] #trasmission channels
-    imagesFluor = [imBitConvert(ImgFluor[i,:,:]*5, bit=16, norm=norm) for i in range(ImgFluor.shape[0])]+[IFluorRetard]
+    imagesFluor = [imBitConvert(ImgFluor[i,:,:], bit=16, norm=norm) for i in range(ImgFluor.shape[0])]+[IFluorRetard]
     
     images = imagesTrans+imagesFluor   
     chNames = ['Transmission', 'Retardance', 'Orientation', 'Scattering',
@@ -93,8 +93,8 @@ def PolColor(I_trans, retard, azimuth, scattering, norm=True):
         # retard = cv2.convertScaleAbs(retard, alpha=(2**8-1)/np.max(retard))
         # I_trans = cv2.convertScaleAbs(I_trans, alpha=(2**8-1)/np.max(I_trans))
     else:
-        retard = cv2.convertScaleAbs(retard, alpha=2)
-        I_trans = cv2.convertScaleAbs(I_trans, alpha=200)
+        retard = cv2.convertScaleAbs(retard, alpha=100)
+        I_trans = cv2.convertScaleAbs(I_trans, alpha=100)
         scattering = cv2.convertScaleAbs(scattering, alpha=2000)
 #    retard = histequal(retard)
     
