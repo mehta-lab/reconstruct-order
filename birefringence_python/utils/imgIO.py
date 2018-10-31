@@ -34,11 +34,17 @@ def FindDirContainPos(ImgPath):
         return ImgPath
 
 
-def loadTiff(acquDirPath, acquFiles):   
+def loadTiff(acquDirPath, acquFiles):
+    """
+    Load single tiff file
+    :param acquDirPath str: directory of the tiff
+    :param acquFiles str: file name of the tiff
+    :return 2D float32 array: image
+    """
     TiffFile = os.path.join(acquDirPath, acquFiles)
-    img = cv2.imread(TiffFile,-1) # flag -1 to perserve the bit dept of the raw image
+    img = cv2.imread(TiffFile,-1) # flag -1 to preserve the bit dept of the raw image
     img = img.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
-    img = img.reshape(img.shape[0], img.shape[1],1)
+    # img = img.reshape(img.shape[0], img.shape[1],1)
     return img
 
 def ParseFileList(acquDirPath):
@@ -68,59 +74,110 @@ def ParseFileList(acquDirPath):
     return PolChan, PolZ, FluorChan, FluorZ
             
         
-def ParseTiffInput(imgInput): # Load the TIFF stack format output by the acquisition software created by Shalin (software name?)
-    acquDirPath = imgInput.ImgPosPath
-    acquFiles = os.listdir(acquDirPath)      
-    ImgRaw = np.array([])
-    ImgProc = np.array([])
-    ImgFluor = np.zeros((imgInput.height,imgInput.width,4))
-    ImgBF = np.array([])
-    tIdx = imgInput.tIdx 
-    zIdx = imgInput.zIdx
+def ParseTiffInput_old(img_io):
+    """
+    Parse tiff file name following mManager/Polacquisition output format
+    :param img_io instance: instance of mManagerIO class holding imaging metadata
+    :return 3D float32 arrays: stack of images parsed based on their imaging modalities with axis order (channel, row,
+    column)
+    """
+    acquDirPath = img_io.ImgPosPath
+    acquFiles = os.listdir(acquDirPath)
+    ImgRaw = []
+    ImgProc = []
+    ImgBF = []
+    ImgFluor = np.zeros((4, img_io.height,img_io.width)) # assuming 4 flour channels for now
+    tIdx = img_io.tIdx
+    zIdx = img_io.zIdx
     for fileName in acquFiles: # load raw images with Sigma0, 1, 2, 3 states, and processed images        
-        matchObjRaw = re.match( r'img_000000%03d_(State|PolAcquisition|Zyla_PolState)(\d+)( - Acquired Image|_Confocal40|_Widefield|)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read images with "state" string in the filename
-        matchObjProc = re.match( r'img_000000%03d_(.*) - Computed Image_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read computed images 
-        matchObjFluor = re.match( r'img_000000%03d_Zyla_(Confocal40|Widefield|widefield|BF)_(.*)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read computed images 
-        matchObjBF = re.match( r'img_000000%03d_Zyla_(BF)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read computed images 
-        if matchObjRaw:            
+        matchObjRaw = re.match( r'img_000000%03d_(State|PolAcquisition|Zyla_PolState|EMCCD_PolState)(\d+)( - Acquired Image|_Confocal40|_Widefield|)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read images with "state" string in the filename
+        matchObjProc = re.match( r'img_000000%03d_(.*) - Computed Image_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read computed images
+        matchObjFluor1 = re.match(
+            r'img_000000%03d_(Zyla|EMCCD)_(Confocal40|Widefield|widefield|BF)_(.*)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I)
+        matchObjFluor2 = re.match(
+            r'img_000000%03d_(Zyla|EMCCD)_(.*)_(Confocal40|Widefield|widefield|BF)_%03d.tif' % (tIdx, zIdx), fileName,
+            re.M | re.I)  # read computed images
+        matchObjBF = re.match( r'img_000000%03d_(Zyla|EMCCD)_(BF)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read computed images
+        if any([matchObjRaw, matchObjProc, matchObjFluor1, matchObjFluor2, matchObjBF]):
             img = loadTiff(acquDirPath, fileName)
-            if ImgRaw.size:            
-                ImgRaw = np.concatenate((ImgRaw, img), axis=2)
-            else:
-                ImgRaw = img
-        elif matchObjProc:
-            img = loadTiff(acquDirPath, fileName)
-            if ImgProc.size:            
-                ImgProc = np.concatenate((ImgProc, img), axis=2)
-            else:
-                ImgProc = img
-        elif matchObjFluor:
-            img = loadTiff(acquDirPath, fileName)
-            img = img.reshape(img.shape[0], img.shape[1])
-            FluorChannName = matchObjFluor.group(2)
-            if FluorChannName in ['DAPI']:
-                ImgFluor[:,:,0] = img
-            elif FluorChannName in ['GFP']:
-                ImgFluor[:,:,1] = img
-            elif FluorChannName in ['TxR']:
-                ImgFluor[:,:,2] = img
-            elif FluorChannName in ['Cy5']:
-                ImgFluor[:,:,3] = img                            
-        elif matchObjBF:
-            img = loadTiff(acquDirPath, fileName)
-            if ImgBF.size:            
-                ImgBF = np.concatenate((ImgBF, img), axis=2)
-            else:
-                ImgBF = img  
+            img -= img_io.blackLevel
+            if matchObjRaw:
+                ImgRaw += [img]
+            elif matchObjProc:
+                ImgProc += [img]
+            elif matchObjFluor1 or matchObjFluor2:
+                if matchObjFluor1:
+                    FluorChannName = matchObjFluor1.group(3)
+                elif matchObjFluor2:
+                    FluorChannName = matchObjFluor2.group(2)
+                if FluorChannName in ['DAPI','405', '405nm']:
+                    ImgFluor[0,:,:] = img
+                elif FluorChannName in ['GFP','488', '488nm']:
+                    ImgFluor[1,:,:] = img
+                elif FluorChannName in ['TxR', 'TXR', '568', '568nm', '560']:
+                    ImgFluor[2,:,:] = img
+                elif FluorChannName in ['Cy5', 'IFP', '640', '640nm']:
+                    ImgFluor[3,:,:] = img
+            elif matchObjBF:
+                ImgBF += [img]
+    if ImgRaw:
+        ImgRaw = np.stack(ImgRaw)
+    if ImgProc:
+        ImgProc = np.stack(ImgProc)
+    if ImgBF:
+        ImgBF = np.stack(ImgBF)
     return ImgRaw, ImgProc, ImgFluor, ImgBF 
 
-def exportImg(imgInput,imgDict):    
-    tIdx = imgInput.tIdx 
-    zIdx = imgInput.zIdx
-    posIdx = imgInput.posIdx
-    for tiffName in imgInput.chNames:
+def parse_tiff_input(img_io):
+    """
+    Parse tiff file name following mManager/Polacquisition output format
+    :param img_io instance: instance of mManagerIO class holding imaging metadata
+    :return 3D float32 arrays: stack of images parsed based on their imaging modalities with axis order (channel, row,
+    column)
+    """
+    acquDirPath = img_io.ImgPosPath
+    acquFiles = os.listdir(acquDirPath)
+    ImgRaw = []
+    ImgProc = []
+    ImgBF = []
+    ImgFluor = np.zeros((4, img_io.height,img_io.width)) # assuming 4 flour channels for now
+    tIdx = img_io.tIdx
+    zIdx = img_io.zIdx
+    for fileName in acquFiles: # load raw images with Sigma0, 1, 2, 3 states, and processed images
+        matchObj = re.match( r'img_000000%03d_(.*)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read images with "state" string in the filename
+        if matchObj:
+            img = loadTiff(acquDirPath, fileName)
+            img -= img_io.blackLevel
+            if any(substring in matchObj.group(1) for substring in ['State', 'Pol']):
+                ImgRaw += [img]
+            elif any(substring in matchObj.group(1) for substring in ['Computed Image']):
+                ImgProc += [img]
+            elif any(substring in matchObj.group(1) for substring in ['Confocal40','Confocal_40', 'Widefield', 'widefield']):
+                if any(substring in matchObj.group(1) for substring in ['DAPI', '405', '405nm']):
+                    ImgFluor[0,:,:] = img
+                elif any(substring in matchObj.group(1) for substring in ['GFP', '488', '488nm']):
+                    ImgFluor[1,:,:] = img
+                elif any(substring in matchObj.group(1) for substring in ['TxR', 'TXR', '568', '568nm', '560']):
+                    ImgFluor[2,:,:] = img
+                elif any(substring in matchObj.group(1) for substring in ['Cy5', 'IFP', '640', '640nm']):
+                    ImgFluor[3,:,:] = img
+            elif any(substring in matchObj.group(1) for substring in ['BF']):
+                ImgBF += [img]
+    if ImgRaw:
+        ImgRaw = np.stack(ImgRaw)
+    if ImgProc:
+        ImgProc = np.stack(ImgProc)
+    if ImgBF:
+        ImgBF = np.stack(ImgBF)
+    return ImgRaw, ImgProc, ImgFluor, ImgBF
+
+def exportImg(img_io,imgDict):
+    tIdx = img_io.tIdx
+    zIdx = img_io.zIdx
+    posIdx = img_io.posIdx
+    for tiffName in img_io.chNames:
         fileName = 'img_'+tiffName+'_t%03d_p%03d_z%03d.tif'%(tIdx, posIdx, zIdx)
         if len(imgDict[tiffName].shape)<3:
-            cv2.imwrite(os.path.join(imgInput.ImgOutPath, fileName), imgDict[tiffName])
+            cv2.imwrite(os.path.join(img_io.ImgOutPath, fileName), imgDict[tiffName])
         else:
-            cv2.imwrite(os.path.join(imgInput.ImgOutPath, fileName), cv2.cvtColor(imgDict[tiffName], cv2.COLOR_RGB2BGR))
+            cv2.imwrite(os.path.join(img_io.ImgOutPath, fileName), cv2.cvtColor(imgDict[tiffName], cv2.COLOR_RGB2BGR))
