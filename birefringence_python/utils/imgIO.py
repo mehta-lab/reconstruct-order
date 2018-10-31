@@ -74,7 +74,7 @@ def ParseFileList(acquDirPath):
     return PolChan, PolZ, FluorChan, FluorZ
             
         
-def ParseTiffInput(img_io):
+def ParseTiffInput_old(img_io):
     """
     Parse tiff file name following mManager/Polacquisition output format
     :param img_io instance: instance of mManagerIO class holding imaging metadata
@@ -127,6 +127,49 @@ def ParseTiffInput(img_io):
     if ImgBF:
         ImgBF = np.stack(ImgBF)
     return ImgRaw, ImgProc, ImgFluor, ImgBF 
+
+def parse_tiff_input(img_io):
+    """
+    Parse tiff file name following mManager/Polacquisition output format
+    :param img_io instance: instance of mManagerIO class holding imaging metadata
+    :return 3D float32 arrays: stack of images parsed based on their imaging modalities with axis order (channel, row,
+    column)
+    """
+    acquDirPath = img_io.ImgPosPath
+    acquFiles = os.listdir(acquDirPath)
+    ImgRaw = []
+    ImgProc = []
+    ImgBF = []
+    ImgFluor = np.zeros((4, img_io.height,img_io.width)) # assuming 4 flour channels for now
+    tIdx = img_io.tIdx
+    zIdx = img_io.zIdx
+    for fileName in acquFiles: # load raw images with Sigma0, 1, 2, 3 states, and processed images
+        matchObj = re.match( r'img_000000%03d_(.*)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read images with "state" string in the filename
+        if matchObj:
+            img = loadTiff(acquDirPath, fileName)
+            img -= img_io.blackLevel
+            if any(substring in matchObj.group(1) for substring in ['State', 'Pol']):
+                ImgRaw += [img]
+            elif any(substring in matchObj.group(1) for substring in ['Computed Image']):
+                ImgProc += [img]
+            elif any(substring in matchObj.group(1) for substring in ['Confocal40','Confocal_40', 'Widefield', 'widefield']):
+                if any(substring in matchObj.group(1) for substring in ['DAPI', '405', '405nm']):
+                    ImgFluor[0,:,:] = img
+                elif any(substring in matchObj.group(1) for substring in ['GFP', '488', '488nm']):
+                    ImgFluor[1,:,:] = img
+                elif any(substring in matchObj.group(1) for substring in ['TxR', 'TXR', '568', '568nm', '560']):
+                    ImgFluor[2,:,:] = img
+                elif any(substring in matchObj.group(1) for substring in ['Cy5', 'IFP', '640', '640nm']):
+                    ImgFluor[3,:,:] = img
+            elif any(substring in matchObj.group(1) for substring in ['BF']):
+                ImgBF += [img]
+    if ImgRaw:
+        ImgRaw = np.stack(ImgRaw)
+    if ImgProc:
+        ImgProc = np.stack(ImgProc)
+    if ImgBF:
+        ImgBF = np.stack(ImgBF)
+    return ImgRaw, ImgProc, ImgFluor, ImgBF
 
 def exportImg(img_io,imgDict):
     tIdx = img_io.tIdx

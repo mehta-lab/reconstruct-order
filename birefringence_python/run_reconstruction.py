@@ -55,13 +55,13 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 RawDataPath = r'D:/Box Sync/Data'
 ProcessedPath = r'D:/Box Sync/Processed'
 
-# ImgDir = '2018_10_12_human_brain_A_beta_C11_TB_10X'
-# SmDir = 'SMS_2018_0928_1706_1_3'
-# BgDir = 'BG_2018_1012_1714_1'
+ImgDir = '2018_10_12_human_brain_NeuN_C11_TB_63X'
+SmDir = 'SMS_2018_1012_1749_1'
+BgDir = 'BG_2018_1012_1902_1'
 
-ImgDir = '2018_10_18_RainbowCells'
-SmDir = 'SMS_2018_1018_1828_1'
-BgDir = 'BG_2018_1018_1900_1'
+# ImgDir = '2018_10_18_RainbowCells'
+# SmDir = 'SMS_2018_1018_1828_1'
+# BgDir = 'BG_2018_1018_1900_1'
 
 # ImgDir = '2018_09_28_U2OS_rainbow'
 # SmDir = 'SM_2018_0928_1644_1'
@@ -107,10 +107,10 @@ BgDir = 'BG_2018_1018_1900_1'
 #BgDir = 'BG_2018_0802_1508_1'
 
 
-# outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
-# 'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence', '488', '568']
 outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
-'Scattering+Orientation', 'Transmission+Retardance+Orientation']
+'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence', '405', '488']
+# outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
+# 'Scattering+Orientation', 'Transmission+Retardance+Orientation']
                             
 # channels to output, see readme for channel names
 flipPol=True # flip the sign of polarization
@@ -118,8 +118,8 @@ bgCorrect='Auto'
 # bgCorrect='Local'
 # Auto: correct the background using background from the metadata  
 flatField = True
-batchProc = False
-norm = False
+batchProc = True
+norm = True
 recon_method = 'Stokes'
 # recon_method = 'Jones'
 # ProcessedPath = os.path.join('C:/Processed', recon_method)

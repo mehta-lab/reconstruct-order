@@ -64,7 +64,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
 
         plt.savefig(os.path.join(imgInput.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
 
-    IFluorRetard = CompositeImg([100*retard, ImgFluor[2,:,:]*0.05, ImgFluor[1,:,:]*0.01], norm=norm)
+    IFluorRetard = CompositeImg([100*retard, ImgFluor[1,:,:]*0.05, ImgFluor[0,:,:]*0.05], norm=norm)
 #    images = [I_trans, retard, azimuth_degree, I_azi_ret, I_azi_ret_trans, IFluorRetard]
     I_trans = imBitConvert(I_trans * 10 ** 3, bit=16, norm=norm)  # AU, set norm to False for tiling images
     retard = imBitConvert(retard * 10 ** 3, bit=16)  # scale to pm
@@ -143,7 +143,7 @@ def plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_sca
 
     ax2 = plt.subplot(2, 3, 2)
     plt.tick_params(labelbottom=False, labelleft=False)  # labels along the bottom edge are off
-    ax_retard = plt.imshow(imClip(retard, tol=5), cmap='gray')
+    ax_retard = plt.imshow(imClip(retard, tol=1), cmap='gray')
     plt.title('Retardance(nm)')
     plt.xticks([]), plt.yticks([])
     divider = make_axes_locatable(ax2)
@@ -161,7 +161,7 @@ def plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_sca
 
     ax4 = plt.subplot(2, 3, 4)
     plt.tick_params(labelbottom=False, labelleft=False)  # labels along the bottom edge are off
-    ax_hv = plt.imshow(imadjust(I_azi_ret, tol=5, bit=8), cmap='hsv')
+    ax_hv = plt.imshow(imadjust(I_azi_ret, tol=1, bit=8), cmap='hsv')
     plt.title('Retardance+Orientation')
     plt.xticks([]), plt.yticks([])
     divider = make_axes_locatable(ax4)
@@ -179,7 +179,7 @@ def plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_sca
 
     ax6 = plt.subplot(2, 3, 6)
     plt.tick_params(labelbottom=False, labelleft=False)  # labels along the bottom edge are off
-    ax_hsv = plt.imshow(imadjust(I_azi_scat, tol=5, bit=8), cmap='hsv')
+    ax_hsv = plt.imshow(imadjust(I_azi_scat, tol=1, bit=8), cmap='hsv')
     # plt.title('Transmission+Retardance\n+Orientation')
     plt.title('Scattering+Orientation')
     plt.xticks([]), plt.yticks([])

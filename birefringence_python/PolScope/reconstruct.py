@@ -120,7 +120,7 @@ class ImgReconstructor:
         I_135 = img_raw[2, :, :]  # Sigma4 in Fig.2
         I_45 = img_raw[3, :, :]  # Sigma3 in Fig.2
         polarization = np.ones((self.height, self.width))  # polorization is always 1 for Jones calculus
-        if img_raw.shape[0] == 5:  # if the images were taken using 4-frame scheme
+        if img_raw.shape[0] == 4:  # if the images were taken using 4-frame scheme
             img_raw = np.stack((I_ext, I_45, I_90, I_135))  # order the channel following stokes calculus convention
             self.n_chann = np.shape(img_raw)[0]
             inst_mat = np.array([[1, 0, 0, -1],

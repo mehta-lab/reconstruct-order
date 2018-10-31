@@ -5,7 +5,7 @@ import re
 import cv2
 #import sys
 #sys.path.append("..") # Adds higher directory to python modules path.
-from utils.imgIO import ParseTiffInput, exportImg, GetSubDirName, FindDirContainPos
+from utils.imgIO import parse_tiff_input, exportImg, GetSubDirName, FindDirContainPos
 from .reconstruct import ImgReconstructor
 from utils.imgProcessing import ImgMin
 from utils.plotting import plot_sub_images
@@ -72,7 +72,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     img_ioBg.tIdx = 0
     img_ioBg.zIdx = 0
     img_ioBg.recon_method = recon_method
-    ImgRawBg, ImgProcBg, ImgFluor, ImgBF = ParseTiffInput(img_ioBg) # 0 for z-index
+    ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_ioBg) # 0 for z-index
 
     img_reconstructor = ImgReconstructor(ImgRawBg, method=recon_method, swing=img_ioBg.swing,
                                          wavelength=img_ioBg.wavelength)
@@ -185,7 +185,7 @@ def loopZSm(img_io, outputChann, flatField=False, bgCorrect=True, flipPol=False,
         img_io.zIdx = zIdx
         retardMMSm = np.array([])
         azimuthMMSm = np.array([])     
-        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = ParseTiffInput(img_io)
+        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
         img_reconstructor = ImgReconstructor(ImgRawSm, method=img_io.recon_method, swing=img_io.swing,
                                              wavelength=img_io.wavelength, kernel=img_io.kernel)
         img_param_sm = img_reconstructor.compute_param(ImgRawSm)
@@ -246,7 +246,7 @@ def loopZSm(img_io, outputChann, flatField=False, bgCorrect=True, flipPol=False,
 def loopZBg(img_io, flatField=False, bgCorrect=True, flipPol=False):
     for zIdx in range(0,1): # only use the first z 
         img_io.zIdx = zIdx
-        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = ParseTiffInput(img_io)
+        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
         for i in range(ImgFluor.shape[0]):
             if np.any(ImgFluor[i,:,:]):  # if the flour channel exists
                 if img_io.ff_method == 'open':
