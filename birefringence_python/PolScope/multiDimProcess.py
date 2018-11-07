@@ -209,7 +209,9 @@ def loopZSm(img_io, outputChann, flatField=False, bgCorrect=True, flipPol=False,
         #retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images
         if isinstance(ImgBF, np.ndarray):
             if flatField:
-                ImgBF = ImgBF / img_io.param_bg[0]  # flat-field correction
+                ImgBF = ImgBF[0,:,:] / img_io.param_bg[0]  # flat-field correction
+            else:
+                ImgBF = ImgBF[0, :, :]
         else:   # use brightfield calculated from pol-images if there is no brightfield data
             ImgBF = I_trans_Sm
 
