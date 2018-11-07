@@ -55,9 +55,13 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 RawDataPath = r'D:/Box Sync/Data'
 ProcessedPath = r'D:/Box Sync/Processed'
 
-ImgDir = '2018_10_12_human_brain_NeuN_C11_TB_63X'
-SmDir = 'SMS_2018_1012_1749_1'
-BgDir = 'BG_2018_1012_1902_1'
+# ImgDir = '2018_09_25_ctx_sagittal_l1cam_vimentin'
+# SmDir = 'SMS_2018_1012_1749_1'
+# BgDir = 'BG_2018_0925_1440_1'
+
+# ImgDir = '2018_10_12_human_brain_NeuN_C11_TB_63X'
+# SmDir = 'SMS_2018_1012_1749_1'
+# BgDir = 'BG_2018_1012_1902_1'
 
 # ImgDir = '2018_10_18_RainbowCells'
 # SmDir = 'SMS_2018_1018_1828_1'
@@ -67,9 +71,9 @@ BgDir = 'BG_2018_1012_1902_1'
 # SmDir = 'SM_2018_0928_1644_1'
 # BgDir = 'BG_2018_0928_1641_1'
 
-# ImgDir = '2018_10_02_MouseBrainSlice'
-# SmDir = 'SMS_2018_0928_1706_1_3'
-# BgDir = 'BG_2018_1002_1625_1'
+ImgDir = '2018_10_02_MouseBrainSlice'
+SmDir = 'SMS_2018_0928_1706_1_3'
+BgDir = 'BG_2018_1002_1625_1'
 
 # ImgDir = '2018_10_02_MouseBrainSlice_3D'
 # SmDir = 'SMS_2018_1002_1714_1'
