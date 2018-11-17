@@ -52,7 +52,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
         if hasattr(img_ioSm, 'bg'):
             if img_ioSm.bg == 'No Background':
                 bgCorrect=='None' # need to pass the flag down
-                BgDir = SmDir  # need a smarter way to deal with different backgroud options
+                BgDir = SmDir  # need a smarter way to deal with different background options
                 img_ioSm.bg_correct = False
                 print('No background correction is performed for background measurements...')
             else:

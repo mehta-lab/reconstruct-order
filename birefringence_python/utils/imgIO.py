@@ -4,8 +4,6 @@ Read and write Tiff in mManager format. Will be replaced by mManagerIO.py
 import os
 import numpy as np
 import glob
-#import seaborn as sns
-#import matplotlib.pyplot as plt
 import re
 import cv2
 #import sys

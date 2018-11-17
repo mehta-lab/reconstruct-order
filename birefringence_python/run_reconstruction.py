@@ -55,9 +55,13 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 RawDataPath = r'D:/Box Sync/Data'
 ProcessedPath = r'D:/Box Sync/Processed'
 
+# ImgDir = '2018_11_01_kidney_slice'
+# SmDir = 'SMS_2018_1101_1713_1_1'
+# BgDir = 'BG_2018_1101_1705_1'
+
 # ImgDir = '2018_09_25_ctx_sagittal_l1cam_vimentin'
-# SmDir = 'SMS_2018_1012_1749_1'
-# BgDir = 'BG_2018_0925_1440_1'
+# SmDir = 'SM_2018_0925_1634_vz_sagittal_colorsandbirefringence_60x_1'
+# BgDir = 'BG_2018_0925_1614_1'
 
 # ImgDir = '2018_10_12_human_brain_NeuN_C11_TB_63X'
 # SmDir = 'SMS_2018_1012_1749_1'
@@ -71,9 +75,9 @@ ProcessedPath = r'D:/Box Sync/Processed'
 # SmDir = 'SM_2018_0928_1644_1'
 # BgDir = 'BG_2018_0928_1641_1'
 
-ImgDir = '2018_10_02_MouseBrainSlice'
-SmDir = 'SMS_2018_0928_1706_1_3'
-BgDir = 'BG_2018_1002_1625_1'
+# ImgDir = '2018_10_02_MouseBrainSlice'
+# SmDir = 'SMS_2018_0928_1706_1_3'
+# BgDir = 'BG_2018_1002_1625_1'
 
 # ImgDir = '2018_10_02_MouseBrainSlice_3D'
 # SmDir = 'SMS_2018_1002_1714_1'
@@ -82,9 +86,9 @@ BgDir = 'BG_2018_1002_1625_1'
 # SmDir = 'SM_2018_0928_1644_1'
 # BgDir = 'BG_2018_0928_1641_1'
 
-#ImgDir = '20180914_GW20_CUBIC_DAPI'
-#SmDir = 'SMS_2018_0914_1748_1'
-#BgDir = 'BG_2018_0914_1732_1'
+ImgDir = '20180914_GW20_CUBIC_DAPI'
+SmDir = 'SMS_2018_0914_1748_1'
+BgDir = 'BG_2018_0914_1732_1'
 
 #ImgDir = '20180816_Sample_Test_CUBIC'
 #SmDir = 'SM_2018_0801_1313_1'
@@ -112,7 +116,7 @@ BgDir = 'BG_2018_1002_1625_1'
 
 
 outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
-'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence', '405', '488']
+'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence', '405', '488', '568', '640']
 # outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
 # 'Scattering+Orientation', 'Transmission+Retardance+Orientation']
                             
@@ -131,8 +135,8 @@ if batchProc:
     ImgPath = os.path.join(RawDataPath, ImgDir)
     SmDirList = GetSubDirName(ImgPath)
     for SmDir in SmDirList:
-       if 'SM' in SmDir or 'BG' in SmDir :
-#         if 'SM' in SmDir:
+       # if 'SM' in SmDir or 'BG' in SmDir :
+        if 'SM' in SmDir:
             processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=flatField, bgCorrect=bgCorrect,
                        flipPol=flipPol, method=recon_method, norm=norm)
 else:
