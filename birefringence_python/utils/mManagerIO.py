@@ -158,7 +158,8 @@ class mManagerReader(metaclass=ABCMeta):
                 self.channel_dir = os.path.join(timepoint_dir,
                                            'channel_{}'.format(chanIdx))
                 os.makedirs(self.channel_dir, exist_ok=True)
-                for posIdx in range(0, 37):  # nXY
+                for posIdx in range(self.nPos):  # nXY
+               # for posIdx in range(0, 37):  # nXY
                     self.posIdx = posIdx
                     cur_records = self.save_each_image2D()                                        
                     records.extend(cur_records)
