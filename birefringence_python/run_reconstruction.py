@@ -28,13 +28,13 @@ Rudolf Oldenbourg, 2003.
 # In[1]:
 
 
-#get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('matplotlib', 'inline')
 from PolScope.multiDimProcess import findBackground, loopPos
 from utils.imgIO import GetSubDirName
-import seaborn as sns
+# import seaborn as sns
 import os
 
-sns.set_context("talk")
+# sns.set_context("talk")
 
 
 # In[2]:
@@ -52,8 +52,8 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 # #
 # ProcessedPath = 'C:/Processed'
 
-RawDataPath = r'D:/Box Sync/Data'
-ProcessedPath = r'D:/Box Sync/Processed'
+RawDataPath = '/data/sguo/Data'
+ProcessedPath = '/data/sguo/Processed'
 
 # ImgDir = '2018_11_01_kidney_slice'
 # SmDir = 'SMS_2018_1101_1713_1_1'
@@ -75,9 +75,11 @@ ProcessedPath = r'D:/Box Sync/Processed'
 # SmDir = 'SM_2018_0928_1644_1'
 # BgDir = 'BG_2018_0928_1641_1'
 
-# ImgDir = '2018_10_02_MouseBrainSlice'
-# SmDir = 'SMS_2018_0928_1706_1_3'
-# BgDir = 'BG_2018_1002_1625_1'
+
+ImgDir = '2018_11_01_kidney_slice'
+SmDir = 'SMS_2018_1101_1906_1'
+BgDir = 'BG_2018_1101_1834_1'
+
 
 # ImgDir = '2018_10_02_MouseBrainSlice_3D'
 # SmDir = 'SMS_2018_1002_1714_1'
@@ -86,9 +88,9 @@ ProcessedPath = r'D:/Box Sync/Processed'
 # SmDir = 'SM_2018_0928_1644_1'
 # BgDir = 'BG_2018_0928_1641_1'
 
-ImgDir = '20180914_GW20_CUBIC_DAPI'
-SmDir = 'SMS_2018_0914_1748_1'
-BgDir = 'BG_2018_0914_1732_1'
+# ImgDir = '20180914_GW20_CUBIC_DAPI'
+# SmDir = 'SMS_2018_0914_1748_1'
+# BgDir = 'BG_2018_0914_1732_1'
 
 #ImgDir = '20180816_Sample_Test_CUBIC'
 #SmDir = 'SM_2018_0801_1313_1'
@@ -116,7 +118,8 @@ BgDir = 'BG_2018_0914_1732_1'
 
 
 outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
-'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence', '405', '488', '568', '640']
+'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence', '405', '488','568']
+
 # outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
 # 'Scattering+Orientation', 'Transmission+Retardance+Orientation']
                             
@@ -125,9 +128,9 @@ flipPol=True # flip the sign of polarization
 bgCorrect='Auto'
 # bgCorrect='Local'
 # Auto: correct the background using background from the metadata  
-flatField = True
+flatField = False
 batchProc = True
-norm = True
+norm = False
 recon_method = 'Stokes'
 # recon_method = 'Jones'
 # ProcessedPath = os.path.join('C:/Processed', recon_method)
