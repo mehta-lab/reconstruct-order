@@ -58,6 +58,7 @@ class mManagerReader(metaclass=ABCMeta):
         self.size_x_um = 6.5/63 # (um) for zyla at 63X
         self.size_y_um = 6.5/63 # (um) for zyla at 63X
         self.size_z_um = metaFile['Summary']['z-step_um']
+        self.time_stamp = metaFile['Summary']['Time']
 #        if not os.path.exists(self.ImgOutPath): # create folder for processed images
 #            os.makedirs(self.ImgOutPath)
         
@@ -92,7 +93,7 @@ class mManagerReader(metaclass=ABCMeta):
     def readmManager(self):
 #        fileName = 'img_000000%03d'+self.chNamesIn[chanIdx]+'_%03d.tif'%(timeIdx,zIdx)
         
-        fileName = 'img_'+self.chNamesIn[self.chanIdx]+'_t%03d_p%03d_z%03d.tif'%(self.tIdx, self.posIdx, self.zIdx)
+        fileName = 'img_'+self.chNamesOut[self.chanIdx]+'_t%03d_p%03d_z%03d.tif'%(self.tIdx, self.posIdx, self.zIdx)
         TiffFile = os.path.join(self.ImgSmPath, fileName)
         img = cv2.imread(TiffFile,-1) # flag -1 to perserve the bit dept of the raw image
 #        img = img.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
@@ -153,13 +154,15 @@ class mManagerReader(metaclass=ABCMeta):
                                          'timepoint_{}'.format(tIdx))
             os.makedirs(timepoint_dir, exist_ok=True)
 
-            for chanIdx in range(self.nChannIn):
+            for chanIdx in range(self.nChannOut):
                 self.chanIdx = chanIdx
                 self.channel_dir = os.path.join(timepoint_dir,
                                            'channel_{}'.format(chanIdx))
                 os.makedirs(self.channel_dir, exist_ok=True)
+
+                # for posIdx in range(0, 37):  # nXY
                 for posIdx in range(self.nPos):  # nXY
-               # for posIdx in range(0, 37):  # nXY
+
                     self.posIdx = posIdx
                     cur_records = self.save_each_image2D()                                        
                     records.extend(cur_records)

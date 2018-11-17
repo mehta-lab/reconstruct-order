@@ -58,7 +58,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
     I_azi_ret_trans, I_azi_ret, I_azi_scat = PolColor(I_trans, retard, azimuth_degree, scattering, norm=norm)
 
     if plot:
-        plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_scat, zoomin=False, spacing=20, vectorScl=1, dpi=300)
+        plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_scat, zoomin=False, spacing=20, vectorScl=5, dpi=300)
         if zoomin:
             figName = 'Transmission+Retardance+Orientation_Zoomin.png'
         else:
@@ -66,7 +66,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
 
         plt.savefig(os.path.join(imgInput.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
 
-    IFluorRetard = CompositeImg([100*retard, ImgFluor[1,:,:]*0.05, ImgFluor[0,:,:]*0.05], norm=norm)
+    IFluorRetard = CompositeImg([100*retard, ImgFluor[2,:,:]*0.05, ImgFluor[1,:,:]*0.05], norm=norm)
 #    images = [I_trans, retard, azimuth_degree, I_azi_ret, I_azi_ret_trans, IFluorRetard]
     I_trans = imBitConvert(I_trans * 10 ** 3, bit=16, norm=norm)  # AU, set norm to False for tiling images
     retard = imBitConvert(retard * 10 ** 3, bit=16)  # scale to pm

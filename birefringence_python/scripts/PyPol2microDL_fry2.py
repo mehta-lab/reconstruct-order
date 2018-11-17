@@ -11,12 +11,12 @@ from utils.mManagerIO import mManagerReader
 RawDataPath = '/data/sguo/Data'
 ProcessedPath = '/data/sguo/Processed'
 
-ImgDir = '2018_07_03_KidneyTissueSection'
-SmDir = 'SMS_2018_0703_1835_1_BG_2018_0703_1829_1'
-
+ImgDir = '2018_11_01_kidney_slice'
+SmDir = 'SMS_2018_1101_1906_1_BG_2018_1101_1906_1'
+outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', '405', '488', '568']
 
 ImgSmPath = os.path.join(ProcessedPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
 
 OutputPath = os.path.join(ImgSmPath,'split_images')
-imgSm = mManagerReader(ImgSmPath,OutputPath)
+imgSm = mManagerReader(ImgSmPath,OutputPath, outputChann)
 imgSm.save_images()
