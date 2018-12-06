@@ -28,13 +28,13 @@ Rudolf Oldenbourg, 2003.
 # In[1]:
 
 
-#get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('matplotlib', 'inline')
 from PolScope.multiDimProcess import findBackground, loopPos
 from utils.imgIO import GetSubDirName
-import seaborn as sns
+# import seaborn as sns
 import os
 
-sns.set_context("talk")
+# sns.set_context("talk")
 
 
 # In[2]:
@@ -52,12 +52,10 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 # #
 # ProcessedPath = 'C:/Processed'
 
-RawDataPath = r'D:/Box Sync/Data'
-ProcessedPath = r'D:/Box Sync/Processed/'
 
-ImgDir = '2018_11_26_Argolight_channel_registration_63X_confocal'
-SmDir = 'SMS_2018_1126_1625_1'
-BgDir = 'BG_2018_1126_1621_1'
+RawDataPath = '/data/sguo/Data'
+ProcessedPath = '/data/sguo/Processed'
+
 
 # ImgDir = '2018_11_01_kidney_slice'
 # SmDir = 'SMS_2018_1101_1713_1_1'
@@ -87,9 +85,11 @@ BgDir = 'BG_2018_1126_1621_1'
 # SmDir = 'SMS_2018_0928_1706_1_3'
 # BgDir = 'BG_2018_0928_1641_1'
 
-# ImgDir = '2018_10_02_MouseBrainSlice'
-# SmDir = 'SMS_2018_0928_1706_1_3'
-# BgDir = 'BG_2018_1002_1625_1'
+
+ImgDir = '2018_11_01_kidney_slice'
+SmDir = 'SMS_2018_1101_1906_1'
+BgDir = 'BG_2018_1101_1834_1'
+
 
 # ImgDir = '2018_10_02_MouseBrainSlice_3D'
 # SmDir = 'SMS_2018_1002_1714_1'
@@ -128,8 +128,10 @@ BgDir = 'BG_2018_1126_1621_1'
 
 
 outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
+
 'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence', 'Retardance+Fluorescence_all',
                '405', '488', '568', '640']
+
 # outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
 # 'Scattering+Orientation', 'Transmission+Retardance+Orientation']
                             
@@ -139,7 +141,9 @@ bgCorrect='Auto'
 # bgCorrect='Local'
 # Auto: correct the background using background from the metadata  
 flatField = False
-batchProc = False
+
+batchProc = True
+
 norm = False
 recon_method = 'Stokes'
 # recon_method = 'Jones'
