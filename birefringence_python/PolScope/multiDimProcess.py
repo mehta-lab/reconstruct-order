@@ -43,7 +43,8 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
         img_ioSm.ImgOutPath = OutputPath
         img_ioSm.bg_correct = True
     elif bgCorrect=='Local':
-        print('Background correction mode set as "Local". Use local background estimated from sample images')
+        print('Background correction mode set as "Local". Additional background correction using local '
+              'background estimated from sample images will be performed')
         OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + SmDir)
         img_ioSm.ImgOutPath = OutputPath
         img_ioSm.bg_method = 'Local'
@@ -52,7 +53,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
         if hasattr(img_ioSm, 'bg'):
             if img_ioSm.bg == 'No Background':
                 bgCorrect=='None' # need to pass the flag down
-                BgDir = SmDir  # need a smarter way to deal with different backgroud options
+                BgDir = SmDir  # need a smarter way to deal with different background options
                 img_ioSm.bg_correct = False
                 print('No background correction is performed for background measurements...')
             else:
@@ -93,12 +94,12 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     if flatField: # find background flourescence for flatField corection 
         print('Calculating illumination function for flatfield correction...')
         img_ioSm = loopPos(img_ioSm, outputChann, flatField=flatField)
-        img_ioSm.ImgFluorSum = img_ioSm.ImgFluorSum/img_ioSm.nPos # normalize the sum
+        img_ioSm.ImgFluorSum = img_ioSm.ImgFluorSum/img_ioSm.nPos # normalize the sum. Add 1 to avoid 0
         if ff_method=='open':
             ImgFluorBg = img_ioSm.ImgFluorSum
         elif ff_method=='empty':
             ImgFluorBg = img_ioSm.ImgFluorMin
-        
+        ImgFluorBg = ImgFluorBg - np.nanmin(ImgFluorBg[:]) + 1
         ## compare empty v.s. open method#####
 #        titles = ['Ch1 (Open)','Ch2 (Open)','Ch1 (Empty)','ch2 (Empty)']
 #        images = [img_ioSm.ImgFluorSum[:,:,0], img_ioSm.ImgFluorSum[:,:,1],
@@ -198,6 +199,7 @@ def loopZSm(img_io, outputChann, flatField=False, bgCorrect=True, flipPol=False,
             print('Estimating local background...')
             for img in img_param_sm:
                 img_param_bg_local += [cv2.GaussianBlur(img, (401, 401), 0)]
+                # img_param_bg_local += [cv2.blur(img, (801, 801))]
             img_param_bg = img_param_bg_local
             img_param_sm = img_reconstructor.correct_background(img_param_sm, img_param_bg, method=img_io.bg_method,
                                                                 extra=False)  # background subtraction
@@ -216,8 +218,10 @@ def loopZSm(img_io, outputChann, flatField=False, bgCorrect=True, flipPol=False,
             ImgBF = I_trans_Sm
 
         for i in range(ImgFluor.shape[0]):
-            if np.any(ImgFluor[:,:,i]):  # if the flour channel exists   
-                ImgFluor[:,:,i] = ImgFluor[:,:,i]/img_io.ImgFluorBg[:,:,i]
+            # print(np.nanmax(ImgFluor[i,:,:][:]))
+            # print(np.nanmin(img_io.ImgFluorBg[i,:,:][:]))
+            if np.any(ImgFluor[i,:,:]):  # if the flour channel exists
+                ImgFluor[i,:,:] = ImgFluor[i,:,:]/img_io.ImgFluorBg[i,:,:]
             
         if isinstance(ImgProcSm, np.ndarray):
             retardMMSm =  ImgProcSm[0,:,:]

@@ -2,6 +2,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import cm
 import cv2
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from utils.imgProcessing import nanRobustBlur,imadjust, imBitConvert, imClip
@@ -56,7 +57,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
     I_azi_ret_trans, I_azi_ret, I_azi_scat = PolColor(I_trans, retard, azimuth_degree, scattering, norm=norm)
 
     if plot:
-        plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_scat, zoomin=False, spacing=20, vectorScl=1, dpi=300)
+        plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_scat, zoomin=False, spacing=20, vectorScl=5, dpi=300)
         if zoomin:
             figName = 'Transmission+Retardance+Orientation_Zoomin.png'
         else:
@@ -64,20 +65,23 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
 
         plt.savefig(os.path.join(imgInput.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
 
-    IFluorRetard = CompositeImg([100*retard, ImgFluor[1,:,:]*0.05, ImgFluor[0,:,:]*0.05], norm=norm)
+    IFluorRetard = CompositeImg([100*retard, ImgFluor[3,:,:]*1, ImgFluor[2,:,:]*1], norm=norm)
+    # I_fluor_all_retard = CompositeImg([100 * retard, ImgFluor[1, :, :] * 0.05, ImgFluor[0, :, :] * 0.05], norm=norm)
+    I_fluor_all_retard = CompositeImg([100 * retard, ImgFluor[3, :, :] * 1, ImgFluor[2, :, :] * 1,
+                                       ImgFluor[1, :, :] * 1, ImgFluor[0, :, :] * 1], norm=norm)
 #    images = [I_trans, retard, azimuth_degree, I_azi_ret, I_azi_ret_trans, IFluorRetard]
     I_trans = imBitConvert(I_trans * 10 ** 3, bit=16, norm=norm)  # AU, set norm to False for tiling images
     retard = imBitConvert(retard * 10 ** 3, bit=16)  # scale to pm
     scattering = imBitConvert(scattering * 10 ** 4, bit=16)
     azimuth_degree = imBitConvert(azimuth_degree * 100, bit=16)  # scale to [0, 18000], 100*degree
     imagesTrans = [I_trans, retard, azimuth_degree, scattering, I_azi_ret, I_azi_scat, I_azi_ret_trans] #trasmission channels
-    imagesFluor = [imBitConvert(ImgFluor[i,:,:], bit=16, norm=norm) for i in range(ImgFluor.shape[0])]+[IFluorRetard]
+    imagesFluor = [imBitConvert(ImgFluor[i,:,:]*500, bit=16, norm=False) for i in range(ImgFluor.shape[0])]+[IFluorRetard, I_fluor_all_retard]
     
     images = imagesTrans+imagesFluor   
     chNames = ['Transmission', 'Retardance', 'Orientation', 'Scattering',
                             'Retardance+Orientation', 'Scattering+Orientation',
                'Transmission+Retardance+Orientation',
-                            '405','488','568','640', 'Retardance+Fluorescence']
+                            '405','488','568','640', 'Retardance+Fluorescence', 'Retardance+Fluorescence_all']
     
     imgDict = dict(zip(chNames, images))
     imgInput.chNames = outputChann
@@ -110,16 +114,30 @@ def PolColor(I_trans, retard, azimuth, scattering, norm=True):
     return I_azi_ret_trans, I_azi_ret, I_azi_scat
 
 def CompositeImg(images, norm=True):
-    assert len(images)==3,'CompositeImg currently only supports 3-channel image'
+    img_num = len(images)
+    hsv_cmap = cm.get_cmap('hsv', 256)
+    color_idx = np.linspace(0, 1, img_num+1)
+    color_idx = color_idx[:-1] # leave out 1, which corresponds color similar to 0
+
     ImgColor = []
+    idx = 0
     for img in images:
         if norm:
-            img8bit = imadjust(img, tol=1, bit=8)
-            # img8bit = cv2.convertScaleAbs(img, alpha=(2**8-1)/np.max(img))
+            img_one_chann = imadjust(img, tol=1, bit=8)
         else:
-            img8bit = cv2.convertScaleAbs(img, alpha=1)
-        ImgColor +=[img8bit]
-    ImgColor = np.stack(ImgColor,axis=2)
+            img_one_chann = imBitConvert(img, bit=8, norm=False)
+
+        img_one_chann = img_one_chann.astype(np.float32,
+                                             copy=False)  # convert to float32 without making a copy to save memory
+        img_one_chann_rgb = [img_one_chann * hsv_cmap(color_idx[idx])[0], img_one_chann * hsv_cmap(color_idx[idx])[1],
+                             img_one_chann * hsv_cmap(color_idx[idx])[2]]
+        img_one_chann_rgb = np.stack(img_one_chann_rgb, axis=2)
+        ImgColor +=[img_one_chann_rgb]
+        idx += 1
+    ImgColor = np.stack(ImgColor)
+    ImgColor = np.sum(ImgColor, axis=0)
+    ImgColor = imBitConvert(ImgColor, bit=8, norm=False)
+
     return ImgColor
     
 #%%

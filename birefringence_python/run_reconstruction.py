@@ -53,11 +53,27 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 # ProcessedPath = 'C:/Processed'
 
 RawDataPath = r'D:/Box Sync/Data'
-ProcessedPath = r'D:/Box Sync/Processed'
+ProcessedPath = r'D:/Box Sync/Processed/'
 
-# ImgDir = '2018_09_25_ctx_sagittal_l1cam_vimentin'
-# SmDir = 'SMS_2018_1012_1749_1'
-# BgDir = 'BG_2018_0925_1440_1'
+ImgDir = '2018_11_26_Argolight_channel_registration_63X_confocal'
+SmDir = 'SMS_2018_1126_1625_1'
+BgDir = 'BG_2018_1126_1621_1'
+
+# ImgDir = '2018_11_01_kidney_slice'
+# SmDir = 'SMS_2018_1101_1713_1_1'
+# BgDir = 'BG_2018_1101_1705_1'
+
+# ImgDir = '2018_11_20_488ALDH1L1_594IBA1_647GFAP_63X'
+# SmDir = 'SMS_2018_1120_1637_1_1'
+# BgDir = 'BG_2018_1120_1650_1'
+
+# ImgDir = '2018_11_20_594CTIP2_647SATB2'
+# SmDir = 'SMS_2018_1120_1528_1_1'
+# BgDir = 'BG_2018_1120_1510_1'
+
+# ImgDir = '2018_11_20_488L1CAM_594VIM'
+# SmDir = 'SMS_2018_1120_1557_1_1'
+# BgDir = 'BG_2018_1120_1537_1'
 
 # ImgDir = '2018_10_12_human_brain_NeuN_C11_TB_63X'
 # SmDir = 'SMS_2018_1012_1749_1'
@@ -68,12 +84,12 @@ ProcessedPath = r'D:/Box Sync/Processed'
 # BgDir = 'BG_2018_1018_1900_1'
 
 # ImgDir = '2018_09_28_U2OS_rainbow'
-# SmDir = 'SM_2018_0928_1644_1'
+# SmDir = 'SMS_2018_0928_1706_1_3'
 # BgDir = 'BG_2018_0928_1641_1'
 
-ImgDir = '2018_10_02_MouseBrainSlice'
-SmDir = 'SMS_2018_0928_1706_1_3'
-BgDir = 'BG_2018_1002_1625_1'
+# ImgDir = '2018_10_02_MouseBrainSlice'
+# SmDir = 'SMS_2018_0928_1706_1_3'
+# BgDir = 'BG_2018_1002_1625_1'
 
 # ImgDir = '2018_10_02_MouseBrainSlice_3D'
 # SmDir = 'SMS_2018_1002_1714_1'
@@ -82,9 +98,9 @@ BgDir = 'BG_2018_1002_1625_1'
 # SmDir = 'SM_2018_0928_1644_1'
 # BgDir = 'BG_2018_0928_1641_1'
 
-#ImgDir = '20180914_GW20_CUBIC_DAPI'
-#SmDir = 'SMS_2018_0914_1748_1'
-#BgDir = 'BG_2018_0914_1732_1'
+# ImgDir = '20180914_GW20_CUBIC_DAPI'
+# SmDir = 'SMS_2018_0914_1748_1'
+# BgDir = 'BG_2018_0914_1732_1'
 
 #ImgDir = '20180816_Sample_Test_CUBIC'
 #SmDir = 'SM_2018_0801_1313_1'
@@ -112,7 +128,8 @@ BgDir = 'BG_2018_1002_1625_1'
 
 
 outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
-'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence', '405', '488']
+'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence', 'Retardance+Fluorescence_all',
+               '405', '488', '568', '640']
 # outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
 # 'Scattering+Orientation', 'Transmission+Retardance+Orientation']
                             
@@ -121,9 +138,9 @@ flipPol=True # flip the sign of polarization
 bgCorrect='Auto'
 # bgCorrect='Local'
 # Auto: correct the background using background from the metadata  
-flatField = True
-batchProc = True
-norm = True
+flatField = False
+batchProc = False
+norm = False
 recon_method = 'Stokes'
 # recon_method = 'Jones'
 # ProcessedPath = os.path.join('C:/Processed', recon_method)
@@ -131,8 +148,8 @@ if batchProc:
     ImgPath = os.path.join(RawDataPath, ImgDir)
     SmDirList = GetSubDirName(ImgPath)
     for SmDir in SmDirList:
-       if 'SM' in SmDir or 'BG' in SmDir :
-#         if 'SM' in SmDir:
+       # if 'SM' in SmDir or 'BG' in SmDir :
+        if 'SM' in SmDir:
             processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=flatField, bgCorrect=bgCorrect,
                        flipPol=flipPol, method=recon_method, norm=norm)
 else:
