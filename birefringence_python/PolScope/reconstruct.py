@@ -1,8 +1,8 @@
 import numpy as np
 import sys
 import cv2
-from utils.plotting import plot_sub_images
-from scipy.ndimage.filters import median_filter
+# from utils.plotting import plot_sub_images
+# from scipy.ndimage.filters import median_filter
 
 sys.path.append("..") # Add upper level directory to python modules path.
 #from utils.imgCrop import imcrop
@@ -121,9 +121,9 @@ class ImgReconstructor:
         I_90 = img_raw[1, :, :]  # Sigma2 in Fig.2
         I_135 = img_raw[2, :, :]  # Sigma4 in Fig.2
         I_45 = img_raw[3, :, :]  # Sigma3 in Fig.2
-        images = [I_ext, I_90, I_135, I_45]
-        titles = ['I_ext', 'I_90', 'I_135', 'I_45']
-        plot_sub_images(images, titles, self.output_path, 'raw')
+        # images = [I_ext, I_90, I_135, I_45]
+        # titles = ['I_ext', 'I_90', 'I_135', 'I_45']
+        # plot_sub_images(images, titles, self.output_path, 'raw')
         polarization = np.ones((self.height, self.width))  # polorization is always 1 for Jones calculus
         if img_raw.shape[0] == 4:  # if the images were taken using 4-frame scheme
             img_raw = np.stack((I_ext, I_45, I_90, I_135))  # order the channel following stokes calculus convention
