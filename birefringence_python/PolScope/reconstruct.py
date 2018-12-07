@@ -146,9 +146,9 @@ class ImgReconstructor:
         img_stokes_flat = np.dot(inst_mat_inv, img_raw_flat)
         img_stokes = np.reshape(img_stokes_flat, (img_stokes_flat.shape[0], self.height, self.width))
         [s0, s1, s2, s3] = [img_stokes[i, :, :] for i in range(0, img_stokes.shape[0])]
-        images = [s0, s1, s2, s3]
-        titles = ['s0', 's1', 's2', 's3']
-        plot_sub_images(images, titles, self.output_path, 'stokes')
+        # images = [s0, s1, s2, s3]
+        # titles = ['s0', 's1', 's2', 's3']
+        # plot_sub_images(images, titles, self.output_path, 'stokes')
         A = s1/s3
         B = -s2/s3
         I_trans = s0

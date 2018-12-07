@@ -52,8 +52,8 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 # #
 # ProcessedPath = 'C:/Processed'
 
-
-RawDataPath = '/data/sguo/Data'
+RawDataPath = '/home/sguo/flexo/AdvancedOpticalMicroscopy/SpinningDisk/RawData/brainarchitecture'
+# RawDataPath = '/data/sguo/Data'
 ProcessedPath = '/data/sguo/Processed'
 
 # RawDataPath = r'D:/Box Sync/Data'
@@ -66,9 +66,9 @@ ProcessedPath = '/data/sguo/Processed'
 # SmDir = 'SMS_2018_1120_1637_1_1'
 # BgDir = 'BG_2018_1120_1650_1'
 
-# ImgDir = '2018_11_20_594CTIP2_647SATB2'
-# SmDir = 'SMS_2018_1120_1528_1_1'
-# BgDir = 'BG_2018_1120_1510_1'
+ImgDir = '2018_11_28_594CTIP2_647SATB2_10X'
+SmDir = 'SMS_2018_1128_1557_1_3'
+BgDir = 'BG_2018_1120_1509_1'
 
 # ImgDir = '2018_11_20_488L1CAM_594VIM'
 # SmDir = 'SMS_2018_1120_1557_1_1'
@@ -131,7 +131,7 @@ BgDir = 'BG_2018_1101_1834_1'
 outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
 
 'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence', 'Retardance+Fluorescence_all',
-               '405', '488', '568', '640']
+               '405', '568', '640']
 
 # outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
 # 'Scattering+Orientation', 'Transmission+Retardance+Orientation']
@@ -141,9 +141,9 @@ flipPol=True # flip the sign of polarization
 bgCorrect='Auto'
 # bgCorrect='Local'
 # Auto: correct the background using background from the metadata  
-flatField = False
+flatField = True
 
-batchProc = False
+batchProc = True
 
 norm = False
 recon_method = 'Stokes'
