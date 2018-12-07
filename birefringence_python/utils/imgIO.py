@@ -81,7 +81,7 @@ def ParseTiffInput_old(img_io):
     """
     acquDirPath = img_io.ImgPosPath
     acquFiles = os.listdir(acquDirPath)
-    ImgRaw = []
+    ImgPol = []
     ImgProc = []
     ImgBF = []
     ImgFluor = np.zeros((4, img_io.height,img_io.width)) # assuming 4 flour channels for now
@@ -100,7 +100,7 @@ def ParseTiffInput_old(img_io):
             img = loadTiff(acquDirPath, fileName)
             img -= img_io.blackLevel
             if matchObjRaw:
-                ImgRaw += [img]
+                ImgPol += [img]
             elif matchObjProc:
                 ImgProc += [img]
             elif matchObjFluor1 or matchObjFluor2:
@@ -118,13 +118,13 @@ def ParseTiffInput_old(img_io):
                     ImgFluor[3,:,:] = img
             elif matchObjBF:
                 ImgBF += [img]
-    if ImgRaw:
-        ImgRaw = np.stack(ImgRaw)
+    if ImgPol:
+        ImgPol = np.stack(ImgPol)
     if ImgProc:
         ImgProc = np.stack(ImgProc)
     if ImgBF:
         ImgBF = np.stack(ImgBF)
-    return ImgRaw, ImgProc, ImgFluor, ImgBF 
+    return ImgPol, ImgProc, ImgFluor, ImgBF
 
 def parse_tiff_input(img_io):
     """
@@ -135,7 +135,7 @@ def parse_tiff_input(img_io):
     """
     acquDirPath = img_io.ImgPosPath
     acquFiles = os.listdir(acquDirPath)
-    ImgRaw = []
+    ImgPol = np.zeros((4, img_io.height,img_io.width)) # pol channels has minimum 4 channels
     ImgProc = []
     ImgBF = []
     ImgFluor = np.zeros((4, img_io.height,img_io.width)) # assuming 4 flour channels for now
@@ -147,7 +147,17 @@ def parse_tiff_input(img_io):
             img = loadTiff(acquDirPath, fileName)
             img -= img_io.blackLevel
             if any(substring in matchObj.group(1) for substring in ['State', 'Pol']):
-                ImgRaw += [img]
+                if 'State0' in matchObj.group(1):
+                    ImgPol[0, :, :] = img
+                elif 'State1' in matchObj.group(1):
+                    ImgPol[1, :, :] = img
+                elif 'State2' in matchObj.group(1):
+                    ImgPol[2, :, :] = img
+                elif 'State3' in matchObj.group(1):
+                    ImgPol[3, :, :] = img
+                elif 'State4' in matchObj.group(1):
+                    img = np.reshape(img, (1, -1))
+                    ImgPol = np.concatenate((ImgPol, img))
             elif any(substring in matchObj.group(1) for substring in ['Computed Image']):
                 ImgProc += [img]
             elif any(substring in matchObj.group(1) for substring in ['Confocal40','Confocal_40', 'Widefield', 'widefield']):
@@ -161,13 +171,13 @@ def parse_tiff_input(img_io):
                     ImgFluor[3,:,:] = img
             elif any(substring in matchObj.group(1) for substring in ['BF']):
                 ImgBF += [img]
-    if ImgRaw:
-        ImgRaw = np.stack(ImgRaw)
+    if ImgPol:
+        ImgPol = np.stack(ImgPol)
     if ImgProc:
         ImgProc = np.stack(ImgProc)
     if ImgBF:
         ImgBF = np.stack(ImgBF)
-    return ImgRaw, ImgProc, ImgFluor, ImgBF
+    return ImgPol, ImgProc, ImgFluor, ImgBF
 
 def exportImg(img_io,imgDict):
     tIdx = img_io.tIdx

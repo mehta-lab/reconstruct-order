@@ -78,7 +78,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_ioBg) # 0 for z-index
 
     img_reconstructor = ImgReconstructor(ImgRawBg, method=recon_method, swing=img_ioBg.swing,
-                                         wavelength=img_ioBg.wavelength)
+                                         wavelength=img_ioBg.wavelength, output_path=img_ioBg.ImgOutPath)
     img_param_bg = img_reconstructor.compute_param(ImgRawBg)
     
     img_ioSm.param_bg = img_param_bg
@@ -191,7 +191,7 @@ def loopZSm(img_io, outputChann, flatField=False, bgCorrect=True, flipPol=False,
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
 
         img_reconstructor = ImgReconstructor(ImgRawSm, method=img_io.recon_method, swing=img_io.swing,
-                                             wavelength=img_io.wavelength, kernel=img_io.kernel)
+                                             wavelength=img_io.wavelength, kernel=img_io.kernel, output_path=img_io.ImgOutPath)
         img_param_sm = img_reconstructor.compute_param(ImgRawSm)
 
         if img_io.bg_correct:
