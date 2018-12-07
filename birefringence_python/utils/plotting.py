@@ -213,9 +213,13 @@ def plot_sub_images(images,titles, ImgOutPath, figName):
     figSize = (12,12)
     fig = plt.figure(figsize = figSize)            
     for i in range(4):
-        plt.subplot(2,2,i+1),plt.imshow(imadjust(images[i]),'gray')
+        ax_p = plt.subplot(2,2,i+1)
+        ax_i = plt.imshow(imadjust(images[i]),'gray')
         plt.title(titles[i])
         plt.xticks([]),plt.yticks([])
+        divider = make_axes_locatable(ax_p)
+        cax = divider.append_axes('right', size='5%', pad=0.05)
+        cbar = fig.colorbar(ax_i, cax=cax, orientation='vertical')
     plt.show()
     plt.savefig(os.path.join(ImgOutPath, figName), dpi=300, bbox_inches='tight')
 
