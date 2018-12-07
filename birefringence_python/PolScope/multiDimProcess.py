@@ -189,6 +189,7 @@ def loopZSm(img_io, outputChann, flatField=False, bgCorrect=True, flipPol=False,
         retardMMSm = np.array([])
         azimuthMMSm = np.array([])     
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
+
         img_reconstructor = ImgReconstructor(ImgRawSm, method=img_io.recon_method, swing=img_io.swing,
                                              wavelength=img_io.wavelength, kernel=img_io.kernel)
         img_param_sm = img_reconstructor.compute_param(ImgRawSm)

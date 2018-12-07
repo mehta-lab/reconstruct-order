@@ -87,7 +87,7 @@ ProcessedPath = '/data/sguo/Processed'
 
 
 ImgDir = '2018_11_01_kidney_slice'
-SmDir = 'SMS_2018_1101_1906_1'
+SmDir = 'SM_2018_1101_1835_1'
 BgDir = 'BG_2018_1101_1834_1'
 
 
@@ -142,7 +142,7 @@ bgCorrect='Auto'
 # Auto: correct the background using background from the metadata  
 flatField = False
 
-batchProc = True
+batchProc = False
 
 norm = False
 recon_method = 'Stokes'

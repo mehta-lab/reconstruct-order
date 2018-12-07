@@ -1,6 +1,7 @@
 import numpy as np
 import sys
 import cv2
+from utils.plotting import plot_sub_images
 from scipy.ndimage.filters import median_filter
 
 sys.path.append("..") # Add upper level directory to python modules path.
@@ -119,6 +120,9 @@ class ImgReconstructor:
         I_90 = img_raw[1, :, :]  # Sigma2 in Fig.2
         I_135 = img_raw[2, :, :]  # Sigma4 in Fig.2
         I_45 = img_raw[3, :, :]  # Sigma3 in Fig.2
+        images = [I_ext, I_90, I_135, I_45]
+        titles = ['I_ext', 'I_90', 'I_135', 'I_45']
+        plot_sub_images(images, titles, '/data/sguo/Processed/2018_11_01_kidney_slice_linux', 'raw')
         polarization = np.ones((self.height, self.width))  # polorization is always 1 for Jones calculus
         if img_raw.shape[0] == 4:  # if the images were taken using 4-frame scheme
             img_raw = np.stack((I_ext, I_45, I_90, I_135))  # order the channel following stokes calculus convention
@@ -141,6 +145,9 @@ class ImgReconstructor:
         img_stokes_flat = np.dot(inst_mat_inv, img_raw_flat)
         img_stokes = np.reshape(img_stokes_flat, (img_stokes_flat.shape[0], self.height, self.width))
         [s0, s1, s2, s3] = [img_stokes[i, :, :] for i in range(0, img_stokes.shape[0])]
+        images = [s0, s1, s2, s3]
+        titles = ['s0', 's1', 's2', 's3']
+        plot_sub_images(images, titles, '/data/sguo/Processed/2018_11_01_kidney_slice_linux', 'stokes')
         A = s1/s3
         B = -s2/s3
         I_trans = s0
