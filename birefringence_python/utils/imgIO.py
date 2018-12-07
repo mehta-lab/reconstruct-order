@@ -156,7 +156,7 @@ def parse_tiff_input(img_io):
                 elif 'State3' in matchObj.group(1):
                     ImgPol[3, :, :] = img
                 elif 'State4' in matchObj.group(1):
-                    img = np.reshape(img, (1, -1))
+                    img = np.reshape(img, (1, img_io.height, img_io.width))
                     ImgPol = np.concatenate((ImgPol, img))
             elif any(substring in matchObj.group(1) for substring in ['Computed Image']):
                 ImgProc += [img]
@@ -171,8 +171,7 @@ def parse_tiff_input(img_io):
                     ImgFluor[3,:,:] = img
             elif any(substring in matchObj.group(1) for substring in ['BF']):
                 ImgBF += [img]
-    if ImgPol:
-        ImgPol = np.stack(ImgPol)
+
     if ImgProc:
         ImgProc = np.stack(ImgProc)
     if ImgBF:

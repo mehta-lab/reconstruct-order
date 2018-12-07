@@ -53,12 +53,11 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 # ProcessedPath = 'C:/Processed'
 
 
-RawDataPath = '/data/sguo/Data'
-ProcessedPath = '/data/sguo/Processed'
+# RawDataPath = '/data/sguo/Data'
+# ProcessedPath = '/data/sguo/Processed'
 
-# RawDataPath = r'D:/Box Sync/Data'
-# ProcessedPath = r'D:/Box Sync/Processed/'
-
+RawDataPath = r'D:/Box Sync/Data'
+ProcessedPath = r'D:/Box Sync/Processed/'
 # ImgDir = '2018_11_01_kidney_slice'
 # SmDir = 'SMS_2018_1101_1713_1_1'
 # BgDir = 'BG_2018_1101_1705_1'
