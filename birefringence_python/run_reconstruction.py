@@ -62,6 +62,10 @@ ProcessedPath = '/data/sguo/Processed'
 # SmDir = 'SMS_2018_1101_1713_1_1'
 # BgDir = 'BG_2018_1101_1705_1'
 
+# ImgDir = '2018_11_26_Argolight_channel_registration_63X_confocal'
+# SmDir = 'SMS_2018_1126_1625_1'
+# BgDir = 'BG_2018_1126_1621_1'
+
 # ImgDir = '2018_11_20_488ALDH1L1_594IBA1_647GFAP_63X'
 # SmDir = 'SMS_2018_1120_1637_1_1'
 # BgDir = 'BG_2018_1120_1650_1'
