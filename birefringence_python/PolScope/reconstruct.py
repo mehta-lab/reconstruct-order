@@ -1,14 +1,15 @@
 import numpy as np
 import sys
 import cv2
-from scipy.ndimage.filters import median_filter
+# from utils.plotting import plot_sub_images
+# from scipy.ndimage.filters import median_filter
 
 sys.path.append("..") # Add upper level directory to python modules path.
 #from utils.imgCrop import imcrop
 #%%
 class ImgReconstructor:
     def __init__(self, img_raw_bg, method='Stokes', swing=None, wavelength=532,
-                 kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (100, 100))):
+                 kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (100, 100)), output_path=None):
         self.img_raw_bg = img_raw_bg
         self.method = method
         self.swing = swing*2*np.pi # covert swing from fraction of wavelength to radian
@@ -17,6 +18,7 @@ class ImgReconstructor:
         self.width = np.shape(img_raw_bg)[2]
         self.wavelength = wavelength
         self.kernel = kernel
+        self.output_path = output_path
 
     def compute_param(self, img_raw):
         if self.method == 'Jones':
@@ -119,6 +121,9 @@ class ImgReconstructor:
         I_90 = img_raw[1, :, :]  # Sigma2 in Fig.2
         I_135 = img_raw[2, :, :]  # Sigma4 in Fig.2
         I_45 = img_raw[3, :, :]  # Sigma3 in Fig.2
+        # images = [I_ext, I_90, I_135, I_45]
+        # titles = ['I_ext', 'I_90', 'I_135', 'I_45']
+        # plot_sub_images(images, titles, self.output_path, 'raw')
         polarization = np.ones((self.height, self.width))  # polorization is always 1 for Jones calculus
         if img_raw.shape[0] == 4:  # if the images were taken using 4-frame scheme
             img_raw = np.stack((I_ext, I_45, I_90, I_135))  # order the channel following stokes calculus convention
@@ -141,6 +146,9 @@ class ImgReconstructor:
         img_stokes_flat = np.dot(inst_mat_inv, img_raw_flat)
         img_stokes = np.reshape(img_stokes_flat, (img_stokes_flat.shape[0], self.height, self.width))
         [s0, s1, s2, s3] = [img_stokes[i, :, :] for i in range(0, img_stokes.shape[0])]
+        # images = [s0, s1, s2, s3]
+        # titles = ['s0', 's1', 's2', 's3']
+        # plot_sub_images(images, titles, self.output_path, 'stokes')
         A = s1/s3
         B = -s2/s3
         I_trans = s0

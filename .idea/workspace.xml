@@ -5,12 +5,9 @@
     <bookmark url="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py" line="79" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="213a1158-0346-4162-98ad-6788db62b436" name="Default Changelist" comment="update mManagerIO">
+    <list default="true" id="213a1158-0346-4162-98ad-6788db62b436" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" beforeDir="false" afterPath="$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/birefringence_python/utils/imgProcessing.py" beforeDir="false" afterPath="$PROJECT_DIR$/birefringence_python/utils/imgProcessing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/birefringence_python/utils/plotting.py" beforeDir="false" afterPath="$PROJECT_DIR$/birefringence_python/utils/plotting.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -40,29 +37,31 @@
     <session id="1180832588">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="7" />
+          <entry key="project.closed" value="8" />
           <entry key="project.open.time.1" value="2" />
           <entry key="project.open.time.10" value="1" />
           <entry key="project.open.time.11" value="1" />
           <entry key="project.open.time.12" value="1" />
           <entry key="project.open.time.15" value="1" />
-          <entry key="project.open.time.2" value="2" />
+          <entry key="project.open.time.2" value="3" />
           <entry key="project.open.time.3" value="1" />
           <entry key="project.open.time.6" value="2" />
           <entry key="project.open.time.7" value="1" />
-          <entry key="project.opened" value="12" />
+          <entry key="project.opened" value="13" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="34" />
+          <entry key="md" value="1" />
+          <entry key="py" value="41" />
           <entry key="tif" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Image" value="2" />
-          <entry key="Python" value="34" />
+          <entry key="Markdown" value="1" />
+          <entry key="Python" value="41" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -71,20 +70,23 @@
           <entry key="Unnamed" value="107" />
           <entry key="dummy" value="18" />
           <entry key="list_modules" value="103" />
-          <entry key="py" value="3675" />
-          <entry key="run_reconstruction" value="29" />
-          <entry key="txt" value="481" />
+          <entry key="md" value="1000" />
+          <entry key="py" value="4064" />
+          <entry key="run_reconstruction" value="107" />
+          <entry key="txt" value="640" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="499" />
-          <entry key="Python" value="4203" />
+          <entry key="Markdown" value="1000" />
+          <entry key="PLAIN_TEXT" value="658" />
+          <entry key="Python" value="4670" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
         <counts>
           <entry key="git.branch.checkout.local" value="2" />
+          <entry key="git.branch.delete.local" value="1" />
         </counts>
       </usages-collector>
     </session>
@@ -97,8 +99,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1748">
-              <caret line="95" column="19" selection-start-line="95" selection-start-column="19" selection-end-line="95" selection-end-column="19" />
+            <state relative-caret-position="2964">
+              <caret line="156" column="49" lean-forward="true" selection-start-line="156" selection-start-column="49" selection-end-line="156" selection-end-column="49" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -109,8 +111,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgIO.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-281">
-              <caret line="114" column="74" selection-start-line="114" selection-start-column="74" selection-end-line="114" selection-end-column="74" />
+            <state relative-caret-position="3287">
+              <caret line="173" selection-start-line="173" selection-end-line="173" />
               <folding>
                 <element signature="e#83#92#0" expanded="true" />
               </folding>
@@ -119,22 +121,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/birefringence_python/utils/mManagerIO.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="835">
-              <caret line="88" selection-start-line="88" selection-end-line="88" />
-              <folding>
-                <element signature="e#85#124#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="379">
-              <caret line="222" column="52" lean-forward="true" selection-start-line="222" selection-start-column="52" selection-end-line="222" selection-end-column="52" />
+            <state relative-caret-position="228">
+              <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -142,14 +132,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/birefringence_python/scripts/PyPol2microDL_fry2.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="380">
-              <caret line="20" column="56" selection-start-line="20" selection-start-column="56" selection-end-line="20" selection-end-column="56" />
-              <folding>
-                <element signature="e#86#95#0" expanded="true" />
-              </folding>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="437">
+                <caret line="23" column="68" lean-forward="true" selection-start-line="23" selection-start-column="68" selection-end-line="23" selection-end-column="68" />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -157,20 +147,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2109">
-              <caret line="111" column="30" lean-forward="true" selection-start-line="111" selection-start-column="30" selection-end-line="111" selection-end-column="30" />
+            <state relative-caret-position="-249">
+              <caret line="2" column="16" lean-forward="true" selection-start-line="1" selection-end-line="2" selection-end-column="16" />
               <folding>
-                <element signature="e#1122#1182#0" expanded="true" />
+                <element signature="e#1123#1183#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="189">
-              <caret line="115" column="36" selection-start-line="115" selection-start-column="36" selection-end-line="115" selection-end-column="36" />
+            <state relative-caret-position="4275">
+              <caret line="225" selection-start-line="225" selection-end-line="225" />
               <folding>
                 <element signature="e#20#29#0" expanded="true" />
               </folding>
@@ -181,7 +171,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../old/neurons/latruculin_CNN_small.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
+            <state relative-caret-position="1216">
               <caret line="64" column="59" selection-start-line="64" selection-start-column="59" selection-end-line="64" selection-end-column="59" />
               <folding>
                 <element signature="e#1#10#0" expanded="true" />
@@ -193,7 +183,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgProcessing.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-779">
+            <state relative-caret-position="1007">
               <caret line="53" column="23" selection-start-line="53" selection-start-column="23" selection-end-line="53" selection-end-column="23" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -226,6 +216,7 @@
       <find>ParseTiffInput</find>
       <find>img16bit</find>
       <find>im16bit</find>
+      <find>ImgRaw</find>
     </findStrings>
     <replaceStrings>
       <replace>azimuth_degree</replace>
@@ -236,13 +227,14 @@
       <replace>scattering</replace>
       <replace>parse_tiff_input</replace>
       <replace>img_one_chann</replace>
+      <replace>ImgPol</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="sguo" />
       </map>
     </option>
   </component>
@@ -250,15 +242,16 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/birefringence_python/2018_07_13_KidneySection.py" />
-        <option value="$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py" />
         <option value="$PROJECT_DIR$/birefringence_python/test/list_modules.py" />
-        <option value="$PROJECT_DIR$/birefringence_python/utils/imgIO.py" />
         <option value="$PROJECT_DIR$/birefringence_python/scripts/PyPol2microDL_fry2.py" />
         <option value="$PROJECT_DIR$/birefringence_python/utils/mManagerIO.py" />
-        <option value="$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" />
         <option value="$PROJECT_DIR$/birefringence_python/utils/imgProcessing.py" />
-        <option value="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" />
         <option value="$PROJECT_DIR$/birefringence_python/utils/plotting.py" />
+        <option value="$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" />
+        <option value="$PROJECT_DIR$/birefringence_python/utils/imgIO.py" />
+        <option value="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" />
+        <option value="$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -269,9 +262,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="50" />
-    <option name="width" value="1937" />
-    <option name="height" value="1038" />
+    <option name="x" value="-8" />
+    <option name="y" value="2" />
+    <option name="width" value="1934" />
+    <option name="height" value="1037" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -283,6 +277,117 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/birefringence_python/2018_07_13_KidneySection.py" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RestoreUpdateTree" date="Moments ago" ActionInfo="_Update">
+    <UpdatedFiles>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Updated from server" />
+        <option name="myStatusName" value="Changed on server" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="CHANGED_ON_SERVER" />
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Updated" />
+          <option name="myStatusName" value="Changed" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="UPDATED" />
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/birefringence_python/PolScope/__pycache__/reconstruct.cpython-36.pyc</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/birefringence_python/run_reconstruction.py</PATH>
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Created" />
+          <option name="myStatusName" value="Created" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="CREATED" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Deleted" />
+          <option name="myStatusName" value="Deleted" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="true" />
+          <option name="myId" value="REMOVED_FROM_REPOSITORY" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Restored" />
+          <option name="myStatusName" value="Will be restored" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="RESTORED" />
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Modified" />
+        <option name="myStatusName" value="Modified" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MODIFIED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Skipped" />
+        <option name="myStatusName" value="Skipped" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="SKIPPED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with conflicts" />
+        <option name="myStatusName" value="Will be merged with conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_CONFLICTS" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with tree conflicts" />
+        <option name="myStatusName" value="Merged with tree conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_TREE_CONFLICT" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with property conflicts" />
+        <option name="myStatusName" value="Will be merged with property conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_PROPERTY_CONFLICT" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged" />
+        <option name="myStatusName" value="Will be merged" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Not in repository" />
+        <option name="myStatusName" value="Not in repository" />
+        <option name="mySupportsDeletion" value="true" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="UNKNOWN" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Locally added" />
+        <option name="myStatusName" value="Locally added" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="LOCALLY_ADDED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Locally removed" />
+        <option name="myStatusName" value="Locally removed" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="LOCALLY_REMOVED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Switched" />
+        <option name="myStatusName" value="Switched" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="SWITCHED" />
+      </FILE-GROUP>
+    </UpdatedFiles>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -391,6 +496,8 @@
       <list>
         <item itemvalue="Python.run_reconstruction" />
         <item itemvalue="Python.list_modules" />
+        <item itemvalue="Python.run_reconstruction" />
+        <item itemvalue="Python.list_modules" />
       </list>
     </recent_temporary>
   </component>
@@ -447,11 +554,46 @@
       <option name="project" value="LOCAL" />
       <updated>1542419149789</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="update &quot;CompositeImg&quot; to take input with &gt; 3 channels">
+      <created>1544137714644</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1544137714644</updated>
+    </task>
+    <task id="LOCAL-00008" summary="update 'parse_tiff_input' to fix the pol channel order issue when run on Linux system">
+      <created>1544209971067</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1544209971067</updated>
+    </task>
+    <task id="LOCAL-00009" summary="minor fix">
+      <created>1544216800606</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1544216800606</updated>
+    </task>
+    <task id="LOCAL-00010" summary="minor fix">
+      <created>1544216823458</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1544216823458</updated>
+    </task>
+    <task id="LOCAL-00011" summary="disable debug code">
+      <created>1544219281577</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1544219281577</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="40" y="0" width="1549" height="830" extended-state="0" />
+    <frame x="-6" y="2" width="1547" height="829" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" weight="0.3298887" />
@@ -460,7 +602,7 @@
       <window_info anchor="bottom" id="Database Changes" order="1" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="2" weight="0.32921347" />
       <window_info anchor="bottom" id="Terminal" order="3" />
-      <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.50039744" side_tool="true" weight="0.20846905" />
+      <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.50039744" side_tool="true" visible="true" weight="0.20977011" />
       <window_info anchor="bottom" id="Message" order="5" />
       <window_info anchor="bottom" id="Find" order="6" />
       <window_info anchor="bottom" id="Run" order="7" />
@@ -468,14 +610,14 @@
       <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="11" />
-      <window_info anchor="right" x="0" y="0" width="337" height="638" id="Documentation" order="0" sideWeight="0.48493543" side_tool="true" visible="true" weight="0.54006517" />
+      <window_info anchor="right" x="0" y="0" width="337" height="638" id="Documentation" order="0" sideWeight="0.48727274" side_tool="true" weight="0.34898892" />
       <window_info anchor="right" id="SciView" order="1" sideWeight="0.49945712" weight="0.3292969" />
       <window_info anchor="right" id="Database" order="2" weight="0.3295302" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="3" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="4" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="5" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Project" order="6" sideWeight="0.498708" weight="0.3761719" />
-      <window_info active="true" anchor="right" id="Python Console" order="7" sideWeight="0.51506454" visible="true" weight="0.54006517" />
+      <window_info active="true" anchor="right" id="Python Console" order="7" sideWeight="0.51272726" visible="true" weight="0.34898892" />
     </layout>
     <layout-to-restore>
       <window_info id="Favorites" order="0" side_tool="true" weight="0.3298887" />
@@ -515,7 +657,11 @@
     <MESSAGE value="replace old ParseTiffInput.py with more general parse_tiff_input.py to parse micromanager channel names" />
     <MESSAGE value="Fix BF image array dimension" />
     <MESSAGE value="update mManagerIO" />
-    <option name="LAST_COMMIT_MESSAGE" value="update mManagerIO" />
+    <MESSAGE value="update &quot;CompositeImg&quot; to take input with &gt; 3 channels" />
+    <MESSAGE value="update 'parse_tiff_input' to fix the pol channel order issue when run on Linux system" />
+    <MESSAGE value="minor fix" />
+    <MESSAGE value="disable debug code" />
+    <option name="LAST_COMMIT_MESSAGE" value="disable debug code" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -527,7 +673,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/birefringence_python/utils/plotting.py</url>
-          <line>77</line>
+          <line>79</line>
           <option name="timeStamp" value="18" />
         </line-breakpoint>
       </breakpoints>
@@ -578,40 +724,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1748">
-          <caret line="95" column="19" selection-start-line="95" selection-start-column="19" selection-end-line="95" selection-end-column="19" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/IPython/core/interactiveshell.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="298">
           <caret line="2909" selection-start-line="2909" selection-end-line="2909" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/mManagerIO.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="835">
-          <caret line="88" selection-start-line="88" selection-end-line="88" />
-          <folding>
-            <element signature="e#85#124#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgIO.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-281">
-          <caret line="114" column="74" selection-start-line="114" selection-start-column="74" selection-end-line="114" selection-end-column="74" />
-          <folding>
-            <element signature="e#83#92#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -625,29 +741,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py">
+    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/mManagerIO.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="379">
-          <caret line="222" column="52" lean-forward="true" selection-start-line="222" selection-start-column="52" selection-end-line="222" selection-end-column="52" />
+        <state relative-caret-position="5111">
+          <caret line="269" selection-start-line="269" selection-end-line="269" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../old/neurons/latruculin_CNN_small.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="64" column="59" selection-start-line="64" selection-start-column="59" selection-end-line="64" selection-end-column="59" />
-          <folding>
-            <element signature="e#1#10#0" expanded="true" />
+            <element signature="e#85#124#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgProcessing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-779">
+        <state relative-caret-position="1007">
           <caret line="53" column="23" selection-start-line="53" selection-start-column="23" selection-end-line="53" selection-end-column="23" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -655,23 +761,73 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py">
+    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2109">
-          <caret line="111" column="30" lean-forward="true" selection-start-line="111" selection-start-column="30" selection-end-line="111" selection-end-column="30" />
+        <state relative-caret-position="4275">
+          <caret line="225" selection-start-line="225" selection-end-line="225" />
           <folding>
-            <element signature="e#1122#1182#0" expanded="true" />
+            <element signature="e#20#29#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py">
+    <entry file="file://$PROJECT_DIR$/../old/neurons/latruculin_CNN_small.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="115" column="36" selection-start-line="115" selection-start-column="36" selection-end-line="115" selection-end-column="36" />
+        <state relative-caret-position="1216">
+          <caret line="64" column="59" selection-start-line="64" selection-start-column="59" selection-end-line="64" selection-end-column="59" />
           <folding>
-            <element signature="e#20#29#0" expanded="true" />
+            <element signature="e#1#10#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-249">
+          <caret line="2" column="16" lean-forward="true" selection-start-line="1" selection-end-line="2" selection-end-column="16" />
+          <folding>
+            <element signature="e#1123#1183#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgIO.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3287">
+          <caret line="173" selection-start-line="173" selection-end-line="173" />
+          <folding>
+            <element signature="e#83#92#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2964">
+          <caret line="156" column="49" lean-forward="true" selection-start-line="156" selection-start-column="49" selection-end-line="156" selection-end-column="49" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="437">
+            <caret line="23" column="68" lean-forward="true" selection-start-line="23" selection-start-column="68" selection-end-line="23" selection-end-column="68" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>

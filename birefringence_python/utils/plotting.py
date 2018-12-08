@@ -1,6 +1,8 @@
 #%matplotlib inline
 import os
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import cv2
@@ -207,16 +209,19 @@ def plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_sca
     cbar = fig.colorbar(ax_hsv, cax=cax, orientation='vertical', ticks=np.linspace(0, 255, 5))
     cbar.ax.set_yticklabels([r'$0^o$', r'$45^o$', r'$90^o$', r'$135^o$', r'$180^o$'])  # vertically oriented colorbar
 
-def plot_sub_images(images,titles,imgInput):
+def plot_sub_images(images,titles, ImgOutPath, figName):
     figSize = (12,12)
-    figName = 'test'
     fig = plt.figure(figsize = figSize)            
     for i in range(4):
-        plt.subplot(2,2,i+1),plt.imshow(imadjust(images[i]),'gray')
+        ax_p = plt.subplot(2,2,i+1)
+        ax_i = plt.imshow(imadjust(images[i]),'gray')
         plt.title(titles[i])
         plt.xticks([]),plt.yticks([])
+        divider = make_axes_locatable(ax_p)
+        cax = divider.append_axes('right', size='5%', pad=0.05)
+        cbar = fig.colorbar(ax_i, cax=cax, orientation='vertical')
     plt.show()
-    plt.savefig(os.path.join(imgInput.ImgOutPath, figName), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(ImgOutPath, figName), dpi=300, bbox_inches='tight')
 
 
 
