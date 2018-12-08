@@ -52,7 +52,7 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 # #
 # ProcessedPath = 'C:/Processed'
 
-RawDataPath = '/home/sguo/flexo/AdvancedOpticalMicroscopy/SpinningDisk/RawData/brainarchitecture'
+RawDataPath = '/flexo/AdvancedOpticalMicroscopy/SpinningDisk/RawData/brainarchitecture'
 # RawDataPath = '/data/sguo/Data'
 ProcessedPath = '/data/sguo/Processed'
 
@@ -68,7 +68,7 @@ ProcessedPath = '/data/sguo/Processed'
 
 ImgDir = '2018_11_28_594CTIP2_647SATB2_10X'
 SmDir = 'SMS_2018_1128_1557_1_3'
-BgDir = 'BG_2018_1120_1509_1'
+BgDir = 'BG_2018_1128_1509_1'
 
 # ImgDir = '2018_11_20_488L1CAM_594VIM'
 # SmDir = 'SMS_2018_1120_1557_1_1'
@@ -87,9 +87,9 @@ BgDir = 'BG_2018_1120_1509_1'
 # BgDir = 'BG_2018_0928_1641_1'
 
 
-ImgDir = '2018_11_01_kidney_slice'
-SmDir = 'SM_2018_1101_1835_1'
-BgDir = 'BG_2018_1101_1834_1'
+# ImgDir = '2018_11_01_kidney_slice'
+# SmDir = 'SM_2018_1101_1835_1'
+# BgDir = 'BG_2018_1101_1834_1'
 
 
 # ImgDir = '2018_10_02_MouseBrainSlice_3D'
@@ -143,7 +143,7 @@ bgCorrect='Auto'
 # Auto: correct the background using background from the metadata  
 flatField = True
 
-batchProc = True
+batchProc = False
 
 norm = False
 recon_method = 'Stokes'
