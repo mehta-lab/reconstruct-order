@@ -17,6 +17,12 @@ outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', '405',
 
 ImgSmPath = os.path.join(ProcessedPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
 
-OutputPath = os.path.join(ImgSmPath,'split_images')
-imgSm = mManagerReader(ImgSmPath,OutputPath, outputChann)
-imgSm.save_images()
+# OutputPath = os.path.join(ImgSmPath,'split_images')
+# imgSm = mManagerReader(ImgSmPath,OutputPath, outputChann)
+# imgSm.save_microDL_format_old()
+
+OutputPath = os.path.join(ImgSmPath,'microDL_format')
+imgSm = mManagerReader(ImgSmPath, OutputPath, outputChann)
+imgSm.save_microDL_format_new()
+
+
