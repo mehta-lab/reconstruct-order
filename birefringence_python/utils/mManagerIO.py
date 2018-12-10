@@ -213,7 +213,6 @@ class mManagerReader(metaclass=ABCMeta):
                         img = self.readmManager()
                         self.mean = np.nanmean(img)
                         self.std = np.nanstd(img)
-                        np.save(cur_fname, img, allow_pickle=True, fix_imports=True)
                         cv2.imwrite(cur_fname, img)
                         msg = 'Generated file:{}'.format(cur_fname)
                         self._log_info(msg)
