@@ -62,9 +62,9 @@ ProcessedPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\Processed\vir
 # RawDataPath = r'D:/Box Sync/Data'
 # ProcessedPath = r'D:/Box Sync/Processed/'
 
-ImgDir = '2018_12_07_A549_MembraneLabel_WGA_NoPerm_v3'
-SmDir = 'FOV1_1'
-BgDir = 'BG_2018_1207_1058_1'
+# ImgDir = '2018_12_07_A549_MembraneLabel_WGA_NoPerm_v3'
+# SmDir = 'FOV1_1'
+# BgDir = 'BG_2018_1207_1058_1'
 
 # ImgDir = '2018_11_01_kidney_slice'
 # SmDir = 'SMS_2018_1101_1713_1_1'
@@ -85,6 +85,10 @@ BgDir = 'BG_2018_1207_1058_1'
 # ImgDir = '2018_11_20_488L1CAM_594VIM'
 # SmDir = 'SMS_2018_1120_1557_1_1'
 # BgDir = 'BG_2018_1120_1537_1'
+
+ImgDir = '2018_09_25_ctx_sagittal_l1cam_vimentin'
+SmDir = 'SMS_2018_1120_1557_1_1'
+BgDir = 'BG_2018_1120_1537_1'
 
 # ImgDir = '2018_10_12_human_brain_NeuN_C11_TB_63X'
 # SmDir = 'SMS_2018_1012_1749_1'

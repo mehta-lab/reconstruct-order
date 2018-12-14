@@ -95,7 +95,7 @@ class mManagerReader(metaclass=ABCMeta):
         
         fileName = 'img_'+self.chNamesOut[self.chanIdx]+'_t%03d_p%03d_z%03d.tif'%(self.tIdx, self.posIdx, self.zIdx)
         TiffFile = os.path.join(self.ImgSmPath, fileName)
-        img = cv2.imread(TiffFile,-1) # flag -1 to perserve the bit dept of the raw image
+        img = cv2.imread(TiffFile,-1) # flag -1 to preserve the bit dept of the raw image
 #        img = img.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
 #        img = img.reshape(img.shape[0], img.shape[1],1)        
         return img

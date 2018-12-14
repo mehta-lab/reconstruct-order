@@ -2,7 +2,7 @@
 import os
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import cv2
@@ -125,7 +125,7 @@ def CompositeImg(images, norm=True):
     idx = 0
     for img in images:
         if norm:
-            img_one_chann = imadjust(img, tol=1, bit=8)
+            img_one_chann = imadjust(img, tol=0.01, bit=8)
         else:
             img_one_chann = imBitConvert(img, bit=8, norm=False)
 
@@ -209,7 +209,7 @@ def plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_sca
     cbar = fig.colorbar(ax_hsv, cax=cax, orientation='vertical', ticks=np.linspace(0, 255, 5))
     cbar.ax.set_yticklabels([r'$0^o$', r'$45^o$', r'$90^o$', r'$135^o$', r'$180^o$'])  # vertically oriented colorbar
 
-def plot_sub_images(images,titles, ImgOutPath, figName):
+def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
     figSize = (12,12)
     fig = plt.figure(figsize = figSize)            
     for i in range(4):
@@ -217,9 +217,10 @@ def plot_sub_images(images,titles, ImgOutPath, figName):
         ax_i = plt.imshow(imadjust(images[i]),'gray')
         plt.title(titles[i])
         plt.xticks([]),plt.yticks([])
-        divider = make_axes_locatable(ax_p)
-        cax = divider.append_axes('right', size='5%', pad=0.05)
-        cbar = fig.colorbar(ax_i, cax=cax, orientation='vertical')
+        if colorbar:
+            divider = make_axes_locatable(ax_p)
+            cax = divider.append_axes('right', size='5%', pad=0.05)
+            cbar = fig.colorbar(ax_i, cax=cax, orientation='vertical')
     plt.show()
     plt.savefig(os.path.join(ImgOutPath, figName), dpi=300, bbox_inches='tight')
 
