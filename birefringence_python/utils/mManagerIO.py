@@ -118,9 +118,9 @@ class mManagerReader(metaclass=ABCMeta):
         with open(metaFileName, 'w') as f:  
             json.dump(self.metaFile, f)        
         
-    def save_images(self):
+    def save_microDL_format_old(self):
         """
-        Save the images in microDL (https://github.com/czbiohub/microDL) input format 
+        Save the images in old microDL (https://github.com/czbiohub/microDL) input format
         microDL input structure:
         ImgOutPath
          |-split_images, split_images_info.csv
@@ -133,12 +133,6 @@ class mManagerReader(metaclass=ABCMeta):
                 and so on
         
         Saves the individual images as a npy file
-
-        2D might have more acquisitions +/- focal plane, (usually 3 images).
-        focal_plane_idx corresponds to the plane to consider. Mid-plane is the
-        one in focus and the +/- on either side would be blurred. For 2D
-        acquisitions, this is stored along the Z dimension. How is this handled
-        for 3D acquisitions?
         """
 
         if not os.path.exists(self.ImgSmPath):
@@ -164,7 +158,7 @@ class mManagerReader(metaclass=ABCMeta):
                 for posIdx in range(self.nPos):  # nXY
 
                     self.posIdx = posIdx
-                    cur_records = self.save_each_image2D()                                        
+                    cur_records = self.save_npy_2D()
                     records.extend(cur_records)
                 msg = 'Wrote files for tp:{}, channel:{}'.format(
                     tIdx, chanIdx
@@ -180,16 +174,54 @@ class mManagerReader(metaclass=ABCMeta):
                                       'split_images_info.csv')
         df.to_csv(metadata_fname, sep=',')
 
+    def save_microDL_format_new(self):
+        """
+        Save the images in new microDL (https://github.com/czbiohub/microDL) input format
+        microDL input structure:
+        dir_name
+            |
+            |- frames_meta.csv
+            |- global_metadata.csv
+            |- im_c***_z***_t***_p***.png
+            |- im_c***_z***_t***_p***.png
+            |- ...
 
+        Saves the individual images as a png file
+        """
 
-    """Saves the individual images as a npy file
+        if not os.path.exists(self.ImgSmPath):
+            raise FileNotFoundError(
+                "image file doesn't exist at:", self.ImgSmPath
+            )
+        os.makedirs(self.ImgOutPath, exist_ok=True)
+        self.logger = self._init_logger()
+        records = []
+        for tIdx in range(self.nTime):
+            self.tIdx = tIdx
+            for chanIdx in range(self.nChannOut):
+                self.chanIdx = chanIdx
+                # for posIdx in range(0, 37):  # nXY
+                for posIdx in range(self.nPos):  # nXY
+                    self.posIdx = posIdx
+                    for zIdx in range(self.nZ):
+                        self.zIdx = zIdx
+                        cur_fname = os.path.join(
+                            self.ImgOutPath, 'im_c{}_z{}_t{}_p{}.png'.format(chanIdx, zIdx, tIdx, posIdx)
+                        )
+                        # image voxels are 16 bits
 
-    In some acquisitions there are 3 z images corresponding to different focal
-    planes (focal plane might not be the correct term here!). Using z=0 for the
-    recent experiment
-    """
+                        img = self.readmManager()
+                        self.mean = np.nanmean(img)
+                        self.std = np.nanstd(img)
+                        cv2.imwrite(cur_fname, img)
+                        msg = 'Generated file:{}'.format(cur_fname)
+                        self._log_info(msg)
+                msg = 'Wrote files for tp:{}, channel:{}'.format(
+                    tIdx, chanIdx
+                )
+                self._log_info(msg)
 
-    def save_each_image2D(self):
+    def save_npy_2D(self):
         """Saves the each individual image as a npy file.
 
         Have to decide when to reprocess the file and when not to. Currently
@@ -225,42 +257,6 @@ class mManagerReader(metaclass=ABCMeta):
             records.append((self.tIdx, self.chanIdx, self.posIdx, zIdx,
                             cur_fname, self.size_x_um, self.size_y_um, self.size_z_um,
                             self.mean, self.std))
-        return records
-
-
-
-    """Class for splitting and cropping lif images."""
-
-    def save_each_image3D(self, reader, nZ, channel_dir, tIdx,
-                        chanIdx, posIdx, size_x_um, size_y_um,
-                        size_z_um):
-        """Saves the individual image volumes as a npy file.
-
-        :param bf.ImageReader reader: fname with full path of the lif image
-        :param int nZ: number of focal_plane acquisitions
-        :param str channel_dir: dir to save the split images
-        :param int tIdx: timepoint to split
-        :param int chann: channel to split
-        :param int posIdx: sample to split
-        :param float size_x_um: voxel resolution along x in microns
-        :param float size_y_um: voxel resolution along y in microns
-        :param float size_z_um: voxel resolution along z in microns
-        :return: list of tuples of metadata
-        """
-
-        records = []
-        cur_vol_fname = os.path.join(channel_dir,
-                                     'image_n{}.npy'.format(posIdx))
-        for zIdx in range(nZ):
-            img[:, :, zIdx] = reader.read(c=chanIdx, z=zIdx,
-                                           t=tIdx, series=posIdx,
-                                           rescale=False)
-        np.save(cur_vol_fname, img, allow_pickle=True, fix_imports=True)
-        # add wavelength info perhaps?
-        records.append((chanIdx, posIdx, tIdx, cur_vol_fname,
-                        size_x_um, size_y_um, size_z_um))
-        msg = 'Wrote files for channel:{}'.format(chann)
-        self._log_info(msg)
         return records
 
 class PolAcquReader(mManagerReader):
