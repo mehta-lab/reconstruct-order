@@ -472,6 +472,9 @@
       <module name="ReconstructOrder" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/birefringence_python" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -498,6 +501,7 @@
         <item itemvalue="Python.list_modules" />
         <item itemvalue="Python.run_reconstruction" />
         <item itemvalue="Python.list_modules" />
+        <item itemvalue="Python.run_reconstruction" />
       </list>
     </recent_temporary>
   </component>
