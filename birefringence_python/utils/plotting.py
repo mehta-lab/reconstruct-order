@@ -50,6 +50,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
     tIdx = imgInput.tIdx 
     zIdx = imgInput.zIdx
     posIdx = imgInput.posIdx
+    chann_scale = [10, 10, 10, 10] # scale fluor channels for composite images when norm=False
     if zoomin: # crop the images
         imList = [I_trans, retard, azimuth]
         imListCrop = imcrop(imList, I_trans)
@@ -67,17 +68,20 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
 
         plt.savefig(os.path.join(imgInput.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
 
-    IFluorRetard = CompositeImg([100*retard, ImgFluor[3,:,:]*1, ImgFluor[2,:,:]*1], norm=norm)
+    IFluorRetard = CompositeImg([100*retard, ImgFluor[3,:,:]*chann_scale[3], ImgFluor[2,:,:]*chann_scale[2]], norm=norm)
     # I_fluor_all_retard = CompositeImg([100 * retard, ImgFluor[1, :, :] * 0.05, ImgFluor[0, :, :] * 0.05], norm=norm)
-    I_fluor_all_retard = CompositeImg([100 * retard, ImgFluor[3, :, :] * 1, ImgFluor[2, :, :] * 1,
-                                       ImgFluor[1, :, :] * 1, ImgFluor[0, :, :] * 1], norm=norm)
+    I_fluor_all_retard = CompositeImg([100 * retard,
+                                       ImgFluor[3, :, :] * chann_scale[3],
+                                       ImgFluor[2, :, :] * chann_scale[2],
+                                       ImgFluor[1, :, :] * chann_scale[1],
+                                       ImgFluor[0, :, :] * chann_scale[0]], norm=norm)
 #    images = [I_trans, retard, azimuth_degree, I_azi_ret, I_azi_ret_trans, IFluorRetard]
     I_trans = imBitConvert(I_trans * 10 ** 3, bit=16, norm=norm)  # AU, set norm to False for tiling images
     retard = imBitConvert(retard * 10 ** 3, bit=16)  # scale to pm
     scattering = imBitConvert(scattering * 10 ** 4, bit=16)
     azimuth_degree = imBitConvert(azimuth_degree * 100, bit=16)  # scale to [0, 18000], 100*degree
     imagesTrans = [I_trans, retard, azimuth_degree, scattering, I_azi_ret, I_azi_scat, I_azi_ret_trans] #trasmission channels
-    imagesFluor = [imBitConvert(ImgFluor[i,:,:]*500, bit=16, norm=False) for i in range(ImgFluor.shape[0])]+[IFluorRetard, I_fluor_all_retard]
+    imagesFluor = [imBitConvert(ImgFluor[i,:,:]*50, bit=16, norm=False) for i in range(ImgFluor.shape[0])]+[IFluorRetard, I_fluor_all_retard]
     
     images = imagesTrans+imagesFluor   
     chNames = ['Transmission', 'Retardance', 'Orientation', 'Scattering',

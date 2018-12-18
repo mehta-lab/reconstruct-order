@@ -52,12 +52,12 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 # #
 # ProcessedPath = 'C:/Processed'
 
-# RawDataPath = '/flexo/AdvancedOpticalMicroscopy/SpinningDisk/RawData/brainarchitecture'
+RawDataPath = '/flexo/AdvancedOpticalMicroscopy/SpinningDisk/RawData/brainarchitecture'
 # # RawDataPath = '/data/sguo/Data'
-# ProcessedPath = '/data/sguo/Processed'
+ProcessedPath = '/data/sguo/Processed'
 
-RawDataPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\SpinningDisk\RawData\virtualstaining\2018_12_05-07_A549_MembraneLabel_CellMask_WGA'
-ProcessedPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\Processed\virtualistaining\RSVinfection\2018_12_05-07_A549_MembraneLabel_CellMask_WGA'
+# RawDataPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\SpinningDisk\RawData\virtualstaining\2018_12_05-07_A549_MembraneLabel_CellMask_WGA'
+# ProcessedPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\Processed\virtualistaining\RSVinfection\2018_12_05-07_A549_MembraneLabel_CellMask_WGA'
 
 # RawDataPath = r'D:/Box Sync/Data'
 # ProcessedPath = r'D:/Box Sync/Processed/'
@@ -78,17 +78,17 @@ ProcessedPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\Processed\vir
 # SmDir = 'SMS_2018_1120_1637_1_1'
 # BgDir = 'BG_2018_1120_1650_1'
 
-# ImgDir = '2018_11_28_594CTIP2_647SATB2_10X'
-# SmDir = 'SMS_2018_1128_1557_1_3'
-# BgDir = 'BG_2018_1128_1509_1'
+ImgDir = '2018_11_28_594CTIP2_647SATB2_10X'
+SmDir = 'SMS_2018_1128_1557_1_3'
+BgDir = 'BG_2018_1128_1509_1'
 
 # ImgDir = '2018_11_20_488L1CAM_594VIM'
 # SmDir = 'SMS_2018_1120_1557_1_1'
 # BgDir = 'BG_2018_1120_1537_1'
 
-ImgDir = '2018_09_25_ctx_sagittal_l1cam_vimentin'
-SmDir = 'SMS_2018_1120_1557_1_1'
-BgDir = 'BG_2018_1120_1537_1'
+# ImgDir = '2018_09_25_ctx_sagittal_l1cam_vimentin'
+# SmDir = 'SMS_2018_1120_1557_1_1'
+# BgDir = 'BG_2018_1120_1537_1'
 
 # ImgDir = '2018_10_12_human_brain_NeuN_C11_TB_63X'
 # SmDir = 'SMS_2018_1012_1749_1'
