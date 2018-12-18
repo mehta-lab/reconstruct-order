@@ -115,7 +115,7 @@ class ImgReconstructor:
     def calibrate_inst_mat(self):
         return
 
-    def compute_stokes(self, img_raw):
+    def compute_stokes(self, img_raw): #
         chi = self.swing
         I_ext = img_raw[0, :, :]  # Sigma0 in Fig.2
         I_90 = img_raw[1, :, :]  # Sigma2 in Fig.2

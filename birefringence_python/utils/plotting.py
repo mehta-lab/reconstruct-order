@@ -44,7 +44,7 @@ def plotVectorField(I, azimuth, R=40, spacing=40, clim=[None, None]): # plot vec
 #    plt.show()
     return imAx    
 
-def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoomin=False, dpi=300, norm=True, plot=True):
+def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
     I_trans,retard, azimuth, polarization, ImgFluor = imgs
     scattering = 1-polarization
     tIdx = imgInput.tIdx 
@@ -59,7 +59,8 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=1, zoo
     I_azi_ret_trans, I_azi_ret, I_azi_scat = PolColor(I_trans, retard, azimuth_degree, scattering, norm=norm)
 
     if plot:
-        plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_scat, zoomin=False, spacing=20, vectorScl=5, dpi=300)
+        plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_scat, zoomin=False, spacing=spacing,
+                          vectorScl=vectorScl, dpi=dpi)
         if zoomin:
             figName = 'Transmission+Retardance+Orientation_Zoomin.png'
         else:

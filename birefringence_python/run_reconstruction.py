@@ -48,27 +48,27 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
             
 # In[3]:
 
-# RawDataPath = 'C:/Data'
-# #
-# ProcessedPath = 'C:/Processed'
 
-# RawDataPath = '/flexo/AdvancedOpticalMicroscopy/SpinningDisk/RawData/brainarchitecture'
 # # RawDataPath = '/data/sguo/Data'
 # ProcessedPath = '/data/sguo/Processed'
 
-RawDataPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\SpinningDisk\RawData\virtualstaining\2018_12_05-07_A549_MembraneLabel_CellMask_WGA'
-ProcessedPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\Processed\virtualistaining\RSVinfection\2018_12_05-07_A549_MembraneLabel_CellMask_WGA'
+RawDataPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\Hackathon\Data'
+ProcessedPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\Hackathon\Processed'
 
 # RawDataPath = r'D:/Box Sync/Data'
 # ProcessedPath = r'D:/Box Sync/Processed/'
 
-ImgDir = '2018_12_07_A549_MembraneLabel_WGA_NoPerm_v3'
-SmDir = 'FOV1_1'
-BgDir = 'BG_2018_1207_1058_1'
+# ImgDir = '2018_10_02_MouseBrainSlice'
+# SmDir = 'SM_2018_1002_1633_1'
+# BgDir = 'BG_2018_1002_1625_1'
 
-# ImgDir = '2018_11_01_kidney_slice'
-# SmDir = 'SMS_2018_1101_1713_1_1'
-# BgDir = 'BG_2018_1101_1705_1'
+# ImgDir = '2018_12_07_A549_MembraneLabel_WGA_NoPerm_v3'
+# SmDir = 'FOV1_1'
+# BgDir = 'BG_2018_1207_1058_1'
+
+ImgDir = '2018_11_01_kidney_slice'
+SmDir = 'SMS_2018_1101_1713_1_1'
+BgDir = 'BG_2018_1101_1705_1'
 
 # ImgDir = '2018_11_26_Argolight_channel_registration_63X_confocal'
 # SmDir = 'SMS_2018_1126_1625_1'
@@ -149,18 +149,16 @@ outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retar
 # 'Scattering+Orientation', 'Transmission+Retardance+Orientation']
                             
 # channels to output, see readme for channel names
-flipPol=True # flip the sign of polarization
+flipPol=True # flip the sign of polarization, rename to analyzer lcp rcp
 bgCorrect='Auto'
 # bgCorrect='Local'
 # Auto: correct the background using background from the metadata  
 flatField = True
-
-batchProc = False
-
-norm = False
+batchProc = True
+norm = True
 recon_method = 'Stokes'
 # recon_method = 'Jones'
-# ProcessedPath = os.path.join('C:/Processed', recon_method)
+
 if batchProc:
     ImgPath = os.path.join(RawDataPath, ImgDir)
     SmDirList = GetSubDirName(ImgPath)

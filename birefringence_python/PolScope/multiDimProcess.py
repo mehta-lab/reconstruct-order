@@ -119,16 +119,6 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
 def loopPos(img_ioSm, outputChann, flatField=False, bgCorrect=True, flipPol=False, norm=True):
     """
     Loops through each position in the acquisition folder, and performs flat-field correction.
-    
-    @param ImgSmPath: Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
-    @param OutputPath: Output folder path
-    @param Chi: Swing
-    @param Lambda: Wavelength of polarized light.
-    @param Abg: A term in background
-    @param Bbg: B term in background
-    @param I_trans_Bg: another background term.
-    @param DAPIBg: another backgruond term.
-    @param TdTomatoBg: another background term.
     @param flatField: boolean - whether flatField correction is applied.
     @param bgCorrect: boolean - whether or not background correction is applied.
     @param flipPol: whether or not to flip the sign of polarization.
@@ -157,22 +147,10 @@ def loopT(img_io, outputChann, flatField=False, bgCorrect=True, flipPol=False, n
             img_io = loopZBg(img_io, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
     return img_io
 
-def loopZSm(img_io, outputChann, flatField=False, bgCorrect=True, flipPol=False, norm=True):
+def loopZSm(img_io, outputChann, flatField=False, flipPol=False, norm=True):
     """
     Loops through Z.
     
-    @param PolZ: Polarization Z
-    @param ind:
-    @param acquDirPath
-    @param OutputPath: Output folder path
-    @param Chi: Swing
-    @param Lambda: Wavelength of polarized light.
-    @param Abg: A term in background
-    @param Bbg: B term in background
-    @param I_trans_Bg: another background term.
-    @param DAPIBg: another backgruond term.
-    @param TdTomatoBg: another background term.
-    @param imgLimits:
     @param flatField: boolean - whether flatField correction is applied.
     @param bgCorrect: boolean - whether or not background correction is applied.
     @param flipPol: whether or not to flip the sign of polarization.
