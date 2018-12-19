@@ -52,7 +52,7 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 # #
 # ProcessedPath = 'C:/Processed'
 
-RawDataPath = '/flexo/AdvancedOpticalMicroscopy/SpinningDisk/RawData/brainarchitecture'
+RawDataPath = '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/brainarchitecture'
 # # RawDataPath = '/data/sguo/Data'
 ProcessedPath = '/data/sguo/Processed'
 
@@ -80,7 +80,7 @@ ProcessedPath = '/data/sguo/Processed'
 
 ImgDir = '2018_11_28_594CTIP2_647SATB2_10X'
 SmDir = 'SMS_2018_1128_1557_1_3'
-BgDir = 'BG_2018_1128_1509_1'
+BgDir = 'BG_2018_1128_1557_1'
 
 # ImgDir = '2018_11_20_488L1CAM_594VIM'
 # SmDir = 'SMS_2018_1120_1557_1_1'
