@@ -157,11 +157,9 @@ flipPol=True # flip the sign of polarization
 bgCorrect='Auto'
 # bgCorrect='Local'
 # Auto: correct the background using background from the metadata  
-flatField = True
-
+flatField = False
 batchProc = False
-
-norm = False
+norm = True
 recon_method = 'Stokes'
 # recon_method = 'Jones'
 # ProcessedPath = os.path.join('C:/Processed', recon_method)
