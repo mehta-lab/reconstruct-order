@@ -57,7 +57,8 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 # RawDataPath = '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/brainarchitecture'
 RawDataPath = '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/virtualstaining'
 # # RawDataPath = '/data/sguo/Data'
-ProcessedPath = '/data/sguo/Processed'
+# ProcessedPath = '/data/sguo/Processed'
+ProcessedPath = '/flexo/ComputationalMicroscopy/Processed/u2os_leonetti'
 
 # RawDataPath = r'\\flexo\MicroscopyData\ComputationalMicroscopy\Hackathon\Data'
 # ProcessedPath = r'\\flexo\MicroscopyData\ComputationalMicroscopy\Hackathon\Processed\test'
