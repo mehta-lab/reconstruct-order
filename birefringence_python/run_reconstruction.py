@@ -54,21 +54,22 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 # In[3]:
 
 
-RawDataPath = '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/brainarchitecture'
+# RawDataPath = '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/brainarchitecture'
+RawDataPath = '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/virtualstaining'
 # # RawDataPath = '/data/sguo/Data'
 ProcessedPath = '/data/sguo/Processed'
 
-RawDataPath = r'\\flexo\MicroscopyData\ComputationalMicroscopy\Hackathon\Data'
-ProcessedPath = r'\\flexo\MicroscopyData\ComputationalMicroscopy\Hackathon\Processed\test'
+# RawDataPath = r'\\flexo\MicroscopyData\ComputationalMicroscopy\Hackathon\Data'
+# ProcessedPath = r'\\flexo\MicroscopyData\ComputationalMicroscopy\Hackathon\Processed\test'
 # RawDataPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\SpinningDisk\RawData\virtualstaining\2018_12_05-07_A549_MembraneLabel_CellMask_WGA'
 # ProcessedPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\Processed\virtualistaining\RSVinfection\2018_12_05-07_A549_MembraneLabel_CellMask_WGA'
 
 # RawDataPath = r'D:/Box Sync/Data'
 # ProcessedPath = r'D:/Box Sync/Processed/'
 
-ImgDir = '2018_10_02_MouseBrainSlice'
-SmDir = 'SM_2018_1002_1633_1'
-BgDir = 'BG_2018_1002_1625_1'
+ImgDir = '2018_12_21_U20S_TOMM20A_HighDensity'
+SmDir = 'SMS_2018_1221_1325_1'
+BgDir = 'BG_2018_1221_1220_1'
 
 # ImgDir = '2018_12_07_A549_MembraneLabel_WGA_NoPerm_v3'
 # SmDir = 'FOV1_1'
@@ -89,9 +90,9 @@ BgDir = 'BG_2018_1002_1625_1'
 # SmDir = 'SMS_2018_1120_1637_1_1'
 # BgDir = 'BG_2018_1120_1650_1'
 
-ImgDir = '2018_11_28_594CTIP2_647SATB2_10X'
-SmDir = 'SMS_2018_1128_1557_1_3'
-BgDir = 'BG_2018_1128_1557_1'
+# ImgDir = '2018_11_28_594CTIP2_647SATB2_10X'
+# SmDir = 'SMS_2018_1128_1557_1_3'
+# BgDir = 'BG_2018_1128_1557_1'
 
 # ImgDir = '2018_11_20_488L1CAM_594VIM'
 # SmDir = 'SMS_2018_1120_1557_1_1'
@@ -157,8 +158,8 @@ BgDir = 'BG_2018_1128_1557_1'
 
 outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
 
-'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence', 'Retardance+Fluorescence_all',
-               '405', '568', '640']
+'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence',
+               '488']
 
 # outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
 # 'Scattering+Orientation', 'Transmission+Retardance+Orientation']
@@ -169,7 +170,7 @@ bgCorrect='Auto'
 # bgCorrect='Local'
 # Auto: correct the background using background from the metadata  
 flatField = False
-batchProc = True
+batchProc = False
 norm = True
 recon_method = 'Stokes'
 # recon_method = 'Jones'
