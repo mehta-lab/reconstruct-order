@@ -35,53 +35,58 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
         img_ioSm = PolAcquReader(ImgSmPath, OutputPath, outputChann)
     except:
         img_ioSm = mManagerReader(ImgSmPath,OutputPath, outputChann)
-    img_ioSm.bg_method = 'Global'
-    if bgCorrect=='None':
-        print('No background correction is performed...')
-        img_ioSm.bg_correct = False
-    elif bgCorrect=='Input':
-        print('Background correction mode set as "Input". Use user input background directory')
-        OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
-        img_ioSm.ImgOutPath = OutputPath
-        img_ioSm.bg_correct = True
-    elif bgCorrect=='Local':
-        print('Background correction mode set as "Local". Additional background correction using local '
-              'background estimated from sample images will be performed')
-        OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + SmDir)
-        img_ioSm.ImgOutPath = OutputPath
-        img_ioSm.bg_method = 'Local'
-        img_ioSm.bg_correct = True
-    elif bgCorrect=='Auto':
-        if hasattr(img_ioSm, 'bg'):
-            if img_ioSm.bg == 'No Background':
-                bgCorrect=='None' # need to pass the flag down
-                BgDir = SmDir  # need a smarter way to deal with different background options
-                img_ioSm.bg_correct = False
-                print('No background correction is performed for background measurements...')
-            else:
-                print('Background info found in metadata. Use background specified in metadata')
-                BgDir = img_ioSm.bg
-                OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-                img_ioSm.bg_correct = True
-        else:
-            print('Background not specified in metadata. Use user input background directory')   
-            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
-            img_ioSm.bg_correct = True
-        img_ioSm.ImgOutPath = OutputPath
-
-    ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir) # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
+    ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir)  # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
     img_ioBg = PolAcquReader(ImgBgPath, OutputPath)
-    img_ioBg.posIdx = 0 # assuming only single image for background
+    img_ioBg.posIdx = 0  # assuming only single image for background
     img_ioBg.tIdx = 0
     img_ioBg.zIdx = 0
     img_ioBg.recon_method = recon_method
+    img_ioSm.bg_method = 'Global'
+
+    if bgCorrect=='None':
+        print('No background correction is performed...')
+        img_ioSm.bg_correct = False
+    else:
+        if bgCorrect=='Input':
+            print('Background correction mode set as "Input". Use user input background directory')
+            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
+            img_ioSm.ImgOutPath = OutputPath
+            img_ioSm.bg_correct = True
+        elif bgCorrect=='Local':
+            print('Background correction mode set as "Local". Additional background correction using local '
+                  'background estimated from sample images will be performed')
+            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + SmDir)
+            img_ioSm.ImgOutPath = OutputPath
+            img_ioSm.bg_method = 'Local'
+            img_ioSm.bg_correct = True
+        elif bgCorrect=='Auto':
+            if hasattr(img_ioSm, 'bg'):
+                if img_ioSm.bg == 'No Background':
+                    BgDir = SmDir  # need a smarter way to deal with different background options
+                    img_ioSm.bg_correct = False
+                    print('No background correction is performed for background measurements...')
+                else:
+                    print('Background info found in metadata. Use background specified in metadata')
+                    BgDir = img_ioSm.bg
+                    OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
+                    img_ioSm.bg_correct = True
+            else:
+                print('Background not specified in metadata. Use user input background directory')
+                OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
+                img_ioSm.bg_correct = True
+            img_ioSm.ImgOutPath = OutputPath
+
+
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_ioBg) # 0 for z-index
 
-    img_reconstructor = ImgReconstructor(ImgRawBg, method=recon_method, swing=img_ioBg.swing,
+    if img_ioSm.bg_correct:
+        img_reconstructor = ImgReconstructor(ImgRawBg, method=recon_method, swing=img_ioBg.swing,
                                          wavelength=img_ioBg.wavelength, output_path=img_ioBg.ImgOutPath)
-    img_param_bg = img_reconstructor.compute_param(ImgRawBg)
+        img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
+    else:
+        img_stokes_bg = None
     
-    img_ioSm.param_bg = img_param_bg
+    img_ioSm.param_bg = img_stokes_bg
     img_ioSm.swing = img_ioBg.swing
     img_ioSm.wavelength = img_ioBg.wavelength
     img_ioSm.blackLevel = img_ioBg.blackLevel
@@ -112,20 +117,19 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
         ##################################################################
     else:        
         I_trans_Bg = np.ones((img_ioBg.height,img_ioBg.width))  # use uniform field if no correction
-    img_ioSm.I_trans_Bg = img_param_bg[0]
+    img_ioSm.I_trans_Bg = img_stokes_bg[0]
     img_ioSm.ImgFluorBg = ImgFluorBg
     return img_ioSm
     
-def loopPos(img_ioSm, outputChann, flatField=False, bgCorrect=True, flipPol=False, norm=True):
+def loopPos(img_ioSm, outputChann, flatField=False, bgCorrect=True, circularity='rcp', norm=True):
     """
     Loops through each position in the acquisition folder, and performs flat-field correction.
     @param flatField: boolean - whether flatField correction is applied.
     @param bgCorrect: boolean - whether or not background correction is applied.
-    @param flipPol: whether or not to flip the sign of polarization.
+    @param circularity: whether or not to flip the sign of polarization.
     @return: None
     """       
-    
-    
+
     for posIdx in range(0,img_ioSm.nPos):
     # for posIdx in range(0, 25):
         plt.close("all") # close all the figures from the last run
@@ -135,25 +139,25 @@ def loopPos(img_ioSm, outputChann, flatField=False, bgCorrect=True, flipPol=Fals
             subDir = 'Pos0'
         img_ioSm.ImgPosPath = os.path.join(img_ioSm.ImgSmPath, subDir)
         img_ioSm.posIdx = posIdx
-        img_io = loopT(img_ioSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol, norm=norm)
+        img_io = loopT(img_ioSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
     return img_io
         
-def loopT(img_io, outputChann, flatField=False, bgCorrect=True, flipPol=False, norm=True):
+def loopT(img_io, outputChann, flatField=False, bgCorrect=True, circularity='rcp', norm=True):
     for tIdx in range(0,img_io.nTime):
         img_io.tIdx = tIdx
         if img_io.loopZ =='sample':
-            img_io = loopZSm(img_io, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol, norm=norm)
+            img_io = loopZSm(img_io, outputChann, flatField=flatField, circularity=circularity, norm=norm)
         else:
-            img_io = loopZBg(img_io, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
+            img_io = loopZBg(img_io, flatField=flatField, circularity=circularity)
     return img_io
 
-def loopZSm(img_io, outputChann, flatField=False, flipPol=False, norm=True):
+def loopZSm(img_io, outputChann, flatField=False, circularity='rcp', norm=True):
     """
     Loops through Z.
     
     @param flatField: boolean - whether flatField correction is applied.
     @param bgCorrect: boolean - whether or not background correction is applied.
-    @param flipPol: whether or not to flip the sign of polarization.
+    @param circularity: whether or not to flip the sign of polarization.
     @return: None
     """
     if not os.path.exists(img_io.ImgOutPath):  # create folder for processed images
@@ -170,25 +174,17 @@ def loopZSm(img_io, outputChann, flatField=False, flipPol=False, norm=True):
 
         img_reconstructor = ImgReconstructor(ImgRawSm, method=img_io.recon_method, swing=img_io.swing,
                                              wavelength=img_io.wavelength, kernel=img_io.kernel, output_path=img_io.ImgOutPath)
-        img_param_sm = img_reconstructor.compute_param(ImgRawSm)
+        img_stokes_sm = img_reconstructor.compute_stokes(ImgRawSm)
 
-        if img_io.bg_correct:
-            img_param_sm = img_reconstructor.correct_background(img_param_sm, img_io.param_bg, method=img_io.bg_method,
+        img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm, img_io.param_bg, circularity=circularity, method=img_io.bg_method,
                                                                 extra=False) # background subtraction
-        if img_io.bg_method == 'Local':
-            img_param_bg_local = []
-            print('Estimating local background...')
-            for img in img_param_sm:
-                img_param_bg_local += [cv2.GaussianBlur(img, (401, 401), 0)]
-                # img_param_bg_local += [cv2.blur(img, (801, 801))]
-            img_param_bg = img_param_bg_local
-            img_param_sm = img_reconstructor.correct_background(img_param_sm, img_param_bg, method=img_io.bg_method,
-                                                                extra=False)  # background subtraction
+        [I_trans, retard, azimuth, polarization] = img_computed_sm
+
 
         # titles = ['polarization', 'A', 'B', 'dAB']
         # plot_sub_images(img_param_sm[1:], titles, img_io)
-        I_trans_Sm = img_param_sm[0]
-        retard, azimuth, polarization = img_reconstructor.reconstruct_img(img_param_sm,flipPol=flipPol)
+
+
         #retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images
         if isinstance(ImgBF, np.ndarray):
             if flatField:
@@ -196,7 +192,7 @@ def loopZSm(img_io, outputChann, flatField=False, flipPol=False, norm=True):
             else:
                 ImgBF = ImgBF[0, :, :]
         else:   # use brightfield calculated from pol-images if there is no brightfield data
-            ImgBF = I_trans_Sm
+            ImgBF = I_trans
 
         for i in range(ImgFluor.shape[0]):
             # print(np.nanmax(ImgFluor[i,:,:][:]))
@@ -230,7 +226,7 @@ def loopZSm(img_io, outputChann, flatField=False, flipPol=False, norm=True):
         exportImg(img_io, imgs)
     return img_io
 
-def loopZBg(img_io, flatField=False, bgCorrect=True, flipPol=False):
+def loopZBg(img_io, flatField=False, bgCorrect=True):
     for zIdx in range(0,1): # only use the first z 
         img_io.zIdx = zIdx
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
