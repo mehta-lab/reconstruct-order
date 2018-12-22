@@ -23,3 +23,27 @@ To run reconstruction, do
 ```buildoutcfg
 python ~/ReconstructOrder/birefringence_python/run_reconstruction.py
 ```
+The following options are available in run_reconstruction.py
+ 
+* outputChann: (list of str) output channel names
+    Current available output channel names:
+        'Transmission'
+        'Retardance'
+        'Orientation' 
+        'Retardance+Orientation'
+        'Transmission+Retardance+Orientation'
+        'Retardance+Fluorescence'
+        '405'
+        '488'
+        '568'
+        '640'
+        
+* flipPol: (bool) flip the slow axis horizontally. Set "True" for Dragonfly and "False" for ASI 
+* bgCorrect: (str) 
+    'Auto' (default) to correct the background using background from the metadata if available, otherwise use input background folder;
+    'None' for no background correction; 
+    'Input' to always use input background folder
+    'Local' apply additional background correction using local background estimated from sample images  
+* flatField: (bool) perform flat-field correction on fluorescence images if True
+* norm: (bool) scale fluorescence images for each image for optimal contrast. Set False to use the same scale for all images
+* batchProc: (bool) batch process all the folders in ImgDir if True. 
