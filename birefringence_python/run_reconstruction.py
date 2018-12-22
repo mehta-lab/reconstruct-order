@@ -15,7 +15,7 @@ Rudolf Oldenbourg, 2003.
         '568'
         '640'
         
-* flipPol: (bool) flip the sign of polarization. Set "True" for Dragonfly and "False" for ASI 
+* circularity: (bool) flip the sign of polarization. Set "True" for Dragonfly and "False" for ASI
 * bgCorrect: (str) 
     'Auto' (default) to correct the background using background from the metadata if available, otherwise use input background folder;
     'None' for no background correction; 
@@ -29,6 +29,11 @@ Rudolf Oldenbourg, 2003.
 
 
 # get_ipython().run_line_magic('matplotlib', 'inline')
+import sys
+import os
+sys.path.append(".") # Adds current directory to python search path.
+sys.path.append("..") # Adds parent directory to python search path.
+# sys.path.append(os.path.dirname(sys.argv[0]))
 from PolScope.multiDimProcess import findBackground, loopPos
 from utils.imgIO import GetSubDirName
 # import seaborn as sns
@@ -38,33 +43,33 @@ import os
 
 
 # In[2]:
-def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=False, bgCorrect=True, flipPol=False, method='Stokes', norm=True):
+def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=False, bgCorrect=True, circularity=False, method='Stokes', norm=True):
     print('Processing ' + SmDir + ' ....')
     imgSm = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,flatField=flatField,bgCorrect=bgCorrect,
                            recon_method=method, ff_method='open') # find background tile
     imgSm.loopZ ='sample'
-    imgSm = loopPos(imgSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol, norm=norm)
+    imgSm = loopPos(imgSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
         
             
 # In[3]:
 
-# RawDataPath = 'C:/Data'
-# #
-# ProcessedPath = 'C:/Processed'
 
-# RawDataPath = '/flexo/AdvancedOpticalMicroscopy/SpinningDisk/RawData/brainarchitecture'
 # # RawDataPath = '/data/sguo/Data'
 # ProcessedPath = '/data/sguo/Processed'
 
-RawDataPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\SpinningDisk\RawData\virtualstaining\2018_12_05-07_A549_MembraneLabel_CellMask_WGA'
-ProcessedPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\Processed\virtualistaining\RSVinfection\2018_12_05-07_A549_MembraneLabel_CellMask_WGA'
+RawDataPath = r'\\flexo\MicroscopyData\ComputationalMicroscopy\Hackathon\Data'
+ProcessedPath = r'\\flexo\MicroscopyData\ComputationalMicroscopy\Hackathon\Processed\test'
 
 # RawDataPath = r'D:/Box Sync/Data'
 # ProcessedPath = r'D:/Box Sync/Processed/'
 
-ImgDir = '2018_12_07_A549_MembraneLabel_WGA_NoPerm_v3'
-SmDir = 'FOV1_1'
-BgDir = 'BG_2018_1207_1058_1'
+ImgDir = '2018_10_02_MouseBrainSlice'
+SmDir = 'SM_2018_1002_1633_1'
+BgDir = 'BG_2018_1002_1625_1'
+
+# ImgDir = '2018_12_07_A549_MembraneLabel_WGA_NoPerm_v3'
+# SmDir = 'FOV1_1'
+# BgDir = 'BG_2018_1207_1058_1'
 
 # ImgDir = '2018_11_01_kidney_slice'
 # SmDir = 'SMS_2018_1101_1713_1_1'
@@ -149,18 +154,16 @@ outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retar
 # 'Scattering+Orientation', 'Transmission+Retardance+Orientation']
                             
 # channels to output, see readme for channel names
-flipPol=True # flip the sign of polarization
+circularity= 'rcp' # circularity of the analyzer, lcp or rcp
 bgCorrect='Auto'
 # bgCorrect='Local'
 # Auto: correct the background using background from the metadata  
-flatField = True
-
-batchProc = False
-
-norm = False
+flatField = False
+batchProc = True
+norm = True
 recon_method = 'Stokes'
 # recon_method = 'Jones'
-# ProcessedPath = os.path.join('C:/Processed', recon_method)
+
 if batchProc:
     ImgPath = os.path.join(RawDataPath, ImgDir)
     SmDirList = GetSubDirName(ImgPath)
@@ -168,10 +171,10 @@ if batchProc:
        # if 'SM' in SmDir or 'BG' in SmDir :
         if 'SM' in SmDir:
             processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=flatField, bgCorrect=bgCorrect,
-                       flipPol=flipPol, method=recon_method, norm=norm)
+                       circularity=circularity, method=recon_method, norm=norm)
 else:
     processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=flatField, bgCorrect=bgCorrect,
-               flipPol=flipPol, method=recon_method, norm=norm)
+               circularity=circularity, method=recon_method, norm=norm)
 
 
 
