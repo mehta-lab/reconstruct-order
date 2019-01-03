@@ -54,12 +54,12 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, fl
 # In[3]:
 
 
-# RawDataPath = '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/brainarchitecture'
-RawDataPath = '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/virtualstaining'
+RawDataPath = '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/brainarchitecture'
+# RawDataPath = '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/virtualstaining'
 # # RawDataPath = '/data/sguo/Data'
 # ProcessedPath = '/data/sguo/Processed'
-ProcessedPath = '/flexo/ComputationalMicroscopy/Processed/u2os_leonetti'
-
+# ProcessedPath = '/flexo/ComputationalMicroscopy/Processed/virtualstaining/u2os_leonetti'
+ProcessedPath = '/flexo/ComputationalMicroscopy/Processed/brainarchitecture'
 # RawDataPath = r'\\flexo\MicroscopyData\ComputationalMicroscopy\Hackathon\Data'
 # ProcessedPath = r'\\flexo\MicroscopyData\ComputationalMicroscopy\Hackathon\Processed\test'
 # RawDataPath = r'\\flexo\MicroscopyData\AdvancedOpticalMicroscopy\SpinningDisk\RawData\virtualstaining\2018_12_05-07_A549_MembraneLabel_CellMask_WGA'
@@ -68,9 +68,9 @@ ProcessedPath = '/flexo/ComputationalMicroscopy/Processed/u2os_leonetti'
 # RawDataPath = r'D:/Box Sync/Data'
 # ProcessedPath = r'D:/Box Sync/Processed/'
 
-ImgDir = '2018_12_21_U20S_TOMM20A_HighDensity'
-SmDir = 'SMS_2018_1221_1325_1'
-BgDir = 'BG_2018_1221_1220_1'
+ImgDir = '2018_12_27_background_optimization_Nowakowski_slide'
+SmDir = 'SMS_2018_1227_0138_3'
+BgDir = 'BG_2018_1227_1311_1'
 
 # ImgDir = '2018_12_07_A549_MembraneLabel_WGA_NoPerm_v3'
 # SmDir = 'FOV1_1'
@@ -160,7 +160,7 @@ BgDir = 'BG_2018_1221_1220_1'
 outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
 
 'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence',
-               '488']
+               '488', '568', '640']
 
 # outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
 # 'Scattering+Orientation', 'Transmission+Retardance+Orientation']
@@ -171,7 +171,7 @@ bgCorrect='Auto'
 # bgCorrect='Local'
 # Auto: correct the background using background from the metadata  
 flatField = False
-batchProc = False
+batchProc = True
 norm = True
 recon_method = 'Stokes'
 # recon_method = 'Jones'
@@ -180,8 +180,9 @@ if batchProc:
     ImgPath = os.path.join(RawDataPath, ImgDir)
     SmDirList = GetSubDirName(ImgPath)
     for SmDir in SmDirList:
-       # if 'SM' in SmDir or 'BG' in SmDir :
-        if 'SM' in SmDir:
+        # if 'SM' in SmDir or 'BG' in SmDir :
+        if 'SM' in SmDir and 'SMS' not in SmDir:
+        # if 'SM' in SmDir:
             processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=flatField, bgCorrect=bgCorrect,
                        circularity=circularity, method=recon_method, norm=norm)
 else:
