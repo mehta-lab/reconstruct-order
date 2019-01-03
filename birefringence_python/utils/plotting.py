@@ -1,7 +1,7 @@
 #%matplotlib inline
 import os
 import numpy as np
-import matplotlib
+# import matplotlib
 # matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -219,14 +219,14 @@ def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
     fig = plt.figure(figsize = figSize)            
     for i in range(4):
         ax_p = plt.subplot(2,2,i+1)
-        ax_i = plt.imshow(imadjust(images[i]),'gray')
+        ax_i = plt.imshow(imadjust(images[i]))
         plt.title(titles[i])
         plt.xticks([]),plt.yticks([])
         if colorbar:
             divider = make_axes_locatable(ax_p)
             cax = divider.append_axes('right', size='5%', pad=0.05)
             cbar = fig.colorbar(ax_i, cax=cax, orientation='vertical')
-    plt.show()
+    # plt.show()
     plt.savefig(os.path.join(ImgOutPath, figName), dpi=300, bbox_inches='tight')
 
 

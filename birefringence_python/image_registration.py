@@ -31,12 +31,14 @@ def load_img(img_io, z_range=None):
     return img_chann
 
 def imshow_pair(images, img_io):
-    chann_names = img_io.chNamesOut
+    chann_names = img_io.chNamesOut[:] # adding "[:]" makes a copy of the variable instead of creating a reference
     image_pairs = []
     titles = []
+    image_ref = images.pop(0)
+    chann_names_ref = chann_names.pop(0)
     for image, chann_name in zip(images, chann_names):
-        image_pair = [images[0], image]
-        title = [chann_names[0] + chann_name]
+        image_pair = [image_ref, image]
+        title = [chann_names_ref + chann_name]
         image_pair_rgb = CompositeImg(image_pair, norm=True)
         image_pairs += [image_pair_rgb]
         titles += title
@@ -116,7 +118,7 @@ img_io_sm = mManagerReader(ImgSmPath, OutputPath, outputChann)
 target_images = load_img(img_io_sm, z_range=z_range)
 for zIdx in range(z_range[0], z_range[1]):
     img_io_sm.zIdx = zIdx
-    target_image = [target_image[zIdx,:,:] for target_image in target_images]
+    target_image = [target_image[zIdx-z_range[0],:,:] for target_image in target_images]
     imshow_pair(target_image, img_io_sm)
 
 

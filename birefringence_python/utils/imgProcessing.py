@@ -73,7 +73,9 @@ def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
     # return : output img
     bitTemp = 16 # temporary bit depth for calculation. Convert to 32bit for calculation to minimize the info loss
     vout=(0,2**bitTemp-1)       
-    
+    if src.dtype == 'uint8':
+        bit = 8
+
     src = imBitConvert(src, norm=True) # rescale to 16 bit       
     srcOri = np.copy(src) # make a copy of source image
     if len(src.shape) > 2:    
