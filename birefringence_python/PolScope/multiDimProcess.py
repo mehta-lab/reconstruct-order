@@ -69,6 +69,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
             img_ioSm.bg_method = 'Local_defocus'
             img_ioSm.bg_correct = True
             img_io_bg_local = mManagerReader(img_bg_path, OutputPath)
+            img_io_bg_local.blackLevel = img_ioBg.blackLevel
 
         elif bgCorrect=='Auto':
             if hasattr(img_ioSm, 'bg'):
