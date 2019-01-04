@@ -163,7 +163,8 @@ def loopT(img_io, img_reconstructor, flatField=False, bgCorrect=True, circularit
         if img_io.loopZ =='sample':
             if img_io.bg_method == 'Local_defocus':
                 img_io_bg = img_io.bg_local
-                print('compute defocused backgorund at {} ...'.format(img_io_bg.posIdx))
+                # print('compute defocused backgorund at pos{} ...'.format(img_io_bg.posIdx))
+                print('compute defocused backgorund from' + img_io_bg.ImgPosPath)
                 img_io_bg.tIdx = tIdx
                 img_io_bg.zIdx = 0
                 ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
