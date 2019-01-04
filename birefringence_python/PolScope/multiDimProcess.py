@@ -194,7 +194,7 @@ def loopZSm(img_io, outputChann, flatField=False, circularity='rcp', norm=True):
                 img_io_bg = img_io.bg_local
                 img_io_bg.posIdx = posIdx
                 img_io_bg.tIdx = tIdx
-                img_io_bg.zIdx = zIdx
+                img_io_bg.zIdx = 0
                 ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
                 img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
                 img_io.param_bg = img_stokes_bg
