@@ -37,6 +37,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     except:
         img_ioSm = mManagerReader(ImgSmPath,OutputPath, outputChann)
     ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir)  # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
+    img_bg_path = os.path.join(RawDataPath, ImgDir, BgDir_local)  # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
     img_ioBg = PolAcquReader(ImgBgPath, OutputPath)
     img_ioBg.posIdx = 0  # assuming only single image for background
     img_ioBg.tIdx = 0
@@ -67,7 +68,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
             img_ioSm.ImgOutPath = OutputPath
             img_ioSm.bg_method = 'Local_defocus'
             img_ioSm.bg_correct = True
-            img_io_bg_local = mManagerReader(BgDir_local, OutputPath)
+            img_io_bg_local = mManagerReader(img_bg_path, OutputPath)
 
         elif bgCorrect=='Auto':
             if hasattr(img_ioSm, 'bg'):
