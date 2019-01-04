@@ -91,7 +91,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_ioBg) # 0 for z-index
 
     if img_ioSm.bg_correct:
-        img_reconstructor = ImgReconstructor(ImgRawBg, method=recon_method, swing=img_ioBg.swing,
+        img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=bgCorrect, swing=img_ioBg.swing,
                                          wavelength=img_ioBg.wavelength, output_path=img_ioBg.ImgOutPath)
         img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
     else:
@@ -184,8 +184,9 @@ def loopZSm(img_io, outputChann, flatField=False, circularity='rcp', norm=True):
         azimuthMMSm = np.array([])     
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
 
-        img_reconstructor = ImgReconstructor(ImgRawSm, swing=img_io.swing,
-                                             wavelength=img_io.wavelength, kernel=img_io.kernel, output_path=img_io.ImgOutPath)
+        img_reconstructor = ImgReconstructor(ImgRawSm, swing=img_io.swing, bg_method=img_io.bg_method,
+                                             wavelength=img_io.wavelength, kernel=img_io.kernel,
+                                             output_path=img_io.ImgOutPath)
         img_stokes_sm = img_reconstructor.compute_stokes(ImgRawSm)
         if img_io.bg_method=='Local_defocus':
             if img_io.bg_local:
