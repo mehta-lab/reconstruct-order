@@ -89,7 +89,6 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
                 img_ioSm.bg_correct = True
             img_ioSm.ImgOutPath = OutputPath
 
-
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_ioBg) # 0 for z-index
     img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=bgCorrect, swing=img_ioBg.swing,
                                          wavelength=img_ioBg.wavelength, output_path=img_ioBg.ImgOutPath)
@@ -97,7 +96,6 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
         img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
     else:
         img_stokes_bg = None
-    
 
     img_ioSm.param_bg = img_stokes_bg
     img_ioSm.swing = img_ioBg.swing
@@ -163,7 +161,6 @@ def loopT(img_io, img_reconstructor, flatField=False, bgCorrect=True, circularit
     for tIdx in range(0,img_io.nTime):
         img_io.tIdx = tIdx
         if img_io.loopZ =='sample':
-            img_io = loopZSm(img_io, img_reconstructor, flatField=flatField, circularity=circularity, norm=norm)
             if img_io.bg_method == 'Local_defocus':
                 img_io_bg = img_io.bg_local
                 img_io_bg.tIdx = tIdx
@@ -171,6 +168,8 @@ def loopT(img_io, img_reconstructor, flatField=False, bgCorrect=True, circularit
                 ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
                 img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
                 img_io.param_bg = img_stokes_bg
+            img_io = loopZSm(img_io, img_reconstructor, flatField=flatField, circularity=circularity, norm=norm)
+
         else:
             img_io = loopZBg(img_io, flatField=flatField, circularity=circularity)
     return img_io
