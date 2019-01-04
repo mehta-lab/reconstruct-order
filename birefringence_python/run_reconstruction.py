@@ -46,11 +46,11 @@ import os
 def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, BgDir_local=None, flatField=False,
                bgCorrect=True, circularity=False, method='Stokes', norm=True):
     print('Processing ' + SmDir + ' ....')
-    imgSm = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
+    imgSm, img_reconstructor = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
                            BgDir_local=BgDir_local, flatField=flatField,bgCorrect=bgCorrect,
                            recon_method=method, ff_method='open') # find background tile
     imgSm.loopZ ='sample'
-    imgSm = loopPos(imgSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
+    imgSm = loopPos(imgSm, img_reconstructor, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
         
             
 # In[3]:

@@ -91,10 +91,9 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
 
 
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_ioBg) # 0 for z-index
-
-    if img_ioSm.bg_correct:
-        img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=bgCorrect, swing=img_ioBg.swing,
+    img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=bgCorrect, swing=img_ioBg.swing,
                                          wavelength=img_ioBg.wavelength, output_path=img_ioBg.ImgOutPath)
+    if img_ioSm.bg_correct:
         img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
     else:
         img_stokes_bg = None
@@ -133,9 +132,9 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
         I_trans_Bg = np.ones((img_ioBg.height,img_ioBg.width))  # use uniform field if no correction
     img_ioSm.I_trans_Bg = img_stokes_bg[0]
     img_ioSm.ImgFluorBg = ImgFluorBg
-    return img_ioSm
+    return img_ioSm, img_reconstructor
     
-def loopPos(img_ioSm, outputChann, flatField=False, bgCorrect=True, circularity='rcp', norm=True):
+def loopPos(img_ioSm, img_reconstructor, flatField=False, bgCorrect=True, circularity='rcp', norm=True):
     """
     Loops through each position in the acquisition folder, and performs flat-field correction.
     @param flatField: boolean - whether flatField correction is applied.
@@ -157,19 +156,26 @@ def loopPos(img_ioSm, outputChann, flatField=False, bgCorrect=True, circularity=
             img_io_bg.ImgPosPath = os.path.join(img_io_bg.ImgSmPath, subDir)
             img_io_bg.posIdx = posIdx
         img_ioSm.posIdx = posIdx
-        img_io = loopT(img_ioSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
+        img_io = loopT(img_ioSm, img_reconstructor, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
     return img_io
         
-def loopT(img_io, outputChann, flatField=False, bgCorrect=True, circularity='rcp', norm=True):
+def loopT(img_io, img_reconstructor, flatField=False, bgCorrect=True, circularity='rcp', norm=True):
     for tIdx in range(0,img_io.nTime):
         img_io.tIdx = tIdx
         if img_io.loopZ =='sample':
-            img_io = loopZSm(img_io, outputChann, flatField=flatField, circularity=circularity, norm=norm)
+            img_io = loopZSm(img_io, img_reconstructor, flatField=flatField, circularity=circularity, norm=norm)
+            if img_io.bg_method == 'Local_defocus':
+                img_io_bg = img_io.bg_local
+                img_io_bg.tIdx = tIdx
+                img_io_bg.zIdx = 0
+                ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
+                img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
+                img_io.param_bg = img_stokes_bg
         else:
             img_io = loopZBg(img_io, flatField=flatField, circularity=circularity)
     return img_io
 
-def loopZSm(img_io, outputChann, flatField=False, circularity='rcp', norm=True):
+def loopZSm(img_io, img_reconstructor, flatField=False, circularity='rcp', norm=True):
     """
     Loops through Z.
     
@@ -189,19 +195,7 @@ def loopZSm(img_io, outputChann, flatField=False, circularity='rcp', norm=True):
         retardMMSm = np.array([])
         azimuthMMSm = np.array([])     
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
-
-        img_reconstructor = ImgReconstructor(ImgRawSm, swing=img_io.swing, bg_method=img_io.bg_method,
-                                             wavelength=img_io.wavelength, kernel=img_io.kernel,
-                                             output_path=img_io.ImgOutPath)
         img_stokes_sm = img_reconstructor.compute_stokes(ImgRawSm)
-        if img_io.bg_method=='Local_defocus':
-            img_io_bg = img_io.bg_local
-            img_io_bg.tIdx = tIdx
-            img_io_bg.zIdx = 0
-            ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
-            img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
-            img_io.param_bg = img_stokes_bg
-
         img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm, img_io.param_bg,
                                                                       circularity=circularity, bg_method=img_io.bg_method,
                                                                 extra=False) # background subtraction
@@ -239,7 +233,7 @@ def loopZSm(img_io, outputChann, flatField=False, circularity='rcp', norm=True):
 
         imgs = [ImgBF,retard, azimuth, polarization, ImgFluor]
 
-        img_io, imgs = plot_birefringence(img_io, imgs, outputChann, spacing=20, vectorScl=2, zoomin=False, dpi=200,
+        img_io, imgs = plot_birefringence(img_io, imgs, img_io.chNamesOut, spacing=20, vectorScl=2, zoomin=False, dpi=200,
                                          norm=norm, plot=True)
         # img_io.imgLimits = ImgLimit(imgs,img_io.imgLimits)
         
