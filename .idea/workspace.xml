@@ -7,7 +7,7 @@
   <component name="ChangeListManager">
     <list default="true" id="213a1158-0346-4162-98ad-6788db62b436" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" beforeDir="false" afterPath="$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -75,7 +75,7 @@
           <entry key="image_registration" value="17" />
           <entry key="list_modules" value="103" />
           <entry key="md" value="1000" />
-          <entry key="py" value="6581" />
+          <entry key="py" value="6591" />
           <entry key="run_reconstruction" value="122" />
           <entry key="txt" value="1033" />
         </counts>
@@ -84,7 +84,7 @@
         <counts>
           <entry key="Markdown" value="1000" />
           <entry key="PLAIN_TEXT" value="1063" />
-          <entry key="Python" value="7420" />
+          <entry key="Python" value="7430" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
@@ -117,11 +117,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="188" column="45" selection-start-line="188" selection-start-column="45" selection-end-line="188" selection-end-column="45" />
+            <state relative-caret-position="2919">
+              <caret line="197" column="23" selection-start-line="197" selection-start-column="23" selection-end-line="197" selection-end-column="23" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -153,11 +153,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2099">
-              <caret line="187" column="48" lean-forward="true" selection-start-line="187" selection-start-column="48" selection-end-line="187" selection-end-column="48" />
+            <state relative-caret-position="541">
+              <caret line="177" column="17" selection-start-line="177" selection-start-column="17" selection-end-line="177" selection-end-column="17" />
             </state>
           </provider>
         </entry>
@@ -290,8 +290,8 @@
         <option value="$PROJECT_DIR$/birefringence_python/image_registration.py" />
         <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/birefringence_python/run_reconstruction.py" />
         <option value="$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py" />
-        <option value="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" />
         <option value="$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" />
+        <option value="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" />
       </list>
     </option>
   </component>
@@ -632,7 +632,21 @@
       <option name="project" value="LOCAL" />
       <updated>1546563053549</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="bug fix">
+      <created>1546563331358</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1546563331358</updated>
+    </task>
+    <task id="LOCAL-00024" summary="bug fix">
+      <created>1546563845763</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1546563845763</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TodoView" selected-index="2">
@@ -879,13 +893,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2099">
-          <caret line="187" column="48" lean-forward="true" selection-start-line="187" selection-start-column="48" selection-end-line="187" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/birefringence_python/image_registration.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="900">
@@ -928,11 +935,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="188" column="45" selection-start-line="188" selection-start-column="45" selection-end-line="188" selection-end-column="45" />
+        <state relative-caret-position="2919">
+          <caret line="197" column="23" selection-start-line="197" selection-start-column="23" selection-end-line="197" selection-end-column="23" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="541">
+          <caret line="177" column="17" selection-start-line="177" selection-start-column="17" selection-end-line="177" selection-end-column="17" />
         </state>
       </provider>
     </entry>

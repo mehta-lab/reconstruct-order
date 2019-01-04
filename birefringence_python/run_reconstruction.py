@@ -175,7 +175,7 @@ circularity= 'rcp' # circularity of the analyzer, lcp or rcp
 bgCorrect='Local_defocus'
 # Auto: correct the background using background from the metadata  
 flatField = False
-batchProc = True
+batchProc = False
 norm = True
 recon_method = 'Stokes'
 # recon_method = 'Jones'
