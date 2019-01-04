@@ -43,9 +43,11 @@ import os
 
 
 # In[2]:
-def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=False, bgCorrect=True, circularity=False, method='Stokes', norm=True):
+def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, BgDir_local=None, flatField=False,
+               bgCorrect=True, circularity=False, method='Stokes', norm=True):
     print('Processing ' + SmDir + ' ....')
-    imgSm = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,flatField=flatField,bgCorrect=bgCorrect,
+    imgSm = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
+                           BgDir_local=BgDir_local, flatField=flatField,bgCorrect=bgCorrect,
                            recon_method=method, ff_method='open') # find background tile
     imgSm.loopZ ='sample'
     imgSm = loopPos(imgSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
@@ -71,6 +73,7 @@ ProcessedPath = '/flexo/ComputationalMicroscopy/Processed/brainarchitecture'
 ImgDir = '2018_12_27_background_optimization_Nowakowski_slide'
 SmDir = 'SMS_2018_1227_0138_3'
 BgDir = 'BG_2018_1227_1311_1'
+BgDir_local = 'BGS_2018_1227_1802_2'
 
 # ImgDir = '2018_12_07_A549_MembraneLabel_WGA_NoPerm_v3'
 # SmDir = 'FOV1_1'
@@ -167,8 +170,9 @@ outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retar
                             
 # channels to output, see readme for channel names
 circularity= 'rcp' # circularity of the analyzer, lcp or rcp
-bgCorrect='Auto'
-# bgCorrect='Local'
+# bgCorrect='Auto'
+# bgCorrect='Local_filter'
+bgCorrect='Local_defocus'
 # Auto: correct the background using background from the metadata  
 flatField = False
 batchProc = True
@@ -183,10 +187,12 @@ if batchProc:
         # if 'SM' in SmDir or 'BG' in SmDir :
         if 'SM' in SmDir and 'SMS' not in SmDir:
         # if 'SM' in SmDir:
-            processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=flatField, bgCorrect=bgCorrect,
+            processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
+                       BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
                        circularity=circularity, method=recon_method, norm=norm)
 else:
-    processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=flatField, bgCorrect=bgCorrect,
+    processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
+               BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
                circularity=circularity, method=recon_method, norm=norm)
 
 

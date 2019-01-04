@@ -8,10 +8,10 @@ sys.path.append("..") # Add upper level directory to python modules path.
 #from utils.imgCrop import imcrop
 #%%
 class ImgReconstructor:
-    def __init__(self, img_raw_bg, method='Stokes', swing=None, wavelength=532,
+    def __init__(self, img_raw_bg, bg_method='Global', swing=None, wavelength=532,
                  kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (100, 100)), output_path=None):
         self.img_raw_bg = img_raw_bg
-        self.method = method
+        self.bg_method = bg_method
         self.swing = swing*2*np.pi # covert swing from fraction of wavelength to radian
         self.n_chann = np.shape(img_raw_bg)[0]
         self.height = np.shape(img_raw_bg)[1]
@@ -20,7 +20,7 @@ class ImgReconstructor:
         self.kernel = kernel
         self.output_path = output_path
 
-    def reconstruct_birefringence(self, stokes_param_sm, stokes_param_bg=None, circularity='rcp', method='Global',
+    def reconstruct_birefringence(self, stokes_param_sm, stokes_param_bg=None, circularity='rcp', bg_method='Global',
                            img_crop_ref=None, extra=False):
         # for low birefringence sample that requires 0 background, set extra=True to manually offset the background
         # Correction based on Eq. 16 in reference using linear approximation assuming small retardance for both sample and background
@@ -51,11 +51,11 @@ class ImgReconstructor:
             s2_norm = s2_norm - s2_norm_bg
             return [I_trans, polarization, s1_norm, s2_norm, s3]
 
-        def correct_background(stokes_param_sm, stokes_param_bg, method='Global'):
+        def correct_background(stokes_param_sm, stokes_param_bg, bg_method='Global'):
             if stokes_param_bg:
                 stokes_param_bg = stokes_transform(stokes_param_bg)
                 stokes_param_sm = correct_background_stokes(stokes_param_sm, stokes_param_bg)
-                if method == 'Local':
+                if bg_method == 'Local_filter':
                     stokes_param_bg_local = []
                     print('Estimating local background...')
                     for img in stokes_param_sm:
@@ -64,7 +64,7 @@ class ImgReconstructor:
             return stokes_param_sm
 
         stokes_param_sm = stokes_transform(stokes_param_sm)
-        stokes_param_sm = correct_background(stokes_param_sm, stokes_param_bg, method=method)
+        stokes_param_sm = correct_background(stokes_param_sm, stokes_param_bg, bg_method=bg_method)
         [I_trans, polarization, s1_norm, s2_norm, s3] = stokes_param_sm
         s1 = s1_norm * s3
         s2 = s2_norm * s3

@@ -19,7 +19,8 @@ from utils.imgProcessing import ImgLimit
 
 
 
-def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=False, bgCorrect='Auto',
+def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
+                   BgDir_local=None, flatField=False, bgCorrect='Auto',
                    recon_method='Stokes', ff_method='open'):
     """
     Estimate background for each channel to perform background substraction for
@@ -52,13 +53,22 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
             OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
             img_ioSm.ImgOutPath = OutputPath
             img_ioSm.bg_correct = True
-        elif bgCorrect=='Local':
-            print('Background correction mode set as "Local". Additional background correction using local '
+        elif bgCorrect=='Local_filter':
+            print('Background correction mode set as "Local_filter". Additional background correction using local '
                   'background estimated from sample images will be performed')
             OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + SmDir)
             img_ioSm.ImgOutPath = OutputPath
-            img_ioSm.bg_method = 'Local'
+            img_ioSm.bg_method = 'Local_filter'
             img_ioSm.bg_correct = True
+        elif bgCorrect=='Local_defocus':
+            print('Background correction mode set as "Local_defocus". Use images from' + BgDir_local +
+                  'at the same position as background')
+            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir_local)
+            img_ioSm.ImgOutPath = OutputPath
+            img_ioSm.bg_method = 'Local_defocus'
+            img_ioSm.bg_correct = True
+            img_io_bg_local = mManagerReader(BgDir_local, OutputPath)
+
         elif bgCorrect=='Auto':
             if hasattr(img_ioSm, 'bg'):
                 if img_ioSm.bg == 'No Background':
@@ -86,6 +96,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     else:
         img_stokes_bg = None
     
+    img_ioSm.bg_local = img_io_bg_local
     img_ioSm.param_bg = img_stokes_bg
     img_ioSm.swing = img_ioBg.swing
     img_ioSm.wavelength = img_ioBg.wavelength
@@ -172,11 +183,21 @@ def loopZSm(img_io, outputChann, flatField=False, circularity='rcp', norm=True):
         azimuthMMSm = np.array([])     
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
 
-        img_reconstructor = ImgReconstructor(ImgRawSm, method=img_io.recon_method, swing=img_io.swing,
+        img_reconstructor = ImgReconstructor(ImgRawSm, swing=img_io.swing,
                                              wavelength=img_io.wavelength, kernel=img_io.kernel, output_path=img_io.ImgOutPath)
         img_stokes_sm = img_reconstructor.compute_stokes(ImgRawSm)
+        if img_io.bg_method=='Local_defocus':
+            if img_io.bg_local:
+                img_io_bg = img_io.bg_local
+                img_io_bg.posIdx = posIdx
+                img_io_bg.tIdx = tIdx
+                img_io_bg.zIdx = zIdx
+                ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
+                img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
+                img_io.param_bg = img_stokes_bg
 
-        img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm, img_io.param_bg, circularity=circularity, method=img_io.bg_method,
+        img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm, img_io.param_bg,
+                                                                      circularity=circularity, bg_method=img_io.bg_method,
                                                                 extra=False) # background subtraction
         [I_trans, retard, azimuth, polarization] = img_computed_sm
 
