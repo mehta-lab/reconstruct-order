@@ -161,9 +161,8 @@ BgDir_local = 'BGS_2018_1227_1802_2'
 
 
 outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
-
-'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence',
-               '488', '568', '640']
+               'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence',
+               '405', '488', '568', '640']
 
 # outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
 # 'Scattering+Orientation', 'Transmission+Retardance+Orientation']

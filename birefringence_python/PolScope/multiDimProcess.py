@@ -70,6 +70,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
             img_ioSm.bg_correct = True
             img_io_bg_local = mManagerReader(img_bg_path, OutputPath)
             img_io_bg_local.blackLevel = img_ioBg.blackLevel
+            img_ioSm.bg_local = img_io_bg_local
 
         elif bgCorrect=='Auto':
             if hasattr(img_ioSm, 'bg'):
@@ -98,7 +99,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     else:
         img_stokes_bg = None
     
-    img_ioSm.bg_local = img_io_bg_local
+
     img_ioSm.param_bg = img_stokes_bg
     img_ioSm.swing = img_ioBg.swing
     img_ioSm.wavelength = img_ioBg.wavelength
@@ -151,6 +152,10 @@ def loopPos(img_ioSm, outputChann, flatField=False, bgCorrect=True, circularity=
         else:
             subDir = 'Pos0'
         img_ioSm.ImgPosPath = os.path.join(img_ioSm.ImgSmPath, subDir)
+        if img_ioSm.bg_method == 'Local_defocus':
+            img_io_bg = img_ioSm.bg_local
+            img_io_bg.ImgPosPath = os.path.join(img_io_bg.ImgSmPath, subDir)
+            img_io_bg.posIdx = posIdx
         img_ioSm.posIdx = posIdx
         img_io = loopT(img_ioSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
     return img_io
@@ -190,14 +195,12 @@ def loopZSm(img_io, outputChann, flatField=False, circularity='rcp', norm=True):
                                              output_path=img_io.ImgOutPath)
         img_stokes_sm = img_reconstructor.compute_stokes(ImgRawSm)
         if img_io.bg_method=='Local_defocus':
-            if img_io.bg_local:
-                img_io_bg = img_io.bg_local
-                img_io_bg.posIdx = posIdx
-                img_io_bg.tIdx = tIdx
-                img_io_bg.zIdx = 0
-                ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
-                img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
-                img_io.param_bg = img_stokes_bg
+            img_io_bg = img_io.bg_local
+            img_io_bg.tIdx = tIdx
+            img_io_bg.zIdx = 0
+            ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
+            img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
+            img_io.param_bg = img_stokes_bg
 
         img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm, img_io.param_bg,
                                                                       circularity=circularity, bg_method=img_io.bg_method,
