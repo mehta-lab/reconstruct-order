@@ -69,7 +69,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
 
         plt.savefig(os.path.join(imgInput.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
 
-    IFluorRetard = CompositeImg([100*retard, ImgFluor[1,:,:]*chann_scale[3], ImgFluor[2,:,:]*chann_scale[2]], norm=norm)
+    IFluorRetard = CompositeImg([100*retard, ImgFluor[3,:,:]*chann_scale[3], ImgFluor[2,:,:]*chann_scale[2]], norm=norm)
     # I_fluor_all_retard = CompositeImg([100 * retard, ImgFluor[1, :, :] * 0.05, ImgFluor[0, :, :] * 0.05], norm=norm)
     I_fluor_all_retard = CompositeImg([100 * retard,
                                        ImgFluor[3, :, :] * chann_scale[3],

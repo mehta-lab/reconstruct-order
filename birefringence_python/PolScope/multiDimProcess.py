@@ -37,7 +37,6 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     except:
         img_ioSm = mManagerReader(ImgSmPath,OutputPath, outputChann)
     ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir)  # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
-    img_bg_path = os.path.join(RawDataPath, ImgDir, BgDir_local)  # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
     img_ioBg = PolAcquReader(ImgBgPath, OutputPath)
     img_ioBg.posIdx = 0  # assuming only single image for background
     img_ioBg.tIdx = 0
@@ -64,6 +63,8 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
         elif bgCorrect=='Local_defocus':
             print('Background correction mode set as "Local_defocus". Use images from' + BgDir_local +
                   'at the same position as background')
+            img_bg_path = os.path.join(RawDataPath, ImgDir,
+                                       BgDir_local)
             OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir_local)
             img_ioSm.ImgOutPath = OutputPath
             img_ioSm.bg_method = 'Local_defocus'
@@ -163,8 +164,7 @@ def loopT(img_io, img_reconstructor, flatField=False, bgCorrect=True, circularit
         if img_io.loopZ =='sample':
             if img_io.bg_method == 'Local_defocus':
                 img_io_bg = img_io.bg_local
-                # print('compute defocused backgorund at pos{} ...'.format(img_io_bg.posIdx))
-                print('compute defocused backgorund from' + img_io_bg.ImgPosPath)
+                print('compute defocused backgorund at pos{} ...'.format(img_io_bg.posIdx))
                 img_io_bg.tIdx = tIdx
                 img_io_bg.zIdx = 0
                 ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
@@ -190,6 +190,7 @@ def loopZSm(img_io, img_reconstructor, flatField=False, circularity='rcp', norm=
     tIdx = img_io.tIdx
     posIdx = img_io.posIdx
     for zIdx in range(0,img_io.nZ):
+    # for zIdx in range(0, 1):
         print('Processing position %03d, time %03d, z %03d ...' % (posIdx, tIdx, zIdx))
         plt.close("all") # close all the figures from the last run
         img_io.zIdx = zIdx
@@ -237,9 +238,6 @@ def loopZSm(img_io, img_reconstructor, flatField=False, circularity='rcp', norm=
         img_io, imgs = plot_birefringence(img_io, imgs, img_io.chNamesOut, spacing=20, vectorScl=2, zoomin=False, dpi=200,
                                          norm=norm, plot=True)
         # img_io.imgLimits = ImgLimit(imgs,img_io.imgLimits)
-        
-        
-        
         ##To do: add 'Fluor+Retardance' channel## 
         
         img_io.writeMetaData()

@@ -70,6 +70,11 @@ ProcessedPath = '/flexo/ComputationalMicroscopy/Processed/brainarchitecture'
 # RawDataPath = r'D:/Box Sync/Data'
 # ProcessedPath = r'D:/Box Sync/Processed/'
 
+# ImgDir = '2019_01_04_david_594CTIP2_647SATB2_20X'
+# SmDir = 'SMS_2019_0104_1257_2'
+# BgDir = 'BG_2019_0104_1124_1'
+# BgDir_local = None
+
 ImgDir = '2018_12_27_background_optimization_Nowakowski_slide'
 SmDir = 'SMS_2018_1227_0138_3'
 BgDir = 'BG_2018_1227_1311_1'
@@ -162,7 +167,7 @@ BgDir_local = 'BGS_2018_1227_1802_2'
 
 outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
                'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence',
-               '405', '488', '568', '640']
+               '405', '568', '640']
 
 # outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
 # 'Scattering+Orientation', 'Transmission+Retardance+Orientation']
@@ -170,8 +175,8 @@ outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retar
 # channels to output, see readme for channel names
 circularity= 'rcp' # circularity of the analyzer, lcp or rcp
 # bgCorrect='Auto'
-# bgCorrect='Local_filter'
-bgCorrect='Local_defocus'
+bgCorrect='Local_filter'
+# bgCorrect='Local_defocus'
 # Auto: correct the background using background from the metadata  
 flatField = False
 batchProc = False
