@@ -2,12 +2,13 @@
 <project version="4">
   <component name="BookmarkManager">
     <bookmark url="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py" line="71" />
-    <bookmark url="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py" line="75" />
+    <bookmark url="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py" line="78" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="213a1158-0346-4162-98ad-6788db62b436" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/birefringence_python/image_registration.py" beforeDir="false" afterPath="$PROJECT_DIR$/birefringence_python/scripts/image_registration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" beforeDir="false" afterPath="$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -75,7 +76,7 @@
           <entry key="image_registration" value="61" />
           <entry key="list_modules" value="103" />
           <entry key="md" value="1000" />
-          <entry key="py" value="6771" />
+          <entry key="py" value="6927" />
           <entry key="run_reconstruction" value="122" />
           <entry key="txt" value="1121" />
         </counts>
@@ -84,7 +85,7 @@
         <counts>
           <entry key="Markdown" value="1000" />
           <entry key="PLAIN_TEXT" value="1151" />
-          <entry key="Python" value="7654" />
+          <entry key="Python" value="7810" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
@@ -108,8 +109,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-608">
-              <caret line="6" column="39" selection-start-line="6" selection-start-column="39" selection-end-line="6" selection-end-column="39" />
+            <state relative-caret-position="1425">
+              <caret line="77" column="36" selection-start-line="77" selection-start-column="36" selection-end-line="77" selection-end-column="36" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -120,8 +121,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1178">
-              <caret line="62" column="40" lean-forward="true" selection-start-line="62" selection-start-column="40" selection-end-line="62" selection-end-column="40" />
+            <state relative-caret-position="591">
+              <caret line="42" column="21" selection-start-line="42" selection-start-column="21" selection-end-line="42" selection-end-column="21" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -129,19 +130,10 @@
           </provider>
         </entry>
       </file>
-      <file pinned="true" current-in-tab="false">
-        <entry file="remoteDeploymentFS://&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/birefringence_python/utils/plotting.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="71" column="58" lean-forward="true" selection-start-line="71" selection-start-column="58" selection-end-line="71" selection-end-column="58" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgIO.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-950">
+            <state relative-caret-position="361">
               <caret line="23" selection-start-line="23" selection-end-line="23" />
               <folding>
                 <element signature="e#83#92#0" expanded="true" />
@@ -153,8 +145,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/utils/mManagerIO.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="380">
-              <caret line="51" column="23" selection-start-line="51" selection-start-column="13" selection-end-line="51" selection-end-column="23" />
+            <state relative-caret-position="4028">
+              <caret line="219" column="33" selection-start-line="219" selection-start-column="33" selection-end-line="219" selection-end-column="33" />
               <folding>
                 <element signature="e#85#124#0" expanded="true" />
               </folding>
@@ -162,23 +154,27 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="183" column="23" lean-forward="true" selection-start-line="183" selection-start-column="23" selection-end-line="183" selection-end-column="23" />
+            <state relative-caret-position="-881">
+              <caret line="41" lean-forward="true" selection-start-line="41" selection-end-line="41" />
+              <folding>
+                <marker date="1546838791070" expanded="true" signature="2780:2819" ph="..." />
+                <marker date="1546838791070" expanded="true" signature="3387:3389" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/birefringence_python/scripts/image_registration.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2261">
-              <caret line="119" column="25" lean-forward="true" selection-start-line="119" selection-start-column="25" selection-end-line="119" selection-end-column="25" />
-              <folding>
-                <element signature="e#0#47#0" expanded="true" />
-              </folding>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="893">
+                <caret line="47" column="40" selection-start-line="47" selection-start-column="40" selection-end-line="47" selection-end-column="40" />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -186,10 +182,22 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3176">
-              <caret line="221" selection-start-line="221" selection-end-line="221" />
+            <state relative-caret-position="2850">
+              <caret line="152" column="14" selection-start-line="152" selection-start-column="14" selection-end-line="152" selection-end-column="14" />
               <folding>
                 <element signature="e#20#29#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgProcessing.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="893">
+              <caret line="53" column="23" selection-start-line="53" selection-start-column="23" selection-end-line="53" selection-end-column="23" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -254,7 +262,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="refactor" />
+        <entry key="$PROJECT_DIR$" value="fry2" />
       </map>
     </option>
   </component>
@@ -274,11 +282,11 @@
         <option value="$PROJECT_DIR$/birefringence_python/utils/plotting.py" />
         <option value="$PROJECT_DIR$/birefringence_python/image_registration.py" />
         <option value="$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py" />
-        <option value="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" />
         <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/birefringence_python/PolScope/multiDimProcess.py" />
         <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/birefringence_python/utils/plotting.py" />
         <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/birefringence_python/run_reconstruction.py" />
         <option value="$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" />
+        <option value="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" />
       </list>
     </option>
   </component>
@@ -446,7 +454,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.run_reconstruction (1)">
+  <component name="RunManager" selected="Python.run_reconstruction">
     <configuration name="Unnamed" type="PythonConfigurationType" factoryName="Python">
       <module name="ReconstructOrder" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -477,14 +485,14 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/birefringence_python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/birefringence_python/utils" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="C:\Google Drive\python\ReconstructOrder\birefringence_python\scripts\image_registration.py" />
+      <option name="SCRIPT_NAME" value="C:\Google Drive\python\ReconstructOrder\birefringence_python\image_registration.py" />
       <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
@@ -566,10 +574,11 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.run_reconstruction (1)" />
         <item itemvalue="Python.image_registration" />
         <item itemvalue="Python.run_reconstruction" />
         <item itemvalue="Python.list_modules" />
+        <item itemvalue="Python.run_reconstruction (1)" />
+        <item itemvalue="Python.image_registration" />
       </list>
     </recent_temporary>
   </component>
@@ -895,50 +904,15 @@
           <line>112</line>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
-        <line-breakpoint suspend="THREAD" type="python-line">
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/birefringence_python/utils/plotting.py</url>
-          <line>80</line>
+          <line>84</line>
           <option name="timeStamp" value="18" />
         </line-breakpoint>
-        <line-breakpoint suspend="THREAD" type="python-line">
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/birefringence_python/utils/imgIO.py</url>
           <line>23</line>
           <option name="timeStamp" value="19" />
-        </line-breakpoint>
-        <line-breakpoint suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/birefringence_python/utils/plotting.py</url>
-          <line>144</line>
-          <option name="timeStamp" value="20" />
-        </line-breakpoint>
-        <line-breakpoint suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/birefringence_python/utils/plotting.py</url>
-          <line>140</line>
-          <option name="timeStamp" value="21" />
-        </line-breakpoint>
-        <line-breakpoint suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/birefringence_python/utils/plotting.py</url>
-          <line>147</line>
-          <option name="timeStamp" value="22" />
-        </line-breakpoint>
-        <line-breakpoint suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/birefringence_python/utils/plotting.py</url>
-          <line>145</line>
-          <option name="timeStamp" value="23" />
-        </line-breakpoint>
-        <line-breakpoint suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/birefringence_python/utils/imgProcessing.py</url>
-          <line>78</line>
-          <option name="timeStamp" value="25" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/birefringence_python/scripts/image_registration.py</url>
-          <line>120</line>
-          <option name="timeStamp" value="32" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/birefringence_python/scripts/image_registration.py</url>
-          <line>121</line>
-          <option name="timeStamp" value="33" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -1048,8 +1022,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgProcessing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1444">
-          <caret line="76" column="14" selection-start-line="76" selection-start-column="14" selection-end-line="76" selection-end-column="14" />
+        <state relative-caret-position="893">
+          <caret line="53" column="23" selection-start-line="53" selection-start-column="23" selection-end-line="53" selection-end-column="23" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -1058,8 +1032,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3176">
-          <caret line="221" selection-start-line="221" selection-end-line="221" />
+        <state relative-caret-position="2850">
+          <caret line="152" column="14" selection-start-line="152" selection-start-column="14" selection-end-line="152" selection-end-column="14" />
           <folding>
             <element signature="e#20#29#0" expanded="true" />
           </folding>
@@ -1068,8 +1042,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/birefringence_python/utils/mManagerIO.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="51" column="23" selection-start-line="51" selection-start-column="13" selection-end-line="51" selection-end-column="23" />
+        <state relative-caret-position="4028">
+          <caret line="219" column="33" selection-start-line="219" selection-start-column="33" selection-end-line="219" selection-end-column="33" />
           <folding>
             <element signature="e#85#124#0" expanded="true" />
           </folding>
@@ -1078,7 +1052,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgIO.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-950">
+        <state relative-caret-position="361">
           <caret line="23" selection-start-line="23" selection-end-line="23" />
           <folding>
             <element signature="e#83#92#0" expanded="true" />
@@ -1086,30 +1060,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1178">
-          <caret line="62" column="40" lean-forward="true" selection-start-line="62" selection-start-column="40" selection-end-line="62" selection-end-column="40" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-608">
-          <caret line="6" column="39" selection-start-line="6" selection-start-column="39" selection-end-line="6" selection-end-column="39" />
+        <state relative-caret-position="1425">
+          <caret line="77" column="36" selection-start-line="77" selection-start-column="36" selection-end-line="77" selection-end-column="36" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="183" column="23" lean-forward="true" selection-start-line="183" selection-start-column="23" selection-end-line="183" selection-end-column="23" />
         </state>
       </provider>
     </entry>
@@ -1117,8 +1074,26 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2261">
           <caret line="119" column="25" lean-forward="true" selection-start-line="119" selection-start-column="25" selection-end-line="119" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="591">
+          <caret line="42" column="21" selection-start-line="42" selection-start-column="21" selection-end-line="42" selection-end-column="21" />
           <folding>
-            <element signature="e#0#47#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-881">
+          <caret line="41" lean-forward="true" selection-start-line="41" selection-end-line="41" />
+          <folding>
+            <marker date="1546838791070" expanded="true" signature="2780:2819" ph="..." />
+            <marker date="1546838791070" expanded="true" signature="3387:3389" ph="..." />
           </folding>
         </state>
       </provider>

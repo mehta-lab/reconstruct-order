@@ -21,7 +21,7 @@ from utils.imgProcessing import ImgLimit
 
 def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
                    BgDir_local=None, flatField=False, bgCorrect='Auto',
-                   recon_method='Stokes', ff_method='open'):
+                   ff_method='open'):
     """
     Estimate background for each channel to perform background substraction for
     birefringence and flat-field correction (division) for bright-field and 
@@ -41,7 +41,6 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     img_ioBg.posIdx = 0  # assuming only single image for background
     img_ioBg.tIdx = 0
     img_ioBg.zIdx = 0
-    img_ioBg.recon_method = recon_method
     img_ioSm.bg_method = 'Global'
 
     if bgCorrect=='None':
@@ -102,7 +101,6 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     img_ioSm.swing = img_ioBg.swing
     img_ioSm.wavelength = img_ioBg.wavelength
     img_ioSm.blackLevel = img_ioBg.blackLevel
-    img_ioSm.recon_method = recon_method
     img_ioSm.ImgFluorMin = np.full((4,img_ioBg.height,img_ioBg.width), np.inf) # set initial min array to to be Inf
     img_ioSm.ImgFluorSum = np.zeros((4,img_ioBg.height,img_ioBg.width)) # set the default background to be Ones (uniform field)
     img_ioSm.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(100,100))  # kernel for image opening operation, 100-200 is usually good
