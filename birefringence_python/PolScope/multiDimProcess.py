@@ -19,8 +19,9 @@ from utils.imgProcessing import ImgLimit
 
 
 
-def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, flatField=False, bgCorrect='Auto',
-                   recon_method='Stokes', ff_method='open'):
+def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
+                   BgDir_local=None, flatField=False, bgCorrect='Auto',
+                   ff_method='open'):
     """
     Estimate background for each channel to perform background substraction for
     birefringence and flat-field correction (division) for bright-field and 
@@ -40,7 +41,6 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     img_ioBg.posIdx = 0  # assuming only single image for background
     img_ioBg.tIdx = 0
     img_ioBg.zIdx = 0
-    img_ioBg.recon_method = recon_method
     img_ioSm.bg_method = 'Global'
 
     if bgCorrect=='None':
@@ -52,13 +52,26 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
             OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
             img_ioSm.ImgOutPath = OutputPath
             img_ioSm.bg_correct = True
-        elif bgCorrect=='Local':
-            print('Background correction mode set as "Local". Additional background correction using local '
+        elif bgCorrect=='Local_filter':
+            print('Background correction mode set as "Local_filter". Additional background correction using local '
                   'background estimated from sample images will be performed')
             OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + SmDir)
             img_ioSm.ImgOutPath = OutputPath
-            img_ioSm.bg_method = 'Local'
+            img_ioSm.bg_method = 'Local_filter'
             img_ioSm.bg_correct = True
+        elif bgCorrect=='Local_defocus':
+            print('Background correction mode set as "Local_defocus". Use images from' + BgDir_local +
+                  'at the same position as background')
+            img_bg_path = os.path.join(RawDataPath, ImgDir,
+                                       BgDir_local)
+            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir_local)
+            img_ioSm.ImgOutPath = OutputPath
+            img_ioSm.bg_method = 'Local_defocus'
+            img_ioSm.bg_correct = True
+            img_io_bg_local = mManagerReader(img_bg_path, OutputPath)
+            img_io_bg_local.blackLevel = img_ioBg.blackLevel
+            img_ioSm.bg_local = img_io_bg_local
+
         elif bgCorrect=='Auto':
             if hasattr(img_ioSm, 'bg'):
                 if img_ioSm.bg == 'No Background':
@@ -76,21 +89,18 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
                 img_ioSm.bg_correct = True
             img_ioSm.ImgOutPath = OutputPath
 
-
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_ioBg) # 0 for z-index
-
-    if img_ioSm.bg_correct:
-        img_reconstructor = ImgReconstructor(ImgRawBg, method=recon_method, swing=img_ioBg.swing,
+    img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=bgCorrect, swing=img_ioBg.swing,
                                          wavelength=img_ioBg.wavelength, output_path=img_ioBg.ImgOutPath)
+    if img_ioSm.bg_correct:
         img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
     else:
         img_stokes_bg = None
-    
+
     img_ioSm.param_bg = img_stokes_bg
     img_ioSm.swing = img_ioBg.swing
     img_ioSm.wavelength = img_ioBg.wavelength
     img_ioSm.blackLevel = img_ioBg.blackLevel
-    img_ioSm.recon_method = recon_method
     img_ioSm.ImgFluorMin = np.full((4,img_ioBg.height,img_ioBg.width), np.inf) # set initial min array to to be Inf
     img_ioSm.ImgFluorSum = np.zeros((4,img_ioBg.height,img_ioBg.width)) # set the default background to be Ones (uniform field)
     img_ioSm.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(100,100))  # kernel for image opening operation, 100-200 is usually good
@@ -119,9 +129,9 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
         I_trans_Bg = np.ones((img_ioBg.height,img_ioBg.width))  # use uniform field if no correction
     img_ioSm.I_trans_Bg = img_stokes_bg[0]
     img_ioSm.ImgFluorBg = ImgFluorBg
-    return img_ioSm
+    return img_ioSm, img_reconstructor
     
-def loopPos(img_ioSm, outputChann, flatField=False, bgCorrect=True, circularity='rcp', norm=True):
+def loopPos(img_ioSm, img_reconstructor, flatField=False, bgCorrect=True, circularity='rcp', norm=True):
     """
     Loops through each position in the acquisition folder, and performs flat-field correction.
     @param flatField: boolean - whether flatField correction is applied.
@@ -138,20 +148,33 @@ def loopPos(img_ioSm, outputChann, flatField=False, bgCorrect=True, circularity=
         else:
             subDir = 'Pos0'
         img_ioSm.ImgPosPath = os.path.join(img_ioSm.ImgSmPath, subDir)
+        if img_ioSm.bg_method == 'Local_defocus':
+            img_io_bg = img_ioSm.bg_local
+            img_io_bg.ImgPosPath = os.path.join(img_io_bg.ImgSmPath, subDir)
+            img_io_bg.posIdx = posIdx
         img_ioSm.posIdx = posIdx
-        img_io = loopT(img_ioSm, outputChann, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
+        img_io = loopT(img_ioSm, img_reconstructor, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
     return img_io
         
-def loopT(img_io, outputChann, flatField=False, bgCorrect=True, circularity='rcp', norm=True):
+def loopT(img_io, img_reconstructor, flatField=False, bgCorrect=True, circularity='rcp', norm=True):
     for tIdx in range(0,img_io.nTime):
         img_io.tIdx = tIdx
         if img_io.loopZ =='sample':
-            img_io = loopZSm(img_io, outputChann, flatField=flatField, circularity=circularity, norm=norm)
+            if img_io.bg_method == 'Local_defocus':
+                img_io_bg = img_io.bg_local
+                print('compute defocused backgorund at pos{} ...'.format(img_io_bg.posIdx))
+                img_io_bg.tIdx = tIdx
+                img_io_bg.zIdx = 0
+                ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
+                img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
+                img_io.param_bg = img_stokes_bg
+            img_io = loopZSm(img_io, img_reconstructor, flatField=flatField, circularity=circularity, norm=norm)
+
         else:
             img_io = loopZBg(img_io, flatField=flatField, circularity=circularity)
     return img_io
 
-def loopZSm(img_io, outputChann, flatField=False, circularity='rcp', norm=True):
+def loopZSm(img_io, img_reconstructor, flatField=False, circularity='rcp', norm=True):
     """
     Loops through Z.
     
@@ -165,18 +188,16 @@ def loopZSm(img_io, outputChann, flatField=False, circularity='rcp', norm=True):
     tIdx = img_io.tIdx
     posIdx = img_io.posIdx
     for zIdx in range(0,img_io.nZ):
+    # for zIdx in range(0, 1):
         print('Processing position %03d, time %03d, z %03d ...' % (posIdx, tIdx, zIdx))
         plt.close("all") # close all the figures from the last run
         img_io.zIdx = zIdx
         retardMMSm = np.array([])
         azimuthMMSm = np.array([])     
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
-
-        img_reconstructor = ImgReconstructor(ImgRawSm, method=img_io.recon_method, swing=img_io.swing,
-                                             wavelength=img_io.wavelength, kernel=img_io.kernel, output_path=img_io.ImgOutPath)
         img_stokes_sm = img_reconstructor.compute_stokes(ImgRawSm)
-
-        img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm, img_io.param_bg, circularity=circularity, method=img_io.bg_method,
+        img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm, img_io.param_bg,
+                                                                      circularity=circularity, bg_method=img_io.bg_method,
                                                                 extra=False) # background subtraction
         [I_trans, retard, azimuth, polarization] = img_computed_sm
 
@@ -187,10 +208,8 @@ def loopZSm(img_io, outputChann, flatField=False, circularity='rcp', norm=True):
 
         #retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images
         if isinstance(ImgBF, np.ndarray):
-            if flatField:
-                ImgBF = ImgBF[0,:,:] / img_io.param_bg[0]  # flat-field correction
-            else:
-                ImgBF = ImgBF[0, :, :]
+            ImgBF = ImgBF[0,:,:] / img_io.param_bg[0]  # flat-field correction
+
         else:   # use brightfield calculated from pol-images if there is no brightfield data
             ImgBF = I_trans
 
@@ -214,12 +233,9 @@ def loopZSm(img_io, outputChann, flatField=False, circularity='rcp', norm=True):
 
         imgs = [ImgBF,retard, azimuth, polarization, ImgFluor]
 
-        img_io, imgs = plot_birefringence(img_io, imgs, outputChann, spacing=20, vectorScl=2, zoomin=False, dpi=200,
+        img_io, imgs = plot_birefringence(img_io, imgs, img_io.chNamesOut, spacing=20, vectorScl=2, zoomin=False, dpi=200,
                                          norm=norm, plot=True)
         # img_io.imgLimits = ImgLimit(imgs,img_io.imgLimits)
-        
-        
-        
         ##To do: add 'Fluor+Retardance' channel## 
         
         img_io.writeMetaData()

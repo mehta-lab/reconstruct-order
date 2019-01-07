@@ -1,8 +1,8 @@
 #%matplotlib inline
 import os
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')
+# import matplotlib
+# matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import cv2
@@ -50,6 +50,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
     tIdx = imgInput.tIdx 
     zIdx = imgInput.zIdx
     posIdx = imgInput.posIdx
+    chann_scale = [10, 10, 10, 10] # scale fluor channels for composite images when norm=False
     if zoomin: # crop the images
         imList = [I_trans, retard, azimuth]
         imListCrop = imcrop(imList, I_trans)
@@ -68,17 +69,20 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
 
         plt.savefig(os.path.join(imgInput.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
 
-    IFluorRetard = CompositeImg([100*retard, ImgFluor[3,:,:]*1, ImgFluor[2,:,:]*1], norm=norm)
+    IFluorRetard = CompositeImg([100*retard, ImgFluor[3,:,:]*chann_scale[3], ImgFluor[2,:,:]*chann_scale[2]], norm=norm)
     # I_fluor_all_retard = CompositeImg([100 * retard, ImgFluor[1, :, :] * 0.05, ImgFluor[0, :, :] * 0.05], norm=norm)
-    I_fluor_all_retard = CompositeImg([100 * retard, ImgFluor[3, :, :] * 1, ImgFluor[2, :, :] * 1,
-                                       ImgFluor[1, :, :] * 1, ImgFluor[0, :, :] * 1], norm=norm)
+    I_fluor_all_retard = CompositeImg([100 * retard,
+                                       ImgFluor[3, :, :] * chann_scale[3],
+                                       ImgFluor[2, :, :] * chann_scale[2],
+                                       ImgFluor[1, :, :] * chann_scale[1],
+                                       ImgFluor[0, :, :] * chann_scale[0]], norm=norm)
 #    images = [I_trans, retard, azimuth_degree, I_azi_ret, I_azi_ret_trans, IFluorRetard]
-    I_trans = imBitConvert(I_trans * 10 ** 3, bit=16, norm=norm)  # AU, set norm to False for tiling images
+    I_trans = imBitConvert(I_trans * 10 ** 3, bit=16, norm=False)  # AU, set norm to False for tiling images
     retard = imBitConvert(retard * 10 ** 3, bit=16)  # scale to pm
     scattering = imBitConvert(scattering * 10 ** 4, bit=16)
     azimuth_degree = imBitConvert(azimuth_degree * 100, bit=16)  # scale to [0, 18000], 100*degree
     imagesTrans = [I_trans, retard, azimuth_degree, scattering, I_azi_ret, I_azi_scat, I_azi_ret_trans] #trasmission channels
-    imagesFluor = [imBitConvert(ImgFluor[i,:,:]*500, bit=16, norm=False) for i in range(ImgFluor.shape[0])]+[IFluorRetard, I_fluor_all_retard]
+    imagesFluor = [imBitConvert(ImgFluor[i,:,:], bit=16, norm=False) for i in range(ImgFluor.shape[0])]+[IFluorRetard, I_fluor_all_retard]
     
     images = imagesTrans+imagesFluor   
     chNames = ['Transmission', 'Retardance', 'Orientation', 'Scattering',
@@ -126,7 +130,7 @@ def CompositeImg(images, norm=True):
     idx = 0
     for img in images:
         if norm:
-            img_one_chann = imadjust(img, tol=1, bit=8)
+            img_one_chann = imadjust(img, tol=0.01, bit=8)
         else:
             img_one_chann = imBitConvert(img, bit=8, norm=False)
 
@@ -210,18 +214,19 @@ def plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_sca
     cbar = fig.colorbar(ax_hsv, cax=cax, orientation='vertical', ticks=np.linspace(0, 255, 5))
     cbar.ax.set_yticklabels([r'$0^o$', r'$45^o$', r'$90^o$', r'$135^o$', r'$180^o$'])  # vertically oriented colorbar
 
-def plot_sub_images(images,titles, ImgOutPath, figName):
+def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
     figSize = (12,12)
     fig = plt.figure(figsize = figSize)            
     for i in range(4):
         ax_p = plt.subplot(2,2,i+1)
-        ax_i = plt.imshow(imadjust(images[i]),'gray')
+        ax_i = plt.imshow(imadjust(images[i]))
         plt.title(titles[i])
         plt.xticks([]),plt.yticks([])
-        divider = make_axes_locatable(ax_p)
-        cax = divider.append_axes('right', size='5%', pad=0.05)
-        cbar = fig.colorbar(ax_i, cax=cax, orientation='vertical')
-    plt.show()
+        if colorbar:
+            divider = make_axes_locatable(ax_p)
+            cax = divider.append_axes('right', size='5%', pad=0.05)
+            cbar = fig.colorbar(ax_i, cax=cax, orientation='vertical')
+    # plt.show()
     plt.savefig(os.path.join(ImgOutPath, figName), dpi=300, bbox_inches='tight')
 
 
