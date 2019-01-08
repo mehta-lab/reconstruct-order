@@ -31,7 +31,7 @@ Rudolf Oldenbourg, 2003.
 # get_ipython().run_line_magic('matplotlib', 'inline')
 import sys
 sys.path.append(".") # Adds current directory to python search path.
-sys.path.append("..") # Adds parent directory to python search path.
+# sys.path.append("..") # Adds parent directory to python search path.
 # sys.path.append(os.path.dirname(sys.argv[0]))
 from PolScope.multiDimProcess import findBackground, loopPos
 from utils.imgIO import GetSubDirName
@@ -73,11 +73,11 @@ def read_config(config_fname):
 def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, BgDir_local=None, flatField=False,
                bgCorrect=True, circularity=False, norm=True):
     print('Processing ' + SmDir + ' ....')
-    imgSm, img_reconstructor = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
+    img_io, img_reconstructor = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
                            BgDir_local=BgDir_local, flatField=flatField,bgCorrect=bgCorrect,
                            ff_method='open') # find background tile
-    imgSm.loopZ ='sample'
-    imgSm = loopPos(imgSm, img_reconstructor, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
+    img_io.loopZ ='sample'
+    img_io = loopPos(img_io, img_reconstructor, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
 
 def run_action(args):
     config = read_config(args.config)
