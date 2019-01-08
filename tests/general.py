@@ -3,7 +3,7 @@
 
 # """
 # Reconstruct retardance and orientation maps from images taken with different polarized illumination output
-# by Open PolScope. This script using the 4- or 5-frame reconstruction algorithm described in Michael Shribak and 
+# by Open compute. This script using the 4- or 5-frame reconstruction algorithm described in Michael Shribak and
 # Rudolf Oldenbourg, 2003.
 # 
 # by Syuan-Ming Guo @ CZ Biohub 2018.3.30 
@@ -13,7 +13,7 @@
 
 
 #get_ipython().run_line_magic('matplotlib', 'inline')
-from PolScope.multiPos import findBackground, loopPos
+from compute.multiPos import findBackground, loopPos
 import seaborn as sns
 
 

@@ -1,0 +1,19 @@
+dataset:
+    RawDataPath: '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/brainarchitecture'
+    ProcessedPath: '/flexo/ComputationalMicroscopy/Processed/brainarchitecture'
+    ImgDir: '2018_11_28_594CTIP2_647SATB2_10X'
+    SmDir: 'SMS_2018_1128_1557_1_3'
+    BgDir: 'BG_2018_1128_1557_1'
+    BgDir_local: None
+processing:
+    outputChann: ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
+                   'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence',
+                   '405', '568', '640']
+    circularity: 'rcp'
+    bgCorrect: 'Local_filter'
+    flatField: False
+    batchProc: False
+plotting:
+    norm: True
+       
+

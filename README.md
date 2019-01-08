@@ -16,12 +16,12 @@ ReconstructOrder can be run inside the imaging Docker container that has been bu
 
 To start a docker container, do 
 ```buildoutcfg
-sudo nvidia-docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ -v ~/ReconstructOrder:/ReconstructOrder imaging_docker:gpu_py36_cu90 bash
+nvidia-docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ -v ~/ReconstructOrder:/ReconstructOrder imaging_docker:gpu_py36_cu90 bash
 ```
 ### Run reconstruction
 To run reconstruction, do
 ```buildoutcfg
-python ~/ReconstructOrder/birefringence_python/run_reconstruction.py
+python /ReconstructOrder/run_reconstruction.py --config <your config file>.yml
 ```
 The following options are available in run_reconstruction.py
  
