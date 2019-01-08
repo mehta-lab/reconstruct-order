@@ -5,10 +5,95 @@
     <bookmark url="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py" line="78" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="213a1158-0346-4162-98ad-6788db62b436" name="Default Changelist" comment="add config files">
+    <list default="true" id="213a1158-0346-4162-98ad-6788db62b436" name="Default Changelist" comment="update README">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/birefringence_python/config/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/birefringence_python/config/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/birefringence_python/config/config_2018_11_28_594CTIP2_647SATB2_10X.yml" beforeDir="false" afterPath="$PROJECT_DIR$/birefringence_python/config/config_2018_11_28_594CTIP2_647SATB2_10X.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anisolib-matlab/ComputeFluorAnisotropy.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/anisolib-matlab/ComputeFluorAnisotropy3Frame.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/anisolib-matlab/anisoStats.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/anisolib-matlab/fluorpolnormalize.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/anisolib-matlab/opposites.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/anisolib-matlab/pol2color.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/anisolib-matlab/pol2colorTest.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/anisolib-matlab/pol2opposites.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/.ipynb_checkpoints/20180530_gutCells_10X_Confocal-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/.ipynb_checkpoints/2018_05_09_KindneySection-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/.ipynb_checkpoints/2018_07_13_KindneySection-10x40x-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/.ipynb_checkpoints/Untitled-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/.ipynb_checkpoints/general-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/.ipynb_checkpoints/test-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/config/config.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/config/config_2018_11_28_594CTIP2_647SATB2_10X.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/birefringence_python/scripts/image_registration.py" beforeDir="false" afterPath="$PROJECT_DIR$/birefringence_python/scripts/image_registration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/Contents.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_ang2rad.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_axial.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_axialmean.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_clust.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_cmtest.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_confmean.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_corrcc.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_corrcl.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_dist.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_dist2.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_hktest.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_kappa.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_ktest.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_kuipertest.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_kurtosis.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_mean.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_median.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_medtest.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_moment.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_mtest.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_otest.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_plot.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_r.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_rad2ang.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_raotest.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_rtest.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_samplecdf.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_skewness.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_stats.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_std.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_symtest.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_var.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_vmpar.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_vmpdf.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_vmrnd.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_vtest.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/circ_wwtest.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/examples/data.mat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/examples/example1.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/examples/example2.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/examples/formatSubplot.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/examples/neurodata.mat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/examples/parseVarArgs.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/kuipertable.mat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/license.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/CircStat2012a/readme.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/colorspace/colorcalc.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/colorspace/colorspace.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/colorspace/colorspace.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/colorspace/colorspace.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/colorspace/colorspace.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/colorspace/colorspace_01.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/colorspace/colorspace_02.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/colorspace/colorspace_03.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/colorspace/colorspace_ciedemo.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/colorspace/colorspace_demo.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/colorspace/colorspace_test.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/imagecat.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/parsepropval.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/tiffread.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/tight_subplot.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib-matlab/togglefig.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fluorpol-matlab/EpithelialCells20170327_confocalPolScope.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fluorpol-matlab/computeConfocalNormalizations.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fluorpol-matlab/processConfocalPolData.m" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fluorpol_python/readMatlabOutput.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,8 +103,8 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/ReconstructOrder$run_reconstruction__1_.coverage" NAME="run_reconstruction (1) Coverage Results" MODIFIED="1546562709190" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/birefringence_python" />
-    <SUITE FILE_PATH="coverage/ReconstructOrder$image_registration__1_.coverage" NAME="image_registration (1) Coverage Results" MODIFIED="1545895872012" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/birefringence_python" />
-    <SUITE FILE_PATH="coverage/ReconstructOrder$image_registration.coverage" NAME="image_registration Coverage Results" MODIFIED="1545954213520" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/birefringence_python" />
+    <SUITE FILE_PATH="coverage/ReconstructOrder$image_registration.coverage" NAME="image_registration Coverage Results" MODIFIED="1546842039575" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/birefringence_python/utils" />
+    <SUITE FILE_PATH="coverage/ReconstructOrder$image_registration__1_.coverage" NAME="image_registration (1) Coverage Results" MODIFIED="1546842052344" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/birefringence_python/scripts" />
     <SUITE FILE_PATH="coverage/ReconstructOrder$run_reconstruction.coverage" NAME="run_reconstruction Coverage Results" MODIFIED="1544470304344" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/birefringence_python" />
     <SUITE FILE_PATH="coverage/ReconstructOrder$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1540940766803" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/birefringence_python" />
   </component>
@@ -57,17 +142,17 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="md" value="6" />
-          <entry key="py" value="96" />
+          <entry key="py" value="99" />
           <entry key="tif" value="2" />
-          <entry key="yml" value="2" />
+          <entry key="yml" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Image" value="2" />
           <entry key="Markdown" value="6" />
-          <entry key="Python" value="96" />
-          <entry key="YAML" value="2" />
+          <entry key="Python" value="99" />
+          <entry key="YAML" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -76,19 +161,20 @@
           <entry key="Unnamed" value="107" />
           <entry key="dummy" value="30" />
           <entry key="image_registration" value="61" />
+          <entry key="image_registration (1)" value="6" />
           <entry key="list_modules" value="103" />
-          <entry key="md" value="1000" />
-          <entry key="py" value="6927" />
+          <entry key="md" value="1042" />
+          <entry key="py" value="7112" />
           <entry key="run_reconstruction" value="122" />
-          <entry key="txt" value="1217" />
+          <entry key="txt" value="1243" />
           <entry key="yml" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Markdown" value="1000" />
-          <entry key="PLAIN_TEXT" value="1247" />
-          <entry key="Python" value="7810" />
+          <entry key="Markdown" value="1042" />
+          <entry key="PLAIN_TEXT" value="1273" />
+          <entry key="Python" value="8001" />
           <entry key="YAML" value="22" />
         </counts>
       </usages-collector>
@@ -110,10 +196,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1425">
+            <state relative-caret-position="1463">
               <caret line="77" column="36" selection-start-line="77" selection-start-column="36" selection-end-line="77" selection-end-column="36" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -125,8 +211,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="591">
-              <caret line="42" column="21" selection-start-line="42" selection-start-column="21" selection-end-line="42" selection-end-column="21" />
+            <state relative-caret-position="76">
+              <caret line="4" column="31" lean-forward="true" selection-start-line="4" selection-start-column="31" selection-end-line="4" selection-end-column="31" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -135,52 +221,6 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgIO.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="23" selection-start-line="23" selection-end-line="23" />
-              <folding>
-                <element signature="e#83#92#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/birefringence_python/utils/mManagerIO.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4028">
-              <caret line="219" column="33" selection-start-line="219" selection-start-column="33" selection-end-line="219" selection-end-column="33" />
-              <folding>
-                <element signature="e#85#124#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="487">
-              <caret line="113" column="23" lean-forward="true" selection-start-line="113" selection-start-column="23" selection-end-line="113" selection-end-column="23" />
-              <folding>
-                <marker date="1546838791070" expanded="true" signature="2780:2819" ph="..." />
-                <marker date="1546838791070" expanded="true" signature="3387:3389" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/birefringence_python/config/config_2018_11_28_594CTIP2_647SATB2_10X.yml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="304">
-              <caret line="16" column="10" selection-start-line="16" selection-start-column="10" selection-end-line="16" selection-end-column="10" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/birefringence_python/config/config.yml">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="304">
@@ -193,10 +233,44 @@
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="893">
-                <caret line="47" column="40" selection-start-line="47" selection-start-column="40" selection-end-line="47" selection-end-column="40" />
+              <first_editor relative-caret-position="440">
+                <caret line="31" column="22" selection-start-line="31" selection-start-column="22" selection-end-line="31" selection-end-column="22" />
               </first_editor>
               <second_editor />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="true" current-in-tab="false">
+        <entry file="remoteDeploymentFS://&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/birefringence_python/utils/imgProcessing.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="190">
+              <caret line="10" column="3" lean-forward="true" selection-start-line="10" selection-start-column="3" selection-end-line="10" selection-end-column="3" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="266">
+              <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+              <folding>
+                <marker date="1546904770353" expanded="true" signature="2786:2825" ph="..." />
+                <marker date="1546904770353" expanded="true" signature="3393:3395" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/birefringence_python/scripts/image_registration.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2565">
+              <caret line="135" column="7" selection-start-line="135" selection-start-column="7" selection-end-line="135" selection-end-column="7" />
             </state>
           </provider>
         </entry>
@@ -204,11 +278,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2850">
+            <state relative-caret-position="741">
               <caret line="152" column="14" selection-start-line="152" selection-start-column="14" selection-end-line="152" selection-end-column="14" />
-              <folding>
-                <element signature="e#20#29#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -216,7 +287,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgProcessing.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="893">
+            <state relative-caret-position="518">
               <caret line="53" column="23" selection-start-line="53" selection-start-column="23" selection-end-line="53" selection-end-column="23" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -259,6 +330,7 @@
       <find>circularity</find>
       <find>img_param</find>
       <find>ImgReconstructor</find>
+      <find>img_ioSm</find>
     </findStrings>
     <replaceStrings>
       <replace>azimuth_degree</replace>
@@ -269,7 +341,6 @@
       <replace>parse_tiff_input</replace>
       <replace>img_one_chann</replace>
       <replace>ImgPol</replace>
-      <replace>img_io</replace>
       <replace>save_npy_2D</replace>
       <replace>circularity</replace>
       <replace>s3</replace>
@@ -278,6 +349,7 @@
       <replace>img_</replace>
       <replace>stokes_param</replace>
       <replace>img_stokes</replace>
+      <replace>img_io</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -293,7 +365,6 @@
       <list>
         <option value="$PROJECT_DIR$/birefringence_python/2018_07_13_KidneySection.py" />
         <option value="$PROJECT_DIR$/birefringence_python/test/list_modules.py" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/birefringence_python/scripts/PyPol2microDL_fry2.py" />
         <option value="$PROJECT_DIR$/birefringence_python/utils/imgIO.py" />
         <option value="$PROJECT_DIR$/birefringence_python/utils/mManagerIO.py" />
@@ -307,10 +378,12 @@
         <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/birefringence_python/PolScope/multiDimProcess.py" />
         <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/birefringence_python/utils/plotting.py" />
         <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/birefringence_python/run_reconstruction.py" />
-        <option value="$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" />
-        <option value="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" />
         <option value="$PROJECT_DIR$/birefringence_python/config/config_2018_11_28_594CTIP2_647SATB2_10X.yml" />
         <option value="$PROJECT_DIR$/birefringence_python/config/config.yml" />
+        <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/birefringence_python/scripts/image_registration.py" />
+        <option value="$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" />
+        <option value="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" />
       </list>
     </option>
   </component>
@@ -321,16 +394,46 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="473" />
-    <option name="y" value="261" />
-    <option name="width" value="1934" />
-    <option name="height" value="1037" />
+    <option name="x" value="-5" />
+    <option name="y" value="7" />
+    <option name="width" value="1030" />
+    <option name="height" value="578" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes />
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="ReconstructOrder" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ReconstructOrder" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ReconstructOrder" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ReconstructOrder" type="462c0819:PsiDirectoryNode" />
+              <item name="birefringence_python" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ReconstructOrder" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ReconstructOrder" type="462c0819:PsiDirectoryNode" />
+              <item name="birefringence_python" type="462c0819:PsiDirectoryNode" />
+              <item name="PolScope" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ReconstructOrder" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ReconstructOrder" type="462c0819:PsiDirectoryNode" />
+              <item name="birefringence_python" type="462c0819:PsiDirectoryNode" />
+              <item name="scripts" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="true" />
@@ -339,14 +442,15 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/birefringence_python/scripts" />
+    <property name="last_opened_file_path" value="C:/python" />
     <property name="settings.editor.selected.configurable" value="configurable.group.project" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Google Drive\python\ReconstructOrder\" />
+      <recent name="C:\python" />
       <recent name="C:\Google Drive\python\ReconstructOrder\birefringence_python\scripts" />
       <recent name="C:\Google Drive\python\ReconstructOrder\birefringence_python\" />
-      <recent name="C:\python" />
       <recent name="C:\Google Drive\python\ReconstructOrder\birefringence_python" />
     </key>
   </component>
@@ -478,7 +582,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.run_reconstruction">
+  <component name="RunManager" selected="Python.image_registration (1)">
     <configuration name="Unnamed" type="PythonConfigurationType" factoryName="Python">
       <module name="ReconstructOrder" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -493,6 +597,25 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="C:\Google Drive\python\ReconstructOrder\birefringence_python\run_reconstruction.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="image_registration (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="ReconstructOrder" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/birefringence_python/scripts" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/birefringence_python/scripts/image_registration.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -595,14 +718,15 @@
       <item itemvalue="Python.run_reconstruction" />
       <item itemvalue="Python.image_registration" />
       <item itemvalue="Python.run_reconstruction (1)" />
+      <item itemvalue="Python.image_registration (1)" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.image_registration (1)" />
         <item itemvalue="Python.image_registration" />
         <item itemvalue="Python.run_reconstruction" />
         <item itemvalue="Python.list_modules" />
         <item itemvalue="Python.run_reconstruction (1)" />
-        <item itemvalue="Python.image_registration" />
       </list>
     </recent_temporary>
   </component>
@@ -862,7 +986,21 @@
       <option name="project" value="LOCAL" />
       <updated>1546839356579</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="bug fix">
+      <created>1546839621558</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1546839621558</updated>
+    </task>
+    <task id="LOCAL-00037" summary="update README">
+      <created>1546840411220</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1546840411220</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TodoView" selected-index="2">
@@ -875,19 +1013,19 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
+    <frame x="-8" y="-8" width="2576" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" weight="0.3295302" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.24966443" />
       <window_info anchor="bottom" id="Docker" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="1" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="2" weight="0.32921347" />
+      <window_info anchor="bottom" id="Version Control" order="2" visible="true" weight="0.32814237" />
       <window_info anchor="bottom" id="Terminal" order="3" sideWeight="0.4986577" weight="0.32369298" />
       <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.50067115" side_tool="true" weight="0.30938417" />
       <window_info anchor="bottom" id="Message" order="5" />
       <window_info anchor="bottom" id="Find" order="6" weight="0.32925472" />
-      <window_info anchor="bottom" id="Run" order="7" sideWeight="0.49932885" weight="0.32844576" />
+      <window_info anchor="bottom" id="Run" order="7" sideWeight="0.49932885" weight="0.24916574" />
       <window_info anchor="bottom" id="Debug" order="8" sideWeight="0.49880764" weight="0.21913236" />
       <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
@@ -898,13 +1036,39 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="3" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="4" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="5" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Project" order="6" sideWeight="0.498708" weight="0.3761719" />
-      <window_info active="true" anchor="right" id="Python Console" order="7" sideWeight="0.51272726" visible="true" weight="0.41275167" />
-      <window_info anchor="right" id="Remote Host" order="8" weight="0.42214766" />
+      <window_info anchor="right" content_ui="combo" id="Project" order="6" sideWeight="0.498708" weight="0.3755962" />
+      <window_info anchor="right" id="Python Console" order="7" sideWeight="0.51272726" weight="0.24443561" />
+      <window_info active="true" anchor="right" id="Remote Host" order="8" visible="true" weight="0.42209858" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+              <option name="COLUMN_ORDER">
+                <list>
+                  <option value="0" />
+                  <option value="1" />
+                  <option value="2" />
+                  <option value="3" />
+                </list>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
@@ -930,11 +1094,12 @@
     <MESSAGE value="change config" />
     <MESSAGE value="reuse ImgReconstructor" />
     <MESSAGE value="add message" />
-    <MESSAGE value="bug fix" />
     <MESSAGE value="debug" />
     <MESSAGE value="add command line interface and move processing parameters to the config file" />
     <MESSAGE value="add config files" />
-    <option name="LAST_COMMIT_MESSAGE" value="add config files" />
+    <MESSAGE value="bug fix" />
+    <MESSAGE value="update README" />
+    <option name="LAST_COMMIT_MESSAGE" value="update README" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1036,16 +1201,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="893">
-            <caret line="47" column="40" selection-start-line="47" selection-start-column="40" selection-end-line="47" selection-end-column="40" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="146">
@@ -1060,36 +1215,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgProcessing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="893">
-          <caret line="53" column="23" selection-start-line="53" selection-start-column="23" selection-end-line="53" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2850">
-          <caret line="152" column="14" selection-start-line="152" selection-start-column="14" selection-end-line="152" selection-end-column="14" />
-          <folding>
-            <element signature="e#20#29#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/mManagerIO.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4028">
-          <caret line="219" column="33" selection-start-line="219" selection-start-column="33" selection-end-line="219" selection-end-column="33" />
-          <folding>
-            <element signature="e#85#124#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgIO.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="361">
@@ -1100,40 +1225,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py">
+    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/mManagerIO.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1425">
-          <caret line="77" column="36" selection-start-line="77" selection-start-column="36" selection-end-line="77" selection-end-column="36" />
+        <state relative-caret-position="596">
+          <caret line="219" column="33" selection-start-line="219" selection-start-column="33" selection-end-line="219" selection-end-column="33" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/scripts/image_registration.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2261">
-          <caret line="119" column="25" lean-forward="true" selection-start-line="119" selection-start-column="25" selection-end-line="119" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="591">
-          <caret line="42" column="21" selection-start-line="42" selection-start-column="21" selection-end-line="42" selection-end-column="21" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="487">
-          <caret line="113" column="23" lean-forward="true" selection-start-line="113" selection-start-column="23" selection-end-line="113" selection-end-column="23" />
-          <folding>
-            <marker date="1546838791070" expanded="true" signature="2780:2819" ph="..." />
-            <marker date="1546838791070" expanded="true" signature="3387:3389" ph="..." />
+            <element signature="e#85#124#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1145,10 +1242,75 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+          <folding>
+            <marker date="1546904770353" expanded="true" signature="2786:2825" ph="..." />
+            <marker date="1546904770353" expanded="true" signature="3393:3395" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="440">
+            <caret line="31" column="22" selection-start-line="31" selection-start-column="22" selection-end-line="31" selection-end-column="22" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgProcessing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="518">
+          <caret line="53" column="23" selection-start-line="53" selection-start-column="23" selection-end-line="53" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="741">
+          <caret line="152" column="14" selection-start-line="152" selection-start-column="14" selection-end-line="152" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/birefringence_python/scripts/image_registration.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2565">
+          <caret line="135" column="7" selection-start-line="135" selection-start-column="7" selection-end-line="135" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/birefringence_python/config/config.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="304">
           <caret line="16" column="10" selection-start-line="16" selection-start-column="10" selection-end-line="16" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="4" column="31" lean-forward="true" selection-start-line="4" selection-start-column="31" selection-end-line="4" selection-end-column="31" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1463">
+          <caret line="77" column="36" selection-start-line="77" selection-start-column="36" selection-end-line="77" selection-end-column="36" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

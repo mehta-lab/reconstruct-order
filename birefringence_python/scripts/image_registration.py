@@ -1,3 +1,6 @@
+import sys
+sys.path.append(".") # Adds current directory to python search path.
+sys.path.append("..") # Adds parent directory to python search path.
 from skimage import io, exposure, util, filters
 from skimage.transform import SimilarityTransform, warp
 from skimage.feature import register_translation
@@ -7,7 +10,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from utils.mManagerIO import mManagerReader
 from utils.plotting import CompositeImg, plot_sub_images
-
 
 def load_img(img_io, z_range=None):
     if not os.path.exists(img_io.ImgSmPath):
@@ -30,7 +32,7 @@ def load_img(img_io, z_range=None):
         img_chann += [img_stack]
     return img_chann
 
-def imshow_pair(images, img_io):
+def imshow_pair(images, img_io, fig_name):
     chann_names = img_io.chNamesOut[:] # adding "[:]" makes a copy of the variable instead of creating a reference
     image_pairs = []
     titles = []
@@ -38,11 +40,10 @@ def imshow_pair(images, img_io):
     chann_names_ref = chann_names.pop(0)
     for image, chann_name in zip(images, chann_names):
         image_pair = [image_ref, image]
-        title = [chann_names_ref + chann_name]
+        title = ['{}_{}'.format(chann_names_ref, chann_name)]
         image_pair_rgb = CompositeImg(image_pair, norm=True)
         image_pairs += [image_pair_rgb]
         titles += title
-    fig_name = 'img_pair_z%03d.png'%(zIdx)
     plot_sub_images(image_pairs, titles, img_io.ImgOutPath, fig_name, colorbar=False)
 def cross_correlation(target_images):
     """
@@ -73,9 +74,9 @@ def cross_correlation(target_images):
     # shifts = [np.flipud(shift) for shift in shifts]
 
     # transformation objects, 3x3 matricies
-    transforms = [SimilarityTransform(translation=shift) for shift in shifts]
+    # transforms = [SimilarityTransform(translation=shift) for shift in shifts]
 
-    return shifts, transforms
+    return shifts
 
 
 def warp_batch(images, transforms):
@@ -110,16 +111,26 @@ ImgDir = '2018_11_26_Argolight_channel_registration_63X_confocal'
 SmDir = 'SMS_2018_1126_1625_1_BG_2018_1126_1621_1'
 
 outputChann = ['405', '488', '568', '640', 'Retardance']
-z_range = [8,10]
+z_range = [7,11]
+y_range = [790,810]
 ImgSmPath = os.path.join(ProcessedPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
 
 OutputPath = os.path.join(ImgSmPath,'registration', 'raw')
 img_io_sm = mManagerReader(ImgSmPath, OutputPath, outputChann)
-target_images = load_img(img_io_sm, z_range=z_range)
-for zIdx in range(z_range[0], z_range[1]):
-    img_io_sm.zIdx = zIdx
-    target_image = [target_image[zIdx-z_range[0],:,:] for target_image in target_images]
-    imshow_pair(target_image, img_io_sm)
+target_images = load_img(img_io_sm, z_range=[0,99])
+# for zIdx in range(z_range[0], z_range[1]):
+#     img_io_sm.zIdx = zIdx
+#     target_image = [target_image[zIdx, 750:1300,750:1300] for target_image in target_images]
+#     fig_name = 'img_pair_z%03d.png' % (zIdx)
+#     imshow_pair(target_image, img_io_sm, fig_name)
+#     plt.close("all")
+#
+# for yIdx in range(y_range[0], y_range[1]):
+#     img_io_sm.yIdx = yIdx
+#     target_image = [np.squeeze(target_image[:, yIdx, 750:1300]) for target_image in target_images]
+#     fig_name = 'img_pair_y%03d.png' % (yIdx)
+#     imshow_pair(target_image, img_io_sm, fig_name)
+#     plt.close("all")
 
-
-# shifts, transforms = cross_correlation(target_images)
+target_images_cropped = [target_image[:, 750:1300, 750:1300] for target_image in target_images]
+shifts = cross_correlation(target_images_cropped)
