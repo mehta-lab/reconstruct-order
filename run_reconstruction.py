@@ -1,6 +1,6 @@
 """
 Reconstruct retardance and orientation maps from images taken with different polarized illumination output
-by Open PolScope. This script using the 4- or 5-frame reconstruction algorithm described in Michael Shribak and 
+by Open compute. This script using the 4- or 5-frame reconstruction algorithm described in Michael Shribak and
 Rudolf Oldenbourg, 2003.
  
 * outputChann: (list) output channel names
@@ -33,7 +33,7 @@ import sys
 sys.path.append(".") # Adds current directory to python search path.
 sys.path.append("..") # Adds parent directory to python search path.
 # sys.path.append(os.path.dirname(sys.argv[0]))
-from PolScope.multiDimProcess import findBackground, loopPos
+from compute.multiDimProcess import findBackground, loopPos
 from utils.imgIO import GetSubDirName
 import os
 import argparse
