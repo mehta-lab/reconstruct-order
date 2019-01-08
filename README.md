@@ -21,7 +21,7 @@ nvidia-docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ 
 ### Run reconstruction
 To run reconstruction, do
 ```buildoutcfg
-python /ReconstructOrder/birefringence_python/run_reconstruction.py --config <your config file>.yml
+python /ReconstructOrder/run_reconstruction.py --config <your config file>.yml
 ```
 The following options are available in run_reconstruction.py
  
