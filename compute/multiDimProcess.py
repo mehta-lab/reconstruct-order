@@ -33,105 +33,105 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir)
     ImgSmPath = FindDirContainPos(ImgSmPath)
     try:
-        img_ioSm = PolAcquReader(ImgSmPath, OutputPath, outputChann)
+        img_io = PolAcquReader(ImgSmPath, OutputPath, outputChann)
     except:
-        img_ioSm = mManagerReader(ImgSmPath,OutputPath, outputChann)
+        img_io = mManagerReader(ImgSmPath,OutputPath, outputChann)
     ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir)  # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
     img_ioBg = PolAcquReader(ImgBgPath, OutputPath)
     img_ioBg.posIdx = 0  # assuming only single image for background
     img_ioBg.tIdx = 0
     img_ioBg.zIdx = 0
-    img_ioSm.bg_method = 'Global'
+    img_io.bg_method = 'Global'
 
     if bgCorrect=='None':
         print('No background correction is performed...')
-        img_ioSm.bg_correct = False
+        img_io.bg_correct = False
     else:
         if bgCorrect=='Input':
             print('Background correction mode set as "Input". Use user input background directory')
             OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
-            img_ioSm.ImgOutPath = OutputPath
-            img_ioSm.bg_correct = True
+            img_io.ImgOutPath = OutputPath
+            img_io.bg_correct = True
         elif bgCorrect=='Local_filter':
             print('Background correction mode set as "Local_filter". Additional background correction using local '
                   'background estimated from sample images will be performed')
             OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + SmDir)
-            img_ioSm.ImgOutPath = OutputPath
-            img_ioSm.bg_method = 'Local_filter'
-            img_ioSm.bg_correct = True
+            img_io.ImgOutPath = OutputPath
+            img_io.bg_method = 'Local_filter'
+            img_io.bg_correct = True
         elif bgCorrect=='Local_defocus':
             print('Background correction mode set as "Local_defocus". Use images from' + BgDir_local +
                   'at the same position as background')
             img_bg_path = os.path.join(RawDataPath, ImgDir,
                                        BgDir_local)
             OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir_local)
-            img_ioSm.ImgOutPath = OutputPath
-            img_ioSm.bg_method = 'Local_defocus'
-            img_ioSm.bg_correct = True
+            img_io.ImgOutPath = OutputPath
+            img_io.bg_method = 'Local_defocus'
+            img_io.bg_correct = True
             img_io_bg_local = mManagerReader(img_bg_path, OutputPath)
             img_io_bg_local.blackLevel = img_ioBg.blackLevel
-            img_ioSm.bg_local = img_io_bg_local
+            img_io.bg_local = img_io_bg_local
 
         elif bgCorrect=='Auto':
-            if hasattr(img_ioSm, 'bg'):
-                if img_ioSm.bg == 'No Background':
+            if hasattr(img_io, 'bg'):
+                if img_io.bg == 'No Background':
                     BgDir = SmDir  # need a smarter way to deal with different background options
-                    img_ioSm.bg_correct = False
+                    img_io.bg_correct = False
                     print('No background correction is performed for background measurements...')
                 else:
                     print('Background info found in metadata. Use background specified in metadata')
-                    BgDir = img_ioSm.bg
+                    BgDir = img_io.bg
                     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-                    img_ioSm.bg_correct = True
+                    img_io.bg_correct = True
             else:
                 print('Background not specified in metadata. Use user input background directory')
                 OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_'+BgDir)
-                img_ioSm.bg_correct = True
-            img_ioSm.ImgOutPath = OutputPath
+                img_io.bg_correct = True
+            img_io.ImgOutPath = OutputPath
 
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_ioBg) # 0 for z-index
     img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=bgCorrect, swing=img_ioBg.swing,
                                          wavelength=img_ioBg.wavelength, output_path=img_ioBg.ImgOutPath)
-    if img_ioSm.bg_correct:
+    if img_io.bg_correct:
         img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
     else:
         img_stokes_bg = None
 
-    img_ioSm.param_bg = img_stokes_bg
-    img_ioSm.swing = img_ioBg.swing
-    img_ioSm.wavelength = img_ioBg.wavelength
-    img_ioSm.blackLevel = img_ioBg.blackLevel
-    img_ioSm.ImgFluorMin = np.full((4,img_ioBg.height,img_ioBg.width), np.inf) # set initial min array to to be Inf
-    img_ioSm.ImgFluorSum = np.zeros((4,img_ioBg.height,img_ioBg.width)) # set the default background to be Ones (uniform field)
-    img_ioSm.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(100,100))  # kernel for image opening operation, 100-200 is usually good
-    img_ioSm.loopZ ='background'
-    img_ioSm.ff_method = ff_method
+    img_io.param_bg = img_stokes_bg
+    img_io.swing = img_ioBg.swing
+    img_io.wavelength = img_ioBg.wavelength
+    img_io.blackLevel = img_ioBg.blackLevel
+    img_io.ImgFluorMin = np.full((4,img_ioBg.height,img_ioBg.width), np.inf) # set initial min array to to be Inf
+    img_io.ImgFluorSum = np.zeros((4,img_ioBg.height,img_ioBg.width)) # set the default background to be Ones (uniform field)
+    img_io.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(100,100))  # kernel for image opening operation, 100-200 is usually good
+    img_io.loopZ ='background'
+    img_io.ff_method = ff_method
     ImgFluorBg = np.ones((4,img_ioBg.height,img_ioBg.width))
     
     if flatField: # find background flourescence for flatField corection 
         print('Calculating illumination function for flatfield correction...')
-        img_ioSm = loopPos(img_ioSm, outputChann, flatField=flatField)
-        img_ioSm.ImgFluorSum = img_ioSm.ImgFluorSum/img_ioSm.nPos # normalize the sum. Add 1 to avoid 0
+        img_io = loopPos(img_io, outputChann, flatField=flatField)
+        img_io.ImgFluorSum = img_io.ImgFluorSum/img_io.nPos # normalize the sum. Add 1 to avoid 0
         if ff_method=='open':
-            ImgFluorBg = img_ioSm.ImgFluorSum
+            ImgFluorBg = img_io.ImgFluorSum
         elif ff_method=='empty':
-            ImgFluorBg = img_ioSm.ImgFluorMin
+            ImgFluorBg = img_io.ImgFluorMin
         ImgFluorBg = ImgFluorBg - np.nanmin(ImgFluorBg[:]) + 1
         ## compare empty v.s. open method#####
 #        titles = ['Ch1 (Open)','Ch2 (Open)','Ch1 (Empty)','ch2 (Empty)']
-#        images = [img_ioSm.ImgFluorSum[:,:,0], img_ioSm.ImgFluorSum[:,:,1],
-#                  img_ioSm.ImgFluorMin[:,:,0], img_ioSm.ImgFluorMin[:,:,1]]
+#        images = [img_io.ImgFluorSum[:,:,0], img_io.ImgFluorSum[:,:,1],
+#                  img_io.ImgFluorMin[:,:,0], img_io.ImgFluorMin[:,:,1]]
 #        plot_sub_images(images,titles)
 #         print('Exporting illumination function...')
 #        plt.savefig(os.path.join(OutputPath,'compare_flat_field.png'),dpi=150)
         ##################################################################
     else:        
         I_trans_Bg = np.ones((img_ioBg.height,img_ioBg.width))  # use uniform field if no correction
-    img_ioSm.I_trans_Bg = img_stokes_bg[0]
-    img_ioSm.ImgFluorBg = ImgFluorBg
-    return img_ioSm, img_reconstructor
+    img_io.I_trans_Bg = img_stokes_bg[0]
+    img_io.ImgFluorBg = ImgFluorBg
+    return img_io, img_reconstructor
     
-def loopPos(img_ioSm, img_reconstructor, flatField=False, bgCorrect=True, circularity='rcp', norm=True):
+def loopPos(img_io, img_reconstructor, flatField=False, bgCorrect=True, circularity='rcp', norm=True):
     """
     Loops through each position in the acquisition folder, and performs flat-field correction.
     @param flatField: boolean - whether flatField correction is applied.
@@ -140,20 +140,20 @@ def loopPos(img_ioSm, img_reconstructor, flatField=False, bgCorrect=True, circul
     @return: None
     """       
 
-    for posIdx in range(0,img_ioSm.nPos):
+    for posIdx in range(0,img_io.nPos):
     # for posIdx in range(0, 25):
         plt.close("all") # close all the figures from the last run
-        if img_ioSm.metaFile['Summary']['InitialPositionList']: # PolAcquisition doens't save position list
-            subDir = img_ioSm.metaFile['Summary']['InitialPositionList'][posIdx]['Label']
+        if img_io.metaFile['Summary']['InitialPositionList']: # PolAcquisition doens't save position list
+            subDir = img_io.metaFile['Summary']['InitialPositionList'][posIdx]['Label']
         else:
             subDir = 'Pos0'
-        img_ioSm.ImgPosPath = os.path.join(img_ioSm.ImgSmPath, subDir)
-        if img_ioSm.bg_method == 'Local_defocus':
-            img_io_bg = img_ioSm.bg_local
+        img_io.ImgPosPath = os.path.join(img_io.ImgSmPath, subDir)
+        if img_io.bg_method == 'Local_defocus':
+            img_io_bg = img_io.bg_local
             img_io_bg.ImgPosPath = os.path.join(img_io_bg.ImgSmPath, subDir)
             img_io_bg.posIdx = posIdx
-        img_ioSm.posIdx = posIdx
-        img_io = loopT(img_ioSm, img_reconstructor, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
+        img_io.posIdx = posIdx
+        img_io = loopT(img_io, img_reconstructor, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
     return img_io
         
 def loopT(img_io, img_reconstructor, flatField=False, bgCorrect=True, circularity='rcp', norm=True):

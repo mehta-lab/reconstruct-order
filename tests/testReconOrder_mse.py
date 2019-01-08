@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# title           : this_python_file.py
+# title           : testReconOrder_mse.py
 # description     :This will create a header for a python script.
 # author          :bryant.chhun
 # date            :12/12/18
@@ -9,10 +9,11 @@
 # python_version  :3.6
 
 import unittest
-
+import yaml
 import cv2
 
-from birefringence_python.PolScope import multiDimProcess, reconstruct
+from compute.multiDimProcess import findBackground
+from compute.reconstruct import ImgReconstructor=
 from tests.testMetrics import mse
 
 
@@ -38,7 +39,24 @@ class TestImageReconstruction(unittest.TestCase):
                          condition + \
                          "/img_Scattering_t000_p000_z000.tif"
 
+    sourceData = "./testData/rawData/2018_10_02_MouseBrainSlice/"
+    sourceSample = "SM_2018_1002_1633_1/"
+    sourceBackground = "BG_2018_1002_1625_1/"
+
+    RawDataPath = sourceData+sourceSample
+
+    def __init__(self):
+        #read config
+        with open(config_fname, 'r') as f:
+            config = yaml.load(f)
+
+
     def construct_all(self):
+        #read config
+        imgSm, img_reconstructor = findBackground(self.RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
+                           BgDir_local=BgDir_local, flatField=flatField,bgCorrect=bgCorrect,
+                           ff_method='open')
+
         # create file loaders
         datapipe = PipeToReconOrder(type="Test", sample_type="Sample1")
         datapipe_bg = PipeToReconOrder(type="Test", sample_type='BG')
