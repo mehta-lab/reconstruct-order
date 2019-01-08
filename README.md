@@ -44,7 +44,7 @@ The following options are available in run_reconstruction.py
     'None' for no background correction; 
     'Input' to always use input background folder
     'Local_filter' apply additional background correction using local background estimated from Gaussian-blurred sample images
-    'Local_defocus' use local defocused images from 'BgDir_local' folder. The background images needs to have exactly same position indices as sample images.    
+    'Local_defocus' use local defocused images from 'BgDir_local' folder. The background images need to have exactly same position indices as sample images.    
 * flatField: (bool) perform flat-field correction on fluorescence images if True
 * norm: (bool) scale fluorescence images for each image for optimal contrast. Set False to use the same scale for all images
 * batchProc: (bool) batch process all the folders in ImgDir if True. 
