@@ -11,10 +11,11 @@
 import unittest
 import yaml
 import cv2
+import numpy as np
 
 from compute.multiDimProcess import findBackground
-from compute.reconstruct import ImgReconstructor
 from utils.imgIO import parse_tiff_input
+from utils.imgProcessing import imBitConvert
 from tests.testMetrics import mse
 
 
@@ -41,16 +42,16 @@ class TestImageReconstruction(unittest.TestCase):
                          "/img_Scattering_t000_p000_z000.tif"
 
     source_config_file = './TestData/CONFIG_SM_2018_1002_1633_1.yml'
-    sourceData = "./testData/rawData/2018_10_02_MouseBrainSlice/"
-    sourceSample = "SM_2018_1002_1633_1/"
-    sourceBackground = "BG_2018_1002_1625_1/"
-
-    RawDataPath = sourceData+sourceSample
+    # sourceData = "./testData/rawData/2018_10_02_MouseBrainSlice/"
+    # sourceSample = "SM_2018_1002_1633_1/"
+    # sourceBackground = "BG_2018_1002_1625_1/"
+    #
+    # RawDataPath = sourceData+sourceSample
 
     def __init__(self, *args, **kwargs):
         super(TestImageReconstruction, self).__init__(*args, **kwargs)
 
-        with open('./TestData/CONFIG_SM_2018_1002_1633_1.yml', 'r') as f:
+        with open(self.source_config_file, 'r') as f:
             config = yaml.load(f)
         self.RawDataPath = config['dataset']['RawDataPath']
         self.ProcessedPath = config['dataset']['ProcessedPath']
@@ -78,24 +79,33 @@ class TestImageReconstruction(unittest.TestCase):
                                                                       circularity=self.circularity,
                                                                       bg_method=self.img_io.bg_method,
                                                                       extra=False)  # background subtraction
-        [self.I_trans, self.retard, self.azimuth, self.polarization] = img_computed_sm
+        [self.I_trans, self.retard, azimuth, polarization] = img_computed_sm
+
+        self.scattering = 1 - polarization
+        self.azimuth_degree = azimuth / np.pi * 180
+        self.I_trans = imBitConvert(self.I_trans * 10 ** 3, bit=16, norm=False)  # AU, set norm to False for tiling images
+        self.retard = imBitConvert(self.retard * 10 ** 3, bit=16)  # scale to pm
+        self.scattering = imBitConvert(self.scattering * 10 ** 4, bit=16)
+        self.azimuth_degree = imBitConvert(self.azimuth_degree * 100, bit=16)  # scale to [0, 18000], 100*degree
+
 
 
     def test_mse_Itrans(self):
         self.construct_all()
-        self.assertLessEqual(mse(self.I_trans, cv2.imread(self.target_ITrans, -1)), 100000)
+        # self.assertLessEqual(mse(np.random.random_integers(0, 65536, size=(2048,2048)), np.random.random_integers(0, 65536, size=(2048,2048))), 100000)
+        self.assertLessEqual(mse(self.I_trans, cv2.imread(self.target_ITrans, -1)), 50000)
 
     def test_mse_retard(self):
         self.construct_all()
-        self.assertLessEqual(mse(self.retard, cv2.imread(self.target_retard, -1)), 100000)
+        self.assertLessEqual(mse(self.retard, cv2.imread(self.target_retard, -1)), 100)
 
     def test_mse_orientation(self):
         self.construct_all()
-        self.assertLessEqual(mse(self.azimuth, cv2.imread(self.target_Orientation, -1)), 100000)
+        self.assertLessEqual(mse(self.azimuth_degree, cv2.imread(self.target_Orientation, -1)), 100)
 
     def test_mse_scattering(self):
         self.construct_all()
-        self.assertLessEqual(mse(1-self.polarization, cv2.imread(self.target_Scattering, -1)), 100000)
+        self.assertLessEqual(mse(self.scattering, cv2.imread(self.target_Scattering, -1)), 100)
 
 
 if __name__ == '__main__':
