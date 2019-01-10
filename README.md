@@ -23,8 +23,16 @@ To run reconstruction, do
 ```buildoutcfg
 python /ReconstructOrder/run_reconstruction.py --config <your config file>.yml
 ```
-The following options are available in run_reconstruction.py
- 
+The config file contains the following parameters:
+* RawDataPath: (str) The path of the parent folder that holds raw data 
+* ProcessedPath: (str) The path of the parent folder where the output will be saved
+* ImgDir: (str) The experiment folder within the RawDataPath to process  
+* SmDir: (str or list) Acquisition folder(s) within the experiment folder to process
+* BgDir: (str or list) Background folder(s) within the experiment folder
+* BgDir_local: (str or None) Only used for 'Local_defocus'. Set None otherwise
+
+The full path to the data should be RawDataPath/ImgDir/SmDir/Pos$
+  
 * outputChann: (list of str) output channel names
     Current available output channel names:
         'Transmission'
@@ -38,13 +46,13 @@ The following options are available in run_reconstruction.py
         '568'
         '640'
         
-* flipPol: (bool) flip the slow axis horizontally. Set "True" for Dragonfly and "False" for ASI 
+* circularity: ('lcp' or 'rcp') flip the slow axis horizontally. 
 * bgCorrect: (str) 
     'Auto' (default) to correct the background using background from the metadata if available, otherwise use input background folder;
     'None' for no background correction; 
     'Input' to always use input background folder
     'Local_filter' apply additional background correction using local background estimated from Gaussian-blurred sample images
-    'Local_defocus' use local defocused images from 'BgDir_local' folder. The background images needs to have exactly same position indices as sample images.    
+    'Local_defocus' use local defocused images from 'BgDir_local' folder. The background images must have exactly same position indices as sample images.    
 * flatField: (bool) perform flat-field correction on fluorescence images if True
 * norm: (bool) scale fluorescence images for each image for optimal contrast. Set False to use the same scale for all images
 * batchProc: (bool) batch process all the folders in ImgDir if True. 

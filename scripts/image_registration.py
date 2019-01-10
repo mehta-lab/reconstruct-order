@@ -16,7 +16,6 @@ def load_img(img_io, z_range=None):
         raise FileNotFoundError(
             "image file doesn't exist at:", img_io.ImgSmPath
         )
-    os.makedirs(img_io.ImgOutPath, exist_ok=True)
     img_io.posIdx = 0 # only read the first position
     img_io.tIdx = 0 # only read the first time point
     img_chann = [] # list of 2D or 3D images from different channels
@@ -79,7 +78,7 @@ def cross_correlation(target_images):
     return shifts
 
 
-def warp_batch(images, transforms):
+def warp_batch(images, shifts):
     """
     Warps images using the provided transformation objects, and displays the overlaid images.
 
@@ -89,19 +88,15 @@ def warp_batch(images, transforms):
     """
 
     # applying transformations to all images except for the first one (first channel is source img).
-    registered_images = []
-    for transform, image in zip(transforms, images[1:]):
-        registered_images.append(warp(image, transform.inverse))
-
-    # Need to rescale intensity to see effect of overlay.
-    registered_images = [exposure.rescale_intensity(img, out_range=(0, 65535)) for img in registered_images]
-
-    # Display overlays.
-    for i in registered_images:
-        plt.figure()
-        overlay = target_images[0] + i
-        plt.imshow(overlay, cmap='gray')
-
+    registered_images = [images[0]]
+    for shift, image in zip(shifts, images[1:]):
+        scale = 0.1
+        output_shape = image.shape
+        coords = np.mgrid[:output_shape[0], :output_shape[1], :output_shape[2]]
+        coords = coords.astype(np.float32)
+        for i in range(3):
+            coords[i] = coords[i] - shift[i]
+        registered_images.append(warp(image, coords))
     return registered_images
 
 RawDataPath = r'D:/Box Sync/Data'
@@ -111,13 +106,16 @@ ImgDir = '2018_11_26_Argolight_channel_registration_63X_confocal'
 SmDir = 'SMS_2018_1126_1625_1_BG_2018_1126_1621_1'
 
 outputChann = ['405', '488', '568', '640', 'Retardance']
-z_range = [7,11]
-y_range = [790,810]
+z_load_range = [0,99]
+y_load_range = [750,1300]
+z_plot_range = [4,11]
+y_plot_range = [790,810]
 ImgSmPath = os.path.join(ProcessedPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
 
 OutputPath = os.path.join(ImgSmPath,'registration', 'raw')
 img_io_sm = mManagerReader(ImgSmPath, OutputPath, outputChann)
 target_images = load_img(img_io_sm, z_range=[0,99])
+os.makedirs(img_io_sm.ImgOutPath, exist_ok=True)
 # for zIdx in range(z_range[0], z_range[1]):
 #     img_io_sm.zIdx = zIdx
 #     target_image = [target_image[zIdx, 750:1300,750:1300] for target_image in target_images]
@@ -134,3 +132,34 @@ target_images = load_img(img_io_sm, z_range=[0,99])
 
 target_images_cropped = [target_image[:, 750:1300, 750:1300] for target_image in target_images]
 shifts = cross_correlation(target_images_cropped)
+
+target_images_warped = warp_batch(target_images_cropped, shifts)
+
+OutputPath = os.path.join(ImgSmPath,'registration', 'processed')
+img_io_sm.ImgOutPath = OutputPath
+os.makedirs(img_io_sm.ImgOutPath, exist_ok=True)
+for zIdx in range(z_plot_range[0], z_plot_range[1]):
+    img_io_sm.zIdx = zIdx
+    target_image_warped = [target_image[zIdx-z_load_range[0], :, :] for target_image in target_images_warped]
+    fig_name = 'img_pair_z%03d.png' % (zIdx)
+    imshow_pair(target_image_warped, img_io_sm, fig_name)
+    plt.close("all")
+
+for yIdx in range(y_plot_range[0], y_plot_range[1]):
+    img_io_sm.yIdx = yIdx
+    target_image_warped = [np.squeeze(target_image[:, yIdx-y_load_range[0], :]) for target_image in target_images_warped]
+    fig_name = 'img_pair_y%03d.png' % (yIdx)
+    imshow_pair(target_image_warped, img_io_sm, fig_name)
+    plt.close("all")
+####
+image = np.zeros([5,5])
+image[2,2] = 1
+shift = [0.5,0.5]
+output_shape = image.shape
+coords = np.mgrid[:output_shape[0], :output_shape[1]]
+coords = coords.astype(np.float32)
+for i in range(2):
+    coords[i] = coords[i] - shift[i]
+image_warped = warp(image, coords)
+coords
+image_warped
