@@ -94,16 +94,28 @@ def run_action(args):
     batchProc = config['processing']['batchProc']
     norm = config['plotting']['norm']
 
+    if isinstance(SmDir, list):
+        batchProc = True
+        SmDirList = SmDir
+    else:
+        if batchProc:
+            ImgPath = os.path.join(RawDataPath, ImgDir)
+            SmDirList = GetSubDirName(ImgPath)
+
     if batchProc:
-        ImgPath = os.path.join(RawDataPath, ImgDir)
-        SmDirList = GetSubDirName(ImgPath)
-        for SmDir in SmDirList:
-            # if 'SM' in SmDir or 'BG' in SmDir :
-            # if 'SM' in SmDir and 'SMS' not in SmDir:
-            if 'SM' in SmDir:
-                processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
-                           BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
-                           circularity=circularity, norm=norm)
+        if isinstance(BgDir, str):
+            BgDirList = [BgDir]
+        assert len(SmDirList) == len(BgDirList) or len(BgDirList) == 1, \
+            'Length of the background directory list must be one or same as sample directory list'
+        # Make BgDirList same length as SmDirList
+        if len(BgDirList) == 1:
+            BgDirList = BgDirList * len(SmDirList)
+
+        for SmDir, BgDir in zip(SmDirList, BgDirList):
+            # if 'SM' in SmDir:
+            processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
+                       BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
+                       circularity=circularity, norm=norm)
     else:
         processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
                    BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
