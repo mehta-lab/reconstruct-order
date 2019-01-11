@@ -5,8 +5,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import re
 import cv2
-#import sys
-#sys.path.append("..") # Adds higher directory to python modules path.
+# import sys
+# sys.path.append("..") # Adds higher directory to python modules path.
 from utils.imgIO import parse_tiff_input, exportImg, GetSubDirName, FindDirContainPos
 from .reconstruct import ImgReconstructor
 from utils.imgProcessing import ImgMin

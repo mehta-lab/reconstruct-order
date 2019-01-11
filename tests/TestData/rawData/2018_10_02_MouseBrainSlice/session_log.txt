@@ -1,0 +1,34 @@
+Session Log Created: 2018.10.02 16:20:08
+16:20:08  Session User: Syuan
+16:20:08  Session Name: 2018_10_02_MouseBrainSlice
+16:20:08  Mode: Birefringence
+16:20:08  BG set to : No Background
+16:20:21  Swing set to : 0.1
+16:20:57  Calibration started
+16:20:57  Calibration wavelength: 532.0
+16:20:57  Calibration swing: 0.1
+16:21:00  Calibration interrupted
+16:23:53  Calibration started
+16:23:53  Calibration wavelength: 532.0
+16:23:53  Calibration swing: 0.1
+16:24:10  Setting 0: 0.306,0.674 | Intensity: 1546.8497
+16:24:11  Setting 1: 0.406,0.674 | Intensity: 24804.203
+16:24:16  Setting 2: 0.306,0.792 | Intensity: 1546.8497
+16:24:20  Setting 3: 0.306,0.578 | Intensity: 24772.27
+16:24:25  Setting 4: 0.203,0.674 | Intensity: 24786.85
+16:24:25  Extinction: 168.21
+16:24:25  Calibration finished
+16:25:47  BG set to : No Background
+16:25:57  Acquired BG_2018_1002_1625_1 : 
+16:26:08  BG set to : BG_2018_1002_1625_1
+Pol-Acquisition (MicroManager) Session Resumed: 2018.10.02 16:29:24
+16:29:24  Wavelength set to : 532.0
+16:29:24  BG set to : BG_2018_1002_1625_1
+16:33:40  Acquired SM_2018_1002_1633_1 : 
+16:40:16  Acquired SM_2018_1002_1640_1 : 
+Pol-Analyzer (ImageJ) Session Resumed: 2018.10.02 16:42:27
+16:42:48  BG set to : BG_2018_1002_1625_1
+Pol-Acquisition (MicroManager) Session Exited: 2018.10.02 16:56:54
+----------------------------------------
+Pol-Analyzer (ImageJ) Session Exited: 2018.10.02 18:00:07
+----------------------------------------
