@@ -2,6 +2,8 @@ import os
 from utils.mManagerIO import mManagerReader
 import argparse
 import yaml
+from scripts.channel_registration_3D import translate_3D
+import json
 
 def parse_args():
     """Parse command line arguments
@@ -38,20 +40,30 @@ def run_action(args):
     ProcessedPath = config['dataset']['ProcessedPath']
     ImgDir = config['dataset']['ImgDir']
     SmDir = config['dataset']['SmDir']
+    registration_params_path = config['processing']['registration_params']
     outputChann = config['processing']['outputChann']
     ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir)  # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
 
-    # OutputPath = os.path.join(ImgSmPath,'split_images')
-    # imgSm = mManagerReader(ImgSmPath,OutputPath, outputChann)
-    # imgSm.save_microDL_format_old()
-
-    OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir, 'microDL_format')
+    OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_registered')
     img_io = mManagerReader(ImgSmPath, OutputPath, outputChann)
-    img_io.save_microDL_format_new()
+    with open(registration_params_path, 'r') as f:
+        registration_params = json.load(f)
+
+    if not os.path.exists(img_io.ImgSmPath):
+        raise FileNotFoundError(
+            "image file doesn't exist at:", img_io.ImgSmPath
+        )
+    os.makedirs(img_io.ImgOutPath, exist_ok=True)
+    for t_idx in range(img_io.nTime):
+        img_io.tIdx = t_idx
+        for pos_idx in range(img_io.nPos):  # nXY
+            img_io.posIdx = pos_idx
+            images = img_io.read_multi_chan_img_stack()
+            images_registered = translate_3D(images, outputChann, registration_params)
+            for images, channel in zip(images_registered, outputChann):
+                for z_idx in range(img_io.nZ):
+                    img_io.write_img(images[z_idx], channel, pos_idx, z_idx, t_idx)
 
 if __name__ == '__main__':
     args = parse_args()
     run_action(args)
-
-
-
