@@ -236,9 +236,8 @@ def loopZSm(img_io, img_reconstructor, flatField=False, circularity='rcp', norm=
         img_io, imgs = plot_birefringence(img_io, imgs, img_io.chNamesOut, spacing=20, vectorScl=2, zoomin=False, dpi=200,
                                          norm=norm, plot=True)
         # img_io.imgLimits = ImgLimit(imgs,img_io.imgLimits)
-        ##To do: add 'Fluor+Retardance' channel## 
-        
-        img_io.writeMetaData()
+        ##To do: add 'Fluor+Retardance' channel##
+
         exportImg(img_io, imgs)
     return img_io
 
