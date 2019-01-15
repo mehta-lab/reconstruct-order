@@ -1,9 +1,12 @@
+import sys
+sys.path.append("..") # Adds parent directory to python search path.
 import os
 from utils.mManagerIO import mManagerReader
 import argparse
 import yaml
 from scripts.channel_registration_3D import translate_3D
 import json
+from utils.imgProcessing import imBitConvert
 
 def parse_args():
     """Parse command line arguments
@@ -58,11 +61,13 @@ def run_action(args):
         img_io.tIdx = t_idx
         for pos_idx in range(img_io.nPos):  # nXY
             img_io.posIdx = pos_idx
+            print('Processing position %03d, time %03d ...' % (posIdx, tIdx))
             images = img_io.read_multi_chan_img_stack()
             images_registered = translate_3D(images, outputChann, registration_params)
             for images, channel in zip(images_registered, outputChann):
                 for z_idx in range(img_io.nZ):
-                    img_io.write_img(images[z_idx], channel, pos_idx, z_idx, t_idx)
+                    image = imBitConvert(images[z_idx], bit=16, norm=False)
+                    img_io.write_img(image, channel, pos_idx, z_idx, t_idx)
 
 if __name__ == '__main__':
     args = parse_args()

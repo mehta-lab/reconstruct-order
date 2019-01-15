@@ -71,69 +71,69 @@ def translate_3D(images, channels, registration_params):
             coords = coords.astype(np.float32)
             for i in range(3):
                 coords[i] = coords[i] - shift[i]
-            image = warp(image, coords)
-
+            image = warp(image, coords, preserve_range=True)
         registered_images.append(image)
     return registered_images
 
-# RawDataPath = r'D:/Box Sync/Data'
-# ProcessedPath = r'D:/Box Sync/Processed/'
-RawDataPath = '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/Dragonfly_Calibration'
-ProcessedPath = '/flexo/ComputationalMicroscopy/Processed/virtualstaining/Dragonfly_Calibration'
-ImgDir = '2018_11_26_Argolight_channel_registration_63X_confocal'
-SmDir = 'SMS_2018_1126_1625_1_BG_2018_1126_1621_1'
-outputChann = ['568', '405', '488', '640', 'Retardance'] # first channel is the reference channel
+if __name__ == '__main__':
+    # RawDataPath = r'D:/Box Sync/Data'
+    # ProcessedPath = r'D:/Box Sync/Processed/'
+    RawDataPath = '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/Dragonfly_Calibration'
+    ProcessedPath = '/flexo/ComputationalMicroscopy/Processed/Dragonfly_Calibration'
+    ImgDir = '2018_11_26_Argolight_channel_registration_63X_confocal'
+    SmDir = 'SMS_2018_1126_1625_1_BG_2018_1126_1621_1'
+    outputChann = ['568', '405', '488', '640', 'Retardance'] # first channel is the reference channel
 
-z_load_range = [0,99]
-y_load_range = [750,1300]
-z_plot_range = [4,11]
-y_plot_range = [790,810]
-ImgSmPath = os.path.join(ProcessedPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
-OutputPath = os.path.join(ImgSmPath,'registration', 'raw')
-shift_file_path = os.path.join(ImgSmPath, 'registration', 'registration_param_63X.json')
-img_io = mManagerReader(ImgSmPath, OutputPath, outputChann)
-img_io.posIdx = 0 # only read the first position
-img_io.tIdx = 0 # only read the first time point
-target_images = img_io.read_multi_chan_img_stack(z_range=z_load_range)
-os.makedirs(img_io.ImgOutPath, exist_ok=True)
-# for zIdx in range(z_range[0], z_range[1]):
-#     img_io.zIdx = zIdx
-#     target_image = [target_image[zIdx, 750:1300,750:1300] for target_image in target_images]
-#     fig_name = 'img_pair_z%03d.png' % (zIdx)
-#     imshow_pair(target_image, img_io, fig_name)
-#     plt.close("all")
-#
-# for yIdx in range(y_range[0], y_range[1]):
-#     img_io.yIdx = yIdx
-#     target_image = [np.squeeze(target_image[:, yIdx, 750:1300]) for target_image in target_images]
-#     fig_name = 'img_pair_y%03d.png' % (yIdx)
-#     imshow_pair(target_image, img_io, fig_name)
-#     plt.close("all")
+    z_load_range = [0,99]
+    y_load_range = [750,1300]
+    z_plot_range = [4,11]
+    y_plot_range = [790,810]
+    ImgSmPath = os.path.join(ProcessedPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
+    OutputPath = os.path.join(ImgSmPath,'registration', 'raw')
+    shift_file_path = os.path.join(ImgSmPath, 'registration', 'registration_param_63X.json')
+    img_io = mManagerReader(ImgSmPath, OutputPath, outputChann)
+    img_io.posIdx = 0 # only read the first position
+    img_io.tIdx = 0 # only read the first time point
+    target_images = img_io.read_multi_chan_img_stack(z_range=z_load_range)
+    os.makedirs(img_io.ImgOutPath, exist_ok=True)
+    # for zIdx in range(z_range[0], z_range[1]):
+    #     img_io.zIdx = zIdx
+    #     target_image = [target_image[zIdx, 750:1300,750:1300] for target_image in target_images]
+    #     fig_name = 'img_pair_z%03d.png' % (zIdx)
+    #     imshow_pair(target_image, img_io, fig_name)
+    #     plt.close("all")
+    #
+    # for yIdx in range(y_range[0], y_range[1]):
+    #     img_io.yIdx = yIdx
+    #     target_image = [np.squeeze(target_image[:, yIdx, 750:1300]) for target_image in target_images]
+    #     fig_name = 'img_pair_y%03d.png' % (yIdx)
+    #     imshow_pair(target_image, img_io, fig_name)
+    #     plt.close("all")
 
-target_images_cropped = [target_image[:, 750:1300, 750:1300] for target_image in target_images]
-registration_params = channel_register(target_images_cropped, outputChann)
+    target_images_cropped = [target_image[:, 750:1300, 750:1300] for target_image in target_images]
+    registration_params = channel_register(target_images_cropped, outputChann)
 
-target_images_warped = translate_3D(target_images_cropped, outputChann, registration_params)
+    target_images_warped = translate_3D(target_images_cropped, outputChann, registration_params)
 
-OutputPath = os.path.join(ImgSmPath,'registration', 'processed')
-img_io.ImgOutPath = OutputPath
-os.makedirs(img_io.ImgOutPath, exist_ok=True)
+    OutputPath = os.path.join(ImgSmPath,'registration', 'processed')
+    img_io.ImgOutPath = OutputPath
+    os.makedirs(img_io.ImgOutPath, exist_ok=True)
 
-# for zIdx in range(z_plot_range[0], z_plot_range[1]):
-#     img_io.zIdx = zIdx
-#     target_image_warped = [target_image[zIdx-z_load_range[0], :, :] for target_image in target_images_warped]
-#     fig_name = 'img_pair_z%03d.png' % (zIdx)
-#     imshow_pair(target_image_warped, img_io, fig_name)
-#     plt.close("all")
-#
-# for yIdx in range(y_plot_range[0], y_plot_range[1]):
-#     img_io.yIdx = yIdx
-#     target_image_warped = [np.squeeze(target_image[:, yIdx-y_load_range[0], :]) for target_image in target_images_warped]
-#     fig_name = 'img_pair_y%03d.png' % (yIdx)
-#     imshow_pair(target_image_warped, img_io, fig_name)
-#     plt.close("all")
+    # for zIdx in range(z_plot_range[0], z_plot_range[1]):
+    #     img_io.zIdx = zIdx
+    #     target_image_warped = [target_image[zIdx-z_load_range[0], :, :] for target_image in target_images_warped]
+    #     fig_name = 'img_pair_z%03d.png' % (zIdx)
+    #     imshow_pair(target_image_warped, img_io, fig_name)
+    #     plt.close("all")
+    #
+    # for yIdx in range(y_plot_range[0], y_plot_range[1]):
+    #     img_io.yIdx = yIdx
+    #     target_image_warped = [np.squeeze(target_image[:, yIdx-y_load_range[0], :]) for target_image in target_images_warped]
+    #     fig_name = 'img_pair_y%03d.png' % (yIdx)
+    #     imshow_pair(target_image_warped, img_io, fig_name)
+    #     plt.close("all")
 
 
-registration_params['size_z_um'] = img_io.size_z_um
-with open(shift_file_path, 'w') as f:
-    json.dump(registration_params, f, indent=4)
+    registration_params['size_z_um'] = img_io.size_z_um
+    with open(shift_file_path, 'w') as f:
+        json.dump(registration_params, f, indent=4)
