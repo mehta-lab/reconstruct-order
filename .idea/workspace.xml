@@ -77,17 +77,17 @@
           <entry key="image_registration (1)" value="6" />
           <entry key="list_modules" value="103" />
           <entry key="md" value="1246" />
-          <entry key="py" value="8917" />
+          <entry key="py" value="8956" />
           <entry key="run_reconstruction" value="122" />
-          <entry key="txt" value="1424" />
+          <entry key="txt" value="1469" />
           <entry key="yml" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Markdown" value="1246" />
-          <entry key="PLAIN_TEXT" value="1505" />
-          <entry key="Python" value="10013" />
+          <entry key="PLAIN_TEXT" value="1550" />
+          <entry key="Python" value="10052" />
           <entry key="YAML" value="22" />
         </counts>
       </usages-collector>
@@ -133,23 +133,16 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/channel_registration_3D.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="869">
-              <caret line="91" column="89" selection-start-line="91" selection-start-column="89" selection-end-line="91" selection-end-column="89" />
+            <state relative-caret-position="261">
+              <caret line="62" column="36" selection-start-line="62" selection-start-column="36" selection-end-line="62" selection-end-column="36" />
             </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/contrib-matlab/readMatlabOutput.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-194" />
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="642">
+            <state relative-caret-position="525">
               <caret line="184" column="34" selection-start-line="184" selection-start-column="20" selection-end-line="184" selection-end-column="34" />
             </state>
           </provider>
@@ -158,22 +151,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utils/plotting.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="250">
-              <caret line="72" column="55" selection-start-line="72" selection-start-column="55" selection-end-line="72" selection-end-column="55" />
+            <state relative-caret-position="497">
+              <caret line="85" column="42" selection-start-line="85" selection-start-column="42" selection-end-line="85" selection-end-column="42" />
               <folding>
                 <element signature="e#20#29#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="124" column="16" selection-start-line="124" selection-start-column="16" selection-end-line="124" selection-end-column="16" />
-              <folding>
-                <element signature="e#85#124#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -950,7 +931,21 @@
       <option name="project" value="LOCAL" />
       <updated>1547618607037</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="Add Orientaion_x and Orientaion_y to output">
+      <created>1547621330686</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1547621330686</updated>
+    </task>
+    <task id="LOCAL-00045" summary="Add Orientaion_x and Orientaion_y to output">
+      <created>1547621568338</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1547621568338</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1073,7 +1068,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="replace old ParseTiffInput.py with more general parse_tiff_input.py to parse micromanager channel names" />
     <MESSAGE value="Fix BF image array dimension" />
     <MESSAGE value="update mManagerIO" />
     <MESSAGE value="update &quot;CompositeImg&quot; to take input with &gt; 3 channels" />
@@ -1098,7 +1092,8 @@
     <MESSAGE value="bug fix" />
     <MESSAGE value="Add script to batch register images" />
     <MESSAGE value="update 3D_channel_registration" />
-    <option name="LAST_COMMIT_MESSAGE" value="update 3D_channel_registration" />
+    <MESSAGE value="Add Orientaion_x and Orientaion_y to output" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add Orientaion_x and Orientaion_y to output" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1273,16 +1268,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="124" column="16" selection-start-line="124" selection-start-column="16" selection-end-line="124" selection-end-column="16" />
-          <folding>
-            <element signature="e#85#124#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/run_reconstruction.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="296">
@@ -1290,10 +1275,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/channel_registration_3D.py">
+    <entry file="file://$PROJECT_DIR$/contrib-matlab/readMatlabOutput.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="869">
-          <caret line="91" column="89" selection-start-line="91" selection-start-column="89" selection-end-line="91" selection-end-column="89" />
+        <state relative-caret-position="-194" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="124" column="16" selection-start-line="124" selection-start-column="16" selection-end-line="124" selection-end-column="16" />
+          <folding>
+            <element signature="e#85#124#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1307,22 +1300,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/contrib-matlab/readMatlabOutput.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-194" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="642">
+        <state relative-caret-position="525">
           <caret line="184" column="34" selection-start-line="184" selection-start-column="20" selection-end-line="184" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/channel_registration_3D.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="261">
+          <caret line="62" column="36" selection-start-line="62" selection-start-column="36" selection-end-line="62" selection-end-column="36" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/utils/plotting.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="250">
-          <caret line="72" column="55" selection-start-line="72" selection-start-column="55" selection-end-line="72" selection-end-column="55" />
+        <state relative-caret-position="497">
+          <caret line="85" column="42" selection-start-line="85" selection-start-column="42" selection-end-line="85" selection-end-column="42" />
           <folding>
             <element signature="e#20#29#0" expanded="true" />
           </folding>

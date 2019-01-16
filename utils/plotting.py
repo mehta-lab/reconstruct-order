@@ -82,8 +82,8 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
     retard = imBitConvert(retard * 10 ** 3, bit=16)  # scale to pm
     scattering = imBitConvert(scattering * 10 ** 4, bit=16)
     azimuth_degree = imBitConvert(azimuth_degree * 100, bit=16)  # scale to [0, 18000], 100*degree
-    azimuth_x = imBitConvert(azimuth_x * 1000, bit=16) # scale to [0, 1000]
-    azimuth_y = imBitConvert(azimuth_y * 1000, bit=16)  # scale to [0, 1000]
+    azimuth_x = imBitConvert((azimuth_x+1) * 1000, bit=16) # scale to [0, 1000]
+    azimuth_y = imBitConvert((azimuth_y+1) * 1000, bit=16)  # scale to [0, 1000]
     imagesTrans = [I_trans, retard, azimuth_degree, scattering,
                    azimuth_x, azimuth_y, I_azi_ret, I_azi_scat, I_azi_ret_trans] #trasmission channels
     imagesFluor = [imBitConvert(ImgFluor[i,:,:], bit=16, norm=False) for i in range(ImgFluor.shape[0])]+[IFluorRetard, I_fluor_all_retard]
