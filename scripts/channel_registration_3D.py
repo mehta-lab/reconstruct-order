@@ -59,7 +59,8 @@ def translate_3D(images, channels, registration_params):
     registered_images = []
     for chan, image in zip(channels, images):
         # use shifts of retardance channel for all label-free channels
-        if chan in ['Transmission', 'Retardance', 'Orientation', 'Scattering']:
+        if chan in ['Transmission', 'Retardance', 'Orientation','Orientation_x',
+                    'Orientation_y', 'Scattering']:
             chan = 'Retardance'
         shift = registration_params[chan]
         # only warp the image if shift is non-zero
