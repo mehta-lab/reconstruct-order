@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="213a1158-0346-4162-98ad-6788db62b436" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/channel_registration_3D.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/channel_registration_3D.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/plotting.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/plotting.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -77,17 +77,17 @@
           <entry key="image_registration (1)" value="6" />
           <entry key="list_modules" value="103" />
           <entry key="md" value="1246" />
-          <entry key="py" value="8878" />
+          <entry key="py" value="8917" />
           <entry key="run_reconstruction" value="122" />
-          <entry key="txt" value="1393" />
+          <entry key="txt" value="1424" />
           <entry key="yml" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Markdown" value="1246" />
-          <entry key="PLAIN_TEXT" value="1474" />
-          <entry key="Python" value="9974" />
+          <entry key="PLAIN_TEXT" value="1505" />
+          <entry key="Python" value="10013" />
           <entry key="YAML" value="22" />
         </counts>
       </usages-collector>
@@ -121,8 +121,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/compute/multiDimProcess.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3610">
-              <caret line="190" column="30" lean-forward="true" selection-start-line="191" selection-start-column="8" selection-end-line="191" selection-end-column="87" />
+            <state relative-caret-position="-207">
+              <caret line="201" column="47" selection-start-line="201" selection-start-column="47" selection-end-line="201" selection-end-column="47" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -130,7 +130,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/channel_registration_3D.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="869">
@@ -155,11 +155,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utils/plotting.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-741">
-              <caret line="9" selection-start-line="9" selection-end-line="9" selection-end-column="76" />
+            <state relative-caret-position="250">
+              <caret line="72" column="55" selection-start-line="72" selection-start-column="55" selection-end-line="72" selection-end-column="55" />
+              <folding>
+                <element signature="e#20#29#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -304,7 +307,6 @@
         <option value="$PROJECT_DIR$/tests/TestData/CONFIG_SM_2018_1002_1633_1.yml" />
         <option value="$PROJECT_DIR$/tests/testReconOrder_mse.py" />
         <option value="$PROJECT_DIR$/utils/imgProcessing.py" />
-        <option value="$PROJECT_DIR$/utils/plotting.py" />
         <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/utils/imgProcessing.py" />
         <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/utils/plotting.py" />
         <option value="$PROJECT_DIR$/scripts/image_registration.py" />
@@ -317,6 +319,7 @@
         <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/channel_registration_3D.py" />
         <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/run_image_registration.py" />
         <option value="$PROJECT_DIR$/scripts/channel_registration_3D.py" />
+        <option value="$PROJECT_DIR$/utils/plotting.py" />
       </list>
     </option>
   </component>
@@ -940,7 +943,14 @@
       <option name="project" value="LOCAL" />
       <updated>1547534580658</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="update 3D_channel_registration">
+      <created>1547618607035</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1547618607037</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1063,7 +1073,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add .gitignore" />
     <MESSAGE value="replace old ParseTiffInput.py with more general parse_tiff_input.py to parse micromanager channel names" />
     <MESSAGE value="Fix BF image array dimension" />
     <MESSAGE value="update mManagerIO" />
@@ -1088,7 +1097,8 @@
     <MESSAGE value="disable phase experimenting block; non-linear contrast adjustment for R+O image" />
     <MESSAGE value="bug fix" />
     <MESSAGE value="Add script to batch register images" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add script to batch register images" />
+    <MESSAGE value="update 3D_channel_registration" />
+    <option name="LAST_COMMIT_MESSAGE" value="update 3D_channel_registration" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1273,20 +1283,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils/plotting.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-741">
-          <caret line="9" selection-start-line="9" selection-end-line="9" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="642">
-          <caret line="184" column="34" selection-start-line="184" selection-start-column="20" selection-end-line="184" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/run_reconstruction.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="296">
@@ -1294,10 +1290,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/channel_registration_3D.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="869">
+          <caret line="91" column="89" selection-start-line="91" selection-start-column="89" selection-end-line="91" selection-end-column="89" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/compute/multiDimProcess.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3610">
-          <caret line="190" column="30" lean-forward="true" selection-start-line="191" selection-start-column="8" selection-end-line="191" selection-end-column="87" />
+        <state relative-caret-position="-207">
+          <caret line="201" column="47" selection-start-line="201" selection-start-column="47" selection-end-line="201" selection-end-column="47" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
@@ -1309,10 +1312,20 @@
         <state relative-caret-position="-194" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/channel_registration_3D.py">
+    <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="869">
-          <caret line="91" column="89" selection-start-line="91" selection-start-column="89" selection-end-line="91" selection-end-column="89" />
+        <state relative-caret-position="642">
+          <caret line="184" column="34" selection-start-line="184" selection-start-column="20" selection-end-line="184" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/plotting.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="250">
+          <caret line="72" column="55" selection-start-line="72" selection-start-column="55" selection-end-line="72" selection-end-column="55" />
+          <folding>
+            <element signature="e#20#29#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
