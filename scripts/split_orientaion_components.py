@@ -13,7 +13,7 @@ if __name__ == '__main__':
     RawDataPath = '/data/sguo/Processed'
     ProcessedPath = '/data/sguo/Processed'
     ImgDir = '2018_11_01_kidney_slice'
-    SmDir = 'SMS_2018_1126_1625_1_BG_2018_1126_1621_1'
+    SmDir = 'SMS_2018_1101_1906_1_BG_2018_1101_1906_1'
     outputChann = ['Orientation']
 
     ImgSmPath = os.path.join(ProcessedPath, ImgDir, SmDir)  # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
@@ -25,6 +25,8 @@ if __name__ == '__main__':
         for pos_idx in range(img_io.nPos):  # nXY
             img_io.posIdx = pos_idx
             for z_idx in range(img_io.nZ):
+                print('Processing position %03d, time %03d z %03d ...' % (pos_idx, t_idx, z_idx))
+                img_io.zIdx = z_idx
                 img_io.chanIdx=0
                 azimuth_degree = img_io.read_img()
                 azimuth = azimuth_degree/18000*np.pi

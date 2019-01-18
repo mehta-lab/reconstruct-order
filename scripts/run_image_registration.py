@@ -61,7 +61,7 @@ def run_action(args):
         img_io.tIdx = t_idx
         for pos_idx in range(img_io.nPos):  # nXY
             img_io.posIdx = pos_idx
-            print('Processing position %03d, time %03d ...' % (posIdx, tIdx))
+            print('Processing position %03d, time %03d ...' % (pos_idx, t_idx))
             images = img_io.read_multi_chan_img_stack()
             images_registered = translate_3D(images, outputChann, registration_params)
             for images, channel in zip(images_registered, outputChann):

@@ -1,3 +1,6 @@
+import sys
+sys.path.append(".") # Adds current directory to python search path.
+sys.path.append("..") # Adds parent directory to python search path.
 import os
 from utils.mManagerIO import mManagerReader
 import argparse
