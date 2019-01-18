@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="213a1158-0346-4162-98ad-6788db62b436" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/scripts/split_orientaion_components.py" afterDir="false" />
+    <list default="true" id="213a1158-0346-4162-98ad-6788db62b436" name="Default Changelist" comment="add a script to split the orientation component">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/channel_registration_3D.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/channel_registration_3D.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/run_image_registration.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/run_image_registration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/mManagerIO.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/mManagerIO.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -37,7 +39,7 @@
     <session id="1180832588">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="13" />
+          <entry key="project.closed" value="14" />
           <entry key="project.open.time.0" value="2" />
           <entry key="project.open.time.1" value="7" />
           <entry key="project.open.time.10" value="1" />
@@ -54,7 +56,7 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="md" value="10" />
-          <entry key="py" value="143" />
+          <entry key="py" value="146" />
           <entry key="tif" value="2" />
           <entry key="yml" value="7" />
         </counts>
@@ -63,7 +65,7 @@
         <counts>
           <entry key="Image" value="2" />
           <entry key="Markdown" value="10" />
-          <entry key="Python" value="143" />
+          <entry key="Python" value="146" />
           <entry key="YAML" value="7" />
         </counts>
       </usages-collector>
@@ -77,17 +79,17 @@
           <entry key="image_registration (1)" value="6" />
           <entry key="list_modules" value="103" />
           <entry key="md" value="1246" />
-          <entry key="py" value="9036" />
+          <entry key="py" value="9057" />
           <entry key="run_reconstruction" value="122" />
-          <entry key="txt" value="1494" />
+          <entry key="txt" value="1545" />
           <entry key="yml" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Markdown" value="1246" />
-          <entry key="PLAIN_TEXT" value="1575" />
-          <entry key="Python" value="10132" />
+          <entry key="PLAIN_TEXT" value="1626" />
+          <entry key="Python" value="10153" />
           <entry key="YAML" value="22" />
         </counts>
       </usages-collector>
@@ -103,6 +105,34 @@
         </counts>
       </usages-collector>
     </session>
+    <session id="-635362684">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.open.time.6" value="1" />
+          <entry key="project.opened" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="py" value="2" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="Python" value="2" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="py" value="208" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="Python" value="208" />
+        </counts>
+      </usages-collector>
+    </session>
   </component>
   <component name="FavoritesManager">
     <favorites_list name="ReconstructOrder" />
@@ -110,19 +140,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/run_reconstruction.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="296">
-              <caret line="104" column="46" lean-forward="true" selection-start-line="104" selection-start-column="46" selection-end-line="104" selection-end-column="46" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="623">
-              <caret line="96" column="52" lean-forward="true" selection-start-line="96" selection-start-column="47" selection-end-line="96" selection-end-column="54" />
+            <state relative-caret-position="319">
+              <caret line="59" column="20" selection-start-line="59" selection-start-column="13" selection-end-line="59" selection-end-column="22" />
               <folding>
                 <element signature="e#85#124#0" expanded="true" />
               </folding>
@@ -133,8 +154,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/compute/multiDimProcess.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-207">
-              <caret line="201" column="47" selection-start-line="201" selection-start-column="47" selection-end-line="201" selection-end-column="47" />
+            <state relative-caret-position="458">
+              <caret line="191" column="62" selection-start-line="191" selection-start-column="52" selection-end-line="191" selection-end-column="62" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -146,7 +167,7 @@
         <entry file="file://$PROJECT_DIR$/scripts/channel_registration_3D.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="261">
-              <caret line="62" column="36" selection-start-line="62" selection-start-column="36" selection-end-line="62" selection-end-column="36" />
+              <caret line="116" column="51" selection-start-line="116" selection-start-column="51" selection-end-line="116" selection-end-column="51" />
             </state>
           </provider>
         </entry>
@@ -154,7 +175,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2281">
+            <state relative-caret-position="2338">
               <caret line="184" column="34" selection-start-line="184" selection-start-column="20" selection-end-line="184" selection-end-column="34" />
             </state>
           </provider>
@@ -163,17 +184,26 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/plotting.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="171">
-              <caret line="9" column="76" lean-forward="true" selection-start-line="9" selection-end-line="9" selection-end-column="76" />
+            <state relative-caret-position="-805">
+              <caret line="9" column="76" selection-start-line="9" selection-end-line="9" selection-end-column="76" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts/split_orientaion_components.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="19">
+              <caret line="1" column="60" selection-end-line="2" selection-end-column="68" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/scripts/split_orientaion_components.py">
+        <entry file="file://$PROJECT_DIR$/scripts/run_image_registration.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="304">
-              <caret line="16" column="33" selection-start-line="16" selection-start-column="33" selection-end-line="16" selection-end-column="33" />
+            <state relative-caret-position="347">
+              <caret line="67" column="96" selection-start-line="67" selection-start-column="96" selection-end-line="67" selection-end-column="96" />
             </state>
           </provider>
         </entry>
@@ -181,29 +211,19 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/PyPol2microDL_fry2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="642">
-              <caret line="49" column="10" selection-start-line="49" selection-start-column="10" selection-end-line="49" selection-end-column="10" />
+            <state>
               <folding>
-                <element signature="e#86#95#0" expanded="true" />
+                <element signature="e#0#9#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="true" current-in-tab="false">
-        <entry file="remoteDeploymentFS://&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/run_image_registration.py">
+        <entry file="remoteDeploymentFS://&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/PyPol2microDL_fry2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="850">
-              <caret line="66" column="71" lean-forward="true" selection-start-line="66" selection-start-column="71" selection-end-line="66" selection-end-column="71" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="true" current-in-tab="false">
-        <entry file="remoteDeploymentFS://&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/channel_registration_3D.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="527">
-              <caret line="93" column="63" lean-forward="true" selection-start-line="93" selection-start-column="4" selection-end-line="93" selection-end-column="63" />
+            <state relative-caret-position="38">
+              <caret line="2" column="68" selection-start-line="2" selection-start-column="68" selection-end-line="2" selection-end-column="68" />
             </state>
           </provider>
         </entry>
@@ -313,13 +333,15 @@
         <option value="$PROJECT_DIR$/run_reconstruction.py" />
         <option value="$PROJECT_DIR$/scripts/PyPol2microDL_fry2.py" />
         <option value="$PROJECT_DIR$/scripts/3D_channel_registration.py" />
-        <option value="$PROJECT_DIR$/utils/mManagerIO.py" />
-        <option value="$PROJECT_DIR$/scripts/run_image_registration.py" />
-        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/channel_registration_3D.py" />
-        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/run_image_registration.py" />
-        <option value="$PROJECT_DIR$/scripts/channel_registration_3D.py" />
         <option value="$PROJECT_DIR$/utils/plotting.py" />
         <option value="$PROJECT_DIR$/scripts/split_orientaion_components.py" />
+        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/split_orientaion_components.py" />
+        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/channel_registration_3D.py" />
+        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/run_image_registration.py" />
+        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/PyPol2microDL_fry2.py" />
+        <option value="$PROJECT_DIR$/utils/mManagerIO.py" />
+        <option value="$PROJECT_DIR$/scripts/channel_registration_3D.py" />
+        <option value="$PROJECT_DIR$/scripts/run_image_registration.py" />
       </list>
     </option>
   </component>
@@ -330,8 +352,9 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-7" />
-    <option name="width" value="1546" />
+    <option name="x" value="244" />
+    <option name="y" value="55" />
+    <option name="width" value="1545" />
     <option name="height" value="830" />
   </component>
   <component name="ProjectView">
@@ -347,7 +370,7 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/scripts" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../microDL" />
     <property name="settings.editor.selected.configurable" value="PyConsoleConfigurable.Python Console" />
   </component>
   <component name="PyConsoleOptionsProvider">
@@ -360,8 +383,8 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Google Drive\python\ReconstructOrder\" />
       <recent name="C:\python" />
+      <recent name="C:\Google Drive\python\ReconstructOrder\" />
       <recent name="C:\Google Drive\python\ReconstructOrder\birefringence_python\scripts" />
       <recent name="C:\Google Drive\python\ReconstructOrder\birefringence_python\" />
       <recent name="C:\Google Drive\python\ReconstructOrder\birefringence_python" />
@@ -381,8 +404,9 @@
           <option name="mySupportsDeletion" value="false" />
           <option name="myCanBeAbsent" value="false" />
           <option name="myId" value="UPDATED" />
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/scripts/channel_registration_3D.py</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/scripts/PyPol2microDL_fry2.py</PATH>
           <PATH vcs="Git" revision="">$PROJECT_DIR$/scripts/run_image_registration.py</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/scripts/split_orientaion_components.py</PATH>
         </FILE-GROUP>
         <FILE-GROUP>
           <option name="myUpdateName" value="Created" />
@@ -495,6 +519,9 @@
       <module name="ReconstructOrder" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -971,7 +998,14 @@
       <option name="project" value="LOCAL" />
       <updated>1547623429348</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="add a script to split the orientation component">
+      <created>1547674004290</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1547674004290</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1024,7 +1058,7 @@
       <window_info anchor="bottom" id="Terminal" order="3" sideWeight="0.4986577" weight="0.32369298" />
       <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.5023847" side_tool="true" weight="0.32844576" />
       <window_info anchor="bottom" id="Message" order="5" />
-      <window_info anchor="bottom" id="Find" order="6" sideWeight="0.49761525" weight="0.32844576" />
+      <window_info active="true" anchor="bottom" id="Find" order="6" sideWeight="0.49761525" visible="true" weight="0.32814237" />
       <window_info anchor="bottom" id="Run" order="7" sideWeight="0.49841017" weight="0.24916574" />
       <window_info anchor="bottom" id="Debug" order="8" sideWeight="0.49841017" weight="0.21913236" />
       <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
@@ -1038,8 +1072,8 @@
       <window_info anchor="right" id="Ant Build" order="4" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="5" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Project" order="6" sideWeight="0.498708" weight="0.37877584" />
-      <window_info active="true" anchor="right" id="Python Console" order="7" sideWeight="0.51272726" visible="true" weight="0.26430842" />
-      <window_info anchor="right" id="Remote Host" order="8" weight="0.12837838" />
+      <window_info anchor="right" id="Python Console" order="7" sideWeight="0.51272726" weight="0.26430842" />
+      <window_info anchor="right" id="Remote Host" order="8" visible="true" weight="0.12837838" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1094,7 +1128,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="update mManagerIO" />
     <MESSAGE value="update &quot;CompositeImg&quot; to take input with &gt; 3 channels" />
     <MESSAGE value="update 'parse_tiff_input' to fix the pol channel order issue when run on Linux system" />
     <MESSAGE value="disable debug code" />
@@ -1119,7 +1152,8 @@
     <MESSAGE value="update 3D_channel_registration" />
     <MESSAGE value="Add Orientaion_x and Orientaion_y to output" />
     <MESSAGE value="scale Orientaion_x and Orientaion_y to be always positive" />
-    <option name="LAST_COMMIT_MESSAGE" value="scale Orientaion_x and Orientaion_y to be always positive" />
+    <MESSAGE value="add a script to split the orientation component" />
+    <option name="LAST_COMMIT_MESSAGE" value="add a script to split the orientation component" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1173,6 +1207,10 @@
           <url>file://$PROJECT_DIR$/birefringence_python/scripts/image_registration.py</url>
           <line>121</line>
           <option name="timeStamp" value="33" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/scripts/PyPol2microDL_fry2.py</url>
+          <option name="timeStamp" value="34" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -1274,16 +1312,6 @@
     <entry file="file://$PROJECT_DIR$/birefringence_python/scripts/image_registration.py" />
     <entry file="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py" />
     <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py" />
-    <entry file="file://$PROJECT_DIR$/scripts/run_image_registration.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="239">
-          <caret line="45" lean-forward="true" selection-start-line="45" selection-end-line="45" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/run_reconstruction.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="296">
@@ -1298,10 +1326,50 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/compute/multiDimProcess.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-207">
-          <caret line="201" column="47" selection-start-line="201" selection-start-column="47" selection-end-line="201" selection-end-column="47" />
+        <state relative-caret-position="458">
+          <caret line="191" column="62" selection-start-line="191" selection-start-column="52" selection-end-line="191" selection-end-column="62" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/PyPol2microDL_fry2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/split_orientaion_components.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="19">
+          <caret line="1" column="60" selection-end-line="2" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/plotting.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-805">
+          <caret line="9" column="76" selection-start-line="9" selection-end-line="9" selection-end-column="76" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2338">
+          <caret line="184" column="34" selection-start-line="184" selection-start-column="20" selection-end-line="184" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="319">
+          <caret line="59" column="20" selection-start-line="59" selection-start-column="13" selection-end-line="59" selection-end-column="22" />
+          <folding>
+            <element signature="e#85#124#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1309,48 +1377,14 @@
     <entry file="file://$PROJECT_DIR$/scripts/channel_registration_3D.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="261">
-          <caret line="62" column="36" selection-start-line="62" selection-start-column="36" selection-end-line="62" selection-end-column="36" />
+          <caret line="116" column="51" selection-start-line="116" selection-start-column="51" selection-end-line="116" selection-end-column="51" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/PyPol2microDL_fry2.py">
+    <entry file="file://$PROJECT_DIR$/scripts/run_image_registration.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="642">
-          <caret line="49" column="10" selection-start-line="49" selection-start-column="10" selection-end-line="49" selection-end-column="10" />
-          <folding>
-            <element signature="e#86#95#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2281">
-          <caret line="184" column="34" selection-start-line="184" selection-start-column="20" selection-end-line="184" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="623">
-          <caret line="96" column="52" lean-forward="true" selection-start-line="96" selection-start-column="47" selection-end-line="96" selection-end-column="54" />
-          <folding>
-            <element signature="e#85#124#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils/plotting.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="9" column="76" lean-forward="true" selection-start-line="9" selection-end-line="9" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/split_orientaion_components.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="16" column="33" selection-start-line="16" selection-start-column="33" selection-end-line="16" selection-end-column="33" />
+        <state relative-caret-position="347">
+          <caret line="67" column="96" selection-start-line="67" selection-start-column="96" selection-end-line="67" selection-end-column="96" />
         </state>
       </provider>
     </entry>

@@ -55,8 +55,8 @@ class mManagerReader(metaclass=ABCMeta):
         self.nPos = metaFile['Summary']['Positions']
         self.nTime = metaFile['Summary']['Frames']
         self.nZ = metaFile['Summary']['Slices']
-        self.size_x_um = 6.5/63 # (um) for zyla at 63X
-        self.size_y_um = 6.5/63 # (um) for zyla at 63X
+        self.size_x_um = 6.5/63 # (um) for zyla at 63X. mManager metafile currently does not log the correct pixel size
+        self.size_y_um = 6.5/63 # (um) for zyla at 63X. Manager metafile currently does not log the correct pixel size
         self.size_z_um = metaFile['Summary']['z-step_um']
         self.time_stamp = metaFile['Summary']['Time']
 #        if not os.path.exists(self.ImgOutPath): # create folder for processed images
