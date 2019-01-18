@@ -45,12 +45,14 @@ def run_action(args):
     SmDir = config['dataset']['SmDir']
     registration_params_path = config['processing']['registration_params']
     outputChann = config['processing']['outputChann']
-    ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir)  # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
+    ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir)
 
     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_registered')
     img_io = mManagerReader(ImgSmPath, OutputPath, outputChann)
+    size_z_um = img_io.size_z_um
     with open(registration_params_path, 'r') as f:
         registration_params = json.load(f)
+
 
     if not os.path.exists(img_io.ImgSmPath):
         raise FileNotFoundError(
@@ -63,7 +65,7 @@ def run_action(args):
             img_io.posIdx = pos_idx
             print('Processing position %03d, time %03d ...' % (pos_idx, t_idx))
             images = img_io.read_multi_chan_img_stack()
-            images_registered = translate_3D(images, outputChann, registration_params)
+            images_registered = translate_3D(images, outputChann, registration_params, size_z_um)
             for images, channel in zip(images_registered, outputChann):
                 for z_idx in range(img_io.nZ):
                     image = imBitConvert(images[z_idx], bit=16, norm=False)
