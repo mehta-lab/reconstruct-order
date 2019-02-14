@@ -33,9 +33,9 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir)
     ImgSmPath = FindDirContainPos(ImgSmPath)
     try:
-        img_io = PolAcquReader(ImgSmPath, OutputPath, outputChann)
+        img_io = PolAcquReader(ImgSmPath, OutputPath, outputChann=outputChann)
     except:
-        img_io = mManagerReader(ImgSmPath,OutputPath, outputChann)
+        img_io = mManagerReader(ImgSmPath,OutputPath, outputChann=outputChann)
     ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir)  # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
     img_ioBg = PolAcquReader(ImgBgPath, OutputPath)
     img_ioBg.posIdx = 0  # assuming only single image for background
@@ -116,7 +116,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
             ImgFluorBg = img_io.ImgFluorSum
         elif ff_method=='empty':
             ImgFluorBg = img_io.ImgFluorMin
-        ImgFluorBg = ImgFluorBg - np.nanmin(ImgFluorBg[:]) + 1
+        ImgFluorBg = ImgFluorBg - min(np.nanmin(ImgFluorBg[:]), 0) + 1
         ## compare empty v.s. open method#####
 #        titles = ['Ch1 (Open)','Ch2 (Open)','Ch1 (Empty)','ch2 (Empty)']
 #        images = [img_io.ImgFluorSum[:,:,0], img_io.ImgFluorSum[:,:,1],
@@ -171,7 +171,7 @@ def loopT(img_io, img_reconstructor, flatField=False, bgCorrect=True, circularit
             img_io = loopZSm(img_io, img_reconstructor, flatField=flatField, circularity=circularity, norm=norm)
 
         else:
-            img_io = loopZBg(img_io, flatField=flatField, circularity=circularity)
+            img_io = loopZBg(img_io)
     return img_io
 
 def loopZSm(img_io, img_reconstructor, flatField=False, circularity='rcp', norm=True):
@@ -236,13 +236,12 @@ def loopZSm(img_io, img_reconstructor, flatField=False, circularity='rcp', norm=
         img_io, imgs = plot_birefringence(img_io, imgs, img_io.chNamesOut, spacing=20, vectorScl=2, zoomin=False, dpi=200,
                                          norm=norm, plot=True)
         # img_io.imgLimits = ImgLimit(imgs,img_io.imgLimits)
-        ##To do: add 'Fluor+Retardance' channel## 
-        
-        img_io.writeMetaData()
+        ##To do: add 'Fluor+Retardance' channel##
+
         exportImg(img_io, imgs)
     return img_io
 
-def loopZBg(img_io, flatField=False, bgCorrect=True):
+def loopZBg(img_io):
     for zIdx in range(0,1): # only use the first z 
         img_io.zIdx = zIdx
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)

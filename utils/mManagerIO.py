@@ -55,8 +55,8 @@ class mManagerReader(metaclass=ABCMeta):
         self.nPos = metaFile['Summary']['Positions']
         self.nTime = metaFile['Summary']['Frames']
         self.nZ = metaFile['Summary']['Slices']
-        self.size_x_um = 6.5/63 # (um) for zyla at 63X
-        self.size_y_um = 6.5/63 # (um) for zyla at 63X
+        self.size_x_um = 6.5/63 # (um) for zyla at 63X. mManager metafile currently does not log the correct pixel size
+        self.size_y_um = 6.5/63 # (um) for zyla at 63X. Manager metafile currently does not log the correct pixel size
         self.size_z_um = metaFile['Summary']['z-step_um']
         self.time_stamp = metaFile['Summary']['Time']
 #        if not os.path.exists(self.ImgOutPath): # create folder for processed images
@@ -90,7 +90,8 @@ class mManagerReader(metaclass=ABCMeta):
         if self.verbose > 0:
             self.logger.info(msg)
             
-    def readmManager(self):
+    def read_img(self):
+        """read a single image at (c,t,p,z)"""
 #        fileName = 'img_000000%03d'+self.chNamesIn[chanIdx]+'_%03d.tif'%(timeIdx,zIdx)
         
         fileName = 'img_'+self.chNamesOut[self.chanIdx]+'_t%03d_p%03d_z%03d.tif'%(self.tIdx, self.posIdx, self.zIdx)
@@ -99,11 +100,32 @@ class mManagerReader(metaclass=ABCMeta):
 #        img = img.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
 #        img = img.reshape(img.shape[0], img.shape[1],1)        
         return img
+
+    def read_multi_chan_img_stack(self, z_range=None):
+        """read multi-channel image stack at a given (t,p)"""
+        if not os.path.exists(self.ImgSmPath):
+            raise FileNotFoundError(
+                "image file doesn't exist at:", self.ImgSmPath
+            )
+        if not z_range:
+            z_range = [0, self.nZ]
+        img_chann = []  # list of 2D or 3D images from different channels
+        for chanIdx in range(self.nChannOut):
+            img_stack = []
+            self.chanIdx = chanIdx
+            for zIdx in range(z_range[0], z_range[1]):
+                self.zIdx = zIdx
+                img = self.read_img()
+                img_stack += [img]
+            img_stack = np.stack(img_stack)  # follow zyx order
+            img_stack = np.squeeze(img_stack)
+            img_chann += [img_stack]
+        return img_chann
     
-    def writeImgPyPol(self, img, chanIdx, posIdx, zIdx, timeIdx):            
+    def write_img(self, img, channel, posIdx, zIdx, timeIdx):
         if not os.path.exists(self.ImgOutPath): # create folder for processed images
             os.makedirs(self.ImgOutPath)
-        fileName = 'img_'+self.chNamesIn[chanIdx]+'_t%03d_p%03d_z%03d.tif'%(timeIdx,posIdx,zIdx)
+        fileName = 'img_'+channel+'_t%03d_p%03d_z%03d.tif'%(timeIdx,posIdx,zIdx)
         if len(img.shape)<3:
             cv2.imwrite(os.path.join(self.ImgOutPath, fileName), img)
         else:
@@ -210,7 +232,7 @@ class mManagerReader(metaclass=ABCMeta):
                         )
                         # image voxels are 16 bits
 
-                        img = self.readmManager()
+                        img = self.read_img()
                         self.mean = np.nanmean(img)
                         self.std = np.nanstd(img)
                         cv2.imwrite(cur_fname, img)
@@ -247,7 +269,7 @@ class mManagerReader(metaclass=ABCMeta):
             )
             # image voxels are 16 bits
             
-            img = self.readmManager()
+            img = self.read_img()
             self.mean = np.nanmean(img)
             self.std = np.nanstd(img)
             np.save(cur_fname, img, allow_pickle=True, fix_imports=True)

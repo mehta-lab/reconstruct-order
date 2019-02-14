@@ -50,7 +50,8 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
     tIdx = imgInput.tIdx 
     zIdx = imgInput.zIdx
     posIdx = imgInput.posIdx
-    chann_scale = [10, 10, 10, 10] # scale fluor channels for composite images when norm=False
+    # chann_scale = [10, 10, 10, 10] # scale fluor channels for composite images when norm=False
+    chann_scale = [0.25, 1, 0.05, 1]  # scale fluor channels for composite images when norm=False
     if zoomin: # crop the images
         imList = [I_trans, retard, azimuth]
         imListCrop = imcrop(imList, I_trans)
@@ -58,7 +59,8 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
 
     azimuth_degree = azimuth/np.pi*180
     I_azi_ret_trans, I_azi_ret, I_azi_scat = PolColor(I_trans, retard, azimuth_degree, scattering, norm=norm)
-
+    azimuth_x = np.cos(2 * azimuth)
+    azimuth_y = np.sin(2 * azimuth)
     if plot:
         plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_scat, zoomin=False, spacing=spacing,
                           vectorScl=vectorScl, dpi=dpi)
@@ -69,7 +71,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
 
         plt.savefig(os.path.join(imgInput.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
 
-    IFluorRetard = CompositeImg([100*retard, ImgFluor[3,:,:]*chann_scale[3], ImgFluor[2,:,:]*chann_scale[2]], norm=norm)
+    IFluorRetard = CompositeImg([100*retard, ImgFluor[2,:,:]*chann_scale[2], ImgFluor[0,:,:]*chann_scale[0]], norm=norm)
     # I_fluor_all_retard = CompositeImg([100 * retard, ImgFluor[1, :, :] * 0.05, ImgFluor[0, :, :] * 0.05], norm=norm)
     I_fluor_all_retard = CompositeImg([100 * retard,
                                        ImgFluor[3, :, :] * chann_scale[3],
@@ -81,14 +83,19 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
     retard = imBitConvert(retard * 10 ** 3, bit=16)  # scale to pm
     scattering = imBitConvert(scattering * 10 ** 4, bit=16)
     azimuth_degree = imBitConvert(azimuth_degree * 100, bit=16)  # scale to [0, 18000], 100*degree
-    imagesTrans = [I_trans, retard, azimuth_degree, scattering, I_azi_ret, I_azi_scat, I_azi_ret_trans] #trasmission channels
+    azimuth_x = imBitConvert((azimuth_x+1) * 1000, bit=16) # scale to [0, 1000]
+    azimuth_y = imBitConvert((azimuth_y+1) * 1000, bit=16)  # scale to [0, 1000]
+    imagesTrans = [I_trans, retard, azimuth_degree, scattering,
+                   azimuth_x, azimuth_y, I_azi_ret, I_azi_scat, I_azi_ret_trans] #trasmission channels
     imagesFluor = [imBitConvert(ImgFluor[i,:,:], bit=16, norm=False) for i in range(ImgFluor.shape[0])]+[IFluorRetard, I_fluor_all_retard]
     
     images = imagesTrans+imagesFluor   
     chNames = ['Transmission', 'Retardance', 'Orientation', 'Scattering',
+               'Orientation_x', 'Orientation_y',
                             'Retardance+Orientation', 'Scattering+Orientation',
                'Transmission+Retardance+Orientation',
-                            '405','488','568','640', 'Retardance+Fluorescence', 'Retardance+Fluorescence_all']
+                            '405','488','568','640', 'Retardance+Fluorescence',
+               'Retardance+Fluorescence_all']
     
     imgDict = dict(zip(chNames, images))
     imgInput.chNames = outputChann
