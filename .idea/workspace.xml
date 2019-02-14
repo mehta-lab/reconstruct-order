@@ -3,11 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="213a1158-0346-4162-98ad-6788db62b436" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/TestData/SM_1.yml" beforeDir="false" afterPath="$PROJECT_DIR$/tests/TestData/CONFIG_SM_2018_1002_1633_1.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/testReconOrder_mse.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/testReconOrder_mse.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/compute/multiDimProcess.py" beforeDir="false" afterPath="$PROJECT_DIR$/compute/multiDimProcess.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/plotting.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/plotting.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -15,9 +14,10 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/ReconstructOrder$run_reconstruction__1_.coverage" NAME="run_reconstruction (1) Coverage Results" MODIFIED="1546562709190" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/birefringence_python" />
+    <SUITE FILE_PATH="coverage/ReconstructOrder$3D_channel_registration.coverage" NAME="3D_channel_registration Coverage Results" MODIFIED="1547504862104" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ReconstructOrder$image_registration.coverage" NAME="image_registration Coverage Results" MODIFIED="1546842039575" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/birefringence_python/utils" />
     <SUITE FILE_PATH="coverage/ReconstructOrder$image_registration__1_.coverage" NAME="image_registration (1) Coverage Results" MODIFIED="1546842052344" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/birefringence_python/scripts" />
-    <SUITE FILE_PATH="coverage/ReconstructOrder$run_reconstruction.coverage" NAME="run_reconstruction Coverage Results" MODIFIED="1544470304344" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/birefringence_python" />
+    <SUITE FILE_PATH="coverage/ReconstructOrder$run_reconstruction.coverage" NAME="run_reconstruction Coverage Results" MODIFIED="1549684495696" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ReconstructOrder$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1540940766803" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/birefringence_python" />
   </component>
   <component name="DatabaseView">
@@ -38,9 +38,9 @@
     <session id="1180832588">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="12" />
-          <entry key="project.open.time.0" value="1" />
-          <entry key="project.open.time.1" value="6" />
+          <entry key="project.closed" value="14" />
+          <entry key="project.open.time.0" value="2" />
+          <entry key="project.open.time.1" value="7" />
           <entry key="project.open.time.10" value="1" />
           <entry key="project.open.time.11" value="1" />
           <entry key="project.open.time.12" value="1" />
@@ -49,57 +49,95 @@
           <entry key="project.open.time.3" value="1" />
           <entry key="project.open.time.6" value="2" />
           <entry key="project.open.time.7" value="1" />
-          <entry key="project.opened" value="20" />
+          <entry key="project.opened" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="md" value="6" />
-          <entry key="py" value="101" />
+          <entry key="md" value="10" />
+          <entry key="py" value="146" />
           <entry key="tif" value="2" />
-          <entry key="yml" value="4" />
+          <entry key="yml" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Image" value="2" />
-          <entry key="Markdown" value="6" />
-          <entry key="Python" value="101" />
-          <entry key="YAML" value="4" />
+          <entry key="Markdown" value="10" />
+          <entry key="Python" value="146" />
+          <entry key="YAML" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="490" />
+          <entry key="3D_channel_registration" value="149" />
+          <entry key="Python Console" value="548" />
           <entry key="Unnamed" value="107" />
-          <entry key="dummy" value="30" />
+          <entry key="dummy" value="81" />
           <entry key="image_registration" value="61" />
           <entry key="image_registration (1)" value="6" />
           <entry key="list_modules" value="103" />
           <entry key="md" value="1246" />
-          <entry key="py" value="7112" />
+          <entry key="py" value="9057" />
           <entry key="run_reconstruction" value="122" />
-          <entry key="txt" value="1243" />
+          <entry key="txt" value="1545" />
           <entry key="yml" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Markdown" value="1246" />
-          <entry key="PLAIN_TEXT" value="1273" />
-          <entry key="Python" value="8001" />
+          <entry key="PLAIN_TEXT" value="1626" />
+          <entry key="Python" value="10153" />
           <entry key="YAML" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
         <counts>
-          <entry key="git.branch.checkout.local" value="5" />
+          <entry key="git.branch.checkout.local" value="9" />
           <entry key="git.branch.checkout.remote" value="1" />
-          <entry key="git.branch.compare" value="1" />
+          <entry key="git.branch.compare" value="3" />
           <entry key="git.branch.create.new" value="2" />
-          <entry key="git.branch.delete.local" value="5" />
-          <entry key="git.branch.merge" value="1" />
+          <entry key="git.branch.delete.local" value="6" />
+          <entry key="git.branch.merge" value="2" />
           <entry key="git.branch.rename" value="1" />
+        </counts>
+      </usages-collector>
+    </session>
+    <session id="-635362684">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="3" />
+          <entry key="project.open.time.10" value="1" />
+          <entry key="project.open.time.2" value="1" />
+          <entry key="project.open.time.4" value="1" />
+          <entry key="project.open.time.6" value="1" />
+          <entry key="project.opened" value="4" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="py" value="6" />
+          <entry key="yml" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="Python" value="6" />
+          <entry key="YAML" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="Python Console" value="64" />
+          <entry key="py" value="240" />
+          <entry key="txt" value="84" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="PLAIN_TEXT" value="84" />
+          <entry key="Python" value="304" />
         </counts>
       </usages-collector>
     </session>
@@ -108,100 +146,95 @@
     <favorites_list name="ReconstructOrder" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.47870076">
-      <split-first>
-        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="testReconOrder_mse.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/tests/testReconOrder_mse.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="531">
-                  <caret line="82" lean-forward="true" selection-start-line="82" selection-end-line="82" />
-                  <folding>
-                    <element signature="e#310#325#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="imgIO.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-2041">
-                  <caret line="23" selection-start-line="23" selection-end-line="23" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="imgProcessing.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/utils/imgProcessing.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="376">
-                  <caret line="57" column="65" lean-forward="true" selection-start-line="57" selection-start-column="65" selection-end-line="57" selection-end-column="65" />
-                  <folding>
-                    <element signature="e#0#18#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file leaf-file-name="run_reconstruction.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/run_reconstruction.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="517">
-                  <caret line="81" column="21" lean-forward="true" selection-start-line="81" selection-start-column="21" selection-end-line="81" selection-end-column="21" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="multiDimProcess.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/compute/multiDimProcess.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="177">
-                  <caret line="137" column="75" lean-forward="true" selection-start-line="137" selection-start-column="75" selection-end-line="137" selection-end-column="75" />
-                  <folding>
-                    <element signature="e#0#9#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="mManagerIO.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="270">
-                  <caret line="25" column="11" lean-forward="true" selection-start-line="25" selection-start-column="11" selection-end-line="25" selection-end-column="11" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="CONFIG_SM_2018_1002_1633_1.yml" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/tests/TestData/CONFIG_SM_2018_1002_1633_1.yml">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="300">
-                  <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="reconstruct.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/compute/reconstruct.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="339">
-                  <caret line="82" column="22" selection-start-line="82" selection-start-column="8" selection-end-line="82" selection-end-column="22" />
-                  <folding>
-                    <element signature="e#0#18#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="988">
+              <caret line="59" column="39" selection-start-line="59" selection-start-column="39" selection-end-line="59" selection-end-column="39" />
+              <folding>
+                <element signature="e#85#124#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/compute/multiDimProcess.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="817">
+              <caret line="118" column="66" selection-start-line="118" selection-start-column="66" selection-end-line="118" selection-end-column="66" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utils/imgProcessing.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="969">
+              <caret line="51" selection-start-line="51" selection-end-line="51" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/run_reconstruction.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2432">
+              <caret line="128" column="20" selection-start-line="128" selection-start-column="20" selection-end-line="128" selection-end-column="20" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3401">
+              <caret line="183" column="24" selection-start-line="183" selection-start-column="24" selection-end-line="183" selection-end-column="24" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/utils/plotting.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1064">
+              <caret line="77" column="74" lean-forward="true" selection-start-line="77" selection-start-column="74" selection-end-line="77" selection-end-column="74" />
+              <folding>
+                <element signature="e#20#29#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/compute/reconstruct.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="703">
+              <caret line="37" column="43" lean-forward="true" selection-start-line="37" selection-start-column="43" selection-end-line="37" selection-end-column="43" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts/run_image_registration.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="589">
+              <caret line="67" column="96" selection-start-line="67" selection-start-column="96" selection-end-line="67" selection-end-column="96" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -212,10 +245,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>azimuth</find>
-      <find>imadjust</find>
-      <find>history</find>
-      <find>IHv</find>
       <find>polarization</find>
       <find>black_level</find>
       <find>imgIO</find>
@@ -226,7 +255,6 @@
       <find>img16bit</find>
       <find>im16bit</find>
       <find>ImgRaw</find>
-      <find>self</find>
       <find>save_each_image2D</find>
       <find>flipPol</find>
       <find>dAB</find>
@@ -242,6 +270,11 @@
       <find>parse_tiff</find>
       <find>compute_stokes</find>
       <find>imgOutPath</find>
+      <find>ImgSm0</find>
+      <find>im</find>
+      <find>img_io_sm</find>
+      <find>self</find>
+      <find>j</find>
     </findStrings>
     <replaceStrings>
       <replace>azimuth_degree</replace>
@@ -260,6 +293,7 @@
       <replace>img_</replace>
       <replace>stokes_param</replace>
       <replace>img_stokes</replace>
+      <replace>im</replace>
       <replace>img_io</replace>
     </replaceStrings>
   </component>
@@ -267,7 +301,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="fry2" />
+        <entry key="$PROJECT_DIR$" value="phase" />
       </map>
     </option>
   </component>
@@ -297,6 +331,23 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/tests/TestData/CONFIG_SM_2018_1002_1633_1.yml" />
         <option value="$PROJECT_DIR$/tests/testReconOrder_mse.py" />
+        <option value="$PROJECT_DIR$/utils/imgProcessing.py" />
+        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/utils/imgProcessing.py" />
+        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/utils/plotting.py" />
+        <option value="$PROJECT_DIR$/scripts/image_registration.py" />
+        <option value="$PROJECT_DIR$/scripts/PyPol2microDL_fry2.py" />
+        <option value="$PROJECT_DIR$/scripts/3D_channel_registration.py" />
+        <option value="$PROJECT_DIR$/scripts/split_orientaion_components.py" />
+        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/channel_registration_3D.py" />
+        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/run_image_registration.py" />
+        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/PyPol2microDL_fry2.py" />
+        <option value="$PROJECT_DIR$/utils/mManagerIO.py" />
+        <option value="$PROJECT_DIR$/scripts/channel_registration_3D.py" />
+        <option value="$PROJECT_DIR$/scripts/run_image_registration.py" />
+        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/scripts/split_orientaion_components.py" />
+        <option value="$PROJECT_DIR$/utils/plotting.py" />
+        <option value="$PROJECT_DIR$/run_reconstruction.py" />
+        <option value="$PROJECT_DIR$/compute/multiDimProcess.py" />
       </list>
     </option>
   </component>
@@ -307,34 +358,15 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-5" />
-    <option name="y" value="7" />
-    <option name="width" value="1030" />
-    <option name="height" value="578" />
+    <option name="x" value="-7" />
+    <option name="width" value="1547" />
+    <option name="height" value="831" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="ReconstructOrder" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ReconstructOrder" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ReconstructOrder" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ReconstructOrder" type="462c0819:PsiDirectoryNode" />
-              <item name="utils" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="true" />
@@ -343,13 +375,21 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="C:/python" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/run_reconstruction.py" />
+    <property name="settings.editor.selected.configurable" value="PyConsoleConfigurable.Python Console" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="ReconstructOrder" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="ReconstructOrder" />
+      </console-settings>
+    </option>
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Google Drive\python\ReconstructOrder\" />
       <recent name="C:\python" />
+      <recent name="C:\Google Drive\python\ReconstructOrder\" />
       <recent name="C:\Google Drive\python\ReconstructOrder\birefringence_python\scripts" />
       <recent name="C:\Google Drive\python\ReconstructOrder\birefringence_python\" />
       <recent name="C:\Google Drive\python\ReconstructOrder\birefringence_python" />
@@ -367,7 +407,29 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python tests.Unittests in testReconOrder_mse.py">
+  <component name="RunManager" selected="Python.run_reconstruction">
+    <configuration name="3D_channel_registration" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="ReconstructOrder" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="C:\Google Drive\python\ReconstructOrder\scripts\channel_registration_3D.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="Unnamed" type="PythonConfigurationType" factoryName="Python">
       <module name="ReconstructOrder" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -386,25 +448,9 @@
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
-    </configuration>
-    <configuration name="image_registration (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="ReconstructOrder" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/birefringence_python/scripts" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/birefringence_python/scripts/image_registration.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
     </configuration>
     <configuration name="image_registration" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="ReconstructOrder" />
@@ -414,16 +460,19 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/birefringence_python/utils" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/birefringence_python" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="C:\Google Drive\python\ReconstructOrder\birefringence_python\image_registration.py" />
+      <option name="SCRIPT_NAME" value="C:\Google Drive\python\ReconstructOrder\birefringence_python\scripts\image_registration.py" />
       <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
     </configuration>
     <configuration name="list_modules" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="ReconstructOrder" />
@@ -443,8 +492,11 @@
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
     </configuration>
-    <configuration name="run_reconstruction" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="run_reconstruction (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="ReconstructOrder" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -457,39 +509,51 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="C:\Google Drive\python\ReconstructOrder\birefringence_python\run_reconstruction.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/birefringence_python/run_reconstruction.py" />
       <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
     </configuration>
-    <configuration name="Unittests in testReconOrder_mse.py" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
+    <configuration name="run_reconstruction" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="ReconstructOrder" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/testReconOrder_mse.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/run_reconstruction.py" />
+      <option name="PARAMETERS" value="--config $PROJECT_DIR$/../ReconstructOrder_config/config_NikonSmallWorld.yml" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
     </configuration>
     <list>
       <item itemvalue="Python.Unnamed" />
       <item itemvalue="Python.list_modules" />
       <item itemvalue="Python.run_reconstruction" />
       <item itemvalue="Python.image_registration" />
-      <item itemvalue="Python.image_registration (1)" />
-      <item itemvalue="Python tests.Unittests in testReconOrder_mse.py" />
+      <item itemvalue="Python.run_reconstruction (1)" />
+      <item itemvalue="Python.3D_channel_registration" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.Unittests in testReconOrder_mse.py" />
-        <item itemvalue="Python.image_registration (1)" />
-        <item itemvalue="Python.image_registration" />
         <item itemvalue="Python.run_reconstruction" />
+        <item itemvalue="Python.3D_channel_registration" />
+        <item itemvalue="Python.run_reconstruction (1)" />
+        <item itemvalue="Python.image_registration" />
         <item itemvalue="Python.list_modules" />
       </list>
     </recent_temporary>
@@ -771,7 +835,77 @@
       <option name="project" value="LOCAL" />
       <updated>1546908683784</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="disable phase experimenting block; non-linear contrast adjustment for R+O image">
+      <created>1547234474884</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1547234474884</updated>
+    </task>
+    <task id="LOCAL-00040" summary="bug fix">
+      <created>1547243861767</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1547243861767</updated>
+    </task>
+    <task id="LOCAL-00041" summary="bug fix">
+      <created>1547247250830</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1547247250830</updated>
+    </task>
+    <task id="LOCAL-00042" summary="Add script to batch register images">
+      <created>1547534580658</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1547534580658</updated>
+    </task>
+    <task id="LOCAL-00043" summary="update 3D_channel_registration">
+      <created>1547618607035</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1547618607037</updated>
+    </task>
+    <task id="LOCAL-00044" summary="Add Orientaion_x and Orientaion_y to output">
+      <created>1547621330686</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1547621330686</updated>
+    </task>
+    <task id="LOCAL-00045" summary="Add Orientaion_x and Orientaion_y to output">
+      <created>1547621568338</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1547621568338</updated>
+    </task>
+    <task id="LOCAL-00046" summary="scale Orientaion_x and Orientaion_y to be always positive">
+      <created>1547623429348</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1547623429348</updated>
+    </task>
+    <task id="LOCAL-00047" summary="add a script to split the orientation component">
+      <created>1547674004290</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1547674004290</updated>
+    </task>
+    <task id="LOCAL-00048" summary="Account for different z-step size for channel registration">
+      <created>1547843608391</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1547843608391</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -813,42 +947,60 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="-1080" width="1920" height="1080" extended-state="0" />
+    <frame x="-8" y="-8" width="2576" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" anchor="right" content_ui="combo" id="Project" order="6" sideWeight="0.498708" visible="true" weight="0.17092651" />
-      <window_info anchor="bottom" id="TODO" order="11" weight="0.32986626" />
-      <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.50067115" side_tool="true" weight="0.30855396" />
-      <window_info anchor="bottom" id="Run" order="7" sideWeight="0.49932885" weight="0.36252546" />
-      <window_info anchor="bottom" id="Version Control" order="2" weight="0.3268839" />
-      <window_info anchor="right" id="Python Console" order="7" sideWeight="0.51272726" weight="0.24443561" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.24966443" />
-      <window_info anchor="bottom" id="Terminal" order="3" sideWeight="0.4986577" weight="0.32369298" />
-      <window_info anchor="bottom" id="Debug" order="8" sideWeight="0.49880764" weight="0.21913236" />
       <window_info id="Favorites" order="0" side_tool="true" weight="0.3295302" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="5" weight="0.25" />
-      <window_info anchor="bottom" id="Docker" order="0" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
-      <window_info anchor="right" id="Remote Host" order="8" weight="0.42209858" />
-      <window_info active="true" anchor="right" content_ui="combo" id="Project" order="6" sideWeight="0.498708" visible="true" weight="0.3755962" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.24966443" />
+      <window_info anchor="bottom" id="Docker" order="0" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="1" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="2" sideWeight="0.49920508" weight="0.32814237" />
+      <window_info anchor="bottom" id="Terminal" order="3" sideWeight="0.4986577" weight="0.32369298" />
+      <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.5023847" side_tool="true" weight="0.32844576" />
+      <window_info anchor="bottom" id="Message" order="5" />
+      <window_info anchor="bottom" id="Find" order="6" sideWeight="0.49761525" visible="true" weight="0.43255132" />
+      <window_info anchor="bottom" id="Run" order="7" sideWeight="0.49841017" weight="0.24916574" />
+      <window_info anchor="bottom" id="Debug" order="8" sideWeight="0.49841017" weight="0.2888563" />
+      <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="11" weight="0.32986626" />
+      <window_info anchor="bottom" id="File Transfer" order="12" weight="0.4340176" />
+      <window_info anchor="right" x="0" y="0" width="337" height="638" id="Documentation" order="0" sideWeight="0.48727274" side_tool="true" weight="0.34898892" />
+      <window_info anchor="right" id="SciView" order="1" sideWeight="0.49945712" weight="0.3281879" />
+      <window_info anchor="right" id="Database" order="2" weight="0.3295302" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="3" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="TODO" order="11" weight="0.32986626" />
-      <window_info anchor="bottom" id="Version Control" order="2" visible="true" weight="0.32814237" />
-      <window_info anchor="bottom" id="Run" order="7" sideWeight="0.49932885" weight="0.24916574" />
-      <window_info anchor="right" id="Python Console" order="7" sideWeight="0.51272726" weight="0.24443561" />
-      <window_info anchor="bottom" id="Debug" order="8" sideWeight="0.49880764" weight="0.21913236" />
-      <window_info anchor="right" x="0" y="0" width="337" height="638" id="Documentation" order="0" sideWeight="0.48727274" side_tool="true" weight="0.34898892" />
-      <window_info anchor="right" id="Database" order="2" weight="0.3295302" />
-      <window_info anchor="bottom" id="Message" order="5" />
-      <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.50067115" side_tool="true" weight="0.30938417" />
-      <window_info anchor="bottom" id="Database Changes" order="1" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
-      <window_info anchor="right" id="SciView" order="1" sideWeight="0.49945712" weight="0.3281879" />
-      <window_info anchor="bottom" id="Find" order="6" weight="0.32925472" />
-      <window_info anchor="bottom" id="Terminal" order="3" sideWeight="0.4986577" weight="0.32369298" />
-      <window_info id="Favorites" order="0" side_tool="true" weight="0.3295302" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="5" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Project" order="6" sideWeight="0.498708" weight="0.37877584" />
+      <window_info active="true" anchor="right" id="Python Console" order="7" sideWeight="0.51272726" visible="true" weight="0.26430842" />
+      <window_info anchor="right" id="Remote Host" order="8" weight="0.12837838" />
     </layout>
+    <layout-to-restore>
+      <window_info id="Favorites" order="0" side_tool="true" weight="0.3295302" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.24966443" />
+      <window_info anchor="bottom" id="Docker" order="0" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="1" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="2" sideWeight="0.49920508" weight="0.32814237" />
+      <window_info anchor="bottom" id="Terminal" order="3" sideWeight="0.4986577" weight="0.32369298" />
+      <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.5023847" side_tool="true" weight="0.32844576" />
+      <window_info anchor="bottom" id="Message" order="5" />
+      <window_info anchor="bottom" id="Find" order="6" sideWeight="0.49761525" visible="true" weight="0.43255132" />
+      <window_info anchor="bottom" id="Run" order="7" sideWeight="0.49841017" weight="0.24916574" />
+      <window_info anchor="bottom" id="Debug" order="8" sideWeight="0.49841017" weight="0.2888563" />
+      <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="11" weight="0.32986626" />
+      <window_info anchor="bottom" id="File Transfer" order="12" weight="0.4340176" />
+      <window_info anchor="right" x="0" y="0" width="337" height="638" id="Documentation" order="0" sideWeight="0.48727274" side_tool="true" weight="0.34898892" />
+      <window_info anchor="right" id="SciView" order="1" sideWeight="0.49945712" weight="0.3281879" />
+      <window_info anchor="right" id="Database" order="2" weight="0.3295302" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="3" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="4" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="5" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Project" order="6" sideWeight="0.498708" weight="0.37877584" />
+      <window_info active="true" anchor="right" id="Python Console" order="7" sideWeight="0.51272726" visible="true" weight="0.44630873" />
+      <window_info anchor="right" id="Remote Host" order="8" weight="0.12837838" />
+    </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -863,7 +1015,26 @@
                 <collection />
               </option>
               <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-                <collection />
+                <collection>
+                  <UserGroup>
+                    <option name="users">
+                      <list>
+                        <option value="fry2" />
+                      </list>
+                    </option>
+                  </UserGroup>
+                </collection>
+              </option>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="fry2" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
               </option>
               <option name="COLUMN_ORDER">
                 <list>
@@ -883,13 +1054,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add support for 4-frames Stokes. &#10;Subtract black level for all imported tiff.&#10;Add the switch for local intensity normalization." />
-    <MESSAGE value="Add local background estimation feature" />
-    <MESSAGE value="Add .gitignore" />
-    <MESSAGE value="replace old ParseTiffInput.py with more general parse_tiff_input.py to parse micromanager channel names" />
-    <MESSAGE value="Fix BF image array dimension" />
-    <MESSAGE value="update mManagerIO" />
-    <MESSAGE value="update &quot;CompositeImg&quot; to take input with &gt; 3 channels" />
     <MESSAGE value="update 'parse_tiff_input' to fix the pol channel order issue when run on Linux system" />
     <MESSAGE value="disable debug code" />
     <MESSAGE value="add data dir" />
@@ -906,9 +1070,16 @@
     <MESSAGE value="debug" />
     <MESSAGE value="add command line interface and move processing parameters to the config file" />
     <MESSAGE value="add config files" />
-    <MESSAGE value="bug fix" />
     <MESSAGE value="update README" />
-    <option name="LAST_COMMIT_MESSAGE" value="update README" />
+    <MESSAGE value="disable phase experimenting block; non-linear contrast adjustment for R+O image" />
+    <MESSAGE value="bug fix" />
+    <MESSAGE value="Add script to batch register images" />
+    <MESSAGE value="update 3D_channel_registration" />
+    <MESSAGE value="Add Orientaion_x and Orientaion_y to output" />
+    <MESSAGE value="scale Orientaion_x and Orientaion_y to be always positive" />
+    <MESSAGE value="add a script to split the orientation component" />
+    <MESSAGE value="Account for different z-step size for channel registration" />
+    <option name="LAST_COMMIT_MESSAGE" value="Account for different z-step size for channel registration" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -918,15 +1089,64 @@
           <line>112</line>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/birefringence_python/utils/plotting.py</url>
-          <line>84</line>
+          <line>80</line>
           <option name="timeStamp" value="18" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/birefringence_python/utils/imgIO.py</url>
           <line>23</line>
           <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/birefringence_python/utils/plotting.py</url>
+          <line>144</line>
+          <option name="timeStamp" value="20" />
+        </line-breakpoint>
+        <line-breakpoint suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/birefringence_python/utils/plotting.py</url>
+          <line>140</line>
+          <option name="timeStamp" value="21" />
+        </line-breakpoint>
+        <line-breakpoint suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/birefringence_python/utils/plotting.py</url>
+          <line>147</line>
+          <option name="timeStamp" value="22" />
+        </line-breakpoint>
+        <line-breakpoint suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/birefringence_python/utils/plotting.py</url>
+          <line>145</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/birefringence_python/utils/imgProcessing.py</url>
+          <line>78</line>
+          <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/birefringence_python/scripts/image_registration.py</url>
+          <line>120</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/birefringence_python/scripts/image_registration.py</url>
+          <line>121</line>
+          <option name="timeStamp" value="33" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/scripts/PyPol2microDL_fry2.py</url>
+          <option name="timeStamp" value="34" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/compute/multiDimProcess.py</url>
+          <line>240</line>
+          <option name="timeStamp" value="35" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/compute/multiDimProcess.py</url>
+          <line>110</line>
+          <option name="timeStamp" value="40" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -935,26 +1155,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgIO.py" />
-    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/mManagerIO.py" />
-    <entry file="file://$PROJECT_DIR$/birefringence_python/config/config_2018_11_28_594CTIP2_647SATB2_10X.yml" />
-    <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py" />
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="440">
-            <caret line="31" column="22" selection-start-line="31" selection-start-column="22" selection-end-line="31" selection-end-column="22" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgProcessing.py" />
-    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py" />
-    <entry file="file://$PROJECT_DIR$/birefringence_python/scripts/image_registration.py" />
-    <entry file="file://$PROJECT_DIR$/birefringence_python/config/config.yml" />
-    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" />
-    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py" />
     <entry file="file://$PROJECT_DIR$/birefringence_python/Andrew_fry2.py" />
     <entry file="file://$PROJECT_DIR$/birefringence_python/PyPol2microDL_fry2.py" />
     <entry file="file://$PROJECT_DIR$/birefringence_python/PyPol2microDL.py" />
@@ -985,33 +1185,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgIO.py" />
-    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/mManagerIO.py" />
     <entry file="file://$PROJECT_DIR$/birefringence_python/config/config_2018_11_28_594CTIP2_647SATB2_10X.yml" />
-    <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py" />
     <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgProcessing.py" />
-    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py" />
-    <entry file="file://$PROJECT_DIR$/birefringence_python/scripts/image_registration.py" />
     <entry file="file://$PROJECT_DIR$/birefringence_python/config/config.yml" />
-    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" />
-    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py" />
-    <entry file="file://$PROJECT_DIR$/config/config.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="12" column="12" selection-start-line="12" selection-start-column="4" selection-end-line="12" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="350">
-            <caret line="46" column="157" selection-start-line="46" selection-start-column="157" selection-end-line="46" selection-end-column="157" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/config/config_2018_11_28_594CTIP2_647SATB2_10X.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
@@ -1019,77 +1195,128 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/anaconda3/envs/InstantPol3.6/lib/python3.6/unittest/suite.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="56" selection-start-line="56" selection-end-line="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2041">
-          <caret line="23" selection-start-line="23" selection-end-line="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils/imgProcessing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="376">
-          <caret line="57" column="65" lean-forward="true" selection-start-line="57" selection-start-column="65" selection-end-line="57" selection-end-column="65" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/run_reconstruction.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="517">
-          <caret line="81" column="21" lean-forward="true" selection-start-line="81" selection-start-column="21" selection-end-line="81" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/compute/reconstruct.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="82" column="22" selection-start-line="82" selection-start-column="8" selection-end-line="82" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/envs/InstantPol3.6/lib/python3.6/unittest/suite.py" />
+    <entry file="file://$PROJECT_DIR$/tests/testReconOrder_mse.py" />
     <entry file="file://$PROJECT_DIR$/tests/TestData/CONFIG_SM_2018_1002_1633_1.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
+        <state relative-caret-position="380">
+          <caret line="20" selection-start-line="20" selection-end-line="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="513">
+            <caret line="27" column="2" selection-start-line="27" selection-start-column="2" selection-end-line="27" selection-end-column="2" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/config.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="12" column="12" selection-start-line="12" selection-start-column="4" selection-end-line="12" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/reconstruct.py" />
+    <entry file="file://$PROJECT_DIR$/birefringence_python/PolScope/multiDimProcess.py" />
+    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/imgIO.py" />
+    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/mManagerIO.py" />
+    <entry file="file://$PROJECT_DIR$/birefringence_python/scripts/image_registration.py" />
+    <entry file="file://$PROJECT_DIR$/birefringence_python/utils/plotting.py" />
+    <entry file="file://$PROJECT_DIR$/birefringence_python/run_reconstruction.py" />
+    <entry file="file://$PROJECT_DIR$/contrib-matlab/readMatlabOutput.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-194" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/PyPol2microDL_fry2.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/split_orientaion_components.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="19">
+          <caret line="1" column="60" selection-end-line="2" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/channel_registration_3D.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-893">
+          <caret line="10" column="43" lean-forward="true" selection-start-line="10" selection-start-column="43" selection-end-line="10" selection-end-column="43" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="25" column="11" lean-forward="true" selection-start-line="25" selection-start-column="11" selection-end-line="25" selection-end-column="11" />
+        <state relative-caret-position="988">
+          <caret line="59" column="39" selection-start-line="59" selection-start-column="39" selection-end-line="59" selection-end-column="39" />
+          <folding>
+            <element signature="e#85#124#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/testReconOrder_mse.py">
+    <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="531">
-          <caret line="82" lean-forward="true" selection-start-line="82" selection-end-line="82" />
+        <state relative-caret-position="3401">
+          <caret line="183" column="24" selection-start-line="183" selection-start-column="24" selection-end-line="183" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/run_image_registration.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="589">
+          <caret line="67" column="96" selection-start-line="67" selection-start-column="96" selection-end-line="67" selection-end-column="96" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/compute/reconstruct.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="703">
+          <caret line="37" column="43" lean-forward="true" selection-start-line="37" selection-start-column="43" selection-end-line="37" selection-end-column="43" />
           <folding>
-            <element signature="e#310#325#0" expanded="true" />
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/imgProcessing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="969">
+          <caret line="51" selection-start-line="51" selection-end-line="51" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/compute/multiDimProcess.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="137" column="75" lean-forward="true" selection-start-line="137" selection-start-column="75" selection-end-line="137" selection-end-column="75" />
+        <state relative-caret-position="817">
+          <caret line="118" column="66" selection-start-line="118" selection-start-column="66" selection-end-line="118" selection-end-column="66" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run_reconstruction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2432">
+          <caret line="128" column="20" selection-start-line="128" selection-start-column="20" selection-end-line="128" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/plotting.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1064">
+          <caret line="77" column="74" lean-forward="true" selection-start-line="77" selection-start-column="74" selection-end-line="77" selection-end-column="74" />
+          <folding>
+            <element signature="e#20#29#0" expanded="true" />
           </folding>
         </state>
       </provider>

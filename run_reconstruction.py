@@ -78,6 +78,8 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, Bg
                            ff_method='open') # find background tile
     img_io.loopZ ='sample'
     img_io = loopPos(img_io, img_reconstructor, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
+    img_io.chNamesIn = img_io.chNamesOut
+    img_io.writeMetaData()
 
 def run_action(args):
     config = read_config(args.config)
