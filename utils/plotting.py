@@ -50,7 +50,8 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
     tIdx = imgInput.tIdx 
     zIdx = imgInput.zIdx
     posIdx = imgInput.posIdx
-    chann_scale = [10, 10, 10, 10] # scale fluor channels for composite images when norm=False
+    # chann_scale = [10, 10, 10, 10] # scale fluor channels for composite images when norm=False
+    chann_scale = [0.25, 1, 0.05, 1]  # scale fluor channels for composite images when norm=False
     if zoomin: # crop the images
         imList = [I_trans, retard, azimuth]
         imListCrop = imcrop(imList, I_trans)
@@ -70,7 +71,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
 
         plt.savefig(os.path.join(imgInput.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
 
-    IFluorRetard = CompositeImg([100*retard, ImgFluor[2,:,:]*chann_scale[3], ImgFluor[0,:,:]*chann_scale[2]], norm=norm)
+    IFluorRetard = CompositeImg([100*retard, ImgFluor[2,:,:]*chann_scale[2], ImgFluor[0,:,:]*chann_scale[0]], norm=norm)
     # I_fluor_all_retard = CompositeImg([100 * retard, ImgFluor[1, :, :] * 0.05, ImgFluor[0, :, :] * 0.05], norm=norm)
     I_fluor_all_retard = CompositeImg([100 * retard,
                                        ImgFluor[3, :, :] * chann_scale[3],
