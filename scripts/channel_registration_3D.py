@@ -46,7 +46,7 @@ def channel_register(target_images, channels):
     registration_params = dict(zip(channels, shifts))
     return registration_params
 
-def translate_3D(images, channels, registration_params):
+def translate_3D(images, channels, registration_params, size_z_um):
     """
     Warps images using the provided transformation objects, and displays the overlaid images.
 
@@ -65,6 +65,8 @@ def translate_3D(images, channels, registration_params):
         shift = registration_params[chan]
         # only warp the image if shift is non-zero
         if any(shift):
+            # scale z-shift according to the z-step size
+            shift[0] = shift[0]*registration_params['size_z_um']/size_z_um
             output_shape = image.shape
             coords = np.mgrid[:output_shape[0], :output_shape[1], :output_shape[2]]
             # change the data type to float to allow subpixel registration
@@ -112,8 +114,9 @@ if __name__ == '__main__':
 
     target_images_cropped = [target_image[:, 750:1300, 750:1300] for target_image in target_images]
     registration_params = channel_register(target_images_cropped, outputChann)
+    registration_params['size_z_um'] = size_z_um = img_io.size_z_um
 
-    target_images_warped = translate_3D(target_images_cropped, outputChann, registration_params)
+    target_images_warped = translate_3D(target_images_cropped, outputChann, registration_params, size_z_um)
 
     OutputPath = os.path.join(ImgSmPath,'registration', 'processed')
     img_io.ImgOutPath = OutputPath
@@ -140,6 +143,6 @@ if __name__ == '__main__':
         plt.close("all")
 
 
-    registration_params['size_z_um'] = img_io.size_z_um
+
     with open(shift_file_path, 'w') as f:
         json.dump(registration_params, f, indent=4)
