@@ -10,10 +10,10 @@ from utils.imgProcessing import imBitConvert
 if __name__ == '__main__':
     # RawDataPath = r'D:/Box Sync/Data'
     # ProcessedPath = r'D:/Box Sync/Processed/'
-    RawDataPath = '/data/sguo/Processed'
-    ProcessedPath = '/data/sguo/Processed'
-    ImgDir = '2018_11_01_kidney_slice'
-    SmDir = 'SMS_2018_1101_1906_1_BG_2018_1101_1906_1'
+    RawDataPath = '/flexo/ComputationalMicroscopy/Processed/virtualstaining/u2os_leonetti'
+    ProcessedPath = '/flexo/ComputationalMicroscopy/Processed/virtualstaining/u2os_leonetti'
+    ImgDir = '2018_12_21_U20S_TOMM20A_HighDensity'
+    SmDir = 'SMS_2018_1221_1325_1_SMS_2018_1221_1325_1'
     outputChann = ['Orientation']
 
     ImgSmPath = os.path.join(ProcessedPath, ImgDir, SmDir)  # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
