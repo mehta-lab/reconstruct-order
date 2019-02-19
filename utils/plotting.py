@@ -14,40 +14,40 @@ from utils.imgCrop import imcrop
 
 #%%
 def plotVectorField(I, azimuth, R=40, spacing=40, clim=[None, None]): # plot vector field representaiton of the orientation map,
-    # Currently only plot single pixel value when spacing >0. 
+    # Currently only plot single pixel value when spacing >0.
     # To do: Use average pixel value to reduce noise
 #    retardSmooth = nanRobustBlur(retard, (spacing, spacing))
 #    retardSmooth/np.nanmean(retardSmooth)
 #    R = R/np.nanmean(R)
-    U, V = R*spacing*np.cos(2*azimuth), R*spacing*np.sin(2*azimuth)    
+    U, V = R*spacing*np.cos(2*azimuth), R*spacing*np.sin(2*azimuth)
     USmooth = nanRobustBlur(U,(spacing,spacing)) # plot smoothed vector field
     VSmooth = nanRobustBlur(V,(spacing,spacing)) # plot smoothed vector field
     azimuthSmooth = 0.5*np.arctan2(VSmooth,USmooth)
     RSmooth = np.sqrt(USmooth**2+VSmooth**2)
-    USmooth, VSmooth = RSmooth*np.cos(azimuthSmooth), RSmooth*np.sin(azimuthSmooth) 
-   
+    USmooth, VSmooth = RSmooth*np.cos(azimuthSmooth), RSmooth*np.sin(azimuthSmooth)
+
 #    azimuthSmooth  = azimuth
     nY, nX = I.shape
-    Y, X = np.mgrid[0:nY, 0:nX] # notice the inversed order of X and Y        
- 
+    Y, X = np.mgrid[0:nY, 0:nX] # notice the inversed order of X and Y
+
 #    I = histequal(I)
 #    figSize = (10,10)
-#    fig = plt.figure(figsize = figSize) 
+#    fig = plt.figure(figsize = figSize)
     imAx = plt.imshow(I, cmap='gray', vmin=clim[0], vmax=clim[1])
-    plt.title('Orientation map')                              
-    plt.quiver(X[::spacing, ::spacing], Y[::spacing,::spacing], 
+    plt.title('Orientation map')
+    plt.quiver(X[::spacing, ::spacing], Y[::spacing,::spacing],
                USmooth[::spacing,::spacing], VSmooth[::spacing,::spacing],
                edgecolor='g',facecolor='g',units='xy', alpha=1, width=2,
                headwidth = 0, headlength = 0, headaxislength = 0,
-               scale_units = 'xy',scale = 1 )  
-    
+               scale_units = 'xy',scale = 1 )
+
 #    plt.show()
-    return imAx    
+    return imAx
 
 def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
     I_trans,retard, azimuth, polarization, ImgFluor = imgs
     scattering = 1-polarization
-    tIdx = imgInput.tIdx 
+    tIdx = imgInput.tIdx
     zIdx = imgInput.zIdx
     posIdx = imgInput.posIdx
     # chann_scale = [10, 10, 10, 10] # scale fluor channels for composite images when norm=False
@@ -65,9 +65,9 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
         plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_scat, zoomin=False, spacing=spacing,
                           vectorScl=vectorScl, dpi=dpi)
         if zoomin:
-            figName = 'Transmission+Retardance+Orientation_Zoomin.png'
+            figName = 'Transmission+Retardance+Orientation_Zoomin.jpg'
         else:
-            figName = 'Transmission+Retardance+Orientation_t%03d_p%03d_z%03d.png' % (tIdx, posIdx, zIdx)
+            figName = 'Transmission+Retardance+Orientation_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
 
         plt.savefig(os.path.join(imgInput.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
 
@@ -79,7 +79,8 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
                                        ImgFluor[1, :, :] * chann_scale[1],
                                        ImgFluor[0, :, :] * chann_scale[0]], norm=norm)
 #    images = [I_trans, retard, azimuth_degree, I_azi_ret, I_azi_ret_trans, IFluorRetard]
-    I_trans = imBitConvert(I_trans * 10 ** 3, bit=16, norm=False)  # AU, set norm to False for tiling images
+    I_trans = imBitConvert(I_trans * 10 ** 5, bit=16, norm=False)  # AU, set norm to False for tiling images
+#     I_trans = imBitConvert(I_trans * 10 ** 0, bit=16, norm=False)  # AU, set norm to False for tiling images
     retard = imBitConvert(retard * 10 ** 3, bit=16)  # scale to pm
     scattering = imBitConvert(scattering * 10 ** 4, bit=16)
     azimuth_degree = imBitConvert(azimuth_degree * 100, bit=16)  # scale to [0, 18000], 100*degree
@@ -88,20 +89,20 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
     imagesTrans = [I_trans, retard, azimuth_degree, scattering,
                    azimuth_x, azimuth_y, I_azi_ret, I_azi_scat, I_azi_ret_trans] #trasmission channels
     imagesFluor = [imBitConvert(ImgFluor[i,:,:], bit=16, norm=False) for i in range(ImgFluor.shape[0])]+[IFluorRetard, I_fluor_all_retard]
-    
-    images = imagesTrans+imagesFluor   
+
+    images = imagesTrans+imagesFluor
     chNames = ['Transmission', 'Retardance', 'Orientation', 'Scattering',
                'Orientation_x', 'Orientation_y',
                             'Retardance+Orientation', 'Scattering+Orientation',
                'Transmission+Retardance+Orientation',
                             '405','488','568','640', 'Retardance+Fluorescence',
                'Retardance+Fluorescence_all']
-    
+
     imgDict = dict(zip(chNames, images))
     imgInput.chNames = outputChann
     imgInput.nChann = len(outputChann)
-    return imgInput, imgDict 
-  
+    return imgInput, imgDict
+
 
 def PolColor(I_trans, retard, azimuth, scattering, norm=True):
     if norm:
@@ -115,7 +116,7 @@ def PolColor(I_trans, retard, azimuth, scattering, norm=True):
         I_trans = cv2.convertScaleAbs(I_trans, alpha=100)
         scattering = cv2.convertScaleAbs(scattering, alpha=2000)
 #    retard = histequal(retard)
-    
+
     azimuth = cv2.convertScaleAbs(azimuth, alpha=1)
 #    retardAzi = np.stack([azimuth, retard, np.ones(retard.shape).astype(np.uint8)*255],axis=2)
     I_azi_ret_trans = np.stack([azimuth, retard, I_trans], axis=2)
@@ -124,7 +125,7 @@ def PolColor(I_trans, retard, azimuth, scattering, norm=True):
     I_azi_ret_trans = cv2.cvtColor(I_azi_ret_trans, cv2.COLOR_HSV2RGB)
     I_azi_ret = cv2.cvtColor(I_azi_ret, cv2.COLOR_HSV2RGB)
     I_azi_scat = cv2.cvtColor(I_azi_scat, cv2.COLOR_HSV2RGB)  #
-#    retardAzi = np.stack([azimuth, retard],axis=2)    
+#    retardAzi = np.stack([azimuth, retard],axis=2)
     return I_azi_ret_trans, I_azi_ret, I_azi_scat
 
 def CompositeImg(images, norm=True):
@@ -153,7 +154,7 @@ def CompositeImg(images, norm=True):
     ImgColor = imBitConvert(ImgColor, bit=8, norm=False)
 
     return ImgColor
-    
+
 #%%
 def plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_scat, zoomin=False, spacing=20, vectorScl=1, dpi=300):
 
@@ -223,7 +224,7 @@ def plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_sca
 
 def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
     figSize = (12,12)
-    fig = plt.figure(figsize = figSize)            
+    fig = plt.figure(figsize = figSize)
     for i in range(4):
         ax_p = plt.subplot(2,2,i+1)
         ax_i = plt.imshow(imadjust(images[i]))
