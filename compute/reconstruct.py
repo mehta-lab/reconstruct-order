@@ -3,7 +3,7 @@ import sys
 import cv2
 # from utils.plotting import plot_sub_images
 # from scipy.ndimage.filters import median_filter
-
+from skimage.restoration import denoise_tv_chambolle
 sys.path.append("..") # Add upper level directory to python modules path.
 #from utils.imgCrop import imcrop
 #%%
@@ -54,6 +54,7 @@ class ImgReconstructor:
         def correct_background(stokes_param_sm, stokes_param_bg, bg_method='Global'):
             if stokes_param_bg:
                 stokes_param_bg = stokes_transform(stokes_param_bg)
+                stokes_param_bg = [denoise_tv_chambolle(img, weight=0.1) for img in stokes_param_bg]
                 stokes_param_sm = correct_background_stokes(stokes_param_sm, stokes_param_bg)
                 if bg_method == 'Local_filter':
                     stokes_param_bg_local = []

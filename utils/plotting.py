@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import cv2
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from utils.imgProcessing import nanRobustBlur,imadjust, imBitConvert, imClip
+from utils.imgProcessing import nanRobustBlur, imadjust, imBitConvert, imClip
 from utils.imgCrop import imcrop
 #import sys
 #sys.path.append("..") # Adds higher directory to python modules path.
