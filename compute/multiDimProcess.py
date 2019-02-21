@@ -6,17 +6,17 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import re
 import cv2
-# import sys
-# sys.path.append("..") # Adds higher directory to python modules path.
+import time
 from utils.imgIO import parse_tiff_input, exportImg, GetSubDirName, FindDirContainPos
 from .reconstruct import ImgReconstructor
 from utils.imgProcessing import ImgMin
 from utils.plotting import plot_sub_images
 from utils.mManagerIO import mManagerReader, PolAcquReader
-
 from utils.plotting import plot_birefringence, plot_sub_images
 from utils.imgProcessing import ImgLimit
-import time
+from skimage.restoration import denoise_tv_chambolle
+
+
 
 
 def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
@@ -94,6 +94,10 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
                                          wavelength=img_ioBg.wavelength, output_path=img_ioBg.ImgOutPath)
     if img_io.bg_correct:
         img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
+        print('denoising the background...')
+        img_stokes_bg = [denoise_tv_chambolle(img, weight=10**6) for img in img_stokes_bg]
+        # img_stokes_bg = [cv2.GaussianBlur(img, (5, 5), 0) for img in img_stokes_bg]
+        # img_stokes_bg = [cv2.medianBlur(img, 5) for img in img_stokes_bg]
     else:
         img_stokes_bg = None
 
@@ -143,8 +147,7 @@ def loopPos(img_io, img_reconstructor, flatField=False, bgCorrect=True, circular
     @return: None
     """
 
-    for posIdx in range(26, img_io.nPos):
-        # for posIdx in range(0, 25):
+    for posIdx in range(0, img_io.nPos):
         plt.close("all")  # close all the figures from the last run
         if img_io.metaFile['Summary']['InitialPositionList']:  # PolAcquisition doens't save position list
             subDir = img_io.metaFile['Summary']['InitialPositionList'][posIdx]['Label']
@@ -193,6 +196,7 @@ def loopZSm(img_io, img_reconstructor, circularity='rcp', norm=True):
         os.makedirs(img_io.ImgOutPath)
     tIdx = img_io.tIdx
     posIdx = img_io.posIdx
+    img_stokes_bg = img_io.param_bg
     for zIdx in range(0, img_io.nZ):
         # for zIdx in range(0, 1):
         print('Processing position %03d, time %03d, z %03d ...' % (posIdx, tIdx, zIdx))
@@ -209,7 +213,7 @@ def loopZSm(img_io, img_reconstructor, circularity='rcp', norm=True):
         stop = time.time()
         # print('compute_stokes takes {:.1f} ms ...'.format((stop - start) * 1000))
         start = time.time()
-        img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm, img_io.param_bg,
+        img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm, img_stokes_bg,
                                                                       circularity=circularity,
                                                                       bg_method=img_io.bg_method,
                                                                       extra=False)  # background subtraction
@@ -248,7 +252,7 @@ def loopZSm(img_io, img_reconstructor, circularity='rcp', norm=True):
         start = time.time()
         img_io, imgs = plot_birefringence(img_io, imgs, img_io.chNamesOut, spacing=20, vectorScl=2, zoomin=False,
                                           dpi=200,
-                                          norm=norm, plot=False)
+                                          norm=norm, plot=True)
         stop = time.time()
         # print('plot_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
         # img_io.imgLimits = ImgLimit(imgs,img_io.imgLimits)
@@ -257,6 +261,12 @@ def loopZSm(img_io, img_reconstructor, circularity='rcp', norm=True):
         exportImg(img_io, imgs)
         stop = time.time()
         # print('exportImg takes {:.1f} ms ...'.format((stop - start) * 1000))
+
+        # titles = ['s0', 's1', 's2', 's3']
+        # fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+        # plot_sub_images(img_stokes_sm, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+        # fig_name = 'stokes_bg_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+        # plot_sub_images(img_stokes_bg, titles, img_io.ImgOutPath, fig_name, colorbar=True)
     return img_io
 
 
