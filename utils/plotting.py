@@ -227,7 +227,7 @@ def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
     fig = plt.figure(figsize = figSize)
     for i in range(4):
         ax_p = plt.subplot(2,2,i+1)
-        ax_i = plt.imshow(imadjust(images[i]))
+        ax_i = plt.imshow(imadjust(images[i]), cmap='gray')
         plt.title(titles[i])
         plt.xticks([]),plt.yticks([])
         if colorbar:
