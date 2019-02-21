@@ -2,8 +2,6 @@ import numpy as np
 import sys
 import cv2
 # from utils.plotting import plot_sub_images
-# from scipy.ndimage.filters import median_filter
-from skimage.restoration import denoise_tv_chambolle
 sys.path.append("..") # Add upper level directory to python modules path.
 #from utils.imgCrop import imcrop
 #%%
@@ -53,8 +51,7 @@ class ImgReconstructor:
 
         def correct_background(stokes_param_sm, stokes_param_bg, bg_method='Global'):
             if stokes_param_bg:
-                stokes_param_bg = stokes_transform(stokes_param_bg)
-                stokes_param_bg = [denoise_tv_chambolle(img, weight=0.1) for img in stokes_param_bg]
+                stokes_param_bg = stokes_transform(stokes_param_bg)                
                 stokes_param_sm = correct_background_stokes(stokes_param_sm, stokes_param_bg)
                 if bg_method == 'Local_filter':
                     stokes_param_bg_local = []
@@ -108,6 +105,11 @@ class ImgReconstructor:
                                  [1, -np.sin(chi), 0, -np.cos(chi)],
                                  [1, 0, -np.sin(chi), -np.cos(chi)]])
         inst_mat_inv = np.linalg.pinv(inst_mat)
+        # inst_mat = np.array([[1, 0, 0, -1],
+        #                      [1, np.sin(chi), 0, -np.cos(chi)],
+        #                      [1, 0, np.sin(chi), -np.cos(chi)],
+        #                      [1, -np.sin(chi), 0, -np.cos(chi)],
+        #                      [1, 0, -np.sin(chi), -np.cos(chi)]])
         img_raw_flat = np.reshape(img_raw,(self.n_chann, self.height*self.width))
         img_stokes_flat = np.dot(inst_mat_inv, img_raw_flat)
         img_stokes = np.reshape(img_stokes_flat, (img_stokes_flat.shape[0], self.height, self.width))
