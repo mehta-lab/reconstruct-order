@@ -171,12 +171,24 @@ def parse_tiff_input(img_io):
                     ImgFluor[3,:,:] = img
             elif any(substring in matchObj.group(1) for substring in ['BF']):
                 ImgBF += [img]
-
+    ImgPol = sort_pol_channels(ImgPol)
     if ImgProc:
         ImgProc = np.stack(ImgProc)
     if ImgBF:
         ImgBF = np.stack(ImgBF)
     return ImgPol, ImgProc, ImgFluor, ImgBF
+
+def sort_pol_channels(img_pol):
+    I_ext = img_pol[0, :, :]  # Sigma0 in Fig.2
+    I_90 = img_pol[1, :, :]  # Sigma2 in Fig.2
+    I_135 = img_pol[2, :, :]  # Sigma4 in Fig.2
+    I_45 = img_pol[3, :, :]  # Sigma3 in Fig.2
+    if img_pol.shape[0] == 4:  # if the images were taken using 4-frame scheme
+        img_pol = np.stack((I_ext, I_45, I_90, I_135))  # order the channel following stokes calculus convention
+    elif img_pol.shape[0] == 5:  # if the images were taken using 5-frame scheme
+        I_0 = img_pol[4, :, :]
+        img_pol = np.stack((I_ext, I_0, I_45, I_90, I_135))  # order the channel following stokes calculus convention
+    return img_pol
 
 def exportImg(img_io,imgDict):
     tIdx = img_io.tIdx
