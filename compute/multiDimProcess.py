@@ -94,8 +94,8 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
                                          wavelength=img_ioBg.wavelength, output_path=img_ioBg.ImgOutPath)
     if img_io.bg_correct:
         img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
-        print('denoising the background...')
-        img_stokes_bg = [denoise_tv_chambolle(img, weight=10**6) for img in img_stokes_bg]
+        # print('denoising the background...')
+        # img_stokes_bg = [denoise_tv_chambolle(img, weight=10**6) for img in img_stokes_bg]
         # img_stokes_bg = [cv2.GaussianBlur(img, (5, 5), 0) for img in img_stokes_bg]
         # img_stokes_bg = [cv2.medianBlur(img, 5) for img in img_stokes_bg]
     else:
