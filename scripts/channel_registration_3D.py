@@ -62,7 +62,8 @@ def translate_3D(images, channels, registration_params, size_z_um):
         if chan in ['Transmission', 'Retardance', 'Orientation','Orientation_x',
                     'Orientation_y', 'Scattering']:
             chan = 'Retardance'
-        shift = registration_params[chan]
+        # !!!!"[:]" is necessary to create a copy rather than a reference of the list in the dict!!!!
+        shift = registration_params[chan][:]
         # only warp the image if shift is non-zero
         if any(shift):
             # scale z-shift according to the z-step size
