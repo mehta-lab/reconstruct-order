@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="213a1158-0346-4162-98ad-6788db62b436" name="Default Changelist" comment="test TV denoising for backgorund">
+    <list default="true" id="213a1158-0346-4162-98ad-6788db62b436" name="Default Changelist" comment="move Pol channel rearrangements from compute_stokes to parse_tiff">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/compute/multiDimProcess.py" beforeDir="false" afterPath="$PROJECT_DIR$/compute/multiDimProcess.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/compute/reconstruct.py" beforeDir="false" afterPath="$PROJECT_DIR$/compute/reconstruct.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/simulations/StokesModelMicroscope.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/simulations/StokesModelMicroscope.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/imgIO.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/imgIO.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -124,26 +123,26 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="ipynb" value="3" />
-          <entry key="py" value="19" />
+          <entry key="py" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="IPNB" value="3" />
-          <entry key="Python" value="19" />
+          <entry key="Python" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="37" />
-          <entry key="py" value="249" />
-          <entry key="txt" value="43" />
+          <entry key="py" value="388" />
+          <entry key="txt" value="120" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="43" />
-          <entry key="Python" value="286" />
+          <entry key="PLAIN_TEXT" value="120" />
+          <entry key="Python" value="425" />
         </counts>
       </usages-collector>
     </session>
@@ -177,11 +176,23 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/compute/multiDimProcess.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="171">
-              <caret line="9" column="35" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
+            <state relative-caret-position="4104">
+              <caret line="216" column="94" selection-start-line="216" selection-start-column="94" selection-end-line="216" selection-end-column="94" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="true" current-in-tab="false">
+        <entry file="remoteDeploymentFS://&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/compute/multiDimProcess.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1748">
+              <caret line="98" column="40" selection-start-line="98" selection-start-column="40" selection-end-line="98" selection-end-column="40" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -201,11 +212,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/compute/reconstruct.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="600">
-              <caret line="95" column="65" lean-forward="true" selection-start-line="95" selection-start-column="65" selection-end-line="95" selection-end-column="65" />
+            <state relative-caret-position="1672">
+              <caret line="88" column="55" selection-start-line="88" selection-start-column="55" selection-end-line="88" selection-end-column="55" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -213,22 +224,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/testSuite/testReconOrder_Sample1.py">
+      <file pinned="true" current-in-tab="false">
+        <entry file="remoteDeploymentFS://&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/scripts/run_image_registration.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-456">
-              <folding>
-                <element signature="e#314#329#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="508">
+              <caret line="66" column="55" selection-start-line="66" selection-start-column="55" selection-end-line="66" selection-end-column="55" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts/run_image_registration.py">
+      <file pinned="true" current-in-tab="false">
+        <entry file="remoteDeploymentFS://&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/scripts/channel_registration_3D.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="703">
-              <caret line="67" column="96" selection-start-line="67" selection-start-column="96" selection-end-line="67" selection-end-column="96" />
+            <state relative-caret-position="1501">
+              <caret line="79" lean-forward="true" selection-start-line="79" selection-end-line="79" />
             </state>
           </provider>
         </entry>
@@ -244,8 +253,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>polarization</find>
-      <find>black_level</find>
       <find>imgIO</find>
       <find>Polarization</find>
       <find>IHsv</find>
@@ -272,8 +279,10 @@
       <find>imgOutPath</find>
       <find>ImgSm0</find>
       <find>output_path</find>
-      <find>img_raw</find>
       <find>img_raw_bg</find>
+      <find>bg_method</find>
+      <find>img_raw</find>
+      <find>wave</find>
     </findStrings>
     <replaceStrings>
       <replace>azimuth_degree</replace>
@@ -295,6 +304,7 @@
       <replace>img_io</replace>
       <replace>im</replace>
       <replace>img_pol</replace>
+      <replace>self.bg_method</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -335,11 +345,13 @@
         <option value="$PROJECT_DIR$/utils/plotting.py" />
         <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/utils/plotting.py" />
         <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/compute/reconstruct.py" />
-        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/compute/multiDimProcess.py" />
         <option value="$PROJECT_DIR$/simulations/StokesModelMicroscope.ipynb" />
-        <option value="$PROJECT_DIR$/compute/multiDimProcess.py" />
         <option value="$PROJECT_DIR$/utils/imgIO.py" />
+        <option value="$PROJECT_DIR$/compute/multiDimProcess.py" />
         <option value="$PROJECT_DIR$/compute/reconstruct.py" />
+        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/home/sguo/ReconstructOrder/compute/multiDimProcess.py" />
+        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/scripts/channel_registration_3D.py" />
+        <option value="&lt;3b7c1024-9626-4aa5-bc46-d3ffb0bcf84e&gt;/scripts/run_image_registration.py" />
       </list>
     </option>
   </component>
@@ -350,10 +362,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-4" />
-    <option name="y" value="5" />
-    <option name="width" value="824" />
-    <option name="height" value="463" />
+    <option name="x" value="644" />
+    <option name="y" value="41" />
+    <option name="width" value="1031" />
+    <option name="height" value="580" />
   </component>
   <component name="ProjectReloadState">
     <option name="STATE" value="2" />
@@ -844,7 +856,14 @@
       <option name="project" value="LOCAL" />
       <updated>1550625314802</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="move Pol channel rearrangements from compute_stokes to parse_tiff">
+      <created>1550801967465</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1550801967465</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -910,8 +929,8 @@
       <window_info anchor="right" id="Ant Build" order="4" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="5" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Project" order="6" sideWeight="0.498708" weight="0.37877584" />
-      <window_info active="true" anchor="right" id="Python Console" order="7" sideWeight="0.51272726" visible="true" weight="0.14467409" />
-      <window_info anchor="right" id="Remote Host" order="8" weight="0.105325915" />
+      <window_info anchor="right" id="Python Console" order="7" sideWeight="0.51272726" weight="0.2442953" />
+      <window_info active="true" anchor="right" id="Remote Host" order="8" visible="true" weight="0.14030206" />
     </layout>
     <layout-to-restore>
       <window_info id="Favorites" order="0" side_tool="true" weight="0.3295302" />
@@ -973,7 +992,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add .gitignore" />
     <MESSAGE value="replace old ParseTiffInput.py with more general parse_tiff_input.py to parse micromanager channel names" />
     <MESSAGE value="Fix BF image array dimension" />
     <MESSAGE value="update mManagerIO" />
@@ -998,7 +1016,8 @@
     <MESSAGE value="disable phase experimenting block; non-linear contrast adjustment for R+O image" />
     <MESSAGE value="bug fix" />
     <MESSAGE value="test TV denoising for backgorund" />
-    <option name="LAST_COMMIT_MESSAGE" value="test TV denoising for backgorund" />
+    <MESSAGE value="move Pol channel rearrangements from compute_stokes to parse_tiff" />
+    <option name="LAST_COMMIT_MESSAGE" value="move Pol channel rearrangements from compute_stokes to parse_tiff" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1059,7 +1078,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/compute/multiDimProcess.py</url>
-          <line>260</line>
+          <line>259</line>
           <option name="timeStamp" value="35" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -1175,10 +1194,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/run_image_registration.py">
+    <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="703">
-          <caret line="67" column="96" selection-start-line="67" selection-start-column="96" selection-end-line="67" selection-end-column="96" />
+        <state relative-caret-position="-741">
+          <caret line="42" column="44" selection-start-line="42" selection-start-column="44" selection-end-line="42" selection-end-column="44" />
+          <folding>
+            <element signature="e#85#124#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1187,26 +1209,6 @@
         <state relative-caret-position="-456">
           <folding>
             <element signature="e#314#329#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/compute/multiDimProcess.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="9" column="35" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-741">
-          <caret line="42" column="44" selection-start-line="42" selection-start-column="44" selection-end-line="42" selection-end-column="44" />
-          <folding>
-            <element signature="e#85#124#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1221,12 +1223,29 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/run_image_registration.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="368">
+          <caret line="67" column="96" selection-start-line="67" selection-start-column="96" selection-end-line="67" selection-end-column="96" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/compute/reconstruct.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="600">
-          <caret line="95" column="65" lean-forward="true" selection-start-line="95" selection-start-column="65" selection-end-line="95" selection-end-column="65" />
+        <state relative-caret-position="1672">
+          <caret line="88" column="55" selection-start-line="88" selection-start-column="55" selection-end-line="88" selection-end-column="55" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/compute/multiDimProcess.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4104">
+          <caret line="216" column="94" selection-start-line="216" selection-start-column="94" selection-end-line="216" selection-end-column="94" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
