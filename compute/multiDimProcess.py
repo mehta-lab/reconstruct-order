@@ -90,7 +90,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
             img_io.ImgOutPath = OutputPath
 
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_ioBg)  # 0 for z-index
-    img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=bgCorrect, swing=img_ioBg.swing,
+    img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=img_io.bg_method, swing=img_ioBg.swing,
                                          wavelength=img_ioBg.wavelength, output_path=img_ioBg.ImgOutPath)
     if img_io.bg_correct:
         img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
@@ -215,7 +215,6 @@ def loopZSm(img_io, img_reconstructor, circularity='rcp', norm=True):
         start = time.time()
         img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm, img_stokes_bg,
                                                                       circularity=circularity,
-                                                                      bg_method=img_io.bg_method,
                                                                       extra=False)  # background subtraction
         stop = time.time()
         # print('reconstruct_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
