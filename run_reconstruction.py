@@ -71,11 +71,11 @@ def read_config(config_fname):
     return config
 
 def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, BgDir_local=None, flatField=False,
-               bgCorrect=True, circularity=False, norm=True):
+               bgCorrect=True, circularity=False, norm=True, azimuth_offset=0):
     print('Processing ' + SmDir + ' ....')
     img_io, img_reconstructor = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
                            BgDir_local=BgDir_local, flatField=flatField,bgCorrect=bgCorrect,
-                           ff_method='open') # find background tile
+                           ff_method='open', azimuth_offset=azimuth_offset) # find background tile
     img_io.loopZ ='sample'
     img_io = loopPos(img_io, img_reconstructor, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
     img_io.chNamesIn = img_io.chNamesOut
@@ -94,6 +94,7 @@ def run_action(args):
     bgCorrect=config['processing']['bgCorrect']
     flatField = config['processing']['flatField']
     batchProc = config['processing']['batchProc']
+    azimuth_offset = config['processing']['azimuth_offset']
     norm = config['plotting']['norm']
 
     if isinstance(SmDir, list):
@@ -117,11 +118,11 @@ def run_action(args):
             # if 'SM' in SmDir:
             processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
                        BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
-                       circularity=circularity, norm=norm)
+                       circularity=circularity, norm=norm, azimuth_offset=azimuth_offset)
     else:
         processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
                    BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
-                   circularity=circularity, norm=norm)
+                   circularity=circularity, norm=norm, azimuth_offset=azimuth_offset)
 
 
 if __name__ == '__main__':
