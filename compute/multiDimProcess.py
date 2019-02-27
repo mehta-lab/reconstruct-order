@@ -21,7 +21,7 @@ from skimage.restoration import denoise_tv_chambolle
 
 def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
                    BgDir_local=None, flatField=False, bgCorrect='Auto',
-                   ff_method='open'):
+                   ff_method='open', azimuth_offset = 0):
     """
     Estimate background for each channel to perform background substraction for
     birefringence and flat-field correction (division) for bright-field and
@@ -91,7 +91,8 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
 
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_ioBg)  # 0 for z-index
     img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=img_io.bg_method, swing=img_ioBg.swing,
-                                         wavelength=img_ioBg.wavelength, output_path=img_ioBg.ImgOutPath)
+                                         wavelength=img_ioBg.wavelength, output_path=img_ioBg.ImgOutPath,
+                                         azimuth_offset = azimuth_offset)
     if img_io.bg_correct:
         img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
         # print('denoising the background...')

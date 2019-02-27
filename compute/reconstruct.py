@@ -7,7 +7,8 @@ sys.path.append("..") # Add upper level directory to python modules path.
 #%%
 class ImgReconstructor:
     def __init__(self, img_pol, bg_method='Global', swing=None, wavelength=532,
-                 kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (100, 100)), output_path=None):
+                 kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (100, 100)),
+                 output_path=None, azimuth_offset=0):
         self.img_pol = img_pol
         self.bg_method = bg_method
         self.swing = swing*2*np.pi # covert swing from fraction of wavelength to radian
@@ -30,6 +31,7 @@ class ImgReconstructor:
                                  [1, -np.sin(chi), 0, -np.cos(chi)],
                                  [1, 0, -np.sin(chi), -np.cos(chi)]])
         self.inst_mat_inv = np.linalg.pinv(inst_mat)
+        self.azimuth_offset = azimuth_offset/180*np.pi
 
     def reconstruct_birefringence(self, stokes_param_sm, stokes_param_bg=None, circularity='rcp',
                            img_crop_ref=None, extra=False):
@@ -48,7 +50,7 @@ class ImgReconstructor:
         def stokes_transform(stokes_param):
             [s0, s1, s2, s3] = stokes_param
             s1_norm = s1 / s3
-            s2_norm = -s2 / s3
+            s2_norm = s2 / s3
             I_trans = s0
             polarization = np.sqrt(s1 ** 2 + s2 ** 2 + s3 ** 2) / s0
             return [I_trans, polarization, s1_norm, s2_norm, s3]
@@ -81,11 +83,10 @@ class ImgReconstructor:
         s2 = s2_norm * s3
         retard = np.arctan2(np.sqrt(s1 ** 2 + s2 ** 2), s3)
         retard = retard / (2 * np.pi) * self.wavelength  # convert the unit to [nm]
-        #    azimuth = 0.5*((np.arctan2(s1_norm,s2_norm)+2*np.pi)%(2*np.pi)) # make azimuth fall in [0,pi]
         if circularity == 'rcp':
-            azimuth = (0.5 * np.arctan2(-s1, s2) + 0.5 * np.pi)  # make azimuth fall in [0,pi]
+            azimuth = (0.5 * np.arctan2(s1, -s2) + self.azimuth_offset)%(np.pi)  # make azimuth fall in [0,pi]
         elif circularity == 'lcp':
-            azimuth = (0.5 * np.arctan2(s1, s2) + 0.5 * np.pi)  # make azimuth fall in [0,pi]
+            azimuth = 0.5 * ((np.arctan2(-s1, -s2)+ 2*np.pi + self.azimuth_offset)%(2*np.pi))  # make azimuth fall in [0,pi]
         return [I_trans, retard, azimuth, polarization]
 
     def calibrate_inst_mat(self):
