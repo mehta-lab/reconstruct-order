@@ -83,10 +83,10 @@ class ImgReconstructor:
         s2 = s2_norm * s3
         retard = np.arctan2(np.sqrt(s1 ** 2 + s2 ** 2), s3)
         retard = retard / (2 * np.pi) * self.wavelength  # convert the unit to [nm]
-        if circularity == 'rcp':
-            azimuth = (0.5 * np.arctan2(s1, -s2) + self.azimuth_offset)%(np.pi)  # make azimuth fall in [0,pi]
-        elif circularity == 'lcp':
-            azimuth = 0.5 * ((np.arctan2(-s1, -s2)+ 2*np.pi + self.azimuth_offset)%(2*np.pi))  # make azimuth fall in [0,pi]
+        if circularity == 'lcp':
+            azimuth = (0.5 * np.arctan2(s1, -s2) + self.azimuth_offset) % (np.pi)  # make azimuth fall in [0,pi]
+        elif circularity == 'rcp':
+            azimuth = (0.5 * np.arctan2(-s1, -s2) + self.azimuth_offset) % (np.pi)  # make azimuth fall in [0,pi]
         return [I_trans, retard, azimuth, polarization]
 
     def calibrate_inst_mat(self):
