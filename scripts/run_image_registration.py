@@ -66,6 +66,7 @@ def run_action(args):
             print('Processing position %03d, time %03d ...' % (pos_idx, t_idx))
             images = img_io.read_multi_chan_img_stack()
             images_registered = translate_3D(images, outputChann, registration_params, size_z_um)
+
             for images, channel in zip(images_registered, outputChann):
                 for z_idx in range(img_io.nZ):
                     image = imBitConvert(images[z_idx], bit=16, norm=False)
