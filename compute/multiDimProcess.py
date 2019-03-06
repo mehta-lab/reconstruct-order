@@ -139,7 +139,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     return img_io, img_reconstructor
 
 
-def loopPos(img_io, img_reconstructor, flatField=False, bgCorrect=True, circularity='rcp', norm=True):
+def loopPos(img_io, img_reconstructor, plot_config, flatField=False, bgCorrect=True, circularity='rcp'):
     """
     Loops through each position in the acquisition folder, and performs flat-field correction.
     @param flatField: boolean - whether flatField correction is applied.
@@ -151,21 +151,25 @@ def loopPos(img_io, img_reconstructor, flatField=False, bgCorrect=True, circular
     for posIdx in range(0, img_io.nPos):
         plt.close("all")  # close all the figures from the last run
         if img_io.metaFile['Summary']['InitialPositionList']:  # PolAcquisition doens't save position list
-            subDir = img_io.metaFile['Summary']['InitialPositionList'][posIdx]['Label']
+            pos_name = img_io.metaFile['Summary']['InitialPositionList'][posIdx]['Label']
         else:
-            subDir = 'Pos0'
-        img_io.ImgPosPath = os.path.join(img_io.ImgSmPath, subDir)
+            pos_name = 'Pos0'
+        img_io.ImgPosPath = os.path.join(img_io.ImgSmPath, pos_name)
+        img_io.pos_name = pos_name
+
         if img_io.bg_method == 'Local_defocus':
             img_io_bg = img_io.bg_local
-            img_io_bg.ImgPosPath = os.path.join(img_io_bg.ImgSmPath, subDir)
+            img_io_bg.pos_name = os.path.join(img_io_bg.ImgSmPath, pos_name)
             img_io_bg.posIdx = posIdx
         img_io.posIdx = posIdx
-        img_io = loopT(img_io, img_reconstructor, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity,
-                       norm=norm)
+        os.makedirs(os.path.join(img_io.ImgOutPath, pos_name), exist_ok=True) # create folder for processed images
+        img_io = loopT(img_io, img_reconstructor, plot_config, flatField=flatField,
+                       bgCorrect=bgCorrect, circularity=circularity,
+                       )
     return img_io
 
 
-def loopT(img_io, img_reconstructor, flatField=False, bgCorrect=True, circularity='rcp', norm=True):
+def loopT(img_io, img_reconstructor, plot_config, flatField=False, bgCorrect=True, circularity='rcp'):
     for tIdx in range(0, img_io.nTime):
         img_io.tIdx = tIdx
         if img_io.loopZ == 'sample':
@@ -177,14 +181,14 @@ def loopT(img_io, img_reconstructor, flatField=False, bgCorrect=True, circularit
                 ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
                 img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
                 img_io.param_bg = img_stokes_bg
-            img_io = loopZSm(img_io, img_reconstructor, circularity=circularity, norm=norm)
+            img_io = loopZSm(img_io, img_reconstructor, plot_config, circularity=circularity)
 
         else:
             img_io = loopZBg(img_io)
     return img_io
 
 
-def loopZSm(img_io, img_reconstructor, circularity='rcp', norm=True):
+def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
     """
     Loops through Z.
 
@@ -193,8 +197,7 @@ def loopZSm(img_io, img_reconstructor, circularity='rcp', norm=True):
     @param circularity: whether or not to flip the sign of polarization.
     @return: None
     """
-    if not os.path.exists(img_io.ImgOutPath):  # create folder for processed images
-        os.makedirs(img_io.ImgOutPath)
+
     tIdx = img_io.tIdx
     posIdx = img_io.posIdx
     img_stokes_bg = img_io.param_bg
@@ -208,17 +211,17 @@ def loopZSm(img_io, img_reconstructor, circularity='rcp', norm=True):
         start = time.time()
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
         stop = time.time()
-        # print('parse_tiff_input takes {:.1f} ms ...'.format((stop - start) * 1000))
+        print('parse_tiff_input takes {:.1f} ms ...'.format((stop - start) * 1000))
         start = time.time()
         img_stokes_sm = img_reconstructor.compute_stokes(ImgRawSm)
         stop = time.time()
-        # print('compute_stokes takes {:.1f} ms ...'.format((stop - start) * 1000))
+        print('compute_stokes takes {:.1f} ms ...'.format((stop - start) * 1000))
         start = time.time()
         img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm, img_stokes_bg,
                                                                       circularity=circularity,
                                                                       extra=False)  # background subtraction
         stop = time.time()
-        # print('reconstruct_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
+        print('reconstruct_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
         [I_trans, retard, azimuth, polarization] = img_computed_sm
 
         # titles = ['polarization', 'A', 'B', 'dAB']
@@ -249,18 +252,19 @@ def loopZSm(img_io, img_reconstructor, circularity='rcp', norm=True):
         ##################################################################
 
         imgs = [ImgBF, retard, azimuth, polarization, ImgFluor]
+        norm = plot_config['norm']
+        save_fig = plot_config['save_fig']
         start = time.time()
         img_io, imgs = plot_birefringence(img_io, imgs, img_io.chNamesOut, spacing=20, vectorScl=2, zoomin=False,
                                           dpi=200,
-                                          norm=norm, plot=True)
+                                          norm=norm, plot=save_fig)
         stop = time.time()
-        # print('plot_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
+        print('plot_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
         # img_io.imgLimits = ImgLimit(imgs,img_io.imgLimits)
-        ##To do: add 'Fluor+Retardance' channel##
         start = time.time()
         exportImg(img_io, imgs)
         stop = time.time()
-        # print('exportImg takes {:.1f} ms ...'.format((stop - start) * 1000))
+        print('exportImg takes {:.1f} ms ...'.format((stop - start) * 1000))
 
         # titles = ['s0', 's1', 's2', 's3']
         # fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
