@@ -151,15 +151,18 @@ def loopPos(img_io, img_reconstructor, flatField=False, bgCorrect=True, circular
     for posIdx in range(0, img_io.nPos):
         plt.close("all")  # close all the figures from the last run
         if img_io.metaFile['Summary']['InitialPositionList']:  # PolAcquisition doens't save position list
-            subDir = img_io.metaFile['Summary']['InitialPositionList'][posIdx]['Label']
+            pos_name = img_io.metaFile['Summary']['InitialPositionList'][posIdx]['Label']
         else:
-            subDir = 'Pos0'
-        img_io.ImgPosPath = os.path.join(img_io.ImgSmPath, subDir)
+            pos_name = 'Pos0'
+        img_io.ImgPosPath = os.path.join(img_io.ImgSmPath, pos_name)
+        img_io.pos_name = pos_name
+
         if img_io.bg_method == 'Local_defocus':
             img_io_bg = img_io.bg_local
-            img_io_bg.ImgPosPath = os.path.join(img_io_bg.ImgSmPath, subDir)
+            img_io_bg.pos_name = os.path.join(img_io_bg.ImgSmPath, pos_name)
             img_io_bg.posIdx = posIdx
         img_io.posIdx = posIdx
+        os.makedirs(os.path.join(img_io.ImgOutPath, pos_name), exist_ok=True) # create folder for processed images
         img_io = loopT(img_io, img_reconstructor, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity,
                        norm=norm)
     return img_io
@@ -193,8 +196,7 @@ def loopZSm(img_io, img_reconstructor, circularity='rcp', norm=True):
     @param circularity: whether or not to flip the sign of polarization.
     @return: None
     """
-    if not os.path.exists(img_io.ImgOutPath):  # create folder for processed images
-        os.makedirs(img_io.ImgOutPath)
+
     tIdx = img_io.tIdx
     posIdx = img_io.posIdx
     img_stokes_bg = img_io.param_bg
