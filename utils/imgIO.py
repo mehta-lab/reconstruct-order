@@ -190,13 +190,14 @@ def sort_pol_channels(img_pol):
         img_pol = np.stack((I_ext, I_0, I_45, I_90, I_135))  # order the channel following stokes calculus convention
     return img_pol
 
-def exportImg(img_io,imgDict):
+def exportImg(img_io, imgDict):
     tIdx = img_io.tIdx
     zIdx = img_io.zIdx
     posIdx = img_io.posIdx
+    pos_name = img_io.pos_name
     for tiffName in img_io.chNames:
         fileName = 'img_'+tiffName+'_t%03d_p%03d_z%03d.tif'%(tIdx, posIdx, zIdx)
         if len(imgDict[tiffName].shape)<3:
-            cv2.imwrite(os.path.join(img_io.ImgOutPath, fileName), imgDict[tiffName])
+            cv2.imwrite(os.path.join(os.path.join(img_io.ImgOutPath, pos_name), fileName), imgDict[tiffName])
         else:
-            cv2.imwrite(os.path.join(img_io.ImgOutPath, fileName), cv2.cvtColor(imgDict[tiffName], cv2.COLOR_RGB2BGR))
+            cv2.imwrite(os.path.join(os.path.join(img_io.ImgOutPath, pos_name), fileName), cv2.cvtColor(imgDict[tiffName], cv2.COLOR_RGB2BGR))
