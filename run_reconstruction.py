@@ -70,16 +70,23 @@ def read_config(config_fname):
 
     return config
 
-def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, BgDir_local=None, flatField=False,
+def write_config(config, config_fname):
+    with open(config_fname, 'w') as f:
+        yaml.dump(config, f, default_flow_style=False)
+
+def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, config, BgDir_local=None, flatField=False,
                bgCorrect=True, circularity=False, norm=True, azimuth_offset=0):
     print('Processing ' + SmDir + ' ....')
     img_io, img_reconstructor = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
                            BgDir_local=BgDir_local, flatField=flatField,bgCorrect=bgCorrect,
                            ff_method='open', azimuth_offset=azimuth_offset) # find background tile
     img_io.loopZ ='sample'
-    img_io = loopPos(img_io, img_reconstructor, flatField=flatField, bgCorrect=bgCorrect, circularity=circularity, norm=norm)
+    plot_config = config['plotting']
+    img_io = loopPos(img_io, img_reconstructor, plot_config, flatField=flatField, bgCorrect=bgCorrect,
+                     circularity=circularity)
     img_io.chNamesIn = img_io.chNamesOut
     img_io.writeMetaData()
+    write_config(config, os.path.join(img_io.ImgOutPath, 'config.yml')) # save the config file in the processed folder
 
 def run_action(args):
     config = read_config(args.config)
@@ -95,7 +102,7 @@ def run_action(args):
     flatField = config['processing']['flatField']
     batchProc = config['processing']['batchProc']
     azimuth_offset = config['processing']['azimuth_offset']
-    norm = config['plotting']['norm']
+
 
     if isinstance(SmDir, list):
         batchProc = True
@@ -116,13 +123,13 @@ def run_action(args):
 
         for SmDir, BgDir in zip(SmDirList, BgDirList):
             # if 'SM' in SmDir:
-            processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
+            processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, config,
                        BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
-                       circularity=circularity, norm=norm, azimuth_offset=azimuth_offset)
+                       circularity=circularity, azimuth_offset=azimuth_offset)
     else:
-        processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
+        processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, config,
                    BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
-                   circularity=circularity, norm=norm, azimuth_offset=azimuth_offset)
+                   circularity=circularity, azimuth_offset=azimuth_offset)
 
 
 if __name__ == '__main__':
