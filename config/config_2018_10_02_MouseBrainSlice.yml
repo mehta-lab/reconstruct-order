@@ -13,8 +13,9 @@ processing:
     bgCorrect: 'Input'
     flatField: False
     batchProc: False
-    azimuth_offset: 90
+    azimuth_offset: 0
 plotting:
     norm: True
+    save_fig: False
        
 
