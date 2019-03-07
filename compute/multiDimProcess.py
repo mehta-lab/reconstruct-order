@@ -208,20 +208,20 @@ def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
         img_io.zIdx = zIdx
         retardMMSm = np.array([])
         azimuthMMSm = np.array([])
-        start = time.time()
+        # start = time.time()
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
-        stop = time.time()
-        print('parse_tiff_input takes {:.1f} ms ...'.format((stop - start) * 1000))
-        start = time.time()
+        # stop = time.time()
+        # print('parse_tiff_input takes {:.1f} ms ...'.format((stop - start) * 1000))
+        # start = time.time()
         img_stokes_sm = img_reconstructor.compute_stokes(ImgRawSm)
-        stop = time.time()
-        print('compute_stokes takes {:.1f} ms ...'.format((stop - start) * 1000))
-        start = time.time()
+        # stop = time.time()
+        # print('compute_stokes takes {:.1f} ms ...'.format((stop - start) * 1000))
+        # start = time.time()
         img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm, img_stokes_bg,
                                                                       circularity=circularity,
                                                                       extra=False)  # background subtraction
-        stop = time.time()
-        print('reconstruct_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
+        # stop = time.time()
+        # print('reconstruct_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
         [I_trans, retard, azimuth, polarization] = img_computed_sm
 
         # titles = ['polarization', 'A', 'B', 'dAB']
@@ -254,17 +254,17 @@ def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
         imgs = [ImgBF, retard, azimuth, polarization, ImgFluor]
         norm = plot_config['norm']
         save_fig = plot_config['save_fig']
-        start = time.time()
+        # start = time.time()
         img_io, imgs = plot_birefringence(img_io, imgs, img_io.chNamesOut, spacing=20, vectorScl=2, zoomin=False,
                                           dpi=200,
                                           norm=norm, plot=save_fig)
-        stop = time.time()
-        print('plot_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
+        # stop = time.time()
+        # print('plot_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
         # img_io.imgLimits = ImgLimit(imgs,img_io.imgLimits)
-        start = time.time()
+        # start = time.time()
         exportImg(img_io, imgs)
-        stop = time.time()
-        print('exportImg takes {:.1f} ms ...'.format((stop - start) * 1000))
+        # stop = time.time()
+        # print('exportImg takes {:.1f} ms ...'.format((stop - start) * 1000))
 
         # titles = ['s0', 's1', 's2', 's3']
         # fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
