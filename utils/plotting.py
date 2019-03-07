@@ -82,7 +82,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
     I_trans = imBitConvert(I_trans * 10 ** 5, bit=16, norm=False)  # AU, set norm to False for tiling images
 #     I_trans = imBitConvert(I_trans * 10 ** 0, bit=16, norm=False)  # AU, set norm to False for tiling images
     retard = imBitConvert(retard * 10 ** 3, bit=16)  # scale to pm
-    scattering = imBitConvert(scattering * 10 ** 4, bit=16)
+    scattering = imBitConvert(scattering * 10 ** 6, bit=16)
     azimuth_degree = imBitConvert(azimuth_degree * 100, bit=16)  # scale to [0, 18000], 100*degree
     azimuth_x = imBitConvert((azimuth_x+1) * 1000, bit=16) # scale to [0, 1000]
     azimuth_y = imBitConvert((azimuth_y+1) * 1000, bit=16)  # scale to [0, 1000]
