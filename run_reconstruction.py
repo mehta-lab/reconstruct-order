@@ -75,7 +75,7 @@ def write_config(config, config_fname):
         yaml.dump(config, f, default_flow_style=False)
 
 def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann, config, BgDir_local=None, flatField=False,
-               bgCorrect=True, circularity=False, norm=True, azimuth_offset=0):
+               bgCorrect=True, circularity=False, azimuth_offset=0, separate_pos=True):
     print('Processing ' + SmDir + ' ....')
     img_io, img_reconstructor = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann,
                            BgDir_local=BgDir_local, flatField=flatField,bgCorrect=bgCorrect,
@@ -83,7 +83,7 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, output
     img_io.loopZ ='sample'
     plot_config = config['plotting']
     img_io = loopPos(img_io, img_reconstructor, plot_config, flatField=flatField, bgCorrect=bgCorrect,
-                     circularity=circularity)
+                     circularity=circularity, separate_pos=separate_pos)
     img_io.chNamesIn = img_io.chNamesOut
     img_io.writeMetaData()
     write_config(config, os.path.join(img_io.ImgOutPath, 'config.yml')) # save the config file in the processed folder
@@ -100,6 +100,9 @@ def run_action(args):
         PosList = 'all'
     BgDir = config['dataset']['BgDir']
     BgDir_local = config['dataset']['BgDir_local']
+    separate_pos = True
+    if 'separate_pos' in config['dataset']:
+        separate_pos = config['dataset']['separate_pos']
     outputChann = config['processing']['outputChann']
     circularity= config['processing']['circularity']
     bgCorrect=config['processing']['bgCorrect']
@@ -121,15 +124,15 @@ def run_action(args):
         if not isinstance(PosList, list):
             PosList = [PosList]*len(SmDirList)
         # if input is ['Pos1','Pos2','Pos3'], use for all samples
-        elif len(PosList) != len(SmDirList):
+        elif not any(isinstance(i, list) for i in PosList):
             PosList = [PosList]*len(SmDirList)
         
         # Make BgDirList same length as SmDirList
         if isinstance(BgDir, list):
             BgDirList = BgDir
         else:
+            # Make BgDirList same length as SmDirList
             BgDirList = [BgDir] * len(SmDirList)
-        
         assert len(SmDirList) == len(BgDirList), \
             'Length of the background directory list must be one or same as sample directory list'
 
@@ -137,11 +140,13 @@ def run_action(args):
             # if 'SM' in SmDir:
             processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList_, BgDir, outputChann, config,
                        BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
-                       circularity=circularity, azimuth_offset=azimuth_offset)
+                       circularity=circularity, azimuth_offset=azimuth_offset,
+                       separate_pos=separate_pos)
     else:
         processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann, config,
                    BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
-                   circularity=circularity, azimuth_offset=azimuth_offset)
+                   circularity=circularity, azimuth_offset=azimuth_offset,
+                   separate_pos=separate_pos)
 
 if __name__ == '__main__':
     args = parse_args()

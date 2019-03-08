@@ -88,7 +88,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, ou
                 OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
                 img_io.bg_correct = True
             img_io.ImgOutPath = OutputPath
-
+    os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_ioBg)  # 0 for z-index
     img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=img_io.bg_method, swing=img_ioBg.swing,
                                          wavelength=img_ioBg.wavelength, output_path=img_ioBg.ImgOutPath,
@@ -140,7 +140,8 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, ou
     return img_io, img_reconstructor
 
 
-def loopPos(img_io, img_reconstructor, plot_config, flatField=False, bgCorrect=True, circularity='rcp'):
+def loopPos(img_io, img_reconstructor, plot_config, flatField=False, bgCorrect=True,
+            circularity='rcp', separate_pos=True):
     """
     Loops through each position in the acquisition folder, and performs flat-field correction.
     @param flatField: boolean - whether flatField correction is applied.
@@ -150,25 +151,31 @@ def loopPos(img_io, img_reconstructor, plot_config, flatField=False, bgCorrect=T
     """
     
     try:
-        posDict = {idx:img_io.metaFile['Summary']['InitialPositionList'][idx]['Label'] for idx in range(img_io.nPos)}
+        posDict = {idx: img_io.metaFile['Summary']['InitialPositionList'][idx]['Label'] for idx in range(img_io.nPos)}
     except:
         # PolAcquisition doens't save position list
         posDict = {0:'Pos0'}
 
     for posIdx, pos_name in posDict.items():
         if pos_name in img_io.PosList or img_io.PosList == 'all':
-            plt.close("all")  # close all the figures from the last run
+            plt.close("all")  # close all the figures from the last run            
             img_io.ImgPosPath = os.path.join(img_io.ImgSmPath, pos_name)
             img_io.pos_name = pos_name
+            if separate_pos:
+                img_io.img_out_pos_path = os.path.join(img_io.ImgOutPath, pos_name)
+                os.makedirs(img_io.img_out_pos_path, exist_ok=True)  # create folder for processed images
+            else:
+                img_io.img_out_pos_path = img_io.ImgOutPath
     
             if img_io.bg_method == 'Local_defocus':
                 img_io_bg = img_io.bg_local
                 img_io_bg.pos_name = os.path.join(img_io_bg.ImgSmPath, pos_name)
                 img_io_bg.posIdx = posIdx
             img_io.posIdx = posIdx
-            os.makedirs(os.path.join(img_io.ImgOutPath, pos_name), exist_ok=True) # create folder for processed images
+    
             img_io = loopT(img_io, img_reconstructor, plot_config, flatField=flatField,
-                           bgCorrect=bgCorrect, circularity=circularity)
+                           bgCorrect=bgCorrect, circularity=circularity
+                           )
     return img_io
 
 
