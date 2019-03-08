@@ -252,8 +252,12 @@ def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
         ##################################################################
 
         imgs = [ImgBF, retard, azimuth, polarization, ImgFluor]
-        norm = plot_config['norm']
-        save_fig = plot_config['save_fig']
+        if 'norm' in plot_config:
+            norm = plot_config['norm']
+        if 'save_fig' in plot_config:
+            save_fig = plot_config['save_fig']
+        if 'separate_pos' in plot_config:
+            separate_pos = plot_config['separate_pos']
         # start = time.time()
         img_io, imgs = plot_birefringence(img_io, imgs, img_io.chNamesOut, spacing=20, vectorScl=2, zoomin=False,
                                           dpi=200,
@@ -262,7 +266,7 @@ def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
         # print('plot_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
         # img_io.imgLimits = ImgLimit(imgs,img_io.imgLimits)
         # start = time.time()
-        exportImg(img_io, imgs)
+        exportImg(img_io, imgs, separate_pos=separate_pos)
         # stop = time.time()
         # print('exportImg takes {:.1f} ms ...'.format((stop - start) * 1000))
 
