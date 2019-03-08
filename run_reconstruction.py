@@ -75,7 +75,7 @@ def write_config(config, config_fname):
         yaml.dump(config, f, default_flow_style=False)
 
 def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, config, BgDir_local=None, flatField=False,
-               bgCorrect=True, circularity=False, norm=True, azimuth_offset=0):
+               bgCorrect=True, circularity=False, azimuth_offset=0, separate_pos=True):
     print('Processing ' + SmDir + ' ....')
     img_io, img_reconstructor = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
                            BgDir_local=BgDir_local, flatField=flatField,bgCorrect=bgCorrect,
@@ -83,7 +83,7 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, co
     img_io.loopZ ='sample'
     plot_config = config['plotting']
     img_io = loopPos(img_io, img_reconstructor, plot_config, flatField=flatField, bgCorrect=bgCorrect,
-                     circularity=circularity)
+                     circularity=circularity, separate_pos=separate_pos)
     img_io.chNamesIn = img_io.chNamesOut
     img_io.writeMetaData()
     write_config(config, os.path.join(img_io.ImgOutPath, 'config.yml')) # save the config file in the processed folder
@@ -96,6 +96,9 @@ def run_action(args):
     SmDir = config['dataset']['SmDir']
     BgDir = config['dataset']['BgDir']
     BgDir_local = config['dataset']['BgDir_local']
+    separate_pos = True
+    if 'separate_pos' in config['dataset']:
+        separate_pos = config['dataset']['separate_pos']
     outputChann = config['processing']['outputChann']
     circularity= config['processing']['circularity']
     bgCorrect=config['processing']['bgCorrect']
@@ -125,11 +128,13 @@ def run_action(args):
             # if 'SM' in SmDir:
             processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, config,
                        BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
-                       circularity=circularity, azimuth_offset=azimuth_offset)
+                       circularity=circularity, azimuth_offset=azimuth_offset,
+                       separate_pos=separate_pos)
     else:
         processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann, config,
                    BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
-                   circularity=circularity, azimuth_offset=azimuth_offset)
+                   circularity=circularity, azimuth_offset=azimuth_offset,
+                   separate_pos=separate_pos)
 
 
 if __name__ == '__main__':
