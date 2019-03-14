@@ -7,13 +7,14 @@ import matplotlib.pyplot as plt
 import re
 import cv2
 import time
+import copy
 from utils.imgIO import parse_tiff_input, exportImg, GetSubDirName, FindDirContainPos
 from .reconstruct import ImgReconstructor
 from utils.imgProcessing import ImgMin
-from utils.plotting import plot_sub_images
+from utils.plotting import plot_sub_images, plot_stokes
 from utils.mManagerIO import mManagerReader, PolAcquReader
 from utils.plotting import plot_birefringence, plot_sub_images
-from utils.imgProcessing import ImgLimit
+from utils.imgProcessing import ImgLimit, imBitConvert
 from skimage.restoration import denoise_tv_chambolle
 
 
@@ -37,10 +38,10 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, ou
     except:
         img_io = mManagerReader(ImgSmPath, OutputPath, outputChann=outputChann)
     ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir)  # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
-    img_ioBg = PolAcquReader(ImgBgPath, OutputPath)
-    img_ioBg.posIdx = 0  # assuming only single image for background
-    img_ioBg.tIdx = 0
-    img_ioBg.zIdx = 0
+    img_io_bg = PolAcquReader(ImgBgPath, OutputPath)
+    img_io_bg.posIdx = 0  # assuming only single image for background
+    img_io_bg.tIdx = 0
+    img_io_bg.zIdx = 0
     img_io.bg_method = 'Global'
 
     if bgCorrect == 'None':
@@ -50,13 +51,11 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, ou
         if bgCorrect == 'Input':
             print('Background correction mode set as "Input". Use user input background directory')
             OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-            img_io.ImgOutPath = OutputPath
             img_io.bg_correct = True
         elif bgCorrect == 'Local_filter':
             print('Background correction mode set as "Local_filter". Additional background correction using local '
                   'background estimated from sample images will be performed')
             OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + SmDir)
-            img_io.ImgOutPath = OutputPath
             img_io.bg_method = 'Local_filter'
             img_io.bg_correct = True
         elif bgCorrect == 'Local_defocus':
@@ -65,11 +64,10 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, ou
             img_bg_path = os.path.join(RawDataPath, ImgDir,
                                        BgDir_local)
             OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir_local)
-            img_io.ImgOutPath = OutputPath
             img_io.bg_method = 'Local_defocus'
             img_io.bg_correct = True
             img_io_bg_local = mManagerReader(img_bg_path, OutputPath)
-            img_io_bg_local.blackLevel = img_ioBg.blackLevel
+            img_io_bg_local.blackLevel = img_io_bg.blackLevel
             img_io.bg_local = img_io_bg_local
 
         elif bgCorrect == 'Auto':
@@ -86,12 +84,12 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, ou
             else:
                 print('Background not specified in metadata. Use user input background directory')
                 OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-                img_io.bg_correct = True
-            img_io.ImgOutPath = OutputPath
+                img_io.bg_correct = True    
+    img_io.ImgOutPath = OutputPath
     os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
-    ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_ioBg)  # 0 for z-index
-    img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=img_io.bg_method, swing=img_ioBg.swing,
-                                         wavelength=img_ioBg.wavelength, output_path=img_ioBg.ImgOutPath,
+    ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
+    img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=img_io.bg_method, swing=img_io_bg.swing,
+                                         wavelength=img_io_bg.wavelength, output_path=img_io_bg.ImgOutPath,
                                          azimuth_offset = azimuth_offset)
     if img_io.bg_correct:
         img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
@@ -103,18 +101,18 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, ou
         img_stokes_bg = None
 
     img_io.param_bg = img_stokes_bg
-    img_io.swing = img_ioBg.swing
-    img_io.wavelength = img_ioBg.wavelength
-    img_io.blackLevel = img_ioBg.blackLevel
-    img_io.ImgFluorMin = np.full((4, img_ioBg.height, img_ioBg.width), np.inf)  # set initial min array to to be Inf
+    img_io.swing = img_io_bg.swing
+    img_io.wavelength = img_io_bg.wavelength
+    img_io.blackLevel = img_io_bg.blackLevel
+    img_io.ImgFluorMin = np.full((4, img_io_bg.height, img_io_bg.width), np.inf)  # set initial min array to to be Inf
     img_io.ImgFluorSum = np.zeros(
-        (4, img_ioBg.height, img_ioBg.width))  # set the default background to be Ones (uniform field)
+        (4, img_io_bg.height, img_io_bg.width))  # set the default background to be Ones (uniform field)
     img_io.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
                                               (100, 100))  # kernel for image opening operation, 100-200 is usually good
     img_io.loopZ = 'background'
     img_io.PosList = PosList
     img_io.ff_method = ff_method
-    ImgFluorBg = np.ones((4, img_ioBg.height, img_ioBg.width))
+    ImgFluorBg = np.ones((4, img_io_bg.height, img_io_bg.width))
 
     if flatField:  # find background flourescence for flatField corection
         print('Calculating illumination function for flatfield correction...')
@@ -134,7 +132,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, ou
     #        plt.savefig(os.path.join(OutputPath,'compare_flat_field.png'),dpi=150)
     ##################################################################
     else:
-        I_trans_Bg = np.ones((img_ioBg.height, img_ioBg.width))  # use uniform field if no correction
+        I_trans_Bg = np.ones((img_io_bg.height, img_io_bg.width))  # use uniform field if no correction
     img_io.I_trans_Bg = img_stokes_bg[0]
     img_io.ImgFluorBg = ImgFluorBg
     return img_io, img_reconstructor
@@ -210,39 +208,36 @@ def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
 
     tIdx = img_io.tIdx
     posIdx = img_io.posIdx
-    img_stokes_bg = img_io.param_bg
+
     for zIdx in range(0, img_io.nZ):
         # for zIdx in range(0, 1):
         print('Processing position %03d, time %03d, z %03d ...' % (posIdx, tIdx, zIdx))
         plt.close("all")  # close all the figures from the last run
         img_io.zIdx = zIdx
-        retardMMSm = np.array([])
-        azimuthMMSm = np.array([])
+
         # start = time.time()
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
         # stop = time.time()
         # print('parse_tiff_input takes {:.1f} ms ...'.format((stop - start) * 1000))
         # start = time.time()
         img_stokes_sm = img_reconstructor.compute_stokes(ImgRawSm)
+
         # stop = time.time()
         # print('compute_stokes takes {:.1f} ms ...'.format((stop - start) * 1000))
         # start = time.time()
-        img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm, img_stokes_bg,
+        [s0, retard, azimuth, polarization, s1, s2, s3] = \
+            img_reconstructor.reconstruct_birefringence(img_stokes_sm, img_io.param_bg,
                                                                       circularity=circularity,
                                                                       extra=False)  # background subtraction
+        img_stokes = [s0, s1, s2, s3]
         # stop = time.time()
         # print('reconstruct_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
-        [I_trans, retard, azimuth, polarization] = img_computed_sm
-
-        # titles = ['polarization', 'A', 'B', 'dAB']
-        # plot_sub_images(img_param_sm[1:], titles, img_io)
-
         # retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images
         if isinstance(ImgBF, np.ndarray):
             ImgBF = ImgBF[0, :, :] / img_io.param_bg[0]  # flat-field correction
 
         else:  # use brightfield calculated from pol-images if there is no brightfield data
-            ImgBF = I_trans
+            ImgBF = s0
 
         for i in range(ImgFluor.shape[0]):
             # print(np.nanmax(ImgFluor[i,:,:][:]))
@@ -264,29 +259,30 @@ def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
         imgs = [ImgBF, retard, azimuth, polarization, ImgFluor]
         if 'norm' in plot_config:
             norm = plot_config['norm']
+        save_fig = True
         if 'save_fig' in plot_config:
             save_fig = plot_config['save_fig']
+        save_stokes_fig = False
+        if 'save_stokes_fig' in plot_config:
+            save_stokes_fig = plot_config['save_stokes_fig']
         if 'separate_pos' in plot_config:
             separate_pos = plot_config['separate_pos']
         # start = time.time()
-        img_io, imgs = plot_birefringence(img_io, imgs, img_io.chNamesOut, spacing=20, vectorScl=2, zoomin=False,
+        img_io, img_dict = plot_birefringence(img_io, imgs, spacing=20, vectorScl=2, zoomin=False,
                                           dpi=200,
                                           norm=norm, plot=save_fig)
+
+        if save_stokes_fig:
+            plot_stokes(img_io, img_stokes, img_stokes_sm)
+
         # stop = time.time()
         # print('plot_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
         # img_io.imgLimits = ImgLimit(imgs,img_io.imgLimits)
-        # start = time.time()
+        # start = time.time()        
         exportImg(img_io, imgs, separate_pos=separate_pos)
         # stop = time.time()
         # print('exportImg takes {:.1f} ms ...'.format((stop - start) * 1000))
-
-        # titles = ['s0', 's1', 's2', 's3']
-        # fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
-        # plot_sub_images(img_stokes_sm, titles, img_io.ImgOutPath, fig_name, colorbar=True)
-        # fig_name = 'stokes_bg_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
-        # plot_sub_images(img_stokes_bg, titles, img_io.ImgOutPath, fig_name, colorbar=True)
     return img_io
-
 
 def loopZBg(img_io):
     for zIdx in range(0, 1):  # only use the first z
