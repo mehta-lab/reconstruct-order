@@ -259,12 +259,22 @@ def plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_sca
     cbar = fig.colorbar(ax_hsv, cax=cax, orientation='vertical', ticks=np.linspace(0, 255, 5))
     cbar.ax.set_yticklabels([r'$0^o$', r'$45^o$', r'$90^o$', r'$135^o$', r'$180^o$'])  # vertically oriented colorbar
 
+def plot_stokes(img_io, img_stokes, img_stokes_sm):
+    tIdx = img_io.tIdx
+    zIdx = img_io.zIdx
+    posIdx = img_io.posIdx
+    titles = ['s0', 's1', 's2', 's3']
+    fig_name = 'stokes_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+    plot_sub_images(img_stokes, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+    fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+    plot_sub_images(img_stokes_sm, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+
 def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
     figSize = (12,12)
     fig = plt.figure(figsize = figSize)
     for i in range(4):
         ax_p = plt.subplot(2,2,i+1)
-        ax_i = plt.imshow(imadjust(images[i]), cmap='gray')
+        ax_i = plt.imshow(imClip(images[i]), cmap='gray')
         plt.title(titles[i])
         plt.xticks([]),plt.yticks([])
         if colorbar:
