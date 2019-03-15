@@ -113,13 +113,13 @@ def run_action(args):
             SmDirList = GetSubDirName(ImgPath)
 
     if batchProc:
-        if isinstance(BgDir, str):
-            BgDirList = [BgDir]
-        assert len(SmDirList) == len(BgDirList) or len(BgDirList) == 1, \
+        if isinstance(BgDir, list):
+            BgDirList = BgDir
+        else:
+            # Make BgDirList same length as SmDirList
+            BgDirList = [BgDir] * len(SmDirList)
+        assert len(SmDirList) == len(BgDirList), \
             'Length of the background directory list must be one or same as sample directory list'
-        # Make BgDirList same length as SmDirList
-        if len(BgDirList) == 1:
-            BgDirList = BgDirList * len(SmDirList)
 
         for SmDir, BgDir in zip(SmDirList, BgDirList):
             # if 'SM' in SmDir:
