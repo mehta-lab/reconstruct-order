@@ -15,10 +15,9 @@ from utils.imgIO import GetSubDirName
 class mManagerReader(metaclass=ABCMeta):
     """General mManager Reader"""
 
-    def __init__(self, ImgSmPath, ImgOutPath, outputChann=[], verbose=0):
-        """Init.
-
-        :param str ImgPosPath: fname with full path of the Lif file
+    def __init__(self, ImgSmPath, ImgOutPath, inputChann=[], outputChann=[], verbose=0):
+        """
+        :param str ImgSmPath: fname with full path of the Lif file
         :param str ImgOutPath: base folder for storing the individual
          image and cropped volumes
         :param int verbose: specifies the logging level: NOTSET:0, DEBUG:10,
@@ -47,8 +46,9 @@ class mManagerReader(metaclass=ABCMeta):
             self.verbose = 10            
         self.width = metaFile['Summary']['Width']
         self.height = metaFile['Summary']['Height']
-        self.chNamesIn = metaFile['Summary']['ChNames'] #input channel names
-        self.nChannIn = metaFile['Summary']['Channels']
+        self.chNames = metaFile['Summary']['ChNames'] # channels in metadata
+        self.chNamesIn = inputChann  # channels to read
+        self.nChannIn = len(inputChann)
         self.chNamesOut = outputChann #output channel names
         self.nChannOut = len(outputChann)
         self.imgLimits = [[np.Inf,0]]*self.nChannOut
@@ -59,9 +59,6 @@ class mManagerReader(metaclass=ABCMeta):
         self.size_y_um = 6.5/63 # (um) for zyla at 63X. Manager metafile currently does not log the correct pixel size
         self.size_z_um = metaFile['Summary']['z-step_um']
         self.time_stamp = metaFile['Summary']['Time']
-#        if not os.path.exists(self.ImgOutPath): # create folder for processed images
-#            os.makedirs(self.ImgOutPath)
-        
 
     def _init_logger(self):
         """Initialize logger for pre-processing.
@@ -72,14 +69,6 @@ class mManagerReader(metaclass=ABCMeta):
         logger_fname = os.path.join(self.ImgOutPath, 'mManager_splitter.log')
         logger = init_logger('lif_splitter', logger_fname, self.verbose)
         return logger
-
-#    @abstractmethod
-#    def save_each_image(self, reader, nZ, channel_dir, tIdx,
-#                        chanIdx, posIdx, size_x_um, size_y_um,
-#                        size_z_um):
-#        """Save each image as a numpy array."""
-#
-#        raise NotImplementedError
 
     def _log_info(self, msg):
         """Log info.
@@ -97,8 +86,6 @@ class mManagerReader(metaclass=ABCMeta):
         fileName = 'img_'+self.chNamesOut[self.chanIdx]+'_t%03d_p%03d_z%03d.tif'%(self.tIdx, self.posIdx, self.zIdx)
         TiffFile = os.path.join(self.ImgSmPath, fileName)
         img = cv2.imread(TiffFile,-1) # flag -1 to preserve the bit dept of the raw image
-#        img = img.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
-#        img = img.reshape(img.shape[0], img.shape[1],1)        
         return img
 
     def read_multi_chan_img_stack(self, z_range=None):
@@ -282,7 +269,7 @@ class mManagerReader(metaclass=ABCMeta):
         return records
 
 class PolAcquReader(mManagerReader):
-    """PolAcquistion Plugin output reader""" 
+    """PolAcquistion Plugin output format reader"""
     def __init__(self, ImgSmPath, ImgOutPath, verbose=0):
         """
         Extract PolAcquistion specific params from the metafile
