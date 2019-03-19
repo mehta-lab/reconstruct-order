@@ -195,7 +195,7 @@ def exportImg(img_io, imgDict):
     zIdx = img_io.zIdx
     posIdx = img_io.posIdx
     output_path = img_io.img_out_pos_path
-    for tiffName in img_io.chNames:
+    for tiffName in img_io.chNamesOut:
         fileName = 'img_'+tiffName+'_t%03d_p%03d_z%03d.tif'%(tIdx, posIdx, zIdx)
         if len(imgDict[tiffName].shape)<3:
             cv2.imwrite(os.path.join(output_path, fileName), imgDict[tiffName])
