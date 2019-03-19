@@ -90,7 +90,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, ou
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
     img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=img_io.bg_method, swing=img_io_bg.swing,
                                          wavelength=img_io_bg.wavelength, output_path=img_io_bg.ImgOutPath,
-                                         azimuth_offset = azimuth_offset)
+                                         azimuth_offset=azimuth_offset)
     if img_io.bg_correct:
         img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
         # print('denoising the background...')
@@ -271,6 +271,18 @@ def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
         img_io, img_dict = plot_birefringence(img_io, imgs, spacing=20, vectorScl=2, zoomin=False,
                                           dpi=200,
                                           norm=norm, plot=save_fig)
+
+        stokes_names = ['Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3']
+        stokes_names_sm = [x + '_sm' for x in stokes_names]
+
+        img_stokes = [x.astype(np.float32, copy=False) for x in img_stokes]
+        img_stokes_sm = [x.astype(np.float32, copy=False) for x in img_stokes_sm]
+
+        img_stokes_dict = zip(stokes_names, img_stokes)
+        img_stokes_sm_dict = zip(stokes_names_sm, img_stokes_sm)
+
+        img_dict.update(img_stokes_dict)
+        img_dict.update(img_stokes_sm_dict)
 
         if save_stokes_fig:
             plot_stokes(img_io, img_stokes, img_stokes_sm)
