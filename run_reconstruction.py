@@ -67,12 +67,22 @@ def read_config(config_fname):
 
     with open(config_fname, 'r') as f:
         config = yaml.load(f)
+        
+    # TODO add defaults for the rest of the parameters. read_config should return
+    # full config, even if fields were omitted in the yml file
+    if not 'PosList' in config['dataset']:
+        config['dataset']['PosList'] = 'all'
+        
+    if not 'separate_pos' in config['dataset']:
+        config['dataset']['separate_pos'] = True
 
     return config
 
 def write_config(config, config_fname):
     with open(config_fname, 'w') as f:
         yaml.dump(config, f, default_flow_style=False)
+        
+def findData():
 
 def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann, config, BgDir_local=None, flatField=False,
                bgCorrect=True, circularity=False, azimuth_offset=0, separate_pos=True):
@@ -80,6 +90,7 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, output
     img_io, img_reconstructor = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann,
                            BgDir_local=BgDir_local, flatField=flatField,bgCorrect=bgCorrect,
                            ff_method='open', azimuth_offset=azimuth_offset) # find background tile
+    
     img_io.loopZ ='sample'
     plot_config = config['plotting']
     img_io = loopPos(img_io, img_reconstructor, plot_config, flatField=flatField, bgCorrect=bgCorrect,
@@ -94,15 +105,10 @@ def run_action(args):
     ProcessedPath = config['dataset']['ProcessedPath']
     ImgDir = config['dataset']['ImgDir']
     SmDir = config['dataset']['SmDir']
-    if 'PosList' in config['dataset']:
-        PosList = config['dataset']['PosList']
-    else:
-        PosList = 'all'
+    PosList = config['dataset']['PosList']
     BgDir = config['dataset']['BgDir']
     BgDir_local = config['dataset']['BgDir_local']
-    separate_pos = True
-    if 'separate_pos' in config['dataset']:
-        separate_pos = config['dataset']['separate_pos']
+    separate_pos = config['dataset']['separate_pos']
     outputChann = config['processing']['outputChann']
     circularity= config['processing']['circularity']
     bgCorrect=config['processing']['bgCorrect']
@@ -113,41 +119,39 @@ def run_action(args):
 
     if isinstance(SmDir, list):
         batchProc = True
-        SmDirList = SmDir
     else:
         if batchProc:
             ImgPath = os.path.join(RawDataPath, ImgDir)
-            SmDirList = GetSubDirName(ImgPath)
-
+            SmDir = GetSubDirName(ImgPath)
+            
     if batchProc:
         # if input is e.g. 'all' or 'Pos1', use for all samples
         if not isinstance(PosList, list):
-            PosList = [PosList]*len(SmDirList)
+            PosList = [PosList]*len(SmDir)
         # if input is ['Pos1','Pos2','Pos3'], use for all samples
         elif not any(isinstance(i, list) for i in PosList):
-            PosList = [PosList]*len(SmDirList)
+            PosList = [PosList]*len(SmDir)
         
         # Make BgDirList same length as SmDirList
-        if isinstance(BgDir, list):
-            BgDirList = BgDir
-        else:
-            # Make BgDirList same length as SmDirList
-            BgDirList = [BgDir] * len(SmDirList)
-        assert len(SmDirList) == len(BgDirList), \
+        if not isinstance(BgDir, list):
+            BgDir = [BgDir] * len(SmDir)
+            
+        assert len(SmDir) == len(BgDir) == len(PosList), \
             'Length of the background directory list must be one or same as sample directory list'
+            
+    # Check that all paths to be analyzed exist
+    
 
-        for SmDir, BgDir, PosList_ in zip(SmDirList, BgDirList, PosList):
-            # if 'SM' in SmDir:
-            processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList_, BgDir, outputChann, config,
-                       BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
-                       circularity=circularity, azimuth_offset=azimuth_offset,
-                       separate_pos=separate_pos)
-    else:
-        processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann, config,
+    for SmDir_, BgDir_, PosList_ in zip(SmDir, BgDir, PosList):
+        processImg(RawDataPath, ProcessedPath, ImgDir, SmDir_, PosList_, BgDir_, outputChann, config,
                    BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
                    circularity=circularity, azimuth_offset=azimuth_offset,
                    separate_pos=separate_pos)
 
+#class args:
+#    config = '/Users//ivan.ivanov//Documents/Benchmark/config_Benchmark.txt'
+
 if __name__ == '__main__':
+    #    args = args()
     args = parse_args()
     run_action(args)
