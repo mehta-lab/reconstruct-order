@@ -81,8 +81,6 @@ def read_config(config_fname):
 def write_config(config, config_fname):
     with open(config_fname, 'w') as f:
         yaml.dump(config, f, default_flow_style=False)
-        
-def findData():
 
 def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann, config, BgDir_local=None, flatField=False,
                bgCorrect=True, circularity=False, azimuth_offset=0, separate_pos=True):
