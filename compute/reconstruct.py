@@ -6,15 +6,15 @@ sys.path.append("..") # Add upper level directory to python modules path.
 #from utils.imgCrop import imcrop
 #%%
 class ImgReconstructor:
-    def __init__(self, img_pol, bg_method='Global', swing=None, wavelength=532,
+    def __init__(self, img_pol_bg=[], bg_method='Global', swing=None, wavelength=532,
                  kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (100, 100)),
                  output_path=None, azimuth_offset=0):
-        self.img_pol = img_pol
+        self.img_pol_bg = img_pol_bg
         self.bg_method = bg_method
         self.swing = swing*2*np.pi # covert swing from fraction of wavelength to radian
-        self.n_chann = np.shape(img_pol)[0]
-        self.height = np.shape(img_pol)[1]
-        self.width = np.shape(img_pol)[2]
+        self.n_chann = np.shape(img_pol_bg)[0]
+        self.height = np.shape(img_pol_bg)[1]
+        self.width = np.shape(img_pol_bg)[2]
         self.wavelength = wavelength
         self.kernel = kernel
         self.output_path = output_path

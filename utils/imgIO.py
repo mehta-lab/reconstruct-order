@@ -6,9 +6,6 @@ import numpy as np
 import glob
 import re
 import cv2
-#import sys
-#sys.path.append("..") # Adds higher directory to python modules path.
-#from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 def GetSubDirName(ImgPath):
     assert os.path.exists(ImgPath), 'Input folder does not exist!' 
