@@ -1,27 +1,21 @@
 """
-Class to read and write Tiff and the metafile (JSON) in mManager format.  
+Class to read and write Tiff and the metafile (JSON) in mManager format.
 """
-
-
-from abc import ABCMeta, abstractmethod
 import json
 import numpy as np
 import os
 import pandas as pd
 import cv2
-from utils.aux_utils import init_logger
 from utils.imgIO import GetSubDirName
 
-class mManagerReader(metaclass=ABCMeta):
+class mManagerReader:
     """General mManager Reader"""
 
-    def __init__(self, ImgSmPath, ImgOutPath, inputChann=[], outputChann=[], verbose=0):
+    def __init__(self, ImgSmPath, ImgOutPath, inputChann=[], outputChann=[]):
         """
         :param str ImgSmPath: fname with full path of the Lif file
         :param str ImgOutPath: base folder for storing the individual
          image and cropped volumes
-        :param int verbose: specifies the logging level: NOTSET:0, DEBUG:10,
-         INFO:20, WARNING:30, ERROR:40, CRITICAL:50
         """
         subDirName = GetSubDirName(ImgSmPath)          
         
@@ -38,12 +32,6 @@ class mManagerReader(metaclass=ABCMeta):
         self.ImgSmPath = ImgSmPath
         self.ImgPosPath = ImgPosPath
         self.ImgOutPath = ImgOutPath
-        
-        log_levels = [0, 10, 20, 30, 40, 50]
-        if verbose in log_levels:
-            self.verbose = verbose
-        else:
-            self.verbose = 10            
         self.width = metaFile['Summary']['Width']
         self.height = metaFile['Summary']['Height']
         self.chNames = metaFile['Summary']['ChNames'] # channels in metadata
@@ -59,31 +47,12 @@ class mManagerReader(metaclass=ABCMeta):
         self.size_y_um = 6.5/63 # (um) for zyla at 63X. Manager metafile currently does not log the correct pixel size
         self.size_z_um = metaFile['Summary']['z-step_um']
         self.time_stamp = metaFile['Summary']['Time']
-
-    def _init_logger(self):
-        """Initialize logger for pre-processing.
-
-        Logger outputs to console and log_file
-        """
-
-        logger_fname = os.path.join(self.ImgOutPath, 'mManager_splitter.log')
-        logger = init_logger('lif_splitter', logger_fname, self.verbose)
-        return logger
-
-    def _log_info(self, msg):
-        """Log info.
-
-        :param str msg: message to be logged
-        """
-
-        if self.verbose > 0:
-            self.logger.info(msg)
             
     def read_img(self):
         """read a single image at (c,t,p,z)"""
 #        fileName = 'img_000000%03d'+self.chNamesIn[chanIdx]+'_%03d.tif'%(timeIdx,zIdx)
         
-        fileName = 'img_'+self.chNamesOut[self.chanIdx]+'_t%03d_p%03d_z%03d.tif'%(self.tIdx, self.posIdx, self.zIdx)
+        fileName = 'img_'+self.chNamesIn[self.chanIdx]+'_t%03d_p%03d_z%03d.tif'%(self.tIdx, self.posIdx, self.zIdx)
         TiffFile = os.path.join(self.ImgSmPath, fileName)
         img = cv2.imread(TiffFile,-1) # flag -1 to preserve the bit dept of the raw image
         return img
@@ -229,44 +198,6 @@ class mManagerReader(metaclass=ABCMeta):
                     tIdx, chanIdx
                 )
                 self._log_info(msg)
-
-    def save_npy_2D(self):
-        """Saves the each individual image as a npy file.
-
-        Have to decide when to reprocess the file and when not to. Currently
-        doesn't check if the file has already been processed.
-        :param bf.ImageReader reader: fname with full path of the lif image
-        :param int nZ: number of focal_plane acquisitions
-        :param str channel_dir: dir to save the split images
-        :param int tIdx: timepoint to split
-        :param int chann: channel to split
-        :param int posIdx: sample to split
-        :param float size_x_um: voxel resolution along x in microns
-        :param float size_y_um: voxel resolution along y in microns
-        :param float size_z_um: voxel resolution along focal_plane in microns
-        :return: list of tuples of metadata
-        """
-        records = []
-        # exclude the first 14 due to artifacts and some have one z
-        # (series 15, 412) instead of 3
-        for zIdx in range(self.nZ):
-            self.zIdx = zIdx
-            cur_fname = os.path.join(
-                self.channel_dir, 'image_n{}_z{}.npy'.format(self.posIdx, zIdx)
-            )
-            # image voxels are 16 bits
-            
-            img = self.read_img()
-            self.mean = np.nanmean(img)
-            self.std = np.nanstd(img)
-            np.save(cur_fname, img, allow_pickle=True, fix_imports=True)
-            msg = 'Generated file:{}'.format(cur_fname)
-            self._log_info(msg)
-            # add wavelength info perhaps?
-            records.append((self.tIdx, self.chanIdx, self.posIdx, zIdx,
-                            cur_fname, self.size_x_um, self.size_y_um, self.size_z_um,
-                            self.mean, self.std))
-        return records
 
 class PolAcquReader(mManagerReader):
     """PolAcquistion Plugin output format reader"""
