@@ -11,7 +11,8 @@ numpy
 cv2
 
 If you are running ReconstructOrder on fry2, it is recommended to run it in a Docker container. 
-Docker is the virtual environment with all the required libraries pre-installed so you can run your copy of ReconstructOrder without recreating the environment. 
+Docker is the virtual environment with all the required libraries pre-installed so you can run your copy of 
+ReconstructOrder without recreating the environment. 
 ReconstructOrder can be run inside the imaging Docker container that has been built on fry2. 
 
 To start a docker container, do 
@@ -45,14 +46,23 @@ The full path to the data should be RawDataPath/ImgDir/SmDir/Pos$
         '488'
         '568'
         '640'
+        'Stokes_0' 
+        'Stokes_1' 
+        'Stokes_2' 
+        'Stokes_3'
         
-* circularity: ('lcp' or 'rcp') flip the slow axis horizontally. 
+* circularity: ('lcp' or 'rcp') the circularity of the analyzer looking from the detector's point of view. 
+    Changing this flag will flip the slow axis horizontally. 
 * bgCorrect: (str) 
     'Auto' (default) to correct the background using background from the metadata if available, otherwise use input background folder;
     'None' for no background correction; 
     'Input' to always use input background folder
     'Local_filter' apply additional background correction using local background estimated from Gaussian-blurred sample images
-    'Local_defocus' use local defocused images from 'BgDir_local' folder. The background images must have exactly same position indices as sample images.    
+    'Local_defocus' use local defocused images from 'BgDir_local' folder. The background images must have exactly same 
+        position indices as sample images.
+* azimuth_offset: (float) offset of the orientation reference axis            
 * flatField: (bool) perform flat-field correction on fluorescence images if True
-* norm: (bool) scale fluorescence images for each image for optimal contrast. Set False to use the same scale for all images
-* batchProc: (bool) batch process all the folders in ImgDir if True. 
+* norm: (bool) scale fluorescence channels in each 'Retardance+Fluorescence' differently for optimal contrast. Set False to apply same scale for all images
+* batchProc: (bool) batch process all the folders in ImgDir if True.
+* save_fig: (bool) save figures showing different channels 
+    save_stokes_fig: False 

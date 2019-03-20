@@ -44,7 +44,8 @@ def plotVectorField(I, azimuth, R=40, spacing=40, clim=[None, None]): # plot vec
 #    plt.show()
     return imAx
 
-def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
+def plot_birefringence(img_io, imgs, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
+    outputChann = img_io.chNamesOut
     chann_scale = [0.25, 1, 0.05, 1]  # scale fluor channels for composite images when norm=False
     
     I_trans,retard, azimuth, polarization, ImgFluor = imgs
@@ -61,7 +62,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
             for chann in outputChann):
         I_azi_ret_trans, I_azi_ret, I_azi_scat = PolColor(I_trans, retard, azimuth_degree, scattering, norm=norm)
         
-        tIdx = imgInput.tIdx; zIdx = imgInput.zIdx; posIdx = imgInput.posIdx
+        tIdx = img_io.tIdx; zIdx = img_io.zIdx; posIdx = img_io.posIdx
         if plot:
             plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_scat, zoomin=False, spacing=spacing,
                               vectorScl=vectorScl, dpi=dpi)
@@ -70,7 +71,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
             else:
                 figName = 'Transmission+Retardance+Orientation_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
     
-            plt.savefig(os.path.join(imgInput.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
+            plt.savefig(os.path.join(img_io.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
      
     # Compute Retardance+Fluorescence and Retardance+Fluorescence_all overlays
     # Very slow
@@ -136,9 +137,9 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
             
         imgDict[chann] = img
         
-    imgInput.chNames = outputChann
-    imgInput.nChann = len(outputChann)
-    return imgInput, imgDict
+    img_io.chNames = outputChann
+    img_io.nChann = len(outputChann)
+    return img_io, imgDict
 
 
 def PolColor(I_trans, retard, azimuth, scattering, norm=True):
@@ -259,12 +260,22 @@ def plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_sca
     cbar = fig.colorbar(ax_hsv, cax=cax, orientation='vertical', ticks=np.linspace(0, 255, 5))
     cbar.ax.set_yticklabels([r'$0^o$', r'$45^o$', r'$90^o$', r'$135^o$', r'$180^o$'])  # vertically oriented colorbar
 
+def plot_stokes(img_io, img_stokes, img_stokes_sm):
+    tIdx = img_io.tIdx
+    zIdx = img_io.zIdx
+    posIdx = img_io.posIdx
+    titles = ['s0', 's1', 's2', 's3']
+    fig_name = 'stokes_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+    plot_sub_images(img_stokes, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+    fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+    plot_sub_images(img_stokes_sm, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+
 def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
     figSize = (12,12)
     fig = plt.figure(figsize = figSize)
     for i in range(4):
         ax_p = plt.subplot(2,2,i+1)
-        ax_i = plt.imshow(imadjust(images[i]), cmap='gray')
+        ax_i = plt.imshow(imClip(images[i]), cmap='gray')
         plt.title(titles[i])
         plt.xticks([]),plt.yticks([])
         if colorbar:
