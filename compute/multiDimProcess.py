@@ -11,14 +11,10 @@ import copy
 from utils.imgIO import parse_tiff_input, exportImg, GetSubDirName, FindDirContainPos
 from .reconstruct import ImgReconstructor
 from utils.imgProcessing import ImgMin
-from utils.plotting import plot_sub_images, plot_stokes
+from utils.plotting import plot_birefringence, plot_stokes, plot_raw_imgs
 from utils.mManagerIO import mManagerReader, PolAcquReader
-from utils.plotting import plot_birefringence, plot_sub_images
 from utils.imgProcessing import ImgLimit, imBitConvert
 from skimage.restoration import denoise_tv_chambolle
-
-
-
 
 def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann,
                    BgDir_local=None, flatField=False, bgCorrect='Auto',
@@ -88,11 +84,12 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, ou
     img_io.ImgOutPath = OutputPath
     os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
+    img_io.img_raw_bg = ImgRawBg
     img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=img_io.bg_method, swing=img_io_bg.swing,
                                          wavelength=img_io_bg.wavelength, output_path=img_io_bg.ImgOutPath,
                                          azimuth_offset=azimuth_offset)
     if img_io.bg_correct:
-        img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
+        img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)        
         # print('denoising the background...')
         # img_stokes_bg = [denoise_tv_chambolle(img, weight=10**6) for img in img_stokes_bg]
         # img_stokes_bg = [cv2.GaussianBlur(img, (5, 5), 0) for img in img_stokes_bg]
@@ -217,6 +214,7 @@ def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
 
         # start = time.time()
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
+
         # stop = time.time()
         # print('parse_tiff_input takes {:.1f} ms ...'.format((stop - start) * 1000))
         # start = time.time()
@@ -289,6 +287,12 @@ def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
             if save_stokes_fig:
                 plot_stokes(img_io, img_stokes, img_stokes_sm)
 
+        ImgRawSm_bg_subtract = []
+        ImgRawSm_bg_divide = []
+        for i in ImgRawSm.shape[2]:
+            ImgRawSm_bg_subtract += ImgRawSm[..., i] - img_io.img_raw_bg[..., i]
+            ImgRawSm_bg_divide += ImgRawSm[..., i] / img_io.img_raw_bg[..., i]
+        plot_raw_imgs(img_io, ImgRawSm_bg_subtract, ImgRawSm_bg_divide)
         # stop = time.time()
         # print('plot_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
         # img_io.imgLimits = ImgLimit(imgs,img_io.imgLimits)

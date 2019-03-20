@@ -50,8 +50,6 @@ class mManagerReader:
             
     def read_img(self):
         """read a single image at (c,t,p,z)"""
-#        fileName = 'img_000000%03d'+self.chNamesIn[chanIdx]+'_%03d.tif'%(timeIdx,zIdx)
-        
         fileName = 'img_'+self.chNamesIn[self.chanIdx]+'_t%03d_p%03d_z%03d.tif'%(self.tIdx, self.posIdx, self.zIdx)
         TiffFile = os.path.join(self.ImgSmPath, fileName)
         img = cv2.imread(TiffFile,-1) # flag -1 to preserve the bit dept of the raw image
@@ -78,10 +76,10 @@ class mManagerReader:
             img_chann += [img_stack]
         return img_chann
     
-    def write_img(self, img, channel, posIdx, zIdx, timeIdx):
+    def write_img(self, img, channel):
         if not os.path.exists(self.ImgOutPath): # create folder for processed images
             os.makedirs(self.ImgOutPath)
-        fileName = 'img_'+channel+'_t%03d_p%03d_z%03d.tif'%(timeIdx,posIdx,zIdx)
+        fileName = 'img_'+channel+'_t%03d_p%03d_z%03d.tif'%(self.tIdx, self.posIdx, self.zIdx)
         if len(img.shape)<3:
             cv2.imwrite(os.path.join(self.ImgOutPath, fileName), img)
         else:

@@ -270,6 +270,16 @@ def plot_stokes(img_io, img_stokes, img_stokes_sm):
     fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
     plot_sub_images(img_stokes_sm, titles, img_io.ImgOutPath, fig_name, colorbar=True)
 
+def plot_raw_imgs(img_io, ImgRawSm_bg_subtract, ImgRawSm_bg_divide):
+    tIdx = img_io.tIdx
+    zIdx = img_io.zIdx
+    posIdx = img_io.posIdx
+    titles = ['s0', 's1', 's2', 's3']
+    fig_name = 'stokes_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+    plot_sub_images(ImgRawSm_bg_subtract, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+    fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+    plot_sub_images(ImgRawSm_bg_divide, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+
 def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
     figSize = (12,12)
     fig = plt.figure(figsize = figSize)
