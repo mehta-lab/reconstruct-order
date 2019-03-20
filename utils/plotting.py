@@ -44,7 +44,8 @@ def plotVectorField(I, azimuth, R=40, spacing=40, clim=[None, None]): # plot vec
 #    plt.show()
     return imAx
 
-def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
+def plot_birefringence(img_io, imgs, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
+    outputChann = img_io.chNamesOut
     chann_scale = [0.25, 1, 0.05, 1]  # scale fluor channels for composite images when norm=False
     
     I_trans,retard, azimuth, polarization, ImgFluor = imgs
@@ -61,7 +62,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
             for chann in outputChann):
         I_azi_ret_trans, I_azi_ret, I_azi_scat = PolColor(I_trans, retard, azimuth_degree, scattering, norm=norm)
         
-        tIdx = imgInput.tIdx; zIdx = imgInput.zIdx; posIdx = imgInput.posIdx
+        tIdx = img_io.tIdx; zIdx = img_io.zIdx; posIdx = img_io.posIdx
         if plot:
             plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_scat, zoomin=False, spacing=spacing,
                               vectorScl=vectorScl, dpi=dpi)
@@ -70,7 +71,7 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
             else:
                 figName = 'Transmission+Retardance+Orientation_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
     
-            plt.savefig(os.path.join(imgInput.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
+            plt.savefig(os.path.join(img_io.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
      
     # Compute Retardance+Fluorescence and Retardance+Fluorescence_all overlays
     # Very slow
@@ -136,9 +137,9 @@ def plot_birefringence(imgInput, imgs, outputChann, spacing=20, vectorScl=5, zoo
             
         imgDict[chann] = img
         
-    imgInput.chNames = outputChann
-    imgInput.nChann = len(outputChann)
-    return imgInput, imgDict
+    img_io.chNames = outputChann
+    img_io.nChann = len(outputChann)
+    return img_io, imgDict
 
 
 def PolColor(I_trans, retard, azimuth, scattering, norm=True):
