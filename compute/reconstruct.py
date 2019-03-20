@@ -87,7 +87,7 @@ class ImgReconstructor:
             azimuth = (0.5 * np.arctan2(s1, -s2) + self.azimuth_offset) % (np.pi)  # make azimuth fall in [0,pi]
         elif circularity == 'rcp':
             azimuth = (0.5 * np.arctan2(-s1, -s2) + self.azimuth_offset) % (np.pi)  # make azimuth fall in [0,pi]
-        return [I_trans, retard, azimuth, polarization]
+        return [I_trans, retard, azimuth, polarization, s1, s2, s3]
 
     def calibrate_inst_mat(self):
         return
