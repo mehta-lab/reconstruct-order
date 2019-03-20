@@ -19,7 +19,7 @@ from skimage.restoration import denoise_tv_chambolle
 
 
 
-def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann,
+def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann,
                    BgDir_local=None, flatField=False, bgCorrect='Auto',
                    ff_method='open', azimuth_offset = 0):
     """
@@ -112,6 +112,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir, outputChann
     img_io.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
                                               (100, 100))  # kernel for image opening operation, 100-200 is usually good
     img_io.loopZ = 'background'
+    img_io.PosList = PosList
     img_io.ff_method = ff_method
     ImgFluorBg = np.ones((4, img_ioBg.height, img_ioBg.width))
 
@@ -147,25 +148,27 @@ def loopPos(img_io, img_reconstructor, plot_config, flatField=False, bgCorrect=T
     @param circularity: whether or not to flip the sign of polarization.
     @return: None
     """
+    
+    try:
+        posDict = {idx:img_io.metaFile['Summary']['InitialPositionList'][idx]['Label'] for idx in range(img_io.nPos)}
+    except:
+        # PolAcquisition doens't save position list
+        posDict = {0:'Pos0'}
 
-    for posIdx in range(0, img_io.nPos):
-        plt.close("all")  # close all the figures from the last run
-        if img_io.metaFile['Summary']['InitialPositionList']:  # PolAcquisition doens't save position list
-            pos_name = img_io.metaFile['Summary']['InitialPositionList'][posIdx]['Label']
-        else:
-            pos_name = 'Pos0'
-        img_io.ImgPosPath = os.path.join(img_io.ImgSmPath, pos_name)
-        img_io.pos_name = pos_name
-
-        if img_io.bg_method == 'Local_defocus':
-            img_io_bg = img_io.bg_local
-            img_io_bg.pos_name = os.path.join(img_io_bg.ImgSmPath, pos_name)
-            img_io_bg.posIdx = posIdx
-        img_io.posIdx = posIdx
-        os.makedirs(os.path.join(img_io.ImgOutPath, pos_name), exist_ok=True) # create folder for processed images
-        img_io = loopT(img_io, img_reconstructor, plot_config, flatField=flatField,
-                       bgCorrect=bgCorrect, circularity=circularity,
-                       )
+    for posIdx, pos_name in posDict.items():
+        if pos_name in img_io.PosList or img_io.PosList == 'all':
+            plt.close("all")  # close all the figures from the last run
+            img_io.ImgPosPath = os.path.join(img_io.ImgSmPath, pos_name)
+            img_io.pos_name = pos_name
+    
+            if img_io.bg_method == 'Local_defocus':
+                img_io_bg = img_io.bg_local
+                img_io_bg.pos_name = os.path.join(img_io_bg.ImgSmPath, pos_name)
+                img_io_bg.posIdx = posIdx
+            img_io.posIdx = posIdx
+            os.makedirs(os.path.join(img_io.ImgOutPath, pos_name), exist_ok=True) # create folder for processed images
+            img_io = loopT(img_io, img_reconstructor, plot_config, flatField=flatField,
+                           bgCorrect=bgCorrect, circularity=circularity)
     return img_io
 
 
