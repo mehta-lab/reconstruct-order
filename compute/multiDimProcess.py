@@ -272,20 +272,22 @@ def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
                                           dpi=200,
                                           norm=norm, plot=save_fig)
 
+
         stokes_names = ['Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3']
-        stokes_names_sm = [x + '_sm' for x in stokes_names]
+        if any(chan_name in stokes_names for chan_name in img_io.chNamesOut) or save_stokes_fig:
+            stokes_names_sm = [x + '_sm' for x in stokes_names]
 
-        img_stokes = [x.astype(np.float32, copy=False) for x in img_stokes]
-        img_stokes_sm = [x.astype(np.float32, copy=False) for x in img_stokes_sm]
+            img_stokes = [x.astype(np.float32, copy=False) for x in img_stokes]
+            img_stokes_sm = [x.astype(np.float32, copy=False) for x in img_stokes_sm]
 
-        img_stokes_dict = zip(stokes_names, img_stokes)
-        img_stokes_sm_dict = zip(stokes_names_sm, img_stokes_sm)
+            img_stokes_dict = zip(stokes_names, img_stokes)
+            img_stokes_sm_dict = zip(stokes_names_sm, img_stokes_sm)
 
-        img_dict.update(img_stokes_dict)
-        img_dict.update(img_stokes_sm_dict)
+            img_dict.update(img_stokes_dict)
+            img_dict.update(img_stokes_sm_dict)
 
-        if save_stokes_fig:
-            plot_stokes(img_io, img_stokes, img_stokes_sm)
+            if save_stokes_fig:
+                plot_stokes(img_io, img_stokes, img_stokes_sm)
 
         # stop = time.time()
         # print('plot_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
