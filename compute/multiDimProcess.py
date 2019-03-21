@@ -82,7 +82,6 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, ou
                 OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
                 img_io.bg_correct = True    
     img_io.ImgOutPath = OutputPath
-    OutputPath = OutputPath + 'no_denoising'
     os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
     img_io.img_raw_bg = ImgRawBg
