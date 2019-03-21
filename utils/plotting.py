@@ -270,19 +270,35 @@ def plot_stokes(img_io, img_stokes, img_stokes_sm):
     fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
     plot_sub_images(img_stokes_sm, titles, img_io.ImgOutPath, fig_name, colorbar=True)
 
+def plot_raw_imgs(img_io, ImgRawSm_bg_subtract, ImgRawSm_bg_divide):
+    tIdx = img_io.tIdx
+    zIdx = img_io.zIdx
+    posIdx = img_io.posIdx
+    titles = ['s0', 's1', 's2', 's3']
+    fig_name = 'stokes_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+    plot_sub_images(ImgRawSm_bg_subtract, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+    fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+    plot_sub_images(ImgRawSm_bg_divide, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+
 def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
+    n_imgs = len(images)
+    n_rows = 2
+    n_cols = n_imgs // n_rows + 1
+    fig, ax = plt.subplots(n_rows, n_cols, squeeze=False)
+    ax = ax.flatten()
+    fig.set_size_inches((5 * n_cols, 5 * n_rows))
+    axis_count = 0
     figSize = (12,12)
     fig = plt.figure(figsize = figSize)
     for i in range(4):
-        ax_p = plt.subplot(2,2,i+1)
-        ax_i = plt.imshow(imClip(images[i]), cmap='gray')
-        plt.title(titles[i])
-        plt.xticks([]),plt.yticks([])
+        ax_img = ax[axis_count].imshow(imClip(images[i]), cmap='gray')
+        ax[axis_count].axis('off')
+        ax[axis_count].set_title(titles[i])
         if colorbar:
-            divider = make_axes_locatable(ax_p)
+            divider = make_axes_locatable(ax[axis_count])
             cax = divider.append_axes('right', size='5%', pad=0.05)
-            cbar = fig.colorbar(ax_i, cax=cax, orientation='vertical')
-    # plt.show()
+            cbar = fig.colorbar(ax_img, cax=cax, orientation='vertical')
+        axis_count += 1
     plt.savefig(os.path.join(ImgOutPath, figName), dpi=300, bbox_inches='tight')
 
 
