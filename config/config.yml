@@ -3,6 +3,7 @@ dataset:
     ProcessedPath: '/flexo/ComputationalMicroscopy/Projects/brainarchitecture'
     ImgDir: '2018_10_02_MouseBrainSlice'
     SmDir: ['SM_2018_1002_1633_1', 'SM_2018_1002_1640_1']
+    PosList: 'all'
     BgDir: 'BG_2018_1002_1625_1'
     BgDir_local: None
     separate_pos: True
