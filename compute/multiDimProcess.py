@@ -11,14 +11,10 @@ import copy
 from utils.imgIO import parse_tiff_input, exportImg, GetSubDirName, FindDirContainPos
 from .reconstruct import ImgReconstructor
 from utils.imgProcessing import ImgMin
-from utils.plotting import plot_sub_images, plot_stokes
+from utils.plotting import plot_birefringence, plot_stokes, plot_raw_imgs
 from utils.mManagerIO import mManagerReader, PolAcquReader
-from utils.plotting import plot_birefringence, plot_sub_images
 from utils.imgProcessing import ImgLimit, imBitConvert
 from skimage.restoration import denoise_tv_chambolle
-
-
-
 
 def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann,
                    BgDir_local=None, flatField=False, bgCorrect='Auto',
@@ -86,13 +82,15 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, ou
                 OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
                 img_io.bg_correct = True    
     img_io.ImgOutPath = OutputPath
+    OutputPath = OutputPath + 'no_denoising'
     os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
+    img_io.img_raw_bg = ImgRawBg
     img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=img_io.bg_method, swing=img_io_bg.swing,
                                          wavelength=img_io_bg.wavelength, output_path=img_io_bg.ImgOutPath,
                                          azimuth_offset=azimuth_offset)
     if img_io.bg_correct:
-        img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
+        img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)        
         # print('denoising the background...')
         # img_stokes_bg = [denoise_tv_chambolle(img, weight=10**6) for img in img_stokes_bg]
         # img_stokes_bg = [cv2.GaussianBlur(img, (5, 5), 0) for img in img_stokes_bg]
@@ -157,7 +155,7 @@ def loopPos(img_io, img_reconstructor, plot_config, flatField=False, bgCorrect=T
     for posIdx, pos_name in posDict.items():
         if pos_name in img_io.PosList or img_io.PosList == 'all':
             plt.close("all")  # close all the figures from the last run            
-            img_io.ImgPosPath = os.path.join(img_io.ImgSmPath, pos_name)
+            img_io.img_in_pos_path = os.path.join(img_io.ImgSmPath, pos_name)
             img_io.pos_name = pos_name
             if separate_pos:
                 img_io.img_out_pos_path = os.path.join(img_io.ImgOutPath, pos_name)
@@ -217,6 +215,7 @@ def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
 
         # start = time.time()
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
+
         # stop = time.time()
         # print('parse_tiff_input takes {:.1f} ms ...'.format((stop - start) * 1000))
         # start = time.time()
@@ -265,8 +264,6 @@ def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
         save_stokes_fig = False
         if 'save_stokes_fig' in plot_config:
             save_stokes_fig = plot_config['save_stokes_fig']
-        if 'separate_pos' in plot_config:
-            separate_pos = plot_config['separate_pos']
         # start = time.time()
         img_io, img_dict = plot_birefringence(img_io, imgs, spacing=20, vectorScl=2, zoomin=False,
                                           dpi=200,
@@ -293,7 +290,7 @@ def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
         # print('plot_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
         # img_io.imgLimits = ImgLimit(imgs,img_io.imgLimits)
         # start = time.time()        
-        exportImg(img_io, imgs, separate_pos=separate_pos)
+        exportImg(img_io, img_dict)
         # stop = time.time()
         # print('exportImg takes {:.1f} ms ...'.format((stop - start) * 1000))
     return img_io
