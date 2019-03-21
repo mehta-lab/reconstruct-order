@@ -286,12 +286,6 @@ def loopZSm(img_io, img_reconstructor, plot_config, circularity='rcp'):
             if save_stokes_fig:
                 plot_stokes(img_io, img_stokes, img_stokes_sm)
 
-        ImgRawSm_bg_subtract = []
-        ImgRawSm_bg_divide = []
-        for i in range(ImgRawSm.shape[0]):
-            ImgRawSm_bg_subtract += [ImgRawSm[i, ...] - img_io.img_raw_bg[i, ...]]
-            ImgRawSm_bg_divide += [ImgRawSm[i, ...] / img_io.img_raw_bg[i, ...]]
-        plot_raw_imgs(img_io, ImgRawSm_bg_subtract, ImgRawSm_bg_divide)
         # stop = time.time()
         # print('plot_birefringence takes {:.1f} ms ...'.format((stop - start) * 1000))
         # img_io.imgLimits = ImgLimit(imgs,img_io.imgLimits)
