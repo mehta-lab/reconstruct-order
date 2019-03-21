@@ -20,17 +20,17 @@ class mManagerReader:
         subDirName = GetSubDirName(ImgSmPath)          
         
         ## TO DO: track global image limits
-        ImgPosPath = ImgSmPath #PyPol format
+        img_in_pos_path = ImgSmPath #PyPol format
         if subDirName:
             subDir = subDirName[0] # pos0
             if 'Pos' in subDir: # mManager format            
-                ImgPosPath = os.path.join(ImgSmPath, subDir)             
-        metaFileName = os.path.join(ImgPosPath, 'metadata.txt')
+                img_in_pos_path = os.path.join(ImgSmPath, subDir)
+        metaFileName = os.path.join(img_in_pos_path, 'metadata.txt')
         with open(metaFileName, 'r') as f:
             metaFile = json.load(f)
         self.metaFile = metaFile
         self.ImgSmPath = ImgSmPath
-        self.ImgPosPath = ImgPosPath
+        self.img_in_pos_path = img_in_pos_path
         self.ImgOutPath = ImgOutPath
         self.width = metaFile['Summary']['Width']
         self.height = metaFile['Summary']['Height']
