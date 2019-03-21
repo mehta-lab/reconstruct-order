@@ -6,9 +6,6 @@ import numpy as np
 import glob
 import re
 import cv2
-#import sys
-#sys.path.append("..") # Adds higher directory to python modules path.
-#from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 def GetSubDirName(ImgPath):
     assert os.path.exists(ImgPath), 'Input folder does not exist!' 
@@ -79,7 +76,7 @@ def ParseTiffInput_old(img_io):
     :return 3D float32 arrays: stack of images parsed based on their imaging modalities with axis order (channel, row,
     column)
     """
-    acquDirPath = img_io.ImgPosPath
+    acquDirPath = img_io.img_in_pos_path
     acquFiles = os.listdir(acquDirPath)
     ImgPol = []
     ImgProc = []
@@ -133,7 +130,7 @@ def parse_tiff_input(img_io):
     :return 3D float32 arrays: stack of images parsed based on their imaging modalities with axis order (channel, row,
     column)
     """
-    acquDirPath = img_io.ImgPosPath
+    acquDirPath = img_io.img_in_pos_path
     acquFiles = os.listdir(acquDirPath)
     ImgPol = np.zeros((4, img_io.height,img_io.width)) # pol channels has minimum 4 channels
     ImgProc = []
