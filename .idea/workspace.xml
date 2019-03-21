@@ -106,10 +106,10 @@
     <session id="-635362684">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="1" />
+          <entry key="project.closed" value="2" />
           <entry key="project.open.time.0" value="1" />
-          <entry key="project.open.time.1" value="1" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.open.time.1" value="2" />
+          <entry key="project.opened" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
@@ -117,25 +117,26 @@
           <entry key="git.branch.checkout.local" value="4" />
           <entry key="git.branch.checkout.with.rebase" value="1" />
           <entry key="git.branch.compare" value="1" />
-          <entry key="git.branch.create.new" value="1" />
+          <entry key="git.branch.create.new" value="3" />
+          <entry key="git.branch.delete.local" value="3" />
           <entry key="git.branch.merge" value="3" />
-          <entry key="git.branch.rebase" value="1" />
+          <entry key="git.branch.rebase" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="ipynb" value="1" />
-          <entry key="md" value="1" />
-          <entry key="py" value="50" />
-          <entry key="yml" value="6" />
+          <entry key="md" value="3" />
+          <entry key="py" value="65" />
+          <entry key="yml" value="8" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="IPNB" value="1" />
-          <entry key="Markdown" value="1" />
-          <entry key="Python" value="50" />
-          <entry key="YAML" value="6" />
+          <entry key="Markdown" value="3" />
+          <entry key="Python" value="65" />
+          <entry key="YAML" value="8" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -143,17 +144,17 @@
           <entry key="Python Console" value="157" />
           <entry key="dummy" value="12" />
           <entry key="md" value="279" />
-          <entry key="py" value="1249" />
-          <entry key="txt" value="328" />
-          <entry key="yml" value="32" />
+          <entry key="py" value="1934" />
+          <entry key="txt" value="482" />
+          <entry key="yml" value="34" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Markdown" value="279" />
-          <entry key="PLAIN_TEXT" value="340" />
-          <entry key="Python" value="1406" />
-          <entry key="YAML" value="32" />
+          <entry key="PLAIN_TEXT" value="494" />
+          <entry key="Python" value="2091" />
+          <entry key="YAML" value="34" />
         </counts>
       </usages-collector>
     </session>
@@ -166,11 +167,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="513">
-              <caret line="51" column="13" lean-forward="true" selection-start-line="51" selection-start-column="13" selection-end-line="51" selection-end-column="23" />
-              <folding>
-                <element signature="e#85#124#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="114">
+              <caret line="32" column="46" lean-forward="true" selection-start-line="32" selection-start-column="46" selection-end-line="32" selection-end-column="46" />
             </state>
           </provider>
         </entry>
@@ -178,10 +176,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/plotting.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="358">
-              <caret line="46" column="35" lean-forward="true" selection-start-line="46" selection-start-column="35" selection-end-line="46" selection-end-column="35" />
+            <state relative-caret-position="5092">
+              <caret line="292" column="22" selection-start-line="292" selection-start-column="22" selection-end-line="292" selection-end-column="22" />
               <folding>
                 <element signature="e#20#29#0" expanded="true" />
+                <marker date="1553122146735" expanded="true" signature="12372:12812" ph="..." />
               </folding>
             </state>
           </provider>
@@ -190,8 +189,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/imgProcessing.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="813">
-              <caret line="51" selection-start-line="51" selection-end-line="51" />
+            <state relative-caret-position="38">
+              <caret line="11" column="27" lean-forward="true" selection-start-line="11" selection-start-column="27" selection-end-line="11" selection-end-column="27" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -202,8 +201,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/config/config.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="19" column="26" lean-forward="true" selection-start-line="18" selection-start-column="4" selection-end-line="19" selection-end-column="26" />
+            <state relative-caret-position="133">
+              <caret line="7" column="22" lean-forward="true" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -211,8 +210,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/compute/reconstruct.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="608">
-              <caret line="32" column="20" lean-forward="true" selection-start-line="32" selection-start-column="13" selection-end-line="32" selection-end-column="25" />
+            <state relative-caret-position="-168">
+              <caret line="12" column="34" lean-forward="true" selection-start-line="12" selection-start-column="34" selection-end-line="12" selection-end-column="34" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -223,8 +222,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/compute/multiDimProcess.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="273">
-              <caret line="268" column="96" lean-forward="true" selection-start-line="268" selection-start-column="96" selection-end-line="268" selection-end-column="96" />
+            <state relative-caret-position="220">
+              <caret line="286" column="62" selection-start-line="286" selection-start-column="62" selection-end-line="286" selection-end-column="62" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -233,13 +232,13 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="811">
-                <caret line="66" column="59" selection-start-line="66" selection-start-column="59" selection-end-line="66" selection-end-column="59" />
-              </first_editor>
-              <second_editor />
+        <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="164">
+              <caret line="132" column="40" selection-start-line="132" selection-start-column="25" selection-end-line="132" selection-end-column="40" />
+              <folding>
+                <element signature="e#83#92#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -247,17 +246,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/run_reconstruction.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="813">
-              <caret line="129" column="89" lean-forward="true" selection-start-line="129" selection-start-column="89" selection-end-line="129" selection-end-column="89" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1179">
-              <caret line="193" column="22" lean-forward="true" selection-start-line="193" selection-start-column="22" selection-end-line="193" selection-end-column="22" />
+            <state relative-caret-position="946">
+              <caret line="148" column="44" lean-forward="true" selection-start-line="148" selection-start-column="32" selection-end-line="148" selection-end-column="44" />
             </state>
           </provider>
         </entry>
@@ -273,9 +263,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>ImgRaw</find>
-      <find>self</find>
-      <find>save_each_image2D</find>
       <find>flipPol</find>
       <find>dAB</find>
       <find>A</find>
@@ -293,7 +280,6 @@
       <find>ImgSm0</find>
       <find>img_raw</find>
       <find>wave</find>
-      <find>ImgPosPath</find>
       <find>j</find>
       <find>img_stokes_bg</find>
       <find>img_io.ImgOutPath</find>
@@ -303,6 +289,10 @@
       <find>outputChann</find>
       <find>imgInput</find>
       <find>output</find>
+      <find>pd</find>
+      <find>img_in_pos_path</find>
+      <find>height</find>
+      <find>ImgPosPath</find>
     </findStrings>
     <replaceStrings>
       <replace>azimuth_degree</replace>
@@ -326,6 +316,7 @@
       <replace>self.bg_method</replace>
       <replace>pos_name</replace>
       <replace>img_io</replace>
+      <replace>img_in_pos_path</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -362,14 +353,14 @@
         <option value="$PROJECT_DIR$/tests/TestData/CONFIG_SM_2018_1002_1633_1.yml" />
         <option value="$PROJECT_DIR$/tests/testReconOrder_mse.py" />
         <option value="$PROJECT_DIR$/utils/imgProcessing.py" />
-        <option value="$PROJECT_DIR$/run_reconstruction.py" />
-        <option value="$PROJECT_DIR$/compute/reconstruct.py" />
-        <option value="$PROJECT_DIR$/utils/imgIO.py" />
         <option value="$PROJECT_DIR$/config/config_2018_10_02_MouseBrainSlice.yml" />
-        <option value="$PROJECT_DIR$/config/config.yml" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/utils/mManagerIO.py" />
+        <option value="$PROJECT_DIR$/compute/reconstruct.py" />
+        <option value="$PROJECT_DIR$/run_reconstruction.py" />
+        <option value="$PROJECT_DIR$/config/config.yml" />
         <option value="$PROJECT_DIR$/utils/plotting.py" />
+        <option value="$PROJECT_DIR$/utils/imgIO.py" />
+        <option value="$PROJECT_DIR$/utils/mManagerIO.py" />
         <option value="$PROJECT_DIR$/compute/multiDimProcess.py" />
       </list>
     </option>
@@ -381,10 +372,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-6" />
-    <option name="y" value="2" />
-    <option name="width" value="1545" />
-    <option name="height" value="828" />
+    <option name="x" value="836" />
+    <option name="y" value="55" />
+    <option name="width" value="1553" />
+    <option name="height" value="870" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -392,32 +383,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope">
-        <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
-          <expand>
-            <path>
-              <item name="ReconstructOrder" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="" type="442cc68d:ScopeViewTreeModel$RootNode" />
-            </path>
-            <path>
-              <item name="ReconstructOrder" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="" type="442cc68d:ScopeViewTreeModel$RootNode" />
-              <item name="compute" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-            <path>
-              <item name="ReconstructOrder" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="" type="442cc68d:ScopeViewTreeModel$RootNode" />
-              <item name="config" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-            <path>
-              <item name="ReconstructOrder" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="" type="442cc68d:ScopeViewTreeModel$RootNode" />
-              <item name="utils" type="9f88c78c:ScopeViewTreeModel$FileNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -454,6 +419,32 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope">
+        <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
+          <expand>
+            <path>
+              <item name="ReconstructOrder" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="" type="442cc68d:ScopeViewTreeModel$RootNode" />
+            </path>
+            <path>
+              <item name="ReconstructOrder" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="compute" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+            </path>
+            <path>
+              <item name="ReconstructOrder" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="config" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+            </path>
+            <path>
+              <item name="ReconstructOrder" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="" type="442cc68d:ScopeViewTreeModel$RootNode" />
+              <item name="utils" type="9f88c78c:ScopeViewTreeModel$FileNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -464,7 +455,7 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -600,17 +591,17 @@
       <method v="2" />
     </configuration>
     <configuration name="run_reconstruction" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="ReconstructOrder" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="C:\ProgramData\Anaconda3\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/run_reconstruction.py" />
       <option name="PARAMETERS" value="--config $PROJECT_DIR$/../ReconstructOrder_config/config_NikonSmallWorld.yml" />
@@ -649,13 +640,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1537478708525</updated>
-    </task>
-    <task id="LOCAL-00001" summary="Add support for 4-frames Stokes. &#10;Subtract black level for all imported tiff.&#10;Add the switch for local intensity normalization.">
-      <created>1539990252974</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1539990252974</updated>
     </task>
     <task id="LOCAL-00002" summary="Add local background estimation feature">
       <created>1540400918717</created>
@@ -979,7 +963,28 @@
       <option name="project" value="LOCAL" />
       <updated>1553040615650</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="update mManagerIO">
+      <created>1553047774206</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1553047774206</updated>
+    </task>
+    <task id="LOCAL-00049" summary="add background correction for polarization images">
+      <created>1553115216152</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1553115216152</updated>
+    </task>
+    <task id="LOCAL-00050" summary="fixed bugs from merging conflics">
+      <created>1553126994458</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1553126994459</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1045,8 +1050,8 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="3" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="4" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="5" weight="0.25" />
-      <window_info active="true" anchor="right" content_ui="combo" id="Project" order="6" sideWeight="0.498708" visible="true" weight="0.22575517" />
-      <window_info anchor="right" id="Python Console" order="7" sideWeight="0.51272726" weight="0.55353534" />
+      <window_info anchor="right" content_ui="combo" id="Project" order="6" sideWeight="0.498708" weight="0.22575517" />
+      <window_info anchor="right" id="Python Console" order="7" sideWeight="0.51272726" weight="0.55325913" />
       <window_info anchor="right" id="Remote Host" order="8" weight="0.4" />
     </layout>
     <layout-to-restore>
@@ -1124,9 +1129,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="update 'parse_tiff_input' to fix the pol channel order issue when run on Linux system" />
-    <MESSAGE value="disable debug code" />
-    <MESSAGE value="add data dir" />
     <MESSAGE value="add support to output new microDL format" />
     <MESSAGE value="Add 561 and 637 as recognizable channel names for red and far-red channels" />
     <MESSAGE value="add chann_scale" />
@@ -1149,7 +1151,10 @@
     <MESSAGE value="added stokes images to output channels" />
     <MESSAGE value="minor fix" />
     <MESSAGE value="make img_io naming consistent; get output channels from img_io" />
-    <option name="LAST_COMMIT_MESSAGE" value="make img_io naming consistent; get output channels from img_io" />
+    <MESSAGE value="update mManagerIO" />
+    <MESSAGE value="add background correction for polarization images" />
+    <MESSAGE value="fixed bugs from merging conflics" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed bugs from merging conflics" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1210,12 +1215,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/compute/multiDimProcess.py</url>
-          <line>287</line>
+          <line>282</line>
           <option name="timeStamp" value="35" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/compute/multiDimProcess.py</url>
-          <line>112</line>
+          <line>110</line>
           <option name="timeStamp" value="40" />
         </line-breakpoint>
       </breakpoints>
@@ -1294,40 +1299,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/config/config_2018_11_28_594CTIP2_647SATB2_10X.yml" />
     <entry file="file://$PROJECT_DIR$/config/config_2018_10_02_MouseBrainSlice.yml" />
-    <entry file="file://$PROJECT_DIR$/utils/plotting.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="358">
-          <caret line="46" column="35" lean-forward="true" selection-start-line="46" selection-start-column="35" selection-end-line="46" selection-end-column="35" />
-          <folding>
-            <element signature="e#20#29#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/compute/reconstruct.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="608">
-          <caret line="32" column="20" lean-forward="true" selection-start-line="32" selection-start-column="13" selection-end-line="32" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/config/config.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="19" column="26" lean-forward="true" selection-start-line="18" selection-start-column="4" selection-end-line="19" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/run_reconstruction.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="813">
-          <caret line="129" column="89" lean-forward="true" selection-start-line="129" selection-start-column="89" selection-end-line="129" selection-end-column="89" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -1338,37 +1309,72 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="164">
+          <caret line="132" column="40" selection-start-line="132" selection-start-column="25" selection-end-line="132" selection-end-column="40" />
+          <folding>
+            <element signature="e#83#92#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="32" column="46" lean-forward="true" selection-start-line="32" selection-start-column="46" selection-end-line="32" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run_reconstruction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="946">
+          <caret line="148" column="44" lean-forward="true" selection-start-line="148" selection-start-column="32" selection-end-line="148" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/utils/imgProcessing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="813">
-          <caret line="51" selection-start-line="51" selection-end-line="51" />
+        <state relative-caret-position="38">
+          <caret line="11" column="27" lean-forward="true" selection-start-line="11" selection-start-column="27" selection-end-line="11" selection-end-column="27" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
+    <entry file="file://$PROJECT_DIR$/compute/reconstruct.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1179">
-          <caret line="193" column="22" lean-forward="true" selection-start-line="193" selection-start-column="22" selection-end-line="193" selection-end-column="22" />
+        <state relative-caret-position="-168">
+          <caret line="12" column="34" lean-forward="true" selection-start-line="12" selection-start-column="34" selection-end-line="12" selection-end-column="34" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
+    <entry file="file://$PROJECT_DIR$/config/config.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="51" column="13" lean-forward="true" selection-start-line="51" selection-start-column="13" selection-end-line="51" selection-end-column="23" />
+        <state relative-caret-position="133">
+          <caret line="7" column="22" lean-forward="true" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/plotting.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5092">
+          <caret line="292" column="22" selection-start-line="292" selection-start-column="22" selection-end-line="292" selection-end-column="22" />
           <folding>
-            <element signature="e#85#124#0" expanded="true" />
+            <element signature="e#20#29#0" expanded="true" />
+            <marker date="1553122146735" expanded="true" signature="12372:12812" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/compute/multiDimProcess.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="273">
-          <caret line="268" column="96" lean-forward="true" selection-start-line="268" selection-start-column="96" selection-end-line="268" selection-end-column="96" />
+        <state relative-caret-position="220">
+          <caret line="286" column="62" selection-start-line="286" selection-start-column="62" selection-end-line="286" selection-end-column="62" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
