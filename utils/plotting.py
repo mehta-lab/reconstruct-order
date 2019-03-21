@@ -270,14 +270,14 @@ def plot_stokes(img_io, img_stokes, img_stokes_sm):
     fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
     plot_sub_images(img_stokes_sm, titles, img_io.ImgOutPath, fig_name, colorbar=True)
 
-def plot_raw_imgs(img_io, ImgRawSm_bg_subtract, ImgRawSm_bg_divide):
+def plot_pol_imgs(img_io, ImgRawSm_bg_subtract, ImgRawSm_bg_divide):
     tIdx = img_io.tIdx
     zIdx = img_io.zIdx
     posIdx = img_io.posIdx
-    titles = ['s0', 's1', 's2', 's3']
-    fig_name = 'stokes_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+    titles = ['PolState0', 'PolState1', 'PolState2', 'PolState3', 'PolState4']
+    fig_name = 'pol_bg_subtract_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
     plot_sub_images(ImgRawSm_bg_subtract, titles, img_io.ImgOutPath, fig_name, colorbar=True)
-    fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+    fig_name = 'pol_bg_divide_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
     plot_sub_images(ImgRawSm_bg_divide, titles, img_io.ImgOutPath, fig_name, colorbar=True)
 
 def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
@@ -297,7 +297,7 @@ def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
         if colorbar:
             divider = make_axes_locatable(ax[axis_count])
             cax = divider.append_axes('right', size='5%', pad=0.05)
-            cbar = fig.colorbar(ax_img, cax=cax, orientation='vertical')
+            cbar = plt.colorbar(ax_img, cax=cax, orientation='vertical')
         axis_count += 1
     plt.savefig(os.path.join(ImgOutPath, figName), dpi=300, bbox_inches='tight')
 
