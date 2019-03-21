@@ -68,13 +68,29 @@ def read_config(config_fname):
     with open(config_fname, 'r') as f:
         config = yaml.load(f)
         
-    # TODO add defaults for the rest of the parameters. read_config should return
-    # full config, even if fields were omitted in the yml file
-    if not 'PosList' in config['dataset']:
-        config['dataset']['PosList'] = 'all'
-        
-    if not 'separate_pos' in config['dataset']:
-        config['dataset']['separate_pos'] = True
+    assert 'RawDataPath' in config['dataset'], \
+        'Please provde RawDataPath in config file'
+    assert 'ProcessedPath' in config['dataset'], \
+        'Please provde ProcessedPath in config file'
+    assert 'ImgDir' in config['dataset'], \
+        'Please provde ImgDir in config file'
+    assert 'SmDir' in config['dataset'], \
+        'Please provde SmDir in config file'
+    config['dataset'].setdefault('PosList', 'all')
+    config['dataset'].setdefault('BgDir', [])
+    config['dataset'].setdefault('BgDir_local', None)
+    config['dataset'].setdefault('separate_pos', True)
+    
+    config['processing'].setdefault('outputChann', ['Transmission', 'Retardance', 'Orientation', 'Scattering'])
+    config['processing'].setdefault('circularity', 'rcp')
+    config['processing'].setdefault('bgCorrect', None)
+    config['processing'].setdefault('flatField', False)
+    config['processing'].setdefault('batchProc', False)
+    config['processing'].setdefault('azimuth_offset', 0)
+    
+    config['plotting'].setdefault('norm', True)
+    config['plotting'].setdefault('save_fig', False)
+    config['plotting'].setdefault('save_stokes_fig', False)
 
     return config
 
@@ -115,27 +131,26 @@ def run_action(args):
     azimuth_offset = config['processing']['azimuth_offset']
 
 
-    if isinstance(SmDir, list):
-        batchProc = True
-    else:
+    if not isinstance(SmDir, list):
         if batchProc:
             ImgPath = os.path.join(RawDataPath, ImgDir)
             SmDir = GetSubDirName(ImgPath)
-            
-    if batchProc:
-        # if input is e.g. 'all' or 'Pos1', use for all samples
-        if not isinstance(PosList, list):
-            PosList = [PosList]*len(SmDir)
-        # if input is ['Pos1','Pos2','Pos3'], use for all samples
-        elif not any(isinstance(i, list) for i in PosList):
-            PosList = [PosList]*len(SmDir)
+        else:
+            SmDir = [SmDir]
+
+    # if input is e.g. 'all' or 'Pos1', use for all samples
+    if not isinstance(PosList, list):
+        PosList = [PosList]*len(SmDir)
+    # if input is ['Pos1','Pos2','Pos3'], use for all samples
+    elif not any(isinstance(i, list) for i in PosList):
+        PosList = [PosList]*len(SmDir)
         
-        # Make BgDirList same length as SmDirList
-        if not isinstance(BgDir, list):
-            BgDir = [BgDir] * len(SmDir)
+    # Make BgDir same length as SmDir
+    if not isinstance(BgDir, list):
+        BgDir = [BgDir] * len(SmDir)
             
-        assert len(SmDir) == len(BgDir) == len(PosList), \
-            'Length of the background directory list must be one or same as sample directory list'
+    assert len(SmDir) == len(BgDir) == len(PosList), \
+        'Length of the background directory list must be one or same as sample directory list'
             
     # Check that all paths to be analyzed exist
     
@@ -146,10 +161,10 @@ def run_action(args):
                    circularity=circularity, azimuth_offset=azimuth_offset,
                    separate_pos=separate_pos)
 
-#class args:
-#    config = '/Users//ivan.ivanov//Documents/Benchmark/config_Benchmark.txt'
+class args:
+    config = '/Users//ivan.ivanov//Documents/Benchmark/config_Benchmark.txt'
 
 if __name__ == '__main__':
-    #    args = args()
-    args = parse_args()
+    args = args()
+#    args = parse_args()
     run_action(args)
