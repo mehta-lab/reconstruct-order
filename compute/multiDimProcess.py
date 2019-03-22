@@ -81,7 +81,7 @@ def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, ou
                 print('Background not specified in metadata. Use user input background directory')
                 OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
                 img_io.bg_correct = True
-    OutputPath = OutputPath + '_pol'
+    # OutputPath = OutputPath + '_pol'
     img_io.ImgOutPath = OutputPath
     os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
