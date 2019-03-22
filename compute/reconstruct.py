@@ -62,6 +62,7 @@ class ImgReconstructor:
             polarization = polarization / polarization_bg
             s1_norm = s1_norm - s1_norm_bg
             s2_norm = s2_norm - s2_norm_bg
+            # s3_norm = s3 / s3_bg
             return [I_trans, polarization, s1_norm, s2_norm, s3]
 
         def correct_background(stokes_param_sm, stokes_param_bg):
