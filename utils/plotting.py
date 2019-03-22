@@ -13,12 +13,8 @@ from utils.imgCrop import imcrop
 #sys.path.append("..") # Adds higher directory to python modules path.
 
 #%%
-def plotVectorField(I, azimuth, R=40, spacing=40, clim=[None, None]): # plot vector field representaiton of the orientation map,
-    # Currently only plot single pixel value when spacing >0.
-    # To do: Use average pixel value to reduce noise
-#    retardSmooth = nanRobustBlur(retard, (spacing, spacing))
-#    retardSmooth/np.nanmean(retardSmooth)
-#    R = R/np.nanmean(R)
+def plotVectorField(I, azimuth, R=40, spacing=40, clim=[None, None]):
+    # plot vector field representaiton of the orientation map
     U, V = R*spacing*np.cos(2*azimuth), R*spacing*np.sin(2*azimuth)
     USmooth = nanRobustBlur(U,(spacing,spacing)) # plot smoothed vector field
     VSmooth = nanRobustBlur(V,(spacing,spacing)) # plot smoothed vector field
@@ -58,10 +54,9 @@ def plot_birefringence(img_io, imgs, spacing=20, vectorScl=5, zoomin=False, dpi=
     # Compute Retardance+Orientation, Scattering+Orientation, and Transmission+Retardance+Orientation overlays
     # Slow, results in large files
     # Optionally, plot results in tiled image
-    if any(chann in ['Retardance+Orientation', 'Scattering+Orientation', 'Transmission+Retardance+Orientation']
-            for chann in outputChann):
+    if plot or any(chann in ['Retardance+Orientation', 'Scattering+Orientation', 'Transmission+Retardance+Orientation']
+                   for chann in outputChann):
         I_azi_ret_trans, I_azi_ret, I_azi_scat = PolColor(I_trans, retard, azimuth_degree, scattering, norm=norm)
-        
         tIdx = img_io.tIdx; zIdx = img_io.zIdx; posIdx = img_io.posIdx
         if plot:
             plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_scat, zoomin=False, spacing=spacing,
@@ -270,36 +265,42 @@ def plot_stokes(img_io, img_stokes, img_stokes_sm):
     fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
     plot_sub_images(img_stokes_sm, titles, img_io.ImgOutPath, fig_name, colorbar=True)
 
-def plot_pol_imgs(img_io, ImgRawSm_bg_subtract, ImgRawSm_bg_divide):
+def plot_pol_imgs(img_io, imgs_pol, titles):
     tIdx = img_io.tIdx
     zIdx = img_io.zIdx
     posIdx = img_io.posIdx
-    titles = ['PolState0', 'PolState1', 'PolState2', 'PolState3', 'PolState4']
-    fig_name = 'pol_bg_subtract_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
-    plot_sub_images(ImgRawSm_bg_subtract, titles, img_io.ImgOutPath, fig_name, colorbar=True)
-    fig_name = 'pol_bg_divide_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
-    plot_sub_images(ImgRawSm_bg_divide, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+    fig_name = 'imgs_pol_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+    plot_sub_images(imgs_pol, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+
+def plot_Polacquisition_imgs(img_io, imgs_mm_py):
+    """compare python v.s. Polacquisition output"""
+    tIdx = img_io.tIdx
+    zIdx = img_io.zIdx
+    posIdx = img_io.posIdx
+    titles = ['Retardance (MM)','Orientation (MM)','Retardance (Py)','Orientation (Py)']
+    fig_name = 'imgs_mm_py_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+    plot_sub_images(imgs_mm_py, titles, img_io.ImgOutPath, fig_name, colorbar=True)
 
 def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
     n_imgs = len(images)
     n_rows = 2
-    n_cols = n_imgs // n_rows + 1
+    n_cols = np.ceil(n_imgs/n_rows).astype(np.uint32)
     fig, ax = plt.subplots(n_rows, n_cols, squeeze=False)
     ax = ax.flatten()
+    for axs in ax:
+        axs.axis('off')
     fig.set_size_inches((5 * n_cols, 5 * n_rows))
     axis_count = 0
-    figSize = (12,12)
-    fig = plt.figure(figsize = figSize)
-    for i in range(4):
-        ax_img = ax[axis_count].imshow(imClip(images[i]), cmap='gray')
+    for img, title in zip(images, titles):
+        ax_img = ax[axis_count].imshow(imClip(img), cmap='gray')
         ax[axis_count].axis('off')
-        ax[axis_count].set_title(titles[i])
+        ax[axis_count].set_title(title)
         if colorbar:
             divider = make_axes_locatable(ax[axis_count])
             cax = divider.append_axes('right', size='5%', pad=0.05)
             cbar = plt.colorbar(ax_img, cax=cax, orientation='vertical')
         axis_count += 1
-    plt.savefig(os.path.join(ImgOutPath, figName), dpi=300, bbox_inches='tight')
+    fig.savefig(os.path.join(ImgOutPath, figName), dpi=300, bbox_inches='tight')
 
 
 
