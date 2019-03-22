@@ -4,6 +4,7 @@
     <list default="true" id="213a1158-0346-4162-98ad-6788db62b436" name="Default Changelist" comment="add background correction for polarization images">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/compute/multiDimProcess.py" beforeDir="false" afterPath="$PROJECT_DIR$/compute/multiDimProcess.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/compute/reconstruct.py" beforeDir="false" afterPath="$PROJECT_DIR$/compute/reconstruct.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/plotting.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/plotting.py" afterDir="false" />
     </list>
     <list id="7ed05f91-c5ef-4931-9db5-a0c15853849b" name="save the config file in the output folder; add save_fig option in the config file" comment="" />
@@ -128,24 +129,24 @@
         <counts>
           <entry key="ipynb" value="1" />
           <entry key="md" value="3" />
-          <entry key="py" value="72" />
-          <entry key="yml" value="9" />
+          <entry key="py" value="79" />
+          <entry key="yml" value="10" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="IPNB" value="1" />
           <entry key="Markdown" value="3" />
-          <entry key="Python" value="72" />
-          <entry key="YAML" value="9" />
+          <entry key="Python" value="79" />
+          <entry key="YAML" value="10" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="157" />
+          <entry key="Python Console" value="171" />
           <entry key="dummy" value="12" />
           <entry key="md" value="279" />
-          <entry key="py" value="1987" />
+          <entry key="py" value="2803" />
           <entry key="txt" value="423" />
           <entry key="yml" value="34" />
         </counts>
@@ -154,7 +155,7 @@
         <counts>
           <entry key="Markdown" value="279" />
           <entry key="PLAIN_TEXT" value="435" />
-          <entry key="Python" value="2144" />
+          <entry key="Python" value="2974" />
           <entry key="YAML" value="34" />
         </counts>
       </usages-collector>
@@ -168,8 +169,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="513">
-              <caret line="32" column="46" selection-start-line="32" selection-start-column="46" selection-end-line="32" selection-end-column="46" />
+            <state relative-caret-position="-2607">
+              <caret line="39" column="20" lean-forward="true" selection-start-line="39" selection-start-column="13" selection-end-line="39" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -177,11 +178,10 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/plotting.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4637">
-              <caret line="272" column="12" selection-start-line="272" selection-start-column="12" selection-end-line="272" selection-end-column="12" />
+            <state relative-caret-position="471">
+              <caret line="286" column="53" lean-forward="true" selection-start-line="286" selection-start-column="53" selection-end-line="286" selection-end-column="53" />
               <folding>
                 <element signature="e#20#29#0" expanded="true" />
-                <marker date="1553127901922" expanded="true" signature="12372:12866" ph="..." />
               </folding>
             </state>
           </provider>
@@ -190,7 +190,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/imgProcessing.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="95">
+            <state relative-caret-position="-190">
               <caret line="11" column="27" selection-start-line="11" selection-start-column="27" selection-end-line="11" selection-end-column="27" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -208,11 +208,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/compute/reconstruct.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="19">
-              <caret line="12" column="34" selection-start-line="12" selection-start-column="34" selection-end-line="12" selection-end-column="34" />
+            <state relative-caret-position="380">
+              <caret line="65" column="34" lean-forward="true" selection-start-line="65" selection-start-column="34" selection-end-line="65" selection-end-column="34" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -220,11 +220,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/compute/multiDimProcess.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="339">
-              <caret line="73" column="97" lean-forward="true" selection-start-line="73" selection-start-column="97" selection-end-line="73" selection-end-column="97" />
+            <state relative-caret-position="608">
+              <caret line="32" column="52" lean-forward="true" selection-start-line="32" selection-start-column="52" selection-end-line="32" selection-end-column="52" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -235,7 +235,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="164">
+            <state>
               <caret line="132" column="40" selection-start-line="132" selection-start-column="25" selection-end-line="132" selection-end-column="40" />
               <folding>
                 <element signature="e#83#92#0" expanded="true" />
@@ -247,8 +247,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/run_reconstruction.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="186">
-              <caret line="123" column="41" lean-forward="true" selection-start-line="123" selection-start-column="41" selection-end-line="123" selection-end-column="41" />
+            <state relative-caret-position="433">
+              <caret line="85" column="36" lean-forward="true" selection-start-line="85" selection-start-column="36" selection-end-line="85" selection-end-column="36" />
             </state>
           </provider>
         </entry>
@@ -264,7 +264,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>flipPol</find>
       <find>dAB</find>
       <find>A</find>
       <find>B</find>
@@ -294,6 +293,7 @@
       <find>height</find>
       <find>img_in_pos_path</find>
       <find>ImgPosPath</find>
+      <find>correct_background_stokes</find>
     </findStrings>
     <replaceStrings>
       <replace>azimuth_degree</replace>
@@ -324,7 +324,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="fix_merge_conflicts" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
   </component>
@@ -356,13 +356,13 @@
         <option value="$PROJECT_DIR$/utils/imgProcessing.py" />
         <option value="$PROJECT_DIR$/config/config_2018_10_02_MouseBrainSlice.yml" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/compute/reconstruct.py" />
         <option value="$PROJECT_DIR$/run_reconstruction.py" />
         <option value="$PROJECT_DIR$/config/config.yml" />
         <option value="$PROJECT_DIR$/utils/imgIO.py" />
         <option value="$PROJECT_DIR$/utils/mManagerIO.py" />
         <option value="$PROJECT_DIR$/utils/plotting.py" />
         <option value="$PROJECT_DIR$/compute/multiDimProcess.py" />
+        <option value="$PROJECT_DIR$/compute/reconstruct.py" />
       </list>
     </option>
   </component>
@@ -373,10 +373,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="836" />
-    <option name="y" value="55" />
-    <option name="width" value="1553" />
-    <option name="height" value="870" />
+    <option name="x" value="196" />
+    <option name="y" value="105" />
+    <option name="width" value="1546" />
+    <option name="height" value="830" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -1031,14 +1031,14 @@
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" weight="0.3295302" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.24966443" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.24960254" />
       <window_info anchor="bottom" id="Docker" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="1" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="2" show_stripe_button="false" weight="0.43159065" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="2" show_stripe_button="false" visible="true" weight="0.43159065" />
       <window_info anchor="bottom" id="Terminal" order="3" sideWeight="0.4986577" weight="0.32369298" />
-      <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.50067115" side_tool="true" weight="0.30938417" />
+      <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.50067115" side_tool="true" weight="0.30923247" />
       <window_info anchor="bottom" id="Message" order="5" />
-      <window_info active="true" anchor="bottom" id="Find" order="6" visible="true" weight="0.32925472" />
+      <window_info anchor="bottom" id="Find" order="6" weight="0.32925472" />
       <window_info anchor="bottom" id="Run" order="7" sideWeight="0.49932885" weight="0.24916574" />
       <window_info anchor="bottom" id="Debug" order="8" sideWeight="0.49880764" weight="0.21913236" />
       <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
@@ -1216,7 +1216,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/compute/multiDimProcess.py</url>
-          <line>282</line>
+          <line>275</line>
           <option name="timeStamp" value="35" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -1303,20 +1303,10 @@
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="811">
+          <first_editor relative-caret-position="1254">
             <caret line="66" column="59" selection-start-line="66" selection-start-column="59" selection-end-line="66" selection-end-column="59" />
           </first_editor>
           <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils/imgProcessing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="11" column="27" selection-start-line="11" selection-start-column="27" selection-end-line="11" selection-end-column="27" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1327,26 +1317,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
+    <entry file="file://$PROJECT_DIR$/utils/imgProcessing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="32" column="46" selection-start-line="32" selection-start-column="46" selection-end-line="32" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/compute/reconstruct.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="19">
-          <caret line="12" column="34" selection-start-line="12" selection-start-column="34" selection-end-line="12" selection-end-column="34" />
+        <state relative-caret-position="-190">
+          <caret line="11" column="27" selection-start-line="11" selection-start-column="27" selection-end-line="11" selection-end-column="27" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/run_reconstruction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="433">
+          <caret line="85" column="36" lean-forward="true" selection-start-line="85" selection-start-column="36" selection-end-line="85" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/utils/imgIO.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="164">
+        <state>
           <caret line="132" column="40" selection-start-line="132" selection-start-column="25" selection-end-line="132" selection-end-column="40" />
           <folding>
             <element signature="e#83#92#0" expanded="true" />
@@ -1354,30 +1344,39 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/run_reconstruction.py">
+    <entry file="file://$PROJECT_DIR$/utils/mManagerIO.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="186">
-          <caret line="123" column="41" lean-forward="true" selection-start-line="123" selection-start-column="41" selection-end-line="123" selection-end-column="41" />
+        <state relative-caret-position="-2607">
+          <caret line="39" column="20" lean-forward="true" selection-start-line="39" selection-start-column="13" selection-end-line="39" selection-end-column="23" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/utils/plotting.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4637">
-          <caret line="272" column="12" selection-start-line="272" selection-start-column="12" selection-end-line="272" selection-end-column="12" />
+        <state relative-caret-position="471">
+          <caret line="286" column="53" lean-forward="true" selection-start-line="286" selection-start-column="53" selection-end-line="286" selection-end-column="53" />
           <folding>
             <element signature="e#20#29#0" expanded="true" />
-            <marker date="1553127901922" expanded="true" signature="12372:12866" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/compute/multiDimProcess.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="73" column="97" lean-forward="true" selection-start-line="73" selection-start-column="97" selection-end-line="73" selection-end-column="97" />
+        <state relative-caret-position="608">
+          <caret line="32" column="52" lean-forward="true" selection-start-line="32" selection-start-column="52" selection-end-line="32" selection-end-column="52" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/compute/reconstruct.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="65" column="34" lean-forward="true" selection-start-line="65" selection-start-column="34" selection-end-line="65" selection-end-column="34" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
