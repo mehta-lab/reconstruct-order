@@ -44,11 +44,11 @@ def run_action(args):
     ImgDir = config['dataset']['ImgDir']
     SmDir = config['dataset']['SmDir']
     registration_params_path = config['processing']['registration_params']
-    outputChann = config['processing']['outputChann']
+    input_chan = output_chan = config['processing']['outputChann']
     ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir)
 
     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_registered')
-    img_io = mManagerReader(ImgSmPath, OutputPath, outputChann)
+    img_io = mManagerReader(ImgSmPath, OutputPath, inputChann=input_chan, outputChann=output_chan)
     size_z_um = img_io.size_z_um
     with open(registration_params_path, 'r') as f:
         registration_params = json.load(f)
@@ -61,16 +61,19 @@ def run_action(args):
     os.makedirs(img_io.ImgOutPath, exist_ok=True)
     for t_idx in range(img_io.nTime):
         img_io.tIdx = t_idx
-        for pos_idx in range(img_io.nPos):  # nXY
+        # for pos_idx in range(img_io.nPos):  # nXY
+        #TODO: change the pos indexing back
+        for pos_idx in range(24, img_io.nPos):  # nXY
             img_io.posIdx = pos_idx
             print('Processing position %03d, time %03d ...' % (pos_idx, t_idx))
             images = img_io.read_multi_chan_img_stack()
-            images_registered = translate_3D(images, outputChann, registration_params, size_z_um)
+            images_registered = translate_3D(images, output_chan, registration_params, size_z_um)
 
-            for images, channel in zip(images_registered, outputChann):
+            for images, channel in zip(images_registered, output_chan):
                 for z_idx in range(img_io.nZ):
+                    img_io.zIdx = z_idx
                     image = imBitConvert(images[z_idx], bit=16, norm=False)
-                    img_io.write_img(image, channel, pos_idx, z_idx, t_idx)
+                    img_io.write_img(image, channel)
 
 if __name__ == '__main__':
     args = parse_args()
