@@ -13,16 +13,18 @@ from utils.imgCrop import imcrop
 #sys.path.append("..") # Adds higher directory to python modules path.
 
 #%%
-def plotVectorField(I, azimuth, R=40, spacing=40, clim=[None, None]):
+def plotVectorField(I, orientation, R=40, spacing=40, clim=[None, None]):
+    """Overlays orientation field  on image I. Returns matplotlib image axes. """
+
     # plot vector field representaiton of the orientation map
-    U, V = R*spacing*np.cos(2*azimuth), R*spacing*np.sin(2*azimuth)
+    U, V = R * spacing * np.cos(2 * orientation), R * spacing * np.sin(2 * orientation)
     USmooth = nanRobustBlur(U,(spacing,spacing)) # plot smoothed vector field
     VSmooth = nanRobustBlur(V,(spacing,spacing)) # plot smoothed vector field
     azimuthSmooth = 0.5*np.arctan2(VSmooth,USmooth)
     RSmooth = np.sqrt(USmooth**2+VSmooth**2)
     USmooth, VSmooth = RSmooth*np.cos(azimuthSmooth), RSmooth*np.sin(azimuthSmooth)
 
-#    azimuthSmooth  = azimuth
+#    azimuthSmooth  = orientation
     nY, nX = I.shape
     Y, X = np.mgrid[0:nY, 0:nX] # notice the inversed order of X and Y
 
@@ -41,6 +43,9 @@ def plotVectorField(I, azimuth, R=40, spacing=40, clim=[None, None]):
     return imAx
 
 def plot_birefringence(img_io, imgs, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
+    """ Parses transmission, retardance, orientation, and polarization images, and prepares them for export.  """
+    #TODO: refactor name to match the intent of the function. This doesn't seem to plot, but just parse.
+
     outputChann = img_io.chNamesOut
     chann_scale = [0.25, 1, 0.05, 1]  # scale fluor channels for composite images when norm=False
     
@@ -49,17 +54,16 @@ def plot_birefringence(img_io, imgs, spacing=20, vectorScl=5, zoomin=False, dpi=
         imList = [I_trans, retard, azimuth]
         I_trans,retard, azimuth = imcrop(imList, I_trans)
     azimuth_degree = azimuth/np.pi*180
-    scattering = 1-polarization
-    
-    # Compute Retardance+Orientation, Scattering+Orientation, and Transmission+Retardance+Orientation overlays
+
+    # Compute Retardance+Orientation, Polarization+Orientation, and Transmission+Retardance+Orientation overlays
     # Slow, results in large files
     # Optionally, plot results in tiled image
-    if plot or any(chann in ['Retardance+Orientation', 'Scattering+Orientation', 'Transmission+Retardance+Orientation']
+    if plot or any(chann in ['Retardance+Orientation', 'Polarization+Orientation', 'Transmission+Retardance+Orientation']
                    for chann in outputChann):
-        I_azi_ret_trans, I_azi_ret, I_azi_scat = PolColor(I_trans, retard, azimuth_degree, scattering, norm=norm)
+        I_azi_ret_trans, I_azi_ret, I_azi_scat = PolColor(I_trans, retard, azimuth_degree, polarization, norm=norm)
         tIdx = img_io.tIdx; zIdx = img_io.zIdx; posIdx = img_io.posIdx
         if plot:
-            plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_scat, zoomin=False, spacing=spacing,
+            plot_recon_images(I_trans, retard, azimuth, polarization, I_azi_ret, I_azi_scat, zoomin=False, spacing=spacing,
                               vectorScl=vectorScl, dpi=dpi)
             if zoomin:
                 figName = 'Transmission+Retardance+Orientation_Zoomin.jpg'
@@ -89,8 +93,8 @@ def plot_birefringence(img_io, imgs, spacing=20, vectorScl=5, zoomin=False, dpi=
         elif chann == 'Orientation':
             img = imBitConvert(azimuth_degree * 100, bit=16)  # scale to [0, 18000], 100*degree
             
-        elif chann == 'Scattering':
-            img = imBitConvert(scattering * 10 ** 6, bit=16)
+        elif chann == 'Polarization':
+            img = imBitConvert(polarization * 50000, bit=16)
         
         elif chann == 'Orientation_x':
             azimuth_x = np.cos(2 * azimuth)
@@ -102,7 +106,7 @@ def plot_birefringence(img_io, imgs, spacing=20, vectorScl=5, zoomin=False, dpi=
         elif chann == 'Retardance+Orientation':
             img = I_azi_ret
             
-        elif chann == 'Scattering+Orientation':
+        elif chann == 'Polarization+Orientation':
             img = I_azi_scat
             
         elif chann == 'Transmission+Retardance+Orientation':
@@ -137,31 +141,39 @@ def plot_birefringence(img_io, imgs, spacing=20, vectorScl=5, zoomin=False, dpi=
     return img_io, imgDict
 
 
-def PolColor(I_trans, retard, azimuth, scattering, norm=True):
+def PolColor(I_trans, retardance, orientation, polarization, norm=True):
+    """ Generate colormaps with following mappings, where H is Hue, S is Saturation, and V is Value.
+        I_azi_ret_trans: H=Orientation, S=retardance, V=Transmission.
+        I_azi_ret: H=Orientation, V=Retardance.
+        I_azi_pol: H=Orientation, V=Polarization.
+    """
     if norm:
-        retard = imadjust(retard, tol=1, bit=8)
+        retardance = imadjust(retardance, tol=1, bit=8)
         I_trans = imadjust(I_trans, tol=1, bit=8)
-        scattering = imadjust(scattering, tol=1, bit=8)
-        # retard = cv2.convertScaleAbs(retard, alpha=(2**8-1)/np.max(retard))
+        polarization = imadjust(polarization, tol=1, bit=8)
+        # retardance = cv2.convertScaleAbs(retardance, alpha=(2**8-1)/np.max(retardance))
         # I_trans = cv2.convertScaleAbs(I_trans, alpha=(2**8-1)/np.max(I_trans))
     else:
-        retard = cv2.convertScaleAbs(retard, alpha=100)
+        retardance = cv2.convertScaleAbs(retardance, alpha=100)
         I_trans = cv2.convertScaleAbs(I_trans, alpha=100)
-        scattering = cv2.convertScaleAbs(scattering, alpha=2000)
-#    retard = histequal(retard)
+        polarization = cv2.convertScaleAbs(polarization, alpha=2000)
+#    retardance = histequal(retardance)
 
-    azimuth = cv2.convertScaleAbs(azimuth, alpha=1)
-#    retardAzi = np.stack([azimuth, retard, np.ones(retard.shape).astype(np.uint8)*255],axis=2)
-    I_azi_ret_trans = np.stack([azimuth, retard, I_trans], axis=2)
-    I_azi_ret = np.stack([azimuth, np.ones(retard.shape).astype(np.uint8)*255, retard], axis=2)
-    I_azi_scat = np.stack([azimuth, np.ones(retard.shape).astype(np.uint8) * 255, scattering], axis=2)
+    orientation = cv2.convertScaleAbs(orientation, alpha=1)
+#    retardAzi = np.stack([orientation, retardance, np.ones(retardance.shape).astype(np.uint8)*255],axis=2)
+    I_azi_ret_trans = np.stack([orientation, retardance, I_trans], axis=2)
+    I_azi_ret = np.stack([orientation, np.ones(retardance.shape).astype(np.uint8) * 255, retardance], axis=2)
+    I_azi_scat = np.stack([orientation, np.ones(retardance.shape).astype(np.uint8) * 255, polarization], axis=2)
     I_azi_ret_trans = cv2.cvtColor(I_azi_ret_trans, cv2.COLOR_HSV2RGB)
     I_azi_ret = cv2.cvtColor(I_azi_ret, cv2.COLOR_HSV2RGB)
     I_azi_scat = cv2.cvtColor(I_azi_scat, cv2.COLOR_HSV2RGB)  #
-#    retardAzi = np.stack([azimuth, retard],axis=2)
+#    retardAzi = np.stack([orientation, retardance],axis=2)
     return I_azi_ret_trans, I_azi_ret, I_azi_scat
 
 def CompositeImg(images, norm=True):
+    """ Generate overlay of multiple images.  """
+    #TODO: update name and docstring to clarify intent.
+
     img_num = len(images)
     hsv_cmap = cm.get_cmap('hsv', 256)
     color_idx = np.linspace(0, 1, img_num+1)
@@ -189,7 +201,8 @@ def CompositeImg(images, norm=True):
     return ImgColor
 
 #%%
-def plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_scat, zoomin=False, spacing=20, vectorScl=1, dpi=300):
+def plot_recon_images(I_trans, retard, azimuth, polarization, I_azi_ret, I_azi_scat, zoomin=False, spacing=20, vectorScl=1, dpi=300):
+    """ Plot transmission, retardance, orientation, and polarization images, and prepares them for export.  """
 
     R = retard
     R = R / np.nanmean(R)  # normalization
@@ -218,8 +231,8 @@ def plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_sca
 
     ax3 = plt.subplot(2, 3, 3)
     plt.tick_params(labelbottom=False, labelleft=False)  # labels along the bottom edge are off
-    ax_pol = plt.imshow(imClip(scattering, tol=1), cmap='gray')
-    plt.title('Scattering')
+    ax_pol = plt.imshow(imClip(polarization, tol=1), cmap='gray')
+    plt.title('Polarization')
     plt.xticks([]), plt.yticks([])
     divider = make_axes_locatable(ax3)
     cax = divider.append_axes('right', size='5%', pad=0.05)
@@ -247,7 +260,7 @@ def plot_recon_images(I_trans, retard, azimuth, scattering, I_azi_ret, I_azi_sca
     plt.tick_params(labelbottom=False, labelleft=False)  # labels along the bottom edge are off
     ax_hsv = plt.imshow(imadjust(I_azi_scat, tol=1, bit=8), cmap='hsv')
     # plt.title('Transmission+Retardance\n+Orientation')
-    plt.title('Scattering+Orientation')
+    plt.title('Polarization+Orientation')
     plt.xticks([]), plt.yticks([])
     plt.show()
     divider = make_axes_locatable(ax6)

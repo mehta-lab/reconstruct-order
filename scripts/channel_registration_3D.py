@@ -60,7 +60,7 @@ def translate_3D(images, channels, registration_params, size_z_um):
     for chan, image in zip(channels, images):
         # use shifts of retardance channel for all label-free channels
         if chan in ['Transmission', 'Retardance', 'Orientation','Orientation_x',
-                    'Orientation_y', 'Scattering']:
+                    'Orientation_y', 'Polarization']:
             chan = 'Retardance'
         # !!!!"[:]" is necessary to create a copy rather than a reference of the list in the dict!!!!
         shift = registration_params[chan][:]
