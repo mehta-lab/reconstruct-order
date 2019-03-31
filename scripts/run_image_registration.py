@@ -69,11 +69,12 @@ def run_action(args):
             images = img_io.read_multi_chan_img_stack()
             images_registered = translate_3D(images, output_chan, registration_params, size_z_um)
 
-            for images, channel in zip(images_registered, output_chan):
+            for chan_idx, images in enumerate(images_registered):
+                img_io.chanIdx = chan_idx
                 for z_idx in range(img_io.nZ):
                     img_io.zIdx = z_idx
                     image = imBitConvert(images[z_idx], bit=16, norm=False)
-                    img_io.write_img(image, channel)
+                    img_io.write_img(image)
 
 if __name__ == '__main__':
     args = parse_args()
