@@ -11,7 +11,7 @@ from utils.imgIO import GetSubDirName
 class mManagerReader:
     """General mManager Reader"""
 
-    def __init__(self, ImgSmPath, ImgOutPath, inputChann=[], outputChann=[]):
+    def __init__(self, ImgSmPath, ImgOutPath=[], inputChann=[], outputChann=[]):
         """
         :param str ImgSmPath: fname with full path of the Lif file
         :param str ImgOutPath: base folder for storing the individual

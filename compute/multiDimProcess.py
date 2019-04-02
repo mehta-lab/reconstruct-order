@@ -16,75 +16,15 @@ from utils.mManagerIO import mManagerReader, PolAcquReader
 from utils.imgProcessing import ImgLimit, imBitConvert
 from skimage.restoration import denoise_tv_chambolle
 
-def findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann,
-                   BgDir_local=None, flatField=False, bgCorrect='Auto',
-                   ff_method='open', azimuth_offset = 0):
+def findBackground(img_io, img_io_bg_, config):
     """
     Estimate background for each channel to perform background substraction for
     birefringence and flat-field correction (division) for bright-field and
     fluorescence channels
 
     """
-
-    ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir)  # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
-    OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir)
-    ImgSmPath = FindDirContainPos(ImgSmPath)
-    try:
-        img_io = PolAcquReader(ImgSmPath, OutputPath)
-    except:
-        img_io = mManagerReader(ImgSmPath, OutputPath, outputChann=outputChann)
-    ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir)  # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
-    img_io_bg = PolAcquReader(ImgBgPath, OutputPath)
-    img_io_bg.posIdx = 0  # assuming only single image for background
-    img_io_bg.tIdx = 0
-    img_io_bg.zIdx = 0
-    img_io.bg_method = 'Global'
-
-    if bgCorrect == 'None':
-        print('No background correction is performed...')
-        img_io.bg_correct = False
-    else:
-        if bgCorrect == 'Input':
-            print('Background correction mode set as "Input". Use user input background directory')
-            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-            img_io.bg_correct = True
-        elif bgCorrect == 'Local_filter':
-            print('Background correction mode set as "Local_filter". Additional background correction using local '
-                  'background estimated from sample images will be performed')
-            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + SmDir)
-            img_io.bg_method = 'Local_filter'
-            img_io.bg_correct = True
-        elif bgCorrect == 'Local_defocus':
-            print('Background correction mode set as "Local_defocus". Use images from' + BgDir_local +
-                  'at the same position as background')
-            img_bg_path = os.path.join(RawDataPath, ImgDir,
-                                       BgDir_local)
-            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir_local)
-            img_io.bg_method = 'Local_defocus'
-            img_io.bg_correct = True
-            img_io_bg_local = mManagerReader(img_bg_path, OutputPath)
-            img_io_bg_local.blackLevel = img_io_bg.blackLevel
-            img_io.bg_local = img_io_bg_local
-
-        elif bgCorrect == 'Auto':
-            if hasattr(img_io, 'bg'):
-                if img_io.bg == 'No Background':
-                    BgDir = SmDir
-                    img_io.bg_correct = False
-                    print('No background correction is performed for background measurements...')
-                else:
-                    print('Background info found in metadata. Use background specified in metadata')
-                    BgDir = img_io.bg
-                    OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-                    img_io.bg_correct = True
-            else:
-                print('Background not specified in metadata. Use user input background directory')
-                OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-                img_io.bg_correct = True
-    # OutputPath = OutputPath + '_pol'
-    img_io.ImgOutPath = OutputPath
-    os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
-    ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
+    
+    mgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
     img_io.img_raw_bg = ImgRawBg
     img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=img_io.bg_method, swing=img_io_bg.swing,
                                          wavelength=img_io_bg.wavelength, output_path=img_io_bg.ImgOutPath,
