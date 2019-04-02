@@ -34,7 +34,7 @@ sys.path.append(".") # Adds current directory to python search path.
 # sys.path.append("..") # Adds parent directory to python search path.
 # sys.path.append(os.path.dirname(sys.argv[0]))
 from compute.multiDimProcess import findBackground, loopPos
-from utils.imgIO import GetSubDirName
+from utils.imgIO import GetSubDirName, readMetaData
 import os
 import argparse
 import yaml
@@ -76,17 +76,16 @@ def read_config(config_fname):
         'Please provde ImgDir in config file'
     assert 'SmDir' in config['dataset'], \
         'Please provde SmDir in config file'
-    config['dataset'].setdefault('PosList', 'all')
     config['dataset'].setdefault('BgDir', [])
-    config['dataset'].setdefault('BgDir_local', None)
-    config['dataset'].setdefault('separate_pos', True)
-    
+
     config['processing'].setdefault('outputChann', ['Transmission', 'Retardance', 'Orientation', 'Scattering'])
     config['processing'].setdefault('circularity', 'rcp')
-    config['processing'].setdefault('bgCorrect', None)
+    config['processing'].setdefault('bgCorrect', 'None')
     config['processing'].setdefault('flatField', False)
     config['processing'].setdefault('batchProc', False)
     config['processing'].setdefault('azimuth_offset', 0)
+    config['processing'].setdefault('PosList', 'all')
+    config['processing'].setdefault('separate_pos', True)
     
     config['plotting'].setdefault('norm', True)
     config['plotting'].setdefault('save_fig', False)
@@ -98,20 +97,18 @@ def write_config(config, config_fname):
     with open(config_fname, 'w') as f:
         yaml.dump(config, f, default_flow_style=False)
 
-def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann, config, BgDir_local=None, flatField=False,
-               bgCorrect=True, circularity=False, azimuth_offset=0, separate_pos=True):
-    print('Processing ' + SmDir + ' ....')
-    img_io, img_reconstructor = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann,
-                           BgDir_local=BgDir_local, flatField=flatField,bgCorrect=bgCorrect,
-                           ff_method='open', azimuth_offset=azimuth_offset) # find background tile
-    
-    img_io.loopZ ='sample'
-    plot_config = config['plotting']
-    img_io = loopPos(img_io, img_reconstructor, plot_config, flatField=flatField, bgCorrect=bgCorrect,
-                     circularity=circularity, separate_pos=separate_pos)
-    img_io.chNamesIn = img_io.chNamesOut
-    img_io.writeMetaData()
-    write_config(config, os.path.join(img_io.ImgOutPath, 'config.yml')) # save the config file in the processed folder
+def processImg(img_io_list, img_io_bg_list, config):
+    for img_io, img_io_bg in zip(img_io_list, img_io_bg_list):
+        print('Processing ' + SmDir + ' ....')
+        img_io.writeMetaData()
+        img_io.chNamesIn = img_io.chNamesOut
+        write_config(config, os.path.join(img_io.ImgOutPath, 'config.yml')) # save the config file in the processed folder
+                
+        img_io, img_reconstructor = findBackground(img_io, img_io_bg_, config) # find background tile
+        
+        img_io.loopZ ='sample'
+        plot_config = config['plotting']
+        img_io = loopPos(img_io, img_reconstructor, plot_config)
 
 def run_action(args):
     config = read_config(args.config)
@@ -121,15 +118,6 @@ def run_action(args):
     SmDir = config['dataset']['SmDir']
     PosList = config['dataset']['PosList']
     BgDir = config['dataset']['BgDir']
-    BgDir_local = config['dataset']['BgDir_local']
-    separate_pos = config['dataset']['separate_pos']
-    outputChann = config['processing']['outputChann']
-    circularity= config['processing']['circularity']
-    bgCorrect=config['processing']['bgCorrect']
-    flatField = config['processing']['flatField']
-    batchProc = config['processing']['batchProc']
-    azimuth_offset = config['processing']['azimuth_offset']
-
 
     if not isinstance(SmDir, list):
         if batchProc:
@@ -153,13 +141,19 @@ def run_action(args):
         'Length of the background directory list must be one or same as sample directory list'
             
     # Check that all paths to be analyzed exist
-    
-
+    img_io =[]; img_io_bg = []
     for SmDir_, BgDir_, PosList_ in zip(SmDir, BgDir, PosList):
-        processImg(RawDataPath, ProcessedPath, ImgDir, SmDir_, PosList_, BgDir_, outputChann, config,
-                   BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
-                   circularity=circularity, azimuth_offset=azimuth_offset,
-                   separate_pos=separate_pos)
+        img_io, img_io_bg = readMetaData(RawDataPath, ProcessedPath, ImgDir, SmDir_, BgDir_, PosList_, config)
+        img_io.SmDir = 
+        img_io.BgDir
+        img_io.PosList
+        PosList[i] = img_io.PosList
+        checkThatAllDirsExist(SmDir, BgDir, PosList):
+                # OutputPath = OutputPath + '_pol'
+        img_io.ImgOutPath = img_io_bg.OutputPath
+        os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
+
+    processImg(img_io, img_io_bg, config)
 
 class args:
     config = '/Users//ivan.ivanov//Documents/Benchmark/config_Benchmark.txt'
