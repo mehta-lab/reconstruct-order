@@ -1,24 +1,18 @@
-import sys
-sys.path.append(".") # Adds current directory to python search path.
-sys.path.append("..") # Adds parent directory to python search path.
-
 import os
 import numpy as np
 from utils.mManagerIO import mManagerReader
 from utils.imgProcessing import imBitConvert
 
 if __name__ == '__main__':
-    # RawDataPath = r'D:/Box Sync/Data'
-    # ProcessedPath = r'D:/Box Sync/Processed/'
-    RawDataPath = '/flexo/ComputationalMicroscopy/Processed/virtualstaining/u2os_leonetti'
-    ProcessedPath = '/flexo/ComputationalMicroscopy/Processed/virtualstaining/u2os_leonetti'
-    ImgDir = '2018_12_21_U20S_TOMM20A_HighDensity'
-    SmDir = 'SMS_2018_1221_1325_1_SMS_2018_1221_1325_1'
-    outputChann = ['Orientation']
-
-    ImgSmPath = os.path.join(ProcessedPath, ImgDir, SmDir)  # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
+    RawDataPath = '/flexo/ComputationalMicroscopy/Projects/brainarchitecture'
+    ProcessedPath = RawDataPath
+    ImgDir = '2019_01_04_david_594CTIP2_647SATB2_20X'
+    SmDir = 'SMS_2019_0104_1257_2_SMS_2019_0104_1257_2'
+    input_chan = ['Orientation']
+    output_chan = ['Orientation_x', 'Orientation_y']
+    ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir)  # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
     OutputPath = ImgSmPath
-    img_io = mManagerReader(ImgSmPath, OutputPath, outputChann)
+    img_io = mManagerReader(ImgSmPath, OutputPath, inputChann=input_chan, outputChann=output_chan)
 
     for t_idx in range(img_io.nTime):
         img_io.tIdx = t_idx
@@ -27,14 +21,14 @@ if __name__ == '__main__':
             for z_idx in range(img_io.nZ):
                 print('Processing position %03d, time %03d z %03d ...' % (pos_idx, t_idx, z_idx))
                 img_io.zIdx = z_idx
-                img_io.chanIdx=0
+                img_io.chanIdx = 0
                 azimuth_degree = img_io.read_img()
                 azimuth = azimuth_degree/18000*np.pi
-                azimuth_x = np.cos(2 * azimuth)
-                azimuth_y = np.sin(2 * azimuth)
-                azimuth_x = imBitConvert((azimuth_x + 1) * 1000, bit=16)  # scale to [0, 1000]
-                azimuth_y = imBitConvert((azimuth_y + 1) * 1000, bit=16)  # scale to [0, 1000]
-                img_io.write_img(azimuth_x, 'Orientation_x', pos_idx, z_idx, t_idx)
-                img_io.write_img(azimuth_y, 'Orientation_y', pos_idx, z_idx, t_idx)
+                azimuth_imgs = [np.cos(2 * azimuth), np.sin(2 * azimuth)]
+                azimuth_imgs = [imBitConvert((img + 1) * 1000, bit=16) for img in azimuth_imgs]  # scale to [0, 1000]
+                for chan_idx, image in enumerate(azimuth_imgs):
+                    img_io.chanIdx = chan_idx
+                    img_io.write_img(image)
+
 
 
