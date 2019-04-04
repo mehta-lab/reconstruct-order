@@ -1,5 +1,5 @@
 """
-Class to read and write Tiff and the metafile (JSON) in mManager format.
+Class to read mManager format images saved separately and their metadata (JSON) .
 """
 import json
 import numpy as np
@@ -13,14 +13,16 @@ class mManagerReader:
 
     def __init__(self, ImgSmPath, ImgOutPath=[], inputChann=[], outputChann=[]):
         """
-        :param str ImgSmPath: fname with full path of the Lif file
-        :param str ImgOutPath: base folder for storing the individual
-         image and cropped volumes
+        :param str ImgSmPath: full path of the acquisition folder
+        (1 level up of pos folder)
+        :param str ImgOutPath: full path of the output folder
+        :param list inputChann: list of input channel names
+        :param list outputChann: list of output channel names
         """
         subDirName = GetSubDirName(ImgSmPath)          
         
         ## TO DO: track global image limits
-        img_in_pos_path = ImgSmPath #PyPol format
+        img_in_pos_path = ImgSmPath # data structure doesn't have position folders
         if subDirName:
             subDir = subDirName[0] # pos0
             if 'Pos' in subDir: # mManager format            
@@ -30,7 +32,7 @@ class mManagerReader:
             metaFile = json.load(f)
         self.metaFile = metaFile
         self.ImgSmPath = ImgSmPath
-        self.img_in_pos_path = img_in_pos_path
+        self.img_in_pos_path = img_in_pos_path # input pos path
         self.ImgOutPath = ImgOutPath
         self.width = metaFile['Summary']['Width']
         self.height = metaFile['Summary']['Height']
@@ -76,10 +78,10 @@ class mManagerReader:
             img_chann += [img_stack]
         return img_chann
     
-    def write_img(self, img, channel):
+    def write_img(self, img):
         if not os.path.exists(self.ImgOutPath): # create folder for processed images
             os.makedirs(self.ImgOutPath)
-        fileName = 'img_'+channel+'_t%03d_p%03d_z%03d.tif'%(self.tIdx, self.posIdx, self.zIdx)
+        fileName = 'img_'+self.chNamesOut[self.chanIdx]+'_t%03d_p%03d_z%03d.tif'%(self.tIdx, self.posIdx, self.zIdx)
         if len(img.shape)<3:
             cv2.imwrite(os.path.join(self.ImgOutPath, fileName), img)
         else:

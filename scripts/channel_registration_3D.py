@@ -1,8 +1,7 @@
 import sys
 sys.path.append(".") # Adds current directory to python search path.
 sys.path.append("..") # Adds parent directory to python search path.
-from skimage import io, exposure, util, filters
-from skimage.transform import SimilarityTransform, warp
+from scipy.ndimage import affine_transform
 from skimage.feature import register_translation
 import os
 import json
@@ -60,7 +59,9 @@ def translate_3D(images, channels, registration_params, size_z_um):
     for chan, image in zip(channels, images):
         # use shifts of retardance channel for all label-free channels
         if chan in ['Transmission', 'Retardance', 'Orientation','Orientation_x',
-                    'Orientation_y', 'Polarization']:
+                    'Orientation_y', 'Polarization',
+                    'Pol_State_0', 'Pol_State_1',
+                    'Pol_State_2', 'Pol_State_3', 'Pol_State_4']:
             chan = 'Retardance'
         # !!!!"[:]" is necessary to create a copy rather than a reference of the list in the dict!!!!
         shift = registration_params[chan][:]
@@ -68,13 +69,7 @@ def translate_3D(images, channels, registration_params, size_z_um):
         if any(shift):
             # scale z-shift according to the z-step size
             shift[0] = shift[0]*registration_params['size_z_um']/size_z_um
-            output_shape = image.shape
-            coords = np.mgrid[:output_shape[0], :output_shape[1], :output_shape[2]]
-            # change the data type to float to allow subpixel registration
-            coords = coords.astype(np.float32)
-            for i in range(3):
-                coords[i] = coords[i] - shift[i]
-            image = warp(image, coords, preserve_range=True)
+            image = affine_transform(image, np.ones(3), [-x for x in shift], order=1)
         registered_images.append(image)
     return registered_images
 
