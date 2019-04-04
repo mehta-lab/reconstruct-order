@@ -5,8 +5,10 @@ dataset:
     SmDir: ['SM_2018_1002_1633_1', 'SM_2018_1002_1640_1']
     PosList: 'all'
     BgDir: 'BG_2018_1002_1625_1'
+    PosList: 'all'
     BgDir_local: None
     separate_pos: True
+
 processing:
     outputChann: ['Transmission', 'Retardance', 'Orientation', 'Polarization', 'Retardance+Orientation',
                    'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence',
@@ -20,5 +22,6 @@ plotting:
     norm: True
     save_fig: False
     save_stokes_fig: False
+    save_pol_fig: False
        
 
