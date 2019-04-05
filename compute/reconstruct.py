@@ -80,8 +80,8 @@ class ImgReconstructor:
                     img_filtered += [cv2.GaussianBlur(img[z], (401, 401), 0)]
                 img_filtered = np.stack(img_filtered)
             else: # input is a 2D image
-                img_filtered += [cv2.GaussianBlur(img, (401, 401), 0)]
-        stokes_param_bg_local += [img_filtered]
+                img_filtered = cv2.GaussianBlur(img, (401, 401), 0)
+            stokes_param_bg_local += [img_filtered]
         self.stokes_param_bg_local = stokes_param_bg_local
 
     def reconstruct_birefringence(self, stokes_param_sm,
