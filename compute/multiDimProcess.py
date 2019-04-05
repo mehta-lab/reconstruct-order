@@ -218,8 +218,8 @@ def loopZSm(img_io, config, img_reconstructor=None):
     norm = config.plotting.normalize_color_images
     save_fig = config.plotting.save_birefringence_fig
     save_stokes_fig = config.plotting.save_stokes_fig
-    save_pol_fig = False #config.plotting.save_pol_fig
-    save_mm_fig = False #config.plotting.save_mm_fig
+    save_pol_fig = config.plotting.save_polarization_fig
+    save_mm_fig = config.plotting.save_micromanager_fig
     pol_names = ['Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4']
     stokes_names = ['Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3']
     stokes_names_sm = [x + '_sm' for x in stokes_names]
@@ -238,10 +238,7 @@ def loopZSm(img_io, config, img_reconstructor=None):
         plt.close("all")  # close all the figures from the last run
         img_io.zIdx = zIdx
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
-        print(ImgFluor.shape)
-        print(img_io.img_fluor_bg.shape)
         ImgFluor = correct_flat_field(img_io, ImgFluor)
-        print(ImgFluor.shape)
         img_dict = {}
         if save_stokes or save_birefring:
             stokes_param_sm = img_reconstructor.compute_stokes(ImgRawSm)
