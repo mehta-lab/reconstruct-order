@@ -47,6 +47,7 @@ class mManagerReader:
         self.size_y_um = 6.5/63 # (um) for zyla at 63X. Manager metafile currently does not log the correct pixel size
         self.size_z_um = metaFile['Summary']['z-step_um']
         self.time_stamp = metaFile['Summary']['Time']
+        self.img_fluor_bg = np.ones((4, self.height, self.width))
             
     def read_img(self):
         """read a single image at (c,t,p,z)"""
