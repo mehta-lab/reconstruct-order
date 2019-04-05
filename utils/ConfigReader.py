@@ -6,6 +6,7 @@ Created on Wed Apr  3 15:31:41 2019
 @author: ivan.ivanov
 """
 import yaml
+import os.path
 from utils.imgIO import GetSubDirName
 
 class ConfigReader:   
@@ -73,13 +74,31 @@ class ConfigReader:
                 
         assert len(self.dataset.samples) == len(self.dataset.background) == len(self.dataset.positions), \
             'Length of the background directory list must be one or same as sample directory list'
+            
+    def __repr__(self):
+        out = str(self.__class__) + '\n'
+        for (key, value) in self.dataset.__dict__.items():
+            out = out + '{}: {}\n'.format(key,value)
+        for (key, value) in self.processing.__dict__.items():
+            out = out + '{}: {}\n'.format(key,value)
+        for (key, value) in self.plotting.__dict__.items():
+            out = out + '{}: {}\n'.format(key,value)
+        return out
                 
 class Dataset:
-    processed_dir = []
-    data_dir = []
+    _processed_dir = []
+    _data_dir = []
     _samples = []
     _positions = 'all'
     _background = []
+    
+    @property
+    def processed_dir(self):
+        return self._processed_dir
+    
+    @property
+    def data_dir(self):
+        return self._data_dir
     
     @property
     def samples(self):
@@ -92,6 +111,16 @@ class Dataset:
     @property
     def background(self):
         return self._background
+    
+    @processed_dir.setter
+    def processed_dir(self, value):
+        assert os.path.exists(value), 'processed_dir path {} does not exist'.format(value)
+        self._processed_dir = value
+        
+    @data_dir.setter
+    def data_dir(self, value):
+        assert os.path.exists(value), 'data_dir path {} does not exist'.format(value)
+        self._data_dir = value
     
     @samples.setter
     def samples(self, value):
@@ -109,6 +138,8 @@ class Dataset:
     def background(self, value):
         if not isinstance(value, list):
             value = [value]
+        for bg in value:
+            assert os.path.exists(os.path.join(self.data_dir,bg)), 'background directory {} does not exist'.format(bg)
         self._background = value
         
     def __repr__(self):
