@@ -6,7 +6,6 @@ Created on Wed Apr  3 15:31:41 2019
 @author: ivan.ivanov
 """
 import yaml
-import os.path
 from imgIO import GetSubDirName
 
 class ConfigReader:   
@@ -21,91 +20,96 @@ class ConfigReader:
             
         if 'dataset' in config:
             for (key, value) in config['dataset'].items():
-                if key == 'RawDataPath':
-                    self.dataset.RawDataPath = value
-                if key == 'ProcessedPath':
-                    self.dataset.ProcessedPath = value
-                if key == 'ImgDir':
-                    self.dataset.ImgDir = value
-                if key == 'SmDir':
-                    self.dataset.SmDir = value
-                if key == 'BgDir':
-                    self.dataset.BgDir = value
+                if key == 'processed_dir':
+                    self.dataset.processed_dir = value
+                if key == 'data_dir':
+                    self.dataset.data_dir = value
+                if key == 'samples':
+                    self.dataset.samples = value
+                if key == 'positions':
+                    self.dataset.positions = value
+                if key == 'background':
+                    self.dataset.background = value
              
         if 'processing' in config:
             for (key, value) in config['processing'].items():
-                if key == 'outputChann':
-                    self.processing.outputChann = value
+                if key == 'output_channels':
+                    self.processing.output_channels = value
                 if key == 'circularity':
                     self.processing.circularity = value
-                if key == 'bgCorrect':
-                    self.processing.bgCorrect = value
-                if key == 'flatField':
-                    self.processing.flatField = value
+                if key == 'background_correction':
+                    self.processing.background_correction = value
+                if key == 'flatfield_correction':
+                    self.processing.flatfield_correction = value
                 if key == 'azimuth_offset':
                     self.processing.azimuth_offset = value
-                if key == 'PosList':
-                    self.processing.PosList = value
-                if key == 'separate_pos':
-                    self.processing.separate_pos = value
+                if key == 'separate_positions':
+                    self.processing.separate_positions = value
          
         if 'plotting' in config:
             for (key, value) in config['plotting'].items():
-                if key == 'norm':
-                    self.plotting.norm = value
-                if key == 'save_fig':
-                    self.plotting.save_fig = value
+                if key == 'normalize_color_images':
+                    self.plotting.normalize_color_images = value
+                if key == 'save_birefringence_fig':
+                    self.plotting.save_birefringence_fig = value
                 if key == 'save_stokes_fig':
                     self.plotting.save_stokes_fig = value
                     
-        assert self.dataset.RawDataPath, \
-            'Please provde RawDataPath in config file'
-        assert self.dataset.ProcessedPath, \
-            'Please provde ProcessedPath in config file'
-        assert self.dataset.ImgDir, \
-            'Please provde ImgDir in config file'
-        assert self.dataset.SmDir, \
-            'Please provde SmDir in config file'
+        assert self.dataset.processed_dir, \
+            'Please provde processed_dir in config file'
+        assert self.dataset.data_dir, \
+            'Please provde data_dir in config file'
+        assert self.dataset.samples, \
+            'Please provde samples in config file'
             
-        if self.dataset.SmDir[0] == 'all':
-            img_path = os.path.join(self.dataset.RawDataPath, self.dataset.ImgDir)
-            self.dataset.SmDir = GetSubDirName(img_path)         
+        if self.dataset.samples[0] == 'all':
+            self.dataset.samples = GetSubDirName(self.dataset.data_dir)         
             
-        if not any(isinstance(i, list) for i in self.processing.PosList):
-            self.processing.PosList = self.processing.PosList*len(self.dataset.SmDir)
+        if not any(isinstance(i, list) for i in self.dataset.positions):
+            self.dataset.positions = self.dataset.positions*len(self.dataset.samples)
             
-        if len(self.dataset.BgDir) == 1:
-            self.dataset.BgDir = self.dataset.BgDir * len(self.dataset.SmDir)
+        if len(self.dataset.background) == 1:
+            self.dataset.background = self.dataset.background * len(self.dataset.samples)
                 
-        assert len(self.dataset.SmDir) == len(self.dataset.BgDir) == len(self.processing.PosList), \
+        assert len(self.dataset.samples) == len(self.dataset.background) == len(self.dataset.positions), \
             'Length of the background directory list must be one or same as sample directory list'
                 
 class Dataset:
-    RawDataPath = []
-    ProcessedPath = []
-    ImgDir = []
-    _SmDir = []
-    _BgDir = []
+    processed_dir = []
+    data_dir = []
+    _samples = []
+    _positions = 'all'
+    _background = []
     
     @property
-    def SmDir(self):
-        return self._SmDir
+    def samples(self):
+        return self._samples
     
     @property
-    def BgDir(self):
-        return self._BgDir
+    def positions(self):
+        return self._positions
     
-    @SmDir.setter
-    def SmDir(self, value):
+    @property
+    def background(self):
+        return self._background
+    
+    @samples.setter
+    def samples(self, value):
         if not isinstance(value, list):
             value = [value]
-        self._SmDir = value
+        self._samples = value
         
-    @BgDir.setter
-    def BgDir(self, value):
+    @positions.setter
+    def positions(self, value):   
         if not isinstance(value, list):
             value = [value]
-        self._BgDir = value
+        self._positions = value
+        
+    @background.setter
+    def background(self, value):
+        if not isinstance(value, list):
+            value = [value]
+        self._background = value
     
 class Processing:        
     _allowed_output_channels = ['Transmission', 'Retardance', 'Orientation', 'Polarization',
@@ -117,85 +121,74 @@ class Processing:
                                 'Transmission+Retardance+Orientation',
                                 'Retardance+Fluorescence', 'Retardance+Fluorescence_all']  
     _allowed_circularity_values = ['rcp', 'lcp']
-    _allowed_bgCorrect_values = ['None', 'Input', 'Local_filter', 'Local_defocus', 'Auto']
+    _allowed_background_correction_values = ['None', 'Input', 'Local_filter', 'Local_defocus', 'Auto']
     
     def __init__(self):
-        self._outputChann = ['Transmission', 'Retardance', 'Orientation', 'Scattering']
+        self._output_channels = ['Transmission', 'Retardance', 'Orientation', 'Polarization']
         self._circularity = 'rcp'
-        self._bgCorrect = 'None'
-        self._flatField = False
+        self._background_correction = 'None'
+        self._flatfield_correction = False
         self._azimuth_offset = 0
-        self._PosList = 'all'
-        self._separate_pos = True
+        self._separate_positions = True
         
     @property
-    def outputChann(self):
-        return self._outputChann
+    def output_channels(self):
+        return self._output_channels
     
     @property
     def circularity(self):
         return self._circularity
     
     @property
-    def bgCorrect(self):
-        return self._bgCorrect
+    def background_correction(self):
+        return self._background_correction
     
     @property
-    def flatField(self):
-        return self._flatField
+    def flatfield_correction(self):
+        return self._flatfield_correction
     
     @property
     def azimuth_offset(self):
         return self._azimuth_offset
     
     @property
-    def PosList(self):
-        return self._PosList
+    def separate_positions(self):
+        return self._separate_positions
     
-    @property
-    def separate_pos(self):
-        return self._separate_pos
-    
-    @outputChann.setter
-    def outputChann(self, value):     
+    @output_channels.setter
+    def output_channels(self, value):     
         if not isinstance(value, list):
             value = [value]
         for val in value:
             assert val in self._allowed_output_channels, "{} is not an allowed output channel".format(val)
-        self._outputChann = value
+        self._output_channels = value
         
     @circularity.setter
     def circularity(self, value):     
         assert value in self._allowed_circularity_values, "{} is not an allowed circularity setting".format(value)
         self._circularity = value
         
-    @bgCorrect.setter
-    def bgCorrect(self, value):     
-        assert value in self._allowed_bgCorrect_values, "{} is not an allowed bgCorrect setting".format(value)
-        self._bgCorrect = value
+    @background_correction.setter
+    def background_correction(self, value):     
+        assert value in self._allowed_background_correction_values, "{} is not an allowed bg_correction setting".format(value)
+        self._background_correction = value
         
-    @flatField.setter
-    def flatField(self, value):   
-        assert isinstance(value, bool), "flatField must be boolean"
-        self._flatField = value
+    @flatfield_correction.setter
+    def flatfield_correction(self, value):   
+        assert isinstance(value, bool), "flatfield_correction must be boolean"
+        self._flatfield_correction = value
         
     @azimuth_offset.setter
     def azimuth_offset(self, value):   
         # TODO: Check that input value if right type
         self._azimuth_offset = value
         
-    @separate_pos.setter
-    def separate_pos(self, value):   
-        assert isinstance(value, bool), "separate_pos must be boolean"
-        self._separate_pos = value
-        
-    @PosList.setter
-    def PosList(self, value):   
-        if not isinstance(value, list):
-            value = [value]
-        self._PosList = value
+    @separate_positions.setter
+    def separate_positions(self, value):   
+        assert isinstance(value, bool), "separate_positions must be boolean"
+        self._separate_positions = value
     
 class Plotting:
-    norm = True
-    save_fig = False
+    normalize_color_images = True
+    save_birefringence_fig = False
     save_stokes_fig = False
