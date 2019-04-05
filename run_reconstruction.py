@@ -37,8 +37,6 @@ from compute.multiDimProcess import findBackground, loopPos
 from utils.imgIO import GetSubDirName, readMetaData
 import os
 import argparse
-import yaml
-
 
 
 def parse_args():
@@ -55,43 +53,6 @@ def parse_args():
 
     args = parser.parse_args()
     return args
-
-def read_config(config_fname):
-    """Read the config file in yml format
-
-    TODO: validate config!
-
-    :param str config_fname: fname of config yaml with its full path
-    :return:
-    """
-
-    with open(config_fname, 'r') as f:
-        config = yaml.load(f)
-        
-    assert 'RawDataPath' in config['dataset'], \
-        'Please provde RawDataPath in config file'
-    assert 'ProcessedPath' in config['dataset'], \
-        'Please provde ProcessedPath in config file'
-    assert 'ImgDir' in config['dataset'], \
-        'Please provde ImgDir in config file'
-    assert 'SmDir' in config['dataset'], \
-        'Please provde SmDir in config file'
-    config['dataset'].setdefault('BgDir', [])
-
-    config['processing'].setdefault('outputChann', ['Transmission', 'Retardance', 'Orientation', 'Scattering'])
-    config['processing'].setdefault('circularity', 'rcp')
-    config['processing'].setdefault('bgCorrect', 'None')
-    config['processing'].setdefault('flatField', False)
-    config['processing'].setdefault('batchProc', False)
-    config['processing'].setdefault('azimuth_offset', 0)
-    config['processing'].setdefault('PosList', 'all')
-    config['processing'].setdefault('separate_pos', True)
-    
-    config['plotting'].setdefault('norm', True)
-    config['plotting'].setdefault('save_fig', False)
-    config['plotting'].setdefault('save_stokes_fig', False)
-
-    return config
 
 def write_config(config, config_fname):
     with open(config_fname, 'w') as f:
