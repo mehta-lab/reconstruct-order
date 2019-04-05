@@ -35,6 +35,9 @@ class ImgReconstructor:
         self.stokes_param_bg_local = []
         self.circularity = circularity
 
+    def get_shape(self):
+        pass
+
     def compute_stokes(self, img_raw):
         img_raw_flat = np.reshape(img_raw, (self.n_chann, self.height * self.width))
         img_stokes_flat = np.dot(self.inst_mat_inv, img_raw_flat)
