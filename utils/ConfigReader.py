@@ -235,6 +235,8 @@ class Plotting:
     normalize_color_images = True
     save_birefringence_fig = False
     save_stokes_fig = False
+    save_polarization_fig = False
+    save_micromanager_fig = False
     
     def __repr__(self):
         out = str(self.__class__) + '\n'
