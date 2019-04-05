@@ -22,7 +22,7 @@ Output channels indices:
 
 
 #get_ipython().run_line_magic('matplotlib', 'inline')
-from compute.multiDimProcess import findBackground, loopPos
+from compute.multiDimProcess import process_background, loopPos
 import seaborn as sns
 import os
 
@@ -31,10 +31,10 @@ sns.set_context("poster")
 
 # In[2]:
 def processImg(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx, flatField=False, bgCorrect=True, flipPol=False):    
-    imgSm = findBackground(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx,flatField=flatField) # find background tile
+    imgSm = process_background(ImgSmPath, ImgBgPath, OutputPath, outputChannIdx, flatField=flatField) # find background tile
     imgSm.loopZ ='sample'
     print('Calculating birefringence from polarized images...')
-    imgSm = loopPos(imgSm, outputChannIdx, flatField=flatField, bgCorrect=bgCorrect, flipPol=flipPol)
+    imgSm = loopPos(imgSm, outputChannIdx)
         
             
 # In[3]:
