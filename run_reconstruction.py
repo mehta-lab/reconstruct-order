@@ -33,13 +33,11 @@ import sys
 sys.path.append(".") # Adds current directory to python search path.
 # sys.path.append("..") # Adds parent directory to python search path.
 # sys.path.append(os.path.dirname(sys.argv[0]))
-from compute.multiDimProcess import findBackground, loopPos
+from compute.multiDimProcess import process_background, loopPos, compute_flat_field, creat_metadata_object, parse_bg_options
 from utils.ConfigReader import ConfigReader
-from utils.imgIO import readMetaData
 import os
 import argparse
 import yaml
-
 
 def parse_args():
     """Parse command line arguments
@@ -60,42 +58,36 @@ def write_config(config, config_fname):
     with open(config_fname, 'w') as f:
         yaml.dump(config, f, default_flow_style=False)
 
-def processImg(img_io_list, img_io_bg_list, config):
-    for img_io, img_io_bg in zip(img_io_list, img_io_bg_list):
-        print('Processing ' + SmDir + ' ....')
-        img_io.writeMetaData()
-        img_io.chNamesIn = img_io.chNamesOut
-        write_config(config, os.path.join(img_io.ImgOutPath, 'config.yml')) # save the config file in the processed folder
-                
-        img_io, img_reconstructor = findBackground(img_io, img_io_bg_, config) # find background tile
-        
-        img_io.loopZ ='sample'
-        plot_config = config['plotting']
-        img_io = loopPos(img_io, img_reconstructor, plot_config)
+def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, config):
+    print('Processing ' + SmDir + ' ....')
+    flatField = config['processing']['flatField']
+    img_io, img_io_bg = creat_metadata_object(config, RawDataPath, ImgDir, SmDir, BgDir)
+    img_io, img_io_bg = parse_bg_options(img_io, img_io_bg, config, RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir)
+    img_io, img_reconstructor = process_background(img_io, img_io_bg, config)
+    img_io.PosList = PosList
+    if flatField:  # find background flourescence for flatField corection
+        img_io = compute_flat_field(img_io, config)
+    img_io.loopZ ='sample'
+    img_io = loopPos(img_io, config, img_reconstructor)
+    img_io.chNamesIn = img_io.chNamesOut
+    img_io.writeMetaData()
+    write_config(config, os.path.join(img_io.ImgOutPath, 'config.yml')) # save the config file in the processed folder
 
 def run_action(args):
     config = ConfigReader()
     config.read_config(args.config)
-            
-    # Check that all paths to be analyzed exist
-    if len(set(config.dataset.background)) <= 1:
-        img_io_bg = readMetaData(RawDataPath, ProcessedPath, ImgDir, SmDir_, BgDir_, PosList_, config)
-        img_io_bg = [img_io_bg] * len(config.dataset.samples)
     
-    img_io =[]; img_io_bg = []
-    for SmDir_, BgDir_, PosList_ in zip(SmDir, BgDir, PosList):
-        img_io, img_io_bg = readMetaData(RawDataPath, ProcessedPath, ImgDir, SmDir_, BgDir_, PosList_, config)
-        img_io.SmDir
-        img_io.BgDir
-        img_io.PosList
-        PosList[i] = img_io.PosList
-        checkThatAllDirsExist(SmDir, BgDir, PosList)
-                # OutputPath = OutputPath + '_pol'
-        img_io.ImgOutPath = img_io_bg.OutputPath
-        os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
-
-    processImg(img_io, img_io_bg, config)
-
+    split_data_dir = os.path.split(config.dataset.data_dir)
+    RawDataPath = split_data_dir[0]
+    ProcessedPath = config.dataset.processed_dir
+    ImgDir = split_data_dir[1]
+    SmDirList = config.dataset.samples
+    BgDirList = config.dataset.background
+    PosList = config.dataset.positions
+    
+    for SmDir, BgDir, PosList_ in zip(SmDirList, BgDirList, PosList):
+        processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList_, BgDir, config)
+        
 class args:
     config = '/Users/ivan.ivanov/Documents/Benchmark/config_Benchmark.txt'
 
