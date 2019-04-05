@@ -22,7 +22,7 @@ def creat_metadata_object(config, RawDataPath, ImgDir, SmDir, BgDir):
     Pass PolAcquistion specific paramters from background to sample object
 
     """
-    outputChann = config['processing']['outputChann']
+    outputChann = config.processing.output_channels
     ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir)  # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
     ImgSmPath = FindDirContainPos(ImgSmPath)
     ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir)  # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
@@ -43,7 +43,7 @@ def parse_bg_options(img_io, img_io_bg, config, RawDataPath, ProcessedPath, ImgD
 
     """
     img_io.bg_method = 'Global'
-    bgCorrect = config['processing']['bgCorrect']
+    bgCorrect = config.processing.background_correction
 
     if bgCorrect == 'None':
         print('No background correction is performed...')
@@ -98,8 +98,8 @@ def process_background(img_io, img_io_bg, config):
     """
     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
     img_io.img_raw_bg = ImgRawBg
-    circularity = config['processing']['circularity']
-    azimuth_offset = config['processing']['azimuth_offset']
+    circularity = config.processing.circularity
+    azimuth_offset = config.processing.azimuth_offset
     img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=img_io.bg_method, swing=img_io_bg.swing,
                                          wavelength=img_io_bg.wavelength, output_path=img_io_bg.ImgOutPath,
                                          azimuth_offset=azimuth_offset, circularity=circularity)
@@ -121,7 +121,7 @@ def compute_flat_field(img_io, config):
 
     """
     print('Calculating illumination function for flatfield correction...')
-    ff_method = config['processing']['ff_method']
+    ff_method = config.processing.ff_method
     img_io.ff_method = ff_method
     img_io.ImgFluorMin = np.full((4, img_io.height, img_io.width), np.inf)  # set initial min array to to be Inf
     img_io.ImgFluorSum = np.zeros(
@@ -152,7 +152,7 @@ def loopPos(img_io, config, img_reconstructor=None):
     Loop through each position in the sample metadata, check if it is on the user input
     position list; make separate folder for each position if separate_pos == True
     """
-    separate_pos = config['processing']['separate_pos']
+    separate_pos = config.processing.separate_positions
     try:
         posDict = {idx: img_io.metaFile['Summary']['InitialPositionList'][idx]['Label'] for idx in range(img_io.nPos)}
     except:
@@ -215,12 +215,11 @@ def loopZSm(img_io, config, img_reconstructor=None):
 
     tIdx = img_io.tIdx
     posIdx = img_io.posIdx
-    plot_config = config['plotting']
-    norm = plot_config['norm']
-    save_fig = plot_config['save_fig']
-    save_stokes_fig = plot_config['save_stokes_fig']
-    save_pol_fig = plot_config['save_pol_fig']
-    save_mm_fig = plot_config['save_mm_fig']
+    norm = config.plotting.normalize_color_images
+    save_fig = config.plotting.save_birefringence_fig
+    save_stokes_fig = config.plotting.save_stokes_fig
+    save_pol_fig = False #config.plotting.save_pol_fig
+    save_mm_fig = False #config.plotting.save_mm_fig
     pol_names = ['Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4']
     stokes_names = ['Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3']
     stokes_names_sm = [x + '_sm' for x in stokes_names]
