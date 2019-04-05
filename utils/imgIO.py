@@ -8,9 +8,9 @@ import re
 import cv2
 
 def GetSubDirName(ImgPath):
-    assert os.path.exists(ImgPath), 'Input folder does not exist!' 
     subDirPath = glob.glob(os.path.join(ImgPath, '*/'))    
     subDirName = [os.path.split(subdir[:-1])[1] for subdir in subDirPath]
+    # TODO: assert that subDirName[i] contains pol scope data - maybe in readMetaData?
 #    assert subDirName, 'No sub directories found'
     return subDirName
 
