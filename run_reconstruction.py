@@ -60,7 +60,7 @@ def write_config(config, config_fname):
 
 def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, config):
     print('Processing ' + SmDir + ' ....')
-    flatField = config['processing']['flatField']
+    flatField = config.processing.flatfield_correction
     img_io, img_io_bg = creat_metadata_object(config, RawDataPath, ImgDir, SmDir, BgDir)
     img_io, img_io_bg = parse_bg_options(img_io, img_io_bg, config, RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir)
     img_io, img_reconstructor = process_background(img_io, img_io_bg, config)
