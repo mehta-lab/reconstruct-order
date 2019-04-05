@@ -9,7 +9,9 @@ import cv2
 from utils.imgIO import GetSubDirName
 
 class mManagerReader:
-    """General mManager Reader"""
+    """General mManager Reader
+    TODO: move file IO methods to imIO modules
+    """
 
     def __init__(self, ImgSmPath, ImgOutPath=None, inputChann=[], outputChann=[]):
         """
