@@ -33,13 +33,11 @@ import sys
 sys.path.append(".") # Adds current directory to python search path.
 # sys.path.append("..") # Adds parent directory to python search path.
 # sys.path.append(os.path.dirname(sys.argv[0]))
-from compute.multiDimProcess import process_background, loopPos, compute_flat_field
-from utils.imgIO import GetSubDirName, read_meta_data, parse_bg_options
+from compute.multiDimProcess import process_background, loopPos, compute_flat_field, creat_metadata_object, parse_bg_options
+from utils.imgIO import GetSubDirName
 import os
 import argparse
 import yaml
-
-
 
 def parse_args():
     """Parse command line arguments
@@ -100,14 +98,14 @@ def write_config(config, config_fname):
 def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, config):
     print('Processing ' + SmDir + ' ....')
     flatField = config['processing']['flatField']
-    img_io, img_io_bg = read_meta_data(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir)
-    img_io, img_io_bg = parse_bg_options(img_io, config, RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir)
+    img_io, img_io_bg = creat_metadata_object(config, RawDataPath, ImgDir, SmDir, BgDir)
+    img_io, img_io_bg = parse_bg_options(img_io, img_io_bg, config, RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir)
     img_io, img_reconstructor = process_background(img_io, img_io_bg, config)
     img_io.PosList = PosList
     if flatField:  # find background flourescence for flatField corection
         img_io = compute_flat_field(img_io, config)
     img_io.loopZ ='sample'
-    img_io = loopPos(img_io, img_reconstructor, config)
+    img_io = loopPos(img_io, config, img_reconstructor)
     img_io.chNamesIn = img_io.chNamesOut
     img_io.writeMetaData()
     write_config(config, os.path.join(img_io.ImgOutPath, 'config.yml')) # save the config file in the processed folder
@@ -120,7 +118,6 @@ def run_action(args):
     SmDir = config['dataset']['SmDir']
     BgDir = config['dataset']['BgDir']
     PosList = config['processing']['PosList']
-    outputChann = config['processing']['outputChann']
     batchProc = config['processing']['batchProc']
 
     if isinstance(SmDir, list):

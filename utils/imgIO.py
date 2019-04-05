@@ -6,7 +6,6 @@ import numpy as np
 import glob
 import re
 import cv2
-from utils.mManagerIO import mManagerReader, PolAcquReader
 
 def GetSubDirName(ImgPath):
     assert os.path.exists(ImgPath), 'Input folder does not exist!' 
@@ -68,76 +67,6 @@ def ParseFileList(acquDirPath):
     FluorChan = list(set(FluorChan))
     FluorZ = list(set(FluorZ))    
     return PolChan, PolZ, FluorChan, FluorZ
-
-
-def read_meta_data(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir):
-    ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir)  # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
-    ImgSmPath = FindDirContainPos(ImgSmPath)
-    try:
-        img_io = PolAcquReader(ImgSmPath)
-    except:
-        img_io = mManagerReader(ImgSmPath)
-    img_io_bg = parse_bg_options(RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir)
-    return img_io, img_io_bg
-
-
-def parse_bg_options(img_io, config, RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir):
-    ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir)  # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
-    img_io_bg = PolAcquReader(ImgBgPath)
-    img_io_bg.posIdx = 0  # assuming only single image for background
-    img_io_bg.tIdx = 0
-    img_io_bg.zIdx = 0
-    img_io.bg_method = 'Global'
-    bgCorrect = config['processing']['bgCorrect']
-
-    if bgCorrect == 'None':
-        print('No background correction is performed...')
-        img_io.bg_correct = False
-        OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir)
-    else:
-        if bgCorrect == 'Input':
-            print('Background correction mode set as "Input". Use user input background directory')
-            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-            img_io.bg_correct = True
-        elif bgCorrect == 'Local_filter':
-            print('Background correction mode set as "Local_filter". Additional background correction using local '
-                  'background estimated from sample images will be performed')
-            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + SmDir)
-            img_io.bg_method = 'Local_filter'
-            img_io.bg_correct = True
-        elif bgCorrect == 'Local_defocus':
-            print('Background correction mode set as "Local_defocus". Use images from' + BgDir +
-                  'at the same position as background')
-            img_bg_path = os.path.join(RawDataPath, ImgDir,
-                                       BgDir)
-            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-            img_io.bg_method = 'Local_defocus'
-            img_io.bg_correct = True
-            img_io_bg_local = mManagerReader(img_bg_path, OutputPath)
-            img_io_bg_local.blackLevel = img_io_bg.blackLevel
-            img_io.bg_local = img_io_bg_local
-
-        elif bgCorrect == 'Auto':
-            if hasattr(img_io, 'bg'):
-                if img_io.bg == 'No Background':
-                    BgDir = SmDir
-                    img_io.bg_correct = False
-                    print('No background correction is performed for background measurements...')
-                else:
-                    print('Background info found in metadata. Use background specified in metadata')
-                    BgDir = img_io.bg
-                    OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-                    img_io.bg_correct = True
-            else:
-                print('Background not specified in metadata. Use user input background directory')
-                OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-                img_io.bg_correct = True
-    img_io.Outputpath = OutputPath
-    img_io.swing = img_io_bg.swing
-    img_io.wavelength = img_io_bg.wavelength
-    img_io.blackLevel = img_io_bg.blackLevel
-    os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
-    return img_io, img_io_bg
             
         
 def ParseTiffInput_old(img_io):
