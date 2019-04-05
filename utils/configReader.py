@@ -6,7 +6,7 @@ Created on Wed Apr  3 15:31:41 2019
 @author: ivan.ivanov
 """
 import yaml
-from imgIO import GetSubDirName
+from utils.imgIO import GetSubDirName
 
 class ConfigReader:   
     def __init__(self):
@@ -110,7 +110,13 @@ class Dataset:
         if not isinstance(value, list):
             value = [value]
         self._background = value
-    
+        
+    def __repr__(self):
+        out = str(self.__class__) + '\n'
+        for (key, value) in self.__dict__.items():
+            out = out + '{}: {}\n'.format(key,value)
+        return out
+        
 class Processing:        
     _allowed_output_channels = ['Transmission', 'Retardance', 'Orientation', 'Polarization',
                                 'Orientation_x', 'Orientation_y',
@@ -187,8 +193,20 @@ class Processing:
     def separate_positions(self, value):   
         assert isinstance(value, bool), "separate_positions must be boolean"
         self._separate_positions = value
+        
+    def __repr__(self):
+        out = str(self.__class__) + '\n'
+        for (key, value) in self.__dict__.items():
+            out = out + '{}: {}\n'.format(key,value)
+        return out
     
 class Plotting:
     normalize_color_images = True
     save_birefringence_fig = False
     save_stokes_fig = False
+    
+    def __repr__(self):
+        out = str(self.__class__) + '\n'
+        for (key, value) in self.__dict__.items():
+            out = out + '{}: {}\n'.format(key,value)
+        return out

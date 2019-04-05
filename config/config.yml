@@ -1,17 +1,17 @@
 dataset:
-    processed_dir = '/flexo/ComputationalMicroscopy/Projects/brainarchitecture'
-    data_dir = '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/brainarchitecture/2018_10_02_MouseBrainSlice'
-    samples = ['SM_2018_1002_1633_1', 'SM_2018_1002_1640_1']
-    positions = 'all'
-    background = 'BG_2018_1002_1625_1'
+    processed_dir: '/flexo/ComputationalMicroscopy/Projects/brainarchitecture'
+    data_dir: '/flexo/ComputationalMicroscopy/SpinningDisk/RawData/brainarchitecture/2018_10_02_MouseBrainSlice'
+    samples: ['SM_2018_1002_1633_1', 'SM_2018_1002_1640_1']
+    positions: 'all'
+    background: 'BG_2018_1002_1625_1'
 
 processing:
-    output_channels = ['Transmission', 'Retardance', 'Orientation', 'Polarization']
-    circularity = 'rcp'
-    background_correction = 'Input'
-    flatfield_correction = False
-    azimuth_offset = 0
-    separate_positions = True
+    output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization']
+    circularity: 'rcp'
+    background_correction: 'Input'
+    flatfield_correction: False
+    azimuth_offset: 0
+    separate_positions: True
     
 plotting:
     normalize_color_images: True
