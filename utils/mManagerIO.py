@@ -11,7 +11,7 @@ from utils.imgIO import GetSubDirName
 class mManagerReader:
     """General mManager Reader"""
 
-    def __init__(self, ImgSmPath, ImgOutPath=[], inputChann=[], outputChann=[]):
+    def __init__(self, ImgSmPath, ImgOutPath=None, inputChann=[], outputChann=[]):
         """
         :param str ImgSmPath: full path of the acquisition folder
         (1 level up of pos folder)
@@ -49,6 +49,11 @@ class mManagerReader:
         self.size_y_um = 6.5/63 # (um) for zyla at 63X. Manager metafile currently does not log the correct pixel size
         self.size_z_um = metaFile['Summary']['z-step_um']
         self.time_stamp = metaFile['Summary']['Time']
+        self.img_fluor_bg = np.ones((4, self.height, self.width))
+        self.posIdx = 0  # assuming only single image for background
+        self.tIdx = 0
+        self.zIdx = 0
+        self.bg = None
             
     def read_img(self):
         """read a single image at (c,t,p,z)"""
@@ -201,7 +206,7 @@ class mManagerReader:
 
 class PolAcquReader(mManagerReader):
     """PolAcquistion Plugin output format reader"""
-    def __init__(self, ImgSmPath, ImgOutPath, verbose=0):
+    def __init__(self, ImgSmPath, ImgOutPath=None, verbose=0):
         """
         Extract PolAcquistion specific params from the metafile
         """
