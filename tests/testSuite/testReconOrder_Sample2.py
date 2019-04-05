@@ -13,7 +13,7 @@ import yaml
 import cv2
 import numpy as np
 
-from compute.multiDimProcess import findBackground
+from compute.multiDimProcess import process_background
 from utils.imgIO import parse_tiff_input
 from utils.imgProcessing import imBitConvert
 from tests.testMetrics import mse
@@ -70,9 +70,9 @@ class TestImageReconstruction(unittest.TestCase):
 
         :return: None
         '''
-        self.img_io, img_reconstructor = findBackground(self.RawDataPath, self.ProcessedPath, self.ImgDir, self.SmDir, self.BgDir, self.outputChann,
-                           BgDir_local=self.BgDir_local, flatField=self.flatField,bgCorrect=self.bgCorrect,
-                           ff_method='open')
+        self.img_io, img_reconstructor = process_background(self.RawDataPath, self.ProcessedPath, self.ImgDir, self.SmDir, self.BgDir, self.outputChann,
+                                                            BgDir_local=self.BgDir_local, flatField=self.flatField, bgCorrect=self.bgCorrect,
+                                                            ff_method='open')
         self.img_io.posIdx = 0
         self.img_io.tIdx = 0
         self.img_io.zIdx = 0

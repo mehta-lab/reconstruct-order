@@ -33,13 +33,11 @@ import sys
 sys.path.append(".") # Adds current directory to python search path.
 # sys.path.append("..") # Adds parent directory to python search path.
 # sys.path.append(os.path.dirname(sys.argv[0]))
-from compute.multiDimProcess import findBackground, loopPos
+from compute.multiDimProcess import process_background, loopPos, compute_flat_field, creat_metadata_object, parse_bg_options
 from utils.imgIO import GetSubDirName
 import os
 import argparse
 import yaml
-
-
 
 def parse_args():
     """Parse command line arguments
@@ -58,9 +56,6 @@ def parse_args():
 
 def read_config(config_fname):
     """Read the config file in yml format
-
-    TODO: validate config!
-
     :param str config_fname: fname of config yaml with its full path
     :return:
     """
@@ -68,22 +63,49 @@ def read_config(config_fname):
     with open(config_fname, 'r') as f:
         config = yaml.load(f)
 
+    assert 'RawDataPath' in config['dataset'], \
+        'Please provde RawDataPath in config file'
+    assert 'ProcessedPath' in config['dataset'], \
+        'Please provde ProcessedPath in config file'
+    assert 'ImgDir' in config['dataset'], \
+        'Please provde ImgDir in config file'
+    assert 'SmDir' in config['dataset'], \
+        'Please provde SmDir in config file'
+    config['dataset'].setdefault('BgDir', [])
+
+    config['processing'].setdefault('outputChann', ['Transmission', 'Retardance', 'Orientation', 'Scattering'])
+    config['processing'].setdefault('circularity', 'rcp')
+    config['processing'].setdefault('bgCorrect', 'None')
+    config['processing'].setdefault('flatField', False)
+    config['processing'].setdefault('batchProc', False)
+    config['processing'].setdefault('azimuth_offset', 0)
+    config['processing'].setdefault('PosList', 'all')
+    config['processing'].setdefault('separate_pos', True)
+    config['processing'].setdefault('ff_method', 'empty')
+
+    config['plotting'].setdefault('norm', True)
+    config['plotting'].setdefault('save_fig', False)
+    config['plotting'].setdefault('save_stokes_fig', False)
+    config['plotting'].setdefault('save_pol_fig', False)
+    config['plotting'].setdefault('save_mm_fig', False)
+
     return config
 
 def write_config(config, config_fname):
     with open(config_fname, 'w') as f:
         yaml.dump(config, f, default_flow_style=False)
 
-def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann, config, BgDir_local=None, flatField=False,
-               bgCorrect=True, circularity=False, azimuth_offset=0, separate_pos=True):
+def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, config):
     print('Processing ' + SmDir + ' ....')
-    img_io, img_reconstructor = findBackground(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann,
-                           BgDir_local=BgDir_local, flatField=flatField,bgCorrect=bgCorrect,
-                           ff_method='open', azimuth_offset=azimuth_offset) # find background tile
+    flatField = config['processing']['flatField']
+    img_io, img_io_bg = creat_metadata_object(config, RawDataPath, ImgDir, SmDir, BgDir)
+    img_io, img_io_bg = parse_bg_options(img_io, img_io_bg, config, RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir)
+    img_io, img_reconstructor = process_background(img_io, img_io_bg, config)
+    img_io.PosList = PosList
+    if flatField:  # find background flourescence for flatField corection
+        img_io = compute_flat_field(img_io, config)
     img_io.loopZ ='sample'
-    plot_config = config['plotting']
-    img_io = loopPos(img_io, img_reconstructor, plot_config, flatField=flatField, bgCorrect=bgCorrect,
-                     circularity=circularity, separate_pos=separate_pos)
+    img_io = loopPos(img_io, config, img_reconstructor)
     img_io.chNamesIn = img_io.chNamesOut
     img_io.writeMetaData()
     write_config(config, os.path.join(img_io.ImgOutPath, 'config.yml')) # save the config file in the processed folder
@@ -94,22 +116,9 @@ def run_action(args):
     ProcessedPath = config['dataset']['ProcessedPath']
     ImgDir = config['dataset']['ImgDir']
     SmDir = config['dataset']['SmDir']
-    if 'PosList' in config['dataset']:
-        PosList = config['dataset']['PosList']
-    else:
-        PosList = 'all'
     BgDir = config['dataset']['BgDir']
-    BgDir_local = config['dataset']['BgDir_local']
-    separate_pos = True
-    if 'separate_pos' in config['dataset']:
-        separate_pos = config['dataset']['separate_pos']
-    outputChann = config['processing']['outputChann']
-    circularity= config['processing']['circularity']
-    bgCorrect=config['processing']['bgCorrect']
-    flatField = config['processing']['flatField']
+    PosList = config['processing']['PosList']
     batchProc = config['processing']['batchProc']
-    azimuth_offset = config['processing']['azimuth_offset']
-
 
     if isinstance(SmDir, list):
         batchProc = True
@@ -138,15 +147,10 @@ def run_action(args):
 
         for SmDir, BgDir, PosList_ in zip(SmDirList, BgDirList, PosList):
             # if 'SM' in SmDir:
-            processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList_, BgDir, outputChann, config,
-                       BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
-                       circularity=circularity, azimuth_offset=azimuth_offset,
-                       separate_pos=separate_pos)
+            processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList_, BgDir, config)
+
     else:
-        processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, outputChann, config,
-                   BgDir_local=BgDir_local, flatField=flatField, bgCorrect=bgCorrect,
-                   circularity=circularity, azimuth_offset=azimuth_offset,
-                   separate_pos=separate_pos)
+        processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, config)
 
 if __name__ == '__main__':
     args = parse_args()
