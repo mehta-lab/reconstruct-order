@@ -78,6 +78,10 @@ def run_action(args):
     config.read_config(args.config)
             
     # Check that all paths to be analyzed exist
+    if len(set(config.dataset.background)) <= 1:
+        img_io_bg = readMetaData(RawDataPath, ProcessedPath, ImgDir, SmDir_, BgDir_, PosList_, config)
+        img_io_bg = [img_io_bg] * len(config.dataset.samples)
+    
     img_io =[]; img_io_bg = []
     for SmDir_, BgDir_, PosList_ in zip(SmDir, BgDir, PosList):
         img_io, img_io_bg = readMetaData(RawDataPath, ProcessedPath, ImgDir, SmDir_, BgDir_, PosList_, config)
@@ -93,7 +97,7 @@ def run_action(args):
     processImg(img_io, img_io_bg, config)
 
 class args:
-    config = '/Users//ivan.ivanov//Documents/Benchmark/config_Benchmark.txt'
+    config = '/Users/ivan.ivanov/Documents/Benchmark/config_Benchmark.txt'
 
 if __name__ == '__main__':
     args = args()
