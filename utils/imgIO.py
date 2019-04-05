@@ -143,26 +143,27 @@ def parse_tiff_input(img_io):
         if matchObj:
             img = loadTiff(acquDirPath, fileName)
             img -= img_io.blackLevel
-            if any(substring in matchObj.group(1) for substring in ['State', 'Pol']):
-                if 'State0' in matchObj.group(1):
+            if any(substring in matchObj.group(1) for substring in ['State', 'state', 'Pol']):
+                if '0' in matchObj.group(1):
                     ImgPol[0, :, :] = img
-                elif 'State1' in matchObj.group(1):
+                elif '1' in matchObj.group(1):
                     ImgPol[1, :, :] = img
-                elif 'State2' in matchObj.group(1):
+                elif '2' in matchObj.group(1):
                     ImgPol[2, :, :] = img
-                elif 'State3' in matchObj.group(1):
+                elif '3' in matchObj.group(1):
                     ImgPol[3, :, :] = img
-                elif 'State4' in matchObj.group(1):
+                elif '4' in matchObj.group(1):
                     img = np.reshape(img, (1, img_io.height, img_io.width))
                     ImgPol = np.concatenate((ImgPol, img))
             elif any(substring in matchObj.group(1) for substring in ['Computed Image']):
                 ImgProc += [img]
-            elif any(substring in matchObj.group(1) for substring in ['Confocal40','Confocal_40', 'Widefield', 'widefield']):
+            elif any(substring in matchObj.group(1) for substring in
+                     ['Confocal40','Confocal_40', 'Widefield', 'widefield', 'Fluor']):
                 if any(substring in matchObj.group(1) for substring in ['DAPI', '405', '405nm']):
                     ImgFluor[0,:,:] = img
                 elif any(substring in matchObj.group(1) for substring in ['GFP', '488', '488nm']):
                     ImgFluor[1,:,:] = img
-                elif any(substring in matchObj.group(1) for substring in ['TxR', 'TXR', '568', '561', '560']):
+                elif any(substring in matchObj.group(1) for substring in ['TxR', 'TXR', 'TX', '568', '561', '560']):
                     ImgFluor[2,:,:] = img
                 elif any(substring in matchObj.group(1) for substring in ['Cy5', 'IFP', '640', '637']):
                     ImgFluor[3,:,:] = img
@@ -198,3 +199,4 @@ def exportImg(img_io, imgDict):
             cv2.imwrite(os.path.join(output_path, fileName), imgDict[tiffName])
         else:
             cv2.imwrite(os.path.join(output_path, fileName), cv2.cvtColor(imgDict[tiffName], cv2.COLOR_RGB2BGR))
+
