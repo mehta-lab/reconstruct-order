@@ -34,9 +34,11 @@ sys.path.append(".") # Adds current directory to python search path.
 # sys.path.append("..") # Adds parent directory to python search path.
 # sys.path.append(os.path.dirname(sys.argv[0]))
 from compute.multiDimProcess import findBackground, loopPos
-from utils.imgIO import GetSubDirName, readMetaData
+from utils.ConfigReader import ConfigReader
+from utils.imgIO import readMetaData
 import os
 import argparse
+import yaml
 
 
 def parse_args():
@@ -72,44 +74,18 @@ def processImg(img_io_list, img_io_bg_list, config):
         img_io = loopPos(img_io, img_reconstructor, plot_config)
 
 def run_action(args):
-    config = read_config(args.config)
-    RawDataPath = config['dataset']['RawDataPath']
-    ProcessedPath = config['dataset']['ProcessedPath']
-    ImgDir = config['dataset']['ImgDir']
-    SmDir = config['dataset']['SmDir']
-    PosList = config['dataset']['PosList']
-    BgDir = config['dataset']['BgDir']
-
-    if not isinstance(SmDir, list):
-        if batchProc:
-            ImgPath = os.path.join(RawDataPath, ImgDir)
-            SmDir = GetSubDirName(ImgPath)
-        else:
-            SmDir = [SmDir]
-
-    # if input is e.g. 'all' or 'Pos1', use for all samples
-    if not isinstance(PosList, list):
-        PosList = [PosList]*len(SmDir)
-    # if input is ['Pos1','Pos2','Pos3'], use for all samples
-    elif not any(isinstance(i, list) for i in PosList):
-        PosList = [PosList]*len(SmDir)
-        
-    # Make BgDir same length as SmDir
-    if not isinstance(BgDir, list):
-        BgDir = [BgDir] * len(SmDir)
-            
-    assert len(SmDir) == len(BgDir) == len(PosList), \
-        'Length of the background directory list must be one or same as sample directory list'
+    config = ConfigReader()
+    config.read_config(args.config)
             
     # Check that all paths to be analyzed exist
     img_io =[]; img_io_bg = []
     for SmDir_, BgDir_, PosList_ in zip(SmDir, BgDir, PosList):
         img_io, img_io_bg = readMetaData(RawDataPath, ProcessedPath, ImgDir, SmDir_, BgDir_, PosList_, config)
-        img_io.SmDir = 
+        img_io.SmDir
         img_io.BgDir
         img_io.PosList
         PosList[i] = img_io.PosList
-        checkThatAllDirsExist(SmDir, BgDir, PosList):
+        checkThatAllDirsExist(SmDir, BgDir, PosList)
                 # OutputPath = OutputPath + '_pol'
         img_io.ImgOutPath = img_io_bg.OutputPath
         os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
