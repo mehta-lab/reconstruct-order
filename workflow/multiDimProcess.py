@@ -139,8 +139,9 @@ def compute_flat_field(img_io, config):
         img_fluor_bg = img_io.ImgFluorSum
     elif ff_method == 'empty':
         img_fluor_bg = img_io.ImgFluorMin
-    img_fluor_bg = img_fluor_bg - min(np.nanmin(img_fluor_bg[:]), 0) + 1 #add 1 to avoid 0
-    img_fluor_bg /= np.mean(img_fluor_bg)  # normalize the background to have mean = 1
+    for channel in range(img_fluor_bg.shape[0]):
+        img_fluor_bg[channel] = img_fluor_bg[channel] - min(np.nanmin(img_fluor_bg[channel]), 0) + 1 #add 1 to avoid 0
+        img_fluor_bg[channel] /= np.mean(img_fluor_bg[channel])  # normalize the background to have mean = 1
     img_io.img_fluor_bg = img_fluor_bg
     return img_io
 
