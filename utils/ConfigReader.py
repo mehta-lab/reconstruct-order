@@ -17,10 +17,10 @@ class ConfigReader:
         
     def read_config(self,path):
         with open(path, 'r') as f:
-            config = yaml.load(f)
+            self.yaml_config = yaml.load(f)
             
-        if 'dataset' in config:
-            for (key, value) in config['dataset'].items():
+        if 'dataset' in self.yaml_config:
+            for (key, value) in self.yaml_config['dataset'].items():
                 if key == 'processed_dir':
                     self.dataset.processed_dir = value
                 if key == 'data_dir':
@@ -32,8 +32,8 @@ class ConfigReader:
                 if key == 'background':
                     self.dataset.background = value
              
-        if 'processing' in config:
-            for (key, value) in config['processing'].items():
+        if 'processing' in self.yaml_config:
+            for (key, value) in self.yaml_config['processing'].items():
                 if key == 'output_channels':
                     self.processing.output_channels = value
                 if key == 'circularity':
@@ -47,8 +47,8 @@ class ConfigReader:
                 if key == 'separate_positions':
                     self.processing.separate_positions = value
          
-        if 'plotting' in config:
-            for (key, value) in config['plotting'].items():
+        if 'plotting' in self.yaml_config:
+            for (key, value) in self.yaml_config['plotting'].items():
                 if key == 'normalize_color_images':
                     self.plotting.normalize_color_images = value
                 if key == 'save_birefringence_fig':
@@ -67,13 +67,17 @@ class ConfigReader:
             self.dataset.samples = GetSubDirName(self.dataset.data_dir)         
             
         if not any(isinstance(i, list) for i in self.dataset.positions):
-            self.dataset.positions = self.dataset.positions*len(self.dataset.samples)
+            self.dataset.positions = [self.dataset.positions]*len(self.dataset.samples)
             
         if len(self.dataset.background) == 1:
             self.dataset.background = self.dataset.background * len(self.dataset.samples)
                 
         assert len(self.dataset.samples) == len(self.dataset.background) == len(self.dataset.positions), \
             'Length of the background directory list must be one or same as sample directory list'
+            
+    def write_config(self,path):
+        with open(path, 'w') as f:
+            yaml.dump(self.yaml_config, f, default_flow_style=False)
             
     def __repr__(self):
         out = str(self.__class__) + '\n'
@@ -86,6 +90,7 @@ class ConfigReader:
         return out
                 
 class Dataset:
+    n_samples = 0
     _processed_dir = []
     _data_dir = []
     _samples = []
@@ -126,6 +131,9 @@ class Dataset:
     def samples(self, value):
         if not isinstance(value, list):
             value = [value]
+        for sm in value:
+            assert os.path.exists(os.path.join(self.data_dir,sm)), 'sample directory {} does not exist'.format(sm)
+        self.n_samples = len(value)
         self._samples = value
         
     @positions.setter

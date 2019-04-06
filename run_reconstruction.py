@@ -33,11 +33,11 @@ import sys
 sys.path.append(".") # Adds current directory to python search path.
 # sys.path.append("..") # Adds parent directory to python search path.
 # sys.path.append(os.path.dirname(sys.argv[0]))
-from compute.multiDimProcess import process_background, loopPos, compute_flat_field, creat_metadata_object, parse_bg_options
+from compute.multiDimProcess import process_background, loopPos, compute_flat_field, read_metadata, parse_bg_options
 from utils.ConfigReader import ConfigReader
+from utils.imgIO import process_position_list
 import os
 import argparse
-import yaml
 
 def parse_args():
     """Parse command line arguments
@@ -54,15 +54,11 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def write_config(config, config_fname):
-    with open(config_fname, 'w') as f:
-        yaml.dump(config, f, default_flow_style=False)
-
 def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, config):
     print('Processing ' + SmDir + ' ....')
     flatField = config.processing.flatfield_correction
-    img_io, img_io_bg = creat_metadata_object(config, RawDataPath, ImgDir, SmDir, BgDir)
-    img_io, img_io_bg = parse_bg_options(img_io, img_io_bg, config, RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir)
+#    img_io, img_io_bg = creat_metadata_object(config, RawDataPath, ImgDir, SmDir, BgDir)
+#    img_io, img_io_bg = parse_bg_options(img_io, img_io_bg, config, RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir)
     img_io, img_reconstructor = process_background(img_io, img_io_bg, config)
     img_io.PosList = PosList
     if flatField:  # find background flourescence for flatField corection
@@ -71,19 +67,31 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, config
     img_io = loopPos(img_io, config, img_reconstructor)
     img_io.chNamesIn = img_io.chNamesOut
     img_io.writeMetaData()
-    write_config(config, os.path.join(img_io.ImgOutPath, 'config.yml')) # save the config file in the processed folder
+    config.write_config(os.path.join(img_io.ImgOutPath, 'config.yml')) # save the config file in the processed folder
 
 def run_action(args):
     config = ConfigReader()
     config.read_config(args.config)
     
-    split_data_dir = os.path.split(config.dataset.data_dir)
-    RawDataPath = split_data_dir[0]
-    ProcessedPath = config.dataset.processed_dir
-    ImgDir = split_data_dir[1]
-    SmDirList = config.dataset.samples
-    BgDirList = config.dataset.background
-    PosList = config.dataset.positions
+#    split_data_dir = os.path.split(config.dataset.data_dir)
+#    RawDataPath = split_data_dir[0]
+#    ProcessedPath = config.dataset.processed_dir
+#    ImgDir = split_data_dir[1]
+#    SmDirList = config.dataset.samples
+#    BgDirList = config.dataset.background
+#    PosList = config.dataset.positions
+    
+    # read meta data
+    img_obj_list, bg_obj_list = read_metadata(config)
+    config = process_position_list(img_obj_list, config)
+    # process background options
+    img_obj_list = parse_bg_options(img_obj_list, config)
+
+    
+    # call processImg once
+    
+    # make sure that bg is analyzed only once
+    
     
     for SmDir, BgDir, PosList_ in zip(SmDirList, BgDirList, PosList):
         processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList_, BgDir, config)
