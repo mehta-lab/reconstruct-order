@@ -1,20 +1,26 @@
 dataset:
-    RawDataPath: '../TestData/rawData/'
-    ProcessedPath: '../TestData/reconData/'
-    ImgDir: '2018_10_02_MouseBrainSlice'
-    SmDir: 'SM_2018_1002_1633_1'
-    BgDir: 'BG_2018_1002_1625_1'
-    BgDir_local: None
+    data_dir: '../TestData/rawData/2018_10_02_MouseBrainSlice'
+    processed_dir: '../TestData/reconData/'
+    samples: ['SM_2018_1002_1633_1']
+    positions: 'all'
+    background: 'BG_2018_1002_1625_1'
+#    BgDir_local: None
+
 processing:
-    outputChann: ['Transmission', 'Retardance', 'Orientation', 'Scattering', 'Retardance+Orientation',
-                   'Transmission+Retardance+Orientation', 'Scattering+Orientation', 'Retardance+Fluorescence',
-                   '405', '568', '640']
+    outputChann: ['Transmission', 'Retardance', 'Orientation', 'Scattering']
     circularity: 'rcp'
 #    bgCorrect: 'Local_filter'
-    bgCorrect: 'Auto'
-    flatField: False
+    background_correction: 'Input'
+    flatfield_correction: False
     batchProc: False
+    azimuth_offset: 0
+    separate_positions: True
+
 plotting:
-    norm: True
+    normalize_color_images: True
+    save_birefringence_fig: False
+    save_stokes_fig: False
+    save_polarization_fig: False
+    save_micromanager_fig: False
        
 

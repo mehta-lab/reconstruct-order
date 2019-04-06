@@ -9,11 +9,12 @@
 # python_version  :3.6
 
 import unittest
-import yaml
+import os
 import cv2
 import numpy as np
 
-from compute.multiDimProcess import process_background
+from compute.multiDimProcess import process_background, create_metadata_object, parse_bg_options
+from utils.ConfigReader import ConfigReader
 from utils.imgIO import parse_tiff_input
 from utils.imgProcessing import imBitConvert
 from tests.testMetrics import mse
@@ -49,20 +50,26 @@ class TestImageReconstruction(unittest.TestCase):
         '''
         super(TestImageReconstruction, self).__init__(*args, **kwargs)
 
-        with open(self.source_config_file, 'r') as f:
-            config = yaml.load(f)
-        self.RawDataPath = config['dataset']['RawDataPath']
-        self.ProcessedPath = config['dataset']['ProcessedPath']
-        self.ImgDir = config['dataset']['ImgDir']
-        self.SmDir = config['dataset']['SmDir']
-        self.BgDir = config['dataset']['BgDir']
-        self.BgDir_local = config['dataset']['BgDir_local']
-        self.outputChann = config['processing']['outputChann']
-        self.circularity = config['processing']['circularity']
-        self.bgCorrect = config['processing']['bgCorrect']
-        self.flatField = config['processing']['flatField']
-        self.batchProc = config['processing']['batchProc']
-        self.norm = config['plotting']['norm']
+        self.config = ConfigReader()
+        self.config.read_config(self.source_config_file)
+
+        split_data_dir = os.path.split(self.config.dataset.data_dir)
+        self.RawDataPath = split_data_dir[0]
+        self.ProcessedPath = self.config.dataset.processed_dir
+        self.ImgDir = split_data_dir[1]
+
+        self.SmDirList = self.config.dataset.samples
+        self.BgDirList = self.config.dataset.background
+        self.PosList = self.config.dataset.positions
+        #this test data has one element per list
+
+        self.SmDir = self.SmDirList[0]
+        self.BgDir = self.BgDirList[0]
+        self.outputChann = self.config.processing.output_channels
+        self.circularity = self.config.processing.circularity
+        self.bgCorrect = self.config.processing.background_correction
+        self.flatField = self.config.processing.flatfield_correction
+        self.norm = self.config.plotting.normalize_color_images
 
     def construct_all(self):
         '''
@@ -70,19 +77,21 @@ class TestImageReconstruction(unittest.TestCase):
 
         :return: None
         '''
-        self.img_io, img_reconstructor = process_background(self.RawDataPath, self.ProcessedPath, self.ImgDir, self.SmDir, self.BgDir, self.outputChann,
-                                                            BgDir_local=self.BgDir_local, flatField=self.flatField, bgCorrect=self.bgCorrect,
-                                                            ff_method='open')
+        img_io, img_io_bg = create_metadata_object(self.config, self.RawDataPath,
+                                                   self.ImgDir, self.SmDir, self.BgDir)
+        img_io, img_io_bg = parse_bg_options(img_io, img_io_bg, self.config,
+                                             self.RawDataPath, self.ProcessedPath,
+                                             self.ImgDir, self.SmDir, self.BgDir)
+
+        self.img_io, img_reconstructor = process_background(img_io, img_io_bg, self.config)
         self.img_io.posIdx = 0
         self.img_io.tIdx = 0
         self.img_io.zIdx = 0
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(self.img_io)
         img_stokes_sm = img_reconstructor.compute_stokes(ImgRawSm)
-        img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm, self.img_io.param_bg,
-                                                                      circularity=self.circularity,
-                                                                      bg_method=self.img_io.bg_method,
-                                                                      extra=False)  # background subtraction
-        [I_trans, retard, azimuth, polarization] = img_computed_sm
+        img_stokes_sm = img_reconstructor.correct_background(img_stokes_sm)
+        img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm)
+        [I_trans, retard, azimuth, polarization, _, _, _] = img_computed_sm
 
         self.scattering = 1 - polarization
         self.azimuth_degree = azimuth / np.pi * 180
@@ -96,7 +105,6 @@ class TestImageReconstruction(unittest.TestCase):
 
     def test_mse_Itrans(self):
         self.construct_all()
-        # self.assertLessEqual(mse(np.random.random_integers(0, 65536, size=(2048,2048)), np.random.random_integers(0, 65536, size=(2048,2048))), 100000)
         self.assertLessEqual(mse(self.I_trans, cv2.imread(self.target_ITrans, -1)), 50000)
 
     def test_mse_retard(self):
