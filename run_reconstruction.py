@@ -95,11 +95,7 @@ def run_action(args):
 
     for SmDir, BgDir, PosList_ in zip(SmDirList, BgDirList, PosList):
         processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList_, BgDir, config)
-        
-class args:
-    config = '/Users/ivan.ivanov/Documents/Benchmark/config_Benchmark.txt'
 
 if __name__ == '__main__':
-    args = args()
-#    args = parse_args()
+    args = parse_args()
     run_action(args)
