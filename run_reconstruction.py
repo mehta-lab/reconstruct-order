@@ -33,7 +33,7 @@ import sys
 sys.path.append(".") # Adds current directory to python search path.
 # sys.path.append("..") # Adds parent directory to python search path.
 # sys.path.append(os.path.dirname(sys.argv[0]))
-from compute.multiDimProcess import process_background, loopPos, compute_flat_field, creat_metadata_object, parse_bg_options
+from compute.multiDimProcess import process_background, loopPos, compute_flat_field, create_metadata_object, parse_bg_options
 from utils.ConfigReader import ConfigReader
 import os
 import argparse
@@ -58,12 +58,18 @@ def write_config(config, config_fname):
     with open(config_fname, 'w') as f:
         yaml.dump(config, f, default_flow_style=False)
 
+# (this function can be simplified)
 def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, config):
     print('Processing ' + SmDir + ' ....')
     flatField = config.processing.flatfield_correction
-    img_io, img_io_bg = creat_metadata_object(config, RawDataPath, ImgDir, SmDir, BgDir)
+    img_io, img_io_bg = create_metadata_object(config, RawDataPath, ImgDir, SmDir, BgDir)
     img_io, img_io_bg = parse_bg_options(img_io, img_io_bg, config, RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir)
+
+    # process_background constructs an ImgReconstructor
+    #   - calculates and adds the attribute 'stokes_param_bg' to the class
+    #   - adds the attribute "img_raw_bg" to the img_io input, which is the raw background data
     img_io, img_reconstructor = process_background(img_io, img_io_bg, config)
+
     img_io.PosList = PosList
     if flatField:  # find background flourescence for flatField corection
         img_io = compute_flat_field(img_io, config)
@@ -76,15 +82,17 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, config
 def run_action(args):
     config = ConfigReader()
     config.read_config(args.config)
-    
+
+    # RawDataPath is a subfolder of ImgDir
     split_data_dir = os.path.split(config.dataset.data_dir)
     RawDataPath = split_data_dir[0]
-    ProcessedPath = config.dataset.processed_dir
     ImgDir = split_data_dir[1]
+
+    ProcessedPath = config.dataset.processed_dir
     SmDirList = config.dataset.samples
     BgDirList = config.dataset.background
     PosList = config.dataset.positions
-    
+
     for SmDir, BgDir, PosList_ in zip(SmDirList, BgDirList, PosList):
         processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList_, BgDir, config)
         
