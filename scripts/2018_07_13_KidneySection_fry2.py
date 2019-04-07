@@ -22,7 +22,7 @@ Output channels indices:
 
 
 #get_ipython().run_line_magic('matplotlib', 'inline')
-from compute.multiDimProcess import process_background, loopPos
+from workflow.multiDimProcess import process_background, loopPos
 import seaborn as sns
 import os
 

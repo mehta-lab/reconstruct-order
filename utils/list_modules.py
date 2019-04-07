@@ -1,6 +1,6 @@
 from modulefinder import ModuleFinder
 finder = ModuleFinder()
-finder.run_script("../run_reconstruction.py")
+finder.run_script("../workflow/runReconstruction.py")
 # Get names of all the imported modules
 names = list(finder.modules.keys())
 # Get a sorted list of the root modules imported
