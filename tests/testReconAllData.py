@@ -1,6 +1,7 @@
 from workflow.runReconstruction import runReconstruction
 
-configfiles = ['config/config_mousebrainslice.yml', 'config/config_glassbeads.yml','config_mousebrainslice.yml','config_kidneytissue.yml']
+configfiles = ['config/config_mousebrainslice.yml', 'config/config_glassbeads.yml','config_u2os_cells.yml','config_kidneytissue.yml']
+#TODO: analysis runs fine on glass beads and u2os cells, but not on Kidney Tissue data and Mouse Brain slice. Needs debugging.
 
 if __name__ == '__main__':
     """
