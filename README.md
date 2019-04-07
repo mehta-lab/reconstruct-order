@@ -1,5 +1,6 @@
 # ReconstructOrder
-Reconstruct retardance, orientation, scattering images from polarized images output by Open PolScope
+Reconstruct birefringence, slow axis, transmission, and degree of polarization from polarization-resolved images.
+The data is acquired with Micro-Manager and OpenPolScope acquisition plugin.
 
 ## Getting Started
 ### Installation 
@@ -10,7 +11,7 @@ matplotlib
 numpy
 cv2
 
-If you are running ReconstructOrder on fry2, it is recommended to run it in a Docker container. 
+If you are running ReconstructOrder on a compute node (e.g., fry2@czbiohub), it is recommended to run it in a Docker container. 
 Docker is the virtual environment with all the required libraries pre-installed so you can run your copy of 
 ReconstructOrder without recreating the environment. 
 ReconstructOrder can be run inside the imaging Docker container that has been built on fry2. 
@@ -25,4 +26,4 @@ To run reconstruction, do
 python /ReconstructOrder/workflow/runReconstruction.py --config <your config file>.yml
 ```
 
-See config/config.yml file for example and explanation. 
+See /ReconstructOrder/config/config_example.yml file for an example and explanation of parameters. 
