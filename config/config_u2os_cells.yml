@@ -1,0 +1,23 @@
+dataset:
+    data_dir: '/Users/shalin.mehta/Documents/images_local/testDataReconstructOrder/raw/2019_04_02_U2OS_plin2_SirActin_MTs'
+    processed_dir: '/Users/shalin.mehta/Documents/images_local/testDataReconstructOrder/processed/'
+    samples: ['2019-4-2-U2OS_plin2_DS1_2']
+    background: 'BG_2019_0402_1052_1'
+    positions: '4-Pos_000_000'
+
+processing:
+    output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization']
+    circularity: 'rcp'
+    background_correction: 'Local_filter'
+    flatfield_correction: False
+    azimuth_offset: 0
+    
+plotting:
+    normalize_color_images: True
+    save_birefringence_fig: False
+    save_stokes_fig: False
+    save_polarization_fig: False
+    save_micromanager_fig: False
+    
+       
+

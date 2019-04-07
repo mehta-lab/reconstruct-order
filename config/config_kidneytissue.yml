@@ -1,0 +1,23 @@
+dataset:
+    data_dir: '/Users/shalin.mehta/Documents/images_local/testDataReconstructOrder/raw/2019_02_15_kidney_slice'
+    processed_dir: '/Users/shalin.mehta/Documents/images_local/testDataReconstructOrder/'
+    samples: ['SMS_2018_1227_1433_1']
+    background: 'BG_2019_0215_1337_1'
+    positions: '2-Pos_017_22'
+
+processing:
+    output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization','Transmission+Retardance+Orientation']
+    circularity: 'rcp'
+    background_correction: 'Input'
+    flatfield_correction: False
+    azimuth_offset: 0
+    
+plotting:
+    normalize_color_images: True
+    save_birefringence_fig: False
+    save_stokes_fig: False
+    save_polarization_fig: False
+    save_micromanager_fig: False
+    
+       
+
