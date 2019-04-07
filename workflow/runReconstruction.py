@@ -1,43 +1,27 @@
 """
-Reconstruct retardance and orientation maps from images taken with different polarized illumination output
-by Open compute. This script using the 4- or 5-frame reconstruction algorithm described in Michael Shribak and
-Rudolf Oldenbourg, 2003.
- 
-* outputChann: (list) output channel names
-    Current available output channel names:
-        'Transmission'
-        'Retardance'
-        'Orientation' 
-        'Retardance+Orientation'
-        'Transmission+Retardance+Orientation'
-        '405'
-        '488'
-        '568'
-        '640'
-        
-* circularity: (bool) flip the sign of polarization. Set "True" for Dragonfly and "False" for ASI
-* bgCorrect: (str) 
-    'Auto' (default) to correct the background using background from the metadata if available, otherwise use input background folder;
-    'None' for no background correction; 
-    'Input' to always use input background folder   
-* flatField: (bool) perform flat-field correction if True
-* norm: (bool) scale images individually for optimal dynamic range. Set False for tiled images
-    
+runReconstruction:
+Reconstruct birefringence, slow axis, transmission, and degree of polarization from polarization-resolved images.
+This script provides a convenient method to workflow process multi-dimensional images acquired with Micro-Manager and OpenPolScope acquisition plugin.
+
+Parameters
+----------
+    --config: path to configuration file.
+Returns
+-------
+    None: the script writes data to disk.
+
 """
-
-# In[1]:
-
-
-# get_ipython().run_line_magic('matplotlib', 'inline')
 import sys
 sys.path.append(".") # Adds current directory to python search path.
 # sys.path.append("..") # Adds parent directory to python search path.
 # sys.path.append(os.path.dirname(sys.argv[0]))
-from compute.multiDimProcess import process_background, loopPos, compute_flat_field, create_metadata_object, parse_bg_options
+from workflow.multiDimProcess import process_background, loopPos, compute_flat_field, create_metadata_object, parse_bg_options
 from utils.ConfigReader import ConfigReader
 import os
 import argparse
 import yaml
+
+
 
 def parse_args():
     """Parse command line arguments
@@ -56,9 +40,10 @@ def parse_args():
 
 def write_config(config, config_fname):
     with open(config_fname, 'w') as f:
-        yaml.dump(config, f, default_flow_style=False)
+        yaml.dump(config, f, default_flow_style=True)
+        #TODO: the output of output config is not in the correct format.
 
-# (this function can be simplified)
+#TODO: the intent of img_io variable is not clear - does it contain only metadata from Micro-Manager and user?
 def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, config):
     print('Processing ' + SmDir + ' ....')
     flatField = config.processing.flatfield_correction
@@ -79,9 +64,9 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, config
     img_io.writeMetaData()
     write_config(config, os.path.join(img_io.ImgOutPath, 'config.yml')) # save the config file in the processed folder
 
-def run_action(args):
+def runReconstruction(configfile):
     config = ConfigReader()
-    config.read_config(args.config)
+    config.read_config(configfile)
 
     # RawDataPath is a subfolder of ImgDir
     split_data_dir = os.path.split(config.dataset.data_dir)
@@ -96,6 +81,7 @@ def run_action(args):
     for SmDir, BgDir, PosList_ in zip(SmDirList, BgDirList, PosList):
         processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList_, BgDir, config)
 
+
 if __name__ == '__main__':
     args = parse_args()
-    run_action(args)
+    runReconstruction(args.config)

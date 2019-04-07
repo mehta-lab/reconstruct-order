@@ -13,7 +13,7 @@ import os
 import cv2
 import numpy as np
 
-from compute.multiDimProcess import process_background, create_metadata_object, parse_bg_options
+from workflow.multiDimProcess import process_background, create_metadata_object, parse_bg_options
 from utils.ConfigReader import ConfigReader
 from utils.imgIO import parse_tiff_input
 from utils.imgProcessing import imBitConvert
@@ -42,7 +42,7 @@ class TestImageReconstruction(unittest.TestCase):
                          condition + \
                          "/img_Scattering_t000_p000_z000.tif"
 
-    source_config_file = '../../config/MouseBrainSlice_1.yml'
+    source_config_file = '../../config/config_MouseBrainSlice1_unittest.yml'
     def __init__(self, *args, **kwargs):
         '''
         Loads source/raw data configuration file.
@@ -72,7 +72,7 @@ class TestImageReconstruction(unittest.TestCase):
 
     def construct_all(self):
         '''
-        Reconstruct raw data for comparison with target (Recon) data.  Follows procedures outlined in "run_reconstruction.py"
+        Reconstruct raw data for comparison with target (Recon) data.  Follows procedures outlined in "runReconstruction.py"
 
         :return: None
         '''
