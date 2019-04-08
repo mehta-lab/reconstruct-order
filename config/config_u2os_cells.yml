@@ -1,6 +1,6 @@
 dataset:
-    data_dir: '/Users/shalin.mehta/Documents/images_local/testDataReconstructOrder/raw/2019_04_02_U2OS_plin2_SirActin_MTs'
-    processed_dir: '/Users/shalin.mehta/Documents/images_local/testDataReconstructOrder/processed/'
+    data_dir: '/flexo/ComputationalMicroscopy/Projects/virtualstaining/testDataReconstructOrder/raw/2019_04_02_U2OS_plin2_SirActin_MTs'
+    processed_dir: '/flexo/ComputationalMicroscopy/Projects/virtualstaining/testDataReconstructOrder/processed/'
     samples: ['2019-4-2-U2OS_plin2_DS1_2']
     background: 'BG_2019_0402_1052_1'
     positions: '4-Pos_000_000'
