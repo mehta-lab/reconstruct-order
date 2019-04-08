@@ -1,6 +1,6 @@
 dataset:
-    data_dir: '/Users/shalin.mehta/Documents/images_local/testDataReconstructOrder/raw/2019_02_27_GlassBeads9to13um'
-    processed_dir: '/Users/shalin.mehta/Documents/images_local/testDataReconstructOrder/processed'
+    data_dir: '/flexo/ComputationalMicroscopy/Projects/virtualstaining/testDataReconstructOrder/raw/2019_02_27_GlassBeads9to13um'
+    processed_dir: '/flexo/ComputationalMicroscopy/Projects/virtualstaining/testDataReconstructOrder/processed'
     samples: ['SMSwithBF_2019_0227_1519_2']
     background: 'BG_2019_0227_1555_1'
     positions: 'Pos0'

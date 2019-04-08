@@ -1,6 +1,6 @@
 dataset:
-    data_dir: '/Users/shalin.mehta/Documents/images_local/testDataReconstructOrder/raw/2018_10_02_MouseBrainSlice'
-    processed_dir: '/Users/shalin.mehta/Documents/images_local/testDataReconstructOrder/processed'
+    data_dir: '/flexo/ComputationalMicroscopy/Projects/virtualstaining/testDataReconstructOrder/raw/2018_10_02_MouseBrainSlice'
+    processed_dir: '/flexo/ComputationalMicroscopy/Projects/virtualstaining/testDataReconstructOrder/processed'
     samples: ['SM_2018_1002_1633_1','SM_2018_1002_1640_1']
     background: 'BG_2018_1002_1625_1'
     positions: 'Pos0'
