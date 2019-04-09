@@ -46,7 +46,9 @@ class ConfigReader:
                     self.processing.azimuth_offset = value
                 if key == 'separate_positions':
                     self.processing.separate_positions = value
-         
+                if key == 'n_slice_local_bg':
+                    self.processing.n_slice_local_bg = value
+
         if 'plotting' in config:
             for (key, value) in config['plotting'].items():
                 if key == 'normalize_color_images':
@@ -150,7 +152,7 @@ class Dataset:
         return out
         
 class Processing:        
-    _allowed_output_channels = ['Transmission', 'Retardance', 'Orientation', 'Polarization',
+    _allowed_output_channels = ['Brightfield', 'Retardance', 'Orientation', 'Polarization',
                                 'Orientation_x', 'Orientation_y',
                                 'Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
                                 'Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3',
@@ -162,12 +164,13 @@ class Processing:
     _allowed_background_correction_values = ['None', 'Input', 'Local_filter', 'Local_defocus', 'Auto']
     
     def __init__(self):
-        self._output_channels = ['Transmission', 'Retardance', 'Orientation', 'Polarization']
+        self._output_channels = ['Brightfield', 'Retardance', 'Orientation', 'Polarization']
         self._circularity = 'rcp'
         self._background_correction = 'None'
         self._flatfield_correction = False
         self._azimuth_offset = 0
         self._separate_positions = True
+        self._n_slice_local_bg = 1
         
     @property
     def output_channels(self):
@@ -192,7 +195,11 @@ class Processing:
     @property
     def separate_positions(self):
         return self._separate_positions
-    
+
+    @property
+    def n_slice_local_bg(self):
+        return self._n_slice_local_bg
+
     @output_channels.setter
     def output_channels(self, value):     
         if not isinstance(value, list):
@@ -225,7 +232,12 @@ class Processing:
     def separate_positions(self, value):   
         assert isinstance(value, bool), "separate_positions must be boolean"
         self._separate_positions = value
-        
+
+    @n_slice_local_bg.setter
+    def n_slice_local_bg(self, value):
+        assert isinstance(value, int), "n_slice_local_bg must be integer"
+        self._n_slice_local_bg = value
+
     def __repr__(self):
         out = str(self.__class__) + '\n'
         for (key, value) in self.__dict__.items():

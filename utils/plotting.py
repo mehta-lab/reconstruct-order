@@ -84,7 +84,7 @@ def plot_birefringence(img_io, imgs, spacing=20, vectorScl=5, zoomin=False, dpi=
     
     imgDict = {}
     for chann in outputChann:
-        if chann == 'Transmission':
+        if chann == 'Brightfield':
             img = imBitConvert(I_trans * 10 ** 4, bit=16, norm=False)  # AU, set norm to False for tiling images
             
         elif chann == 'Retardance':
@@ -213,7 +213,7 @@ def plot_recon_images(I_trans, retard, azimuth, polarization, I_azi_ret, I_azi_s
     ax1 = plt.subplot(2, 3, 1)
     plt.tick_params(labelbottom=False, labelleft=False)  # labels along the bottom edge are off
     ax_trans = plt.imshow(imClip(I_trans, tol=1), cmap='gray')
-    plt.title('Transmission')
+    plt.title('Brightfield')
     plt.xticks([]), plt.yticks([])
     divider = make_axes_locatable(ax1)
     cax = divider.append_axes('right', size='5%', pad=0.05)

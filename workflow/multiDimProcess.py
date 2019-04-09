@@ -105,9 +105,15 @@ def process_background(img_io, img_io_bg, config):
     img_io.img_raw_bg = ImgRawBg
     circularity = config.processing.circularity
     azimuth_offset = config.processing.azimuth_offset
-    img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=img_io.bg_method, swing=img_io_bg.swing,
-                                         wavelength=img_io_bg.wavelength, output_path=img_io_bg.ImgOutPath,
-                                         azimuth_offset=azimuth_offset, circularity=circularity)
+    n_slice_local_bg = config.processing.n_slice_local_bg
+    img_reconstructor = ImgReconstructor(ImgRawBg,
+                                         bg_method=img_io.bg_method,
+                                         n_slice_local_bg=n_slice_local_bg,
+                                         swing=img_io_bg.swing,
+                                         wavelength=img_io_bg.wavelength,
+                                         output_path=img_io_bg.ImgOutPath,
+                                         azimuth_offset=azimuth_offset,
+                                         circularity=circularity)
     if img_io.bg_correct:
         stokes_param_bg = img_reconstructor.compute_stokes(ImgRawBg)
         # print('denoising the background...')
@@ -196,14 +202,14 @@ def loopT(img_io, config, img_reconstructor=None):
     for tIdx in range(0, img_io.nTime):
         img_io.tIdx = tIdx
         if img_io.loopZ == 'sample':
-            if img_io.bg_method == 'Local_defocus':
-                img_io_bg = img_io.bg_local
-                print('compute defocused backgorund at pos{} ...'.format(img_io_bg.posIdx))
-                img_io_bg.tIdx = tIdx
-                img_io_bg.zIdx = 0
-                ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
-                img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
-                img_io.param_bg = img_stokes_bg
+            # if img_io.bg_method == 'Local_defocus':
+            #     img_io_bg = img_io.bg_local
+            #     print('compute defocused backgorund at pos{} ...'.format(img_io_bg.posIdx))
+            #     img_io_bg.tIdx = tIdx
+            #     img_io_bg.zIdx = 0
+            #     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
+            #     img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
+            #     img_io.param_bg = img_stokes_bg
             img_io = loopZSm(img_io, config, img_reconstructor)
 
         else:
@@ -229,7 +235,7 @@ def loopZSm(img_io, config, img_reconstructor=None):
     pol_names = ['Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4']
     stokes_names = ['Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3']
     stokes_names_sm = [x + '_sm' for x in stokes_names]
-    birefring_names = ['Transmission', 'Retardance', '+Orientation',
+    birefring_names = ['Brightfield', 'Retardance', '+Orientation',
                        'Retardance+Orientation', 'Scattering+Orientation', 'Transmission+Retardance+Orientation',
                        'Retardance+Fluorescence', 'Retardance+Fluorescence_all']
     save_stokes = any(chan in stokes_names + stokes_names_sm
@@ -237,7 +243,87 @@ def loopZSm(img_io, config, img_reconstructor=None):
     save_birefring = any(chan in birefring_names
                for chan in img_io.chNamesOut) or save_fig
     save_pol = any(chan in pol_names for chan in img_io.chNamesOut) or save_pol_fig
+    stokes_param_sm_stack = [[] for i in range(len(stokes_names))]
+    n_slice_local_bg = img_reconstructor.n_slice_local_bg
+    for z_stack_idx in range(0, img_io.nZ, n_slice_local_bg):
+        for zIdx in range(z_stack_idx, z_stack_idx + n_slice_local_bg):
+            print('Processing position %03d, time %03d, z %03d ...' % (posIdx, tIdx, zIdx))
+            plt.close("all")  # close all the figures from the last run
+            img_io.zIdx = zIdx
+            ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
+            ImgFluor = correct_flat_field(img_io, ImgFluor)
+            img_dict = {}
+            if save_stokes or save_birefring:
+                stokes_param_sm = img_reconstructor.compute_stokes(ImgRawSm)
+                for stack, img in zip(stokes_param_sm_stack, stokes_param_sm):
+                    stack.append(img)
+                # retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images
+            if isinstance(ImgBF, np.ndarray):
+                ImgBF = ImgBF[0, :, :] / img_reconstructor.stokes_param_bg[0]  # flat-field correction
+                img_dict.update({'Brightfield': ImgBF})
+            if save_pol:
+                imgs_pol = []
+                for i in range(ImgRawSm.shape[0]):
+                    imgs_pol += [ImgRawSm[i, ...] / img_io.img_raw_bg[i, ...]]
+                if save_pol_fig:
+                    plot_pol_imgs(img_io, imgs_pol, pol_names)
+                imgs_pol = [imBitConvert(img * 10 ** 4, bit=16) for img in imgs_pol]
+                img_dict.update(dict(zip(pol_names, imgs_pol)))
+            exportImg(img_io, img_dict)
+        stokes_param_sm_stack = [np.stack(stack, axis=-1) for stack in stokes_param_sm_stack]
+        stokes_param_sm_stack_tm = img_reconstructor.correct_background(stokes_param_sm_stack)
+        birfring_stacks = \
+            img_reconstructor.reconstruct_birefringence(stokes_param_sm_stack_tm)
+        img_dict = {}
+        for zIdx in range(z_stack_idx, z_stack_idx + n_slice_local_bg):
+            plt.close("all")  # close all the figures from the last run
+            img_io.zIdx = zIdx
+            z_sub_idx = zIdx - z_stack_idx
+            [s0, retard, azimuth, polarization, s1, s2, s3] = [stack[..., z_sub_idx] for stack in birfring_stacks]
+            if save_birefring:
+                imgs = [ImgBF, retard, azimuth, polarization, ImgFluor]
+                img_io, img_dict = plot_birefringence(img_io, imgs, spacing=20, vectorScl=2, zoomin=False,
+                                                      dpi=200,
+                                                      norm=norm, plot=save_fig)
+            if save_stokes:
+                img_stokes = [s0, s1, s2, s3]
+                if save_stokes_fig:
+                    plot_stokes(img_io, img_stokes, img_stokes_sm)
+                img_stokes = [x.astype(np.float32, copy=False) for x in img_stokes]
+                img_stokes_sm = [x.astype(np.float32, copy=False) for x in img_stokes_sm]
+                img_stokes_dict = dict(zip(stokes_names, img_stokes))
+                img_stokes_sm_dict = dict(zip(stokes_names_sm, img_stokes_sm))
+                img_dict.update(img_stokes_dict)
+                img_dict.update(img_stokes_sm_dict)
+            exportImg(img_io, img_dict)
+    return img_io
 
+def loo_z_ouput(img_io, config, img_reconstructor=None):
+    """
+        Loop through each z in the sample metadata; computes and export only images in the
+        supplied output channels (stokes, birefringence, background corrected raw pol images);
+        save figures of images if save_fig is True
+        TODO: only process user input list of z
+        """
+
+    tIdx = img_io.tIdx
+    posIdx = img_io.posIdx
+    norm = config.plotting.normalize_color_images
+    save_fig = config.plotting.save_birefringence_fig
+    save_stokes_fig = config.plotting.save_stokes_fig
+    save_pol_fig = config.plotting.save_polarization_fig
+    save_mm_fig = config.plotting.save_micromanager_fig
+    pol_names = ['Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4']
+    stokes_names = ['Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3']
+    stokes_names_sm = [x + '_sm' for x in stokes_names]
+    birefring_names = ['Brightfield', 'Retardance', '+Orientation',
+                       'Retardance+Orientation', 'Scattering+Orientation', 'Transmission+Retardance+Orientation',
+                       'Retardance+Fluorescence', 'Retardance+Fluorescence_all']
+    save_stokes = any(chan in stokes_names + stokes_names_sm
+                      for chan in img_io.chNamesOut) or any([save_stokes_fig, save_mm_fig])
+    save_birefring = any(chan in birefring_names
+                         for chan in img_io.chNamesOut) or save_fig
+    save_pol = any(chan in pol_names for chan in img_io.chNamesOut) or save_pol_fig
     for zIdx in range(0, img_io.nZ):
         # for zIdx in range(0, 1):
         print('Processing position %03d, time %03d, z %03d ...' % (posIdx, tIdx, zIdx))
@@ -268,8 +354,8 @@ def loopZSm(img_io, config, img_reconstructor=None):
             if save_birefring:
                 imgs = [ImgBF, retard, azimuth, polarization, ImgFluor]
                 img_io, img_dict = plot_birefringence(img_io, imgs, spacing=20, vectorScl=2, zoomin=False,
-                                                  dpi=200,
-                                                  norm=norm, plot=save_fig)
+                                                      dpi=200,
+                                                      norm=norm, plot=save_fig)
             if save_stokes:
                 if save_stokes_fig:
                     plot_stokes(img_io, img_stokes, img_stokes_sm)
