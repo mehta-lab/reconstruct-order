@@ -6,6 +6,7 @@ import numpy as np
 import glob
 import re
 import cv2
+from shutil import copy2
 
 def GetSubDirName(ImgPath):
     assert os.path.exists(ImgPath), 'Input folder does not exist!' 
@@ -28,6 +29,15 @@ def FindDirContainPos(ImgPath):
     else:
         return ImgPath
 
+def copy_files_in_sub_dirs(input_path, output_path):
+    assert os.path.exists(input_path), 'Input folder does not exist!'
+    os.makedirs(output_path, exist_ok=True)
+    sub_dir_paths = glob.glob(os.path.join(input_path, '*/'))
+    for sub_dir_path in sub_dir_paths:
+        src_file_paths = glob.glob(os.path.join(sub_dir_path, '*.*'))
+        for src_file_path in src_file_paths:
+            if os.path.isfile(src_file_path):
+                copy2(src_file_path, output_path)
 
 def loadTiff(acquDirPath, acquFiles):
     """
@@ -188,15 +198,16 @@ def sort_pol_channels(img_pol):
         img_pol = np.stack((I_ext, I_0, I_45, I_90, I_135))  # order the channel following stokes calculus convention
     return img_pol
 
-def exportImg(img_io, imgDict):
+def exportImg(img_io, img_dict):
     tIdx = img_io.tIdx
     zIdx = img_io.zIdx
     posIdx = img_io.posIdx
     output_path = img_io.img_out_pos_path
-    for tiffName in img_io.chNamesOut:
-        fileName = 'img_'+tiffName+'_t%03d_p%03d_z%03d.tif'%(tIdx, posIdx, zIdx)
-        if len(imgDict[tiffName].shape)<3:
-            cv2.imwrite(os.path.join(output_path, fileName), imgDict[tiffName])
-        else:
-            cv2.imwrite(os.path.join(output_path, fileName), cv2.cvtColor(imgDict[tiffName], cv2.COLOR_RGB2BGR))
+    for tiffName in img_dict:
+        if tiffName in img_io.chNamesOut:
+            fileName = 'img_'+tiffName+'_t%03d_p%03d_z%03d.tif'%(tIdx, posIdx, zIdx)
+            if len(img_dict[tiffName].shape)<3:
+                cv2.imwrite(os.path.join(output_path, fileName), img_dict[tiffName])
+            else:
+                cv2.imwrite(os.path.join(output_path, fileName), cv2.cvtColor(img_dict[tiffName], cv2.COLOR_RGB2BGR))
 

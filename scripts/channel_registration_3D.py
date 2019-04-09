@@ -58,7 +58,7 @@ def translate_3D(images, channels, registration_params, size_z_um):
     registered_images = []
     for chan, image in zip(channels, images):
         # use shifts of retardance channel for all label-free channels
-        if chan in ['Transmission', 'Retardance', 'Orientation','Orientation_x',
+        if chan in ['Brightfield', 'Retardance', 'Orientation','Orientation_x',
                     'Orientation_y', 'Polarization',
                     'Pol_State_0', 'Pol_State_1',
                     'Pol_State_2', 'Pol_State_3', 'Pol_State_4']:

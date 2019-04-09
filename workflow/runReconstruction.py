@@ -25,8 +25,6 @@ import yaml
 
 def parse_args():
     """Parse command line arguments
-
-    In python namespaces are implemented as dictionaries
     :return: namespace containing the arguments passed.
     """
 
