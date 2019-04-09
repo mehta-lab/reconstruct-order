@@ -7,7 +7,7 @@ by Open compute. This script using the 4- or 5-frame reconstruction algorithm de
 Rudolf Oldenbourg, 2003.
  
 Output channels indices:
- 0-'Transmission'
+ 0-'Brightfield'
  1-'Retardance'
  2-'Orientation', 
  3-'Retardance+Orientation'
@@ -82,7 +82,7 @@ BgDir = 'BG_2018_0703_1829_1'
 
 ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
 ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir) # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'          
-outputChann = ['Transmission', 'Retardance', 'Orientation',                             
+outputChann = ['Brightfield', 'Retardance', 'Orientation',
                             '405','488','568']# channels to output, see readme for channel names
 flipPol=True # flip the sign of polarization
 bgCorrect=True
