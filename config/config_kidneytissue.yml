@@ -1,9 +1,9 @@
 dataset:
     data_dir: '/flexo/ComputationalMicroscopy/Projects/virtualstaining/testDataReconstructOrder/raw/2019_02_15_kidney_slice'
-    processed_dir: '/flexo/ComputationalMicroscopy/Projects/virtualstaining/testDataReconstructOrder/'
+    processed_dir: '/flexo/ComputationalMicroscopy/Projects/virtualstaining/testDataReconstructOrder/processed'
     samples: ['SMS_2018_1227_1433_1']
     background: 'BG_2019_0215_1337_1'
-    positions: '2-Pos_017_22'
+    positions: '2-Pos_017_022'
 
 processing:
     output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization','Transmission+Retardance+Orientation']
