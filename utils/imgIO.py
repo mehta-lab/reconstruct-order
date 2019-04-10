@@ -28,19 +28,20 @@ def FindDirContainPos(ImgPath):
     else:
         return ImgPath
     
-def process_position_list(img_io, config):
+def process_position_list(img_obj_list, config):
     """
     Make sure all members of positions are part of io_obj.
     If positions = 'all', replace with actual list of positions
     """
-    for idx, io_obj in enumerate(img_io):
+    for idx, io_obj in enumerate(img_obj_list):
         pos_list = config.dataset.positions[idx]
         if pos_list[0] == 'all':
             config.dataset.positions[idx] = io_obj.PosList
         else:
             assert all(i in io_obj.PosList for i in pos_list), \
             'Position list {} for sample in {} is invalid'.format(pos_list, io_obj.ImgSmPath)
-    return config
+            img_obj_list[idx].PosList = pos_list
+    return img_obj_list, config
 
 
 def loadTiff(acquDirPath, acquFiles):

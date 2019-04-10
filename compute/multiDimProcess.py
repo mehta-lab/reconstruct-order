@@ -4,46 +4,21 @@ import matplotlib
 
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import re
 import cv2
-import time
-import copy
-from utils.imgIO import parse_tiff_input, exportImg, GetSubDirName, FindDirContainPos
+from utils.imgIO import parse_tiff_input, exportImg
 from .reconstruct import ImgReconstructor
 from utils.imgProcessing import ImgMin
 from utils.plotting import plot_birefringence, plot_stokes, plot_pol_imgs, plot_Polacquisition_imgs
 from utils.mManagerIO import mManagerReader, PolAcquReader
-from utils.imgProcessing import ImgLimit, imBitConvert
-from skimage.restoration import denoise_tv_chambolle
+from utils.imgProcessing import imBitConvert
 
-#def creat_metadata_object(config, RawDataPath, ImgDir, SmDir, BgDir):
-#    """
-#    Create metadata_object for sample and background images.
-#    Pass PolAcquistion specific paramters from background to sample object
-#
-#    """
-#    outputChann = config.processing.output_channels
-#    ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir)  # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
-#    ImgSmPath = FindDirContainPos(ImgSmPath)
-#    ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir)  # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
-#    try:
-#        img_io = PolAcquReader(ImgSmPath)
-#    except:
-#        img_io = mManagerReader(ImgSmPath, outputChann=outputChann)
-#    img_io_bg = PolAcquReader(ImgBgPath)
-#    img_io.bg = img_io_bg.bg
-#    img_io.swing = img_io_bg.swing
-#    img_io.wavelength = img_io_bg.wavelength
-#    img_io.blackLevel = img_io_bg.blackLevel
-#    return img_io, img_io_bg
-
-def create_metadata_object(data_path):
+def create_metadata_object(data_path, config):
     """
     """
     try:
-        img_obj = PolAcquReader(data_path)
+        img_obj = PolAcquReader(data_path, outputChann = config.processing.output_channels)
     except:
-        img_obj = mManagerReader(data_path)
+        img_obj = mManagerReader(data_path, outputChann = config.processing.output_channels)
     return img_obj
 
 def read_metadata(config):
@@ -52,84 +27,29 @@ def read_metadata(config):
     # If one background is used for all samplem, read only once
     if len(set(config.dataset.background)) <= 1:
         background_path = os.path.join(config.dataset.data_dir,config.dataset.background[0])
-        bg_obj_list.append(create_metadata_object(background_path))
+        bg_obj = create_metadata_object(background_path, config)
+        bg_obj_list.append(bg_obj)
     else:
         for background in set(config.dataset.background):
             background_path = os.path.join(config.dataset.data_dir, background)
-            bg_obj_list.append(create_metadata_object(background_path))
+            bg_obj = create_metadata_object(background_path, config)
+            bg_obj_list.append(bg_obj)
             
     for sample in config.dataset.samples:
         sample_path = os.path.join(config.dataset.data_dir, sample)
-        img_obj_list.append(create_metadata_object(sample_path))
+        img_obj = create_metadata_object(sample_path, config)
+        img_obj_list.append(img_obj)
         
-    if config.dataset.n_samples == len(bg_obj_list):
-        for i in range(config.dataset.n_samples):
-            img_obj_list[i].bg = bg_obj_list[i].bg
-            img_obj_list[i].swing = bg_obj_list[i].swing
-            img_obj_list[i].wavelength = bg_obj_list[i].wavelength
-            img_obj_list[i].blackLevel = bg_obj_list[i].blackLevel
-    else:
-        for i in range(config.dataset.n_samples):
-            img_obj_list[i].bg = bg_obj_list[0].bg
-            img_obj_list[i].swing = bg_obj_list[0].swing
-            img_obj_list[i].wavelength = bg_obj_list[0].wavelength
-            img_obj_list[i].blackLevel = bg_obj_list[0].blackLevel
+    if len(bg_obj_list) == 1:
+        bg_obj_list = bg_obj_list*len(img_obj_list)
+
+    for i in range(config.dataset.n_samples):
+        img_obj_list[i].bg = bg_obj_list[i].bg
+        img_obj_list[i].swing = bg_obj_list[i].swing
+        img_obj_list[i].wavelength = bg_obj_list[i].wavelength
+        img_obj_list[i].blackLevel = bg_obj_list[i].blackLevel
             
     return img_obj_list, bg_obj_list
-
-#def parse_bg_options(img_io, img_io_bg, config, RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir):
-#    """
-#    Parse background correction options; construct output path
-#
-#    """
-#    img_io.bg_method = 'Global'
-#    bgCorrect = config.processing.background_correction
-#
-#    if bgCorrect == 'None':
-#        print('No background correction is performed...')
-#        img_io.bg_correct = False
-#        OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir)
-#    else:
-#        if bgCorrect == 'Input':
-#            print('Background correction mode set as "Input". Use user input background directory')
-#            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-#            img_io.bg_correct = True
-#        elif bgCorrect == 'Local_filter':
-#            print('Background correction mode set as "Local_filter". Additional background correction using local '
-#                  'background estimated from sample images will be performed')
-#            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + SmDir)
-#            img_io.bg_method = 'Local_filter'
-#            img_io.bg_correct = True
-#        elif bgCorrect == 'Local_defocus':
-#            print('Background correction mode set as "Local_defocus". Use images from' + BgDir +
-#                  'at the same position as background')
-#            img_bg_path = os.path.join(RawDataPath, ImgDir,
-#                                       BgDir)
-#            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-#            img_io.bg_method = 'Local_defocus'
-#            img_io.bg_correct = True
-#            img_io_bg_local = mManagerReader(img_bg_path, OutputPath)
-#            img_io_bg_local.blackLevel = img_io_bg.blackLevel
-#            img_io.bg_local = img_io_bg_local
-#
-#        elif bgCorrect == 'Auto':
-#            if hasattr(img_io, 'bg'):
-#                if img_io.bg == 'No Background':
-#                    BgDir = SmDir
-#                    img_io.bg_correct = False
-#                    print('No background correction is performed for background measurements...')
-#                else:
-#                    print('Background info found in metadata. Use background specified in metadata')
-#                    BgDir = img_io.bg
-#                    OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-#                    img_io.bg_correct = True
-#            else:
-#                print('Background not specified in metadata. Use user input background directory')
-#                OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-#                img_io.bg_correct = True
-#    img_io.ImgOutPath = OutputPath
-#    os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
-#    return img_io, img_io_bg
 
 def parse_bg_options(img_obj_list, config):
     """
@@ -206,12 +126,11 @@ def process_background(img_io, img_io_bg, config):
     Read backgorund images, initiate ImgReconstructor to compute background stokes parameters
 
     """
-    ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
-    img_io.img_raw_bg = ImgRawBg
+    ImgRawBg = parse_tiff_input(img_io_bg)[0]  # 0 for z-index
     circularity = config.processing.circularity
     azimuth_offset = config.processing.azimuth_offset
-    img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=img_io.bg_method, swing=img_io_bg.swing,
-                                         wavelength=img_io_bg.wavelength, output_path=img_io_bg.ImgOutPath,
+    img_reconstructor = ImgReconstructor(ImgRawBg, bg_method=img_io.bg_method, swing=img_io.swing,
+                                         wavelength=img_io.wavelength, output_path=img_io.ImgOutPath,
                                          azimuth_offset=azimuth_offset, circularity=circularity)
     if img_io.bg_correct:
         stokes_param_bg = img_reconstructor.compute_stokes(ImgRawBg)
@@ -221,6 +140,7 @@ def process_background(img_io, img_io_bg, config):
         # img_stokes_bg = [cv2.medianBlur(img, 5) for img in img_stokes_bg]
     else:
         stokes_param_bg = None
+    
     img_reconstructor.stokes_param_bg = stokes_param_bg
     return img_io, img_reconstructor
 
@@ -264,8 +184,7 @@ def loopPos(img_io, config, img_reconstructor=None):
     """
     separate_pos = config.processing.separate_positions
     
-    for posIdx in range(img_io.PosList):
-        pos_name = img_io.PosList[posIdx]
+    for posIdx, pos_name in enumerate(img_io.PosList):
         plt.close("all")  # close all the figures from the last run            
         img_io.img_in_pos_path = os.path.join(img_io.ImgSmPath, pos_name)
         img_io.pos_name = pos_name
@@ -382,7 +301,7 @@ def loopZSm(img_io, config, img_reconstructor=None):
         if save_pol:
             imgs_pol = []
             for i in range(ImgRawSm.shape[0]):
-                imgs_pol += [ImgRawSm[i, ...] / img_io.img_raw_bg[i, ...]]
+                imgs_pol += [ImgRawSm[i, ...] / img_reconstructor.img_raw_bg[i, ...]]
             if save_pol_fig:
                 plot_pol_imgs(img_io, imgs_pol, pol_names)
             imgs_pol = [imBitConvert(img * 10 ** 4, bit=16) for img in imgs_pol]

@@ -54,47 +54,33 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, config):
-    print('Processing ' + SmDir + ' ....')
+def processImg(img_obj, bg_obj, config):
+    print('Processing ' + img_obj.name + ' ....')
+    img_obj, img_reconstructor = process_background(img_obj, bg_obj, config)
+    
     flatField = config.processing.flatfield_correction
-#    img_io, img_io_bg = creat_metadata_object(config, RawDataPath, ImgDir, SmDir, BgDir)
-#    img_io, img_io_bg = parse_bg_options(img_io, img_io_bg, config, RawDataPath, ProcessedPath, ImgDir, SmDir, BgDir)
-    img_io, img_reconstructor = process_background(img_io, img_io_bg, config)
-    img_io.PosList = PosList
     if flatField:  # find background flourescence for flatField corection
-        img_io = compute_flat_field(img_io, config)
-    img_io.loopZ ='sample'
-    img_io = loopPos(img_io, config, img_reconstructor)
-    img_io.chNamesIn = img_io.chNamesOut
-    img_io.writeMetaData()
-    config.write_config(os.path.join(img_io.ImgOutPath, 'config.yml')) # save the config file in the processed folder
+        img_obj = compute_flat_field(img_obj, config)
+    img_obj.loopZ ='sample'
+    
+    img_obj = loopPos(img_obj, config, img_reconstructor)
+    img_obj.chNamesIn = img_obj.chNamesOut
+    img_obj.writeMetaData()
+    config.write_config(os.path.join(img_obj.ImgOutPath, 'config.yml')) # save the config file in the processed folder
 
 def run_action(args):
     config = ConfigReader()
     config.read_config(args.config)
     
-#    split_data_dir = os.path.split(config.dataset.data_dir)
-#    RawDataPath = split_data_dir[0]
-#    ProcessedPath = config.dataset.processed_dir
-#    ImgDir = split_data_dir[1]
-#    SmDirList = config.dataset.samples
-#    BgDirList = config.dataset.background
-#    PosList = config.dataset.positions
-    
     # read meta data
     img_obj_list, bg_obj_list = read_metadata(config)
-    config = process_position_list(img_obj_list, config)
+    img_obj_list, config = process_position_list(img_obj_list, config)
     # process background options
     img_obj_list = parse_bg_options(img_obj_list, config)
+    
 
-    
-    # call processImg once
-    
-    # make sure that bg is analyzed only once
-    
-    
-    for SmDir, BgDir, PosList_ in zip(SmDirList, BgDirList, PosList):
-        processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList_, BgDir, config)
+    for img_obj, bg_obj in zip(img_obj_list, bg_obj_list):
+        processImg(img_obj, bg_obj, config)
 
 if __name__ == '__main__':
     args = parse_args()
