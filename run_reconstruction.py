@@ -55,18 +55,23 @@ def parse_args():
     return args
 
 def processImg(img_obj, bg_obj, config):
-    print('Processing ' + img_obj.name + ' ....')
+    print('Processing ' + img_obj.name + ' ....')    
+    
+    # Write metadata in processed folder
+    img_obj.chNamesIn = img_obj.chNamesOut
+    img_obj.writeMetaData()
+    
+    # Write config file in processed folder
+    config.write_config(os.path.join(img_obj.ImgOutPath, 'config.yml')) # save the config file in the processed folder
+    
     img_obj, img_reconstructor = process_background(img_obj, bg_obj, config)
     
     flatField = config.processing.flatfield_correction
     if flatField:  # find background flourescence for flatField corection
         img_obj = compute_flat_field(img_obj, config)
+        
     img_obj.loopZ ='sample'
-    
-    img_obj = loopPos(img_obj, config, img_reconstructor)
-    img_obj.chNamesIn = img_obj.chNamesOut
-    img_obj.writeMetaData()
-    config.write_config(os.path.join(img_obj.ImgOutPath, 'config.yml')) # save the config file in the processed folder
+    img_obj = loopPos(img_obj, config, img_reconstructor) 
 
 def run_action(args):
     config = ConfigReader()
