@@ -91,7 +91,8 @@ class ConfigReader:
         for (key, value) in self.plotting.__dict__.items():
             out = out + '{}: {}\n'.format(key,value)
         return out
-                
+
+
 class Dataset:
     n_samples = 0
     _processed_dir = []
