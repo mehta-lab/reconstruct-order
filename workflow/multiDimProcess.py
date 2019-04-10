@@ -27,7 +27,7 @@ def create_metadata_object(config, RawDataPath, ImgDir, SmDir, BgDir):
     ImgSmPath = FindDirContainPos(ImgSmPath)
     ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir)  # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
     try:
-        img_io = PolAcquReader(ImgSmPath)
+        img_io = PolAcquReader(ImgSmPath, outputChann=outputChann)
     except:
         img_io = mManagerReader(ImgSmPath, outputChann=outputChann)
     img_io_bg = PolAcquReader(ImgBgPath)
@@ -49,46 +49,47 @@ def parse_bg_options(img_io, img_io_bg, config, RawDataPath, ProcessedPath, ImgD
         print('No background correction is performed...')
         img_io.bg_correct = False
         OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir)
-    else:
-        if bgCorrect == 'Input':
-            print('Background correction mode set as "Input". Use user input background directory')
-            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-            img_io.bg_correct = True
-        elif bgCorrect == 'Local_filter':
-            print('Background correction mode set as "Local_filter". Additional background correction using local '
-                  'background estimated from sample images will be performed')
-            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + SmDir)
-            img_io.bg_method = 'Local_filter'
-            img_io.bg_correct = True
-        elif bgCorrect == 'Local_defocus':
-            print('Background correction mode set as "Local_defocus". Use images from' + BgDir +
-                  'at the same position as background')
-            img_bg_path = os.path.join(RawDataPath, ImgDir,
-                                       BgDir)
-            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-            img_io.bg_method = 'Local_defocus'
-            img_io.bg_correct = True
-            img_io_bg_local = mManagerReader(img_bg_path, OutputPath)
-            img_io_bg_local.blackLevel = img_io_bg.blackLevel
-            img_io.bg_local = img_io_bg_local
 
-        elif bgCorrect == 'Auto':
-            if hasattr(img_io, 'bg'):
-                if img_io.bg == 'No Background':
-                    BgDir = SmDir
-                    img_io.bg_correct = False
-                    print('No background correction is performed for background measurements...')
-                else:
-                    print('Background info found in metadata. Use background specified in metadata')
-                    BgDir = img_io.bg
-                    OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-                    img_io.bg_correct = True
+    elif bgCorrect == 'Input':
+        print('Background correction mode set as "Input". Use user input background directory')
+        OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
+        img_io.bg_correct = True
+    elif bgCorrect == 'Local_filter':
+        print('Background correction mode set as "Local_filter". Additional background correction using local '
+              'background estimated from sample images will be performed')
+        OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + SmDir)
+        img_io.bg_method = 'Local_filter'
+        img_io.bg_correct = True
+    elif bgCorrect == 'Local_defocus':
+        print('Background correction mode set as "Local_defocus". Use images from' + BgDir +
+              'at the same position as background')
+        img_bg_path = os.path.join(RawDataPath, ImgDir,
+                                   BgDir)
+        OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
+        img_io.bg_method = 'Local_defocus'
+        img_io.bg_correct = True
+        img_io_bg_local = mManagerReader(img_bg_path, OutputPath)
+        img_io_bg_local.blackLevel = img_io_bg.blackLevel
+        img_io.bg_local = img_io_bg_local
+
+    elif bgCorrect == 'Auto':
+        if hasattr(img_io, 'bg'):
+            if img_io.bg == 'No Background':
+                BgDir = SmDir
+                img_io.bg_correct = False
+                print('No background correction is performed for background measurements...')
             else:
-                print('Background not specified in metadata. Use user input background directory')
+                print('Background info found in metadata. Use background specified in metadata')
+                BgDir = img_io.bg
                 OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
                 img_io.bg_correct = True
+        else:
+            print('Background not specified in metadata. Use user input background directory')
+            OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
+            img_io.bg_correct = True
     img_io.ImgOutPath = OutputPath
     os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
+
     return img_io, img_io_bg
 
 # similar pattern to "create_metadata_object":
@@ -234,8 +235,8 @@ def loopZSm(img_io, config, img_reconstructor=None):
                for chan in img_io.chNamesOut) or any([save_stokes_fig, save_mm_fig])
     save_birefring = any(chan in birefring_names
                for chan in img_io.chNamesOut) or save_fig
-
     save_pol = any(chan in pol_names for chan in img_io.chNamesOut) or save_pol_fig
+
     for zIdx in range(0, img_io.nZ):
         # for zIdx in range(0, 1):
         print('Processing position %03d, time %03d, z %03d ...' % (posIdx, tIdx, zIdx))
