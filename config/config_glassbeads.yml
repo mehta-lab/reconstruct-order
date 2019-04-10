@@ -1,0 +1,23 @@
+dataset:
+    data_dir: '/flexo/ComputationalMicroscopy/Projects/virtualstaining/testDataReconstructOrder/raw/2019_02_27_GlassBeads9to13um'
+    processed_dir: '/flexo/ComputationalMicroscopy/Projects/virtualstaining/testDataReconstructOrder/processed'
+    samples: ['SMSwithBF_2019_0227_1519_2']
+    background: 'BG_2019_0227_1555_1'
+    positions: 'Pos0'
+
+processing:
+    output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization','Transmission+Retardance+Orientation']
+    circularity: 'rcp'
+    background_correction: 'Input'
+    flatfield_correction: False
+    azimuth_offset: 0
+    
+plotting:
+    normalize_color_images: True
+    save_birefringence_fig: False
+    save_stokes_fig: False
+    save_polarization_fig: False
+    save_micromanager_fig: False
+    
+       
+
