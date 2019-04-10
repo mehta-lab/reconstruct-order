@@ -31,6 +31,7 @@ class mManagerReader:
         with open(metaFileName, 'r') as f:
             metaFile = json.load(f)
         self.metaFile = metaFile
+        self.name = metaFile["Summary"]["Prefix"]
         self.ImgSmPath = ImgSmPath
         self.img_in_pos_path = img_in_pos_path # input pos path
         self.ImgOutPath = ImgOutPath
@@ -210,11 +211,11 @@ class mManagerReader:
 
 class PolAcquReader(mManagerReader):
     """PolAcquistion Plugin output format reader"""
-    def __init__(self, ImgSmPath, ImgOutPath=None, verbose=0):
+    def __init__(self, ImgSmPath, ImgOutPath=None, inputChann=[], outputChann=[], verbose=0):
         """
         Extract PolAcquistion specific params from the metafile
         """
-        mManagerReader.__init__(self, ImgSmPath, ImgOutPath)
+        mManagerReader.__init__(self, ImgSmPath, ImgOutPath, inputChann, outputChann)
         metaFile = self.metaFile
         self.acquScheme = metaFile['Summary']['~ Acquired Using']
         self.bg = metaFile['Summary']['~ Background']

@@ -46,6 +46,9 @@ class ConfigReader:
                     self.processing.azimuth_offset = value
                 if key == 'separate_positions':
                     self.processing.separate_positions = value
+        if self.dataset.background and 'processing' not in self.yaml_config \
+            or 'background_correction' not in self.yaml_config['processing']:
+            self.processing.background_correction = 'Input'
          
         if 'plotting' in self.yaml_config:
             for (key, value) in self.yaml_config['plotting'].items():
