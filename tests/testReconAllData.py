@@ -1,4 +1,4 @@
-from runReconstruction import runReconstruction
+from . import runReconstruction
 
 configfiles = ['config/mousebrainslice.yml', 'config/config_u2os_cells.yml']
 #TODO: analysis runs fine on glass beads and u2os cells, but not on Kidney Tissue data and Mouse Brain slice. Needs debugging.
