@@ -36,7 +36,12 @@ def process_position_list(img_obj_list, config):
     for idx, io_obj in enumerate(img_obj_list):
         pos_list = config.dataset.positions[idx]
         if pos_list[0] == 'all':
-            config.dataset.positions[idx] = io_obj.PosList
+            md_pos_list = io_obj.PosList
+            if not isinstance(md_pos_list, list):
+                config.dataset.positions[idx] = [md_pos_list]
+            else:
+                config.dataset.positions[idx] = md_pos_list
+            
         else:
             assert all(i in io_obj.PosList for i in pos_list), \
             'Position list {} for sample in {} is invalid'.format(pos_list, io_obj.ImgSmPath)
