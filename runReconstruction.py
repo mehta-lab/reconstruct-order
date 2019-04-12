@@ -63,7 +63,7 @@ def runReconstruction(configfile):
     
     # read meta data
     img_obj_list, bg_obj_list = read_metadata(config)
-    img_obj_list, config = process_position_list(img_obj_list, config)
+    img_obj_list = process_position_list(img_obj_list, config)
     # process background options
     img_obj_list = parse_bg_options(img_obj_list, config)
     
