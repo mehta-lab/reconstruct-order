@@ -112,18 +112,6 @@ def plot_birefringence(img_io, imgs, spacing=20, vectorScl=5, zoomin=False, dpi=
         elif chann == 'Transmission+Retardance+Orientation':
             img = I_azi_ret_trans
             
-        elif chann == '405':
-            img = imBitConvert(ImgFluor[0,:,:], bit=16, norm=False)
-                    
-        elif chann == '488':
-            img = imBitConvert(ImgFluor[1,:,:], bit=16, norm=False)
-                        
-        elif chann == '568':
-            img = imBitConvert(ImgFluor[2,:,:], bit=16, norm=False)
-                        
-        elif chann == '640':
-            img = imBitConvert(ImgFluor[3,:,:], bit=16, norm=False)
-            
         elif chann == 'Retardance+Fluorescence':
             img = IFluorRetard
             
