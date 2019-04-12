@@ -30,7 +30,7 @@ def read_metadata(config):
         bg_obj = create_metadata_object(background_path, config)
         bg_obj_list.append(bg_obj)
     else:
-        for background in set(config.dataset.background):
+        for background in config.dataset.background:
             background_path = os.path.join(config.dataset.data_dir, background)
             bg_obj = create_metadata_object(background_path, config)
             bg_obj_list.append(bg_obj)
