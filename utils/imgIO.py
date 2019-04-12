@@ -34,19 +34,19 @@ def process_position_list(img_obj_list, config):
     If positions = 'all', replace with actual list of positions
     """
     for idx, io_obj in enumerate(img_obj_list):
-        pos_list = config.dataset.positions[idx]
-        if pos_list[0] == 'all':
-            md_pos_list = io_obj.PosList
-            if not isinstance(md_pos_list, list):
-                config.dataset.positions[idx] = [md_pos_list]
+        config_pos_list = config.dataset.positions[idx]
+        metadata_pos_list = io_obj.PosList
+        if config_pos_list[0] == 'all':
+            if isinstance(metadata_pos_list, list):
+                pos_list = metadata_pos_list
             else:
-                config.dataset.positions[idx] = md_pos_list
-            
+                pos_list = [metadata_pos_list]
         else:
-            assert all(i in io_obj.PosList for i in pos_list), \
-            'Position list {} for sample in {} is invalid'.format(pos_list, io_obj.ImgSmPath)
-            img_obj_list[idx].PosList = pos_list
-    return img_obj_list, config
+            assert all(i in metadata_pos_list for i in config_pos_list), \
+            'Position list {} for sample in {} is invalid'.format(config_pos_list, io_obj.ImgSmPath)
+        
+        img_obj_list[idx].PosList = pos_list
+    return img_obj_list
 
 
 def loadTiff(acquDirPath, acquFiles):
