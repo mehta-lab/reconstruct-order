@@ -61,6 +61,10 @@ class ConfigReader:
                     self.plotting.save_birefringence_fig = value
                 elif key == 'save_stokes_fig':
                     self.plotting.save_stokes_fig = value
+                elif key == 'save_polarization_fig':
+                    self.plotting.save_polarization_fig = value
+                elif key == 'save_micromanager_fig':
+                    self.plotting.save_micromanager_fig = value
                 else:
                     raise NameError('Unrecognized parameter {} passed'.format(key))
                     
