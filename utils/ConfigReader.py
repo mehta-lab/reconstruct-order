@@ -23,41 +23,50 @@ class ConfigReader:
             for (key, value) in self.yaml_config['dataset'].items():
                 if key == 'processed_dir':
                     self.dataset.processed_dir = value
-                if key == 'data_dir':
+                elif key == 'data_dir':
                     self.dataset.data_dir = value
-                if key == 'samples':
+                elif key == 'samples':
                     self.dataset.samples = value
-                if key == 'positions':
+                elif key == 'positions':
                     self.dataset.positions = value
-                if key == 'background':
+                elif key == 'background':
                     self.dataset.background = value
+                else:
+                    raise NameError('Unrecognized parameter {} passed'.format(key))
+        else:
+            raise IOError('dataset is a required field in the config yaml file')
              
         if 'processing' in self.yaml_config:
             for (key, value) in self.yaml_config['processing'].items():
                 if key == 'output_channels':
                     self.processing.output_channels = value
-                if key == 'circularity':
+                elif key == 'circularity':
                     self.processing.circularity = value
-                if key == 'background_correction':
+                elif key == 'background_correction':
                     self.processing.background_correction = value
-                if key == 'flatfield_correction':
+                elif key == 'flatfield_correction':
                     self.processing.flatfield_correction = value
-                if key == 'azimuth_offset':
+                elif key == 'azimuth_offset':
                     self.processing.azimuth_offset = value
-                if key == 'separate_positions':
+                elif key == 'separate_positions':
                     self.processing.separate_positions = value
-        if self.dataset.background and 'processing' not in self.yaml_config \
-            or 'background_correction' not in self.yaml_config['processing']:
-            self.processing.background_correction = 'Input'
+                else:
+                    raise NameError('Unrecognized parameter {} passed'.format(key))
          
         if 'plotting' in self.yaml_config:
             for (key, value) in self.yaml_config['plotting'].items():
                 if key == 'normalize_color_images':
                     self.plotting.normalize_color_images = value
-                if key == 'save_birefringence_fig':
+                elif key == 'save_birefringence_fig':
                     self.plotting.save_birefringence_fig = value
-                if key == 'save_stokes_fig':
+                elif key == 'save_stokes_fig':
                     self.plotting.save_stokes_fig = value
+                else:
+                    raise NameError('Unrecognized parameter {} passed'.format(key))
+                    
+        if self.dataset.background and 'processing' not in self.yaml_config \
+            or 'background_correction' not in self.yaml_config['processing']:
+            self.processing.background_correction = 'Input'
                     
         assert self.dataset.processed_dir, \
             'Please provde processed_dir in config file'
@@ -244,11 +253,13 @@ class Processing:
         return out
     
 class Plotting:
-    normalize_color_images = True
-    save_birefringence_fig = False
-    save_stokes_fig = False
-    save_polarization_fig = False
-    save_micromanager_fig = False
+    
+    def __init__(self):
+        self.normalize_color_images = True
+        self.save_birefringence_fig = False
+        self.save_stokes_fig = False
+        self.save_polarization_fig = False
+        self.save_micromanager_fig = False
     
     def __repr__(self):
         out = str(self.__class__) + '\n'
