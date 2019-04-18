@@ -5,10 +5,36 @@ import cv2
 sys.path.append("..") # Add upper level directory to python modules path.
 #from utils.imgCrop import imcrop
 #%%
+
+
 class ImgReconstructor:
+    """
+    ImgReconstructor contains methods to compute physical properties Birefringence /
+    polarization and transmission given intensity data collected at 4 or 5 polarization orientations
+
+    Parameters
+    ----------
+    img_pol_bg : list = [s0, s1, s2, s3]
+        stokes images for background data.  Same as values returned by compute_stokes
+    bg_method : str
+        "Global", "Local".  type of background correction
+    swing : float
+    wavelength : int
+    kernel : np.ndarray
+    output_path : str
+    azimuth_offset : int
+    circularity : str
+
+    Attributes
+    ----------
+
+
+    """
+
     def __init__(self, img_pol_bg=[], bg_method='Global', swing=None, wavelength=532,
                  kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (100, 100)),
                  output_path=None, azimuth_offset=0, circularity='rcp'):
+
         self.img_pol_bg = img_pol_bg
         self.bg_method = bg_method
         self.swing = swing*2*np.pi # covert swing from fraction of wavelength to radian
@@ -36,6 +62,18 @@ class ImgReconstructor:
         self.circularity = circularity
 
     def compute_stokes(self, img_raw):
+        """
+        Given raw image intensity, compute stokes images
+
+        Parameters
+        ----------
+        img_raw : list of ndarray.  First element of output of utils.imgIO.parse_tiff_input
+
+        Returns
+        -------
+        stokes images : list of ndarray.
+
+        """
         img_raw_flat = np.reshape(img_raw, (self.n_chann, self.height * self.width))
         img_stokes_flat = np.dot(self.inst_mat_inv, img_raw_flat)
         img_stokes = np.reshape(img_stokes_flat, (img_stokes_flat.shape[0], self.height, self.width))
