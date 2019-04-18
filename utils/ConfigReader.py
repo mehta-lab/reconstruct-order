@@ -158,7 +158,7 @@ class Processing:
                                 'Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3',
                                 '405', '488', '568', '640',
                                 'Retardance+Orientation', 'Polarization+Orientation', 
-                                'Transmission+Retardance+Orientation',
+                                'Brightfield+Retardance+Orientation',
                                 'Retardance+Fluorescence', 'Retardance+Fluorescence_all']  
     _allowed_circularity_values = ['rcp', 'lcp']
     _allowed_background_correction_values = ['None', 'Input', 'Local_filter', 'Local_defocus', 'Auto']

@@ -31,10 +31,10 @@ dataset:
 
 
 processing:
-  output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization']
+  output_channels: ['Brightfield', 'Retardance', 'Orientation', 'Polarization']
 
   # (list) Any combination of the following values.
-  ##    'Transmission', 'Retardance', 'Orientation', 'Polarization',
+  ##    'Brightfield', 'Retardance', 'Orientation', 'Polarization',
   ##    'Orientation_x', 'Orientation_y',
   ##    'Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
   ##    'Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3',
@@ -78,7 +78,7 @@ plotting:
 #===========================================#
 
 #   positions: 'all'
-#   output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization']
+#   output_channels: ['Brightfield', 'Retardance', 'Orientation', 'Polarization']
 #   circularity: 'rcp'
 #   background_correction: 'None'
 #   flatfield_correction: False
