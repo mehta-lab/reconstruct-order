@@ -6,7 +6,7 @@ dataset:
     positions: '2-Pos_017_022'
 
 processing:
-    output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization','Transmission+Retardance+Orientation']
+    output_channels: ['Brightfield', 'Retardance', 'Orientation', 'Polarization','Transmission+Retardance+Orientation']
     circularity: 'rcp'
     background_correction: 'Input'
     flatfield_correction: False

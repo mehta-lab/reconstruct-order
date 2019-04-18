@@ -6,11 +6,12 @@ dataset:
     positions: '4-Pos_000_000'
 
 processing:
-    output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization']
+    output_channels: ['488', '568']
     circularity: 'rcp'
     background_correction: 'Local_filter'
     flatfield_correction: False
     azimuth_offset: 0
+    n_slice_local_bg: 4
     
 plotting:
     normalize_color_images: True

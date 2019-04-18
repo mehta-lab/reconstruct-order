@@ -27,9 +27,9 @@ def create_metadata_object(config, RawDataPath, ImgDir, SmDir, BgDir):
     ImgSmPath = FindDirContainPos(ImgSmPath)
     ImgBgPath = os.path.join(RawDataPath, ImgDir, BgDir)  # Background image folder path, of form 'BG_yyyy_mmdd_hhmm_X'
     try:
-        img_io = PolAcquReader(ImgSmPath, outputChann=outputChann)
+        img_io = PolAcquReader(ImgSmPath, output_chan=outputChann)
     except:
-        img_io = mManagerReader(ImgSmPath, outputChann=outputChann)
+        img_io = mManagerReader(ImgSmPath, output_chan=outputChann)
     img_io_bg = PolAcquReader(ImgBgPath)
     img_io.bg = img_io_bg.bg
     img_io.swing = img_io_bg.swing
@@ -165,13 +165,8 @@ def loopPos(img_io, config, img_reconstructor=None):
     position list; make separate folder for each position if separate_pos == True
     """
     separate_pos = config.processing.separate_positions
-    try:
-        posDict = {idx: img_io.metaFile['Summary']['InitialPositionList'][idx]['Label'] for idx in range(img_io.nPos)}
-    except:
-        # PolAcquisition doens't save position list
-        posDict = {0:'Pos0'}
 
-    for posIdx, pos_name in posDict.items():
+    for posIdx, pos_name in enumerate(img_io.pos_names):
         if pos_name in img_io.PosList or img_io.PosList == 'all':
             plt.close("all")  # close all the figures from the last run            
             img_io.img_in_pos_path = os.path.join(img_io.ImgSmPath, pos_name)
@@ -255,6 +250,7 @@ def loopZSm(img_io, config, img_reconstructor=None):
             img_io.zIdx = zIdx
             ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
             ImgFluor = correct_flat_field(img_io, ImgFluor)
+            fluor_list.append(ImgFluor)
             img_dict = {}
             if save_stokes or save_birefring:
                 stokes_param_sm = img_reconstructor.compute_stokes(ImgRawSm)
@@ -273,16 +269,17 @@ def loopZSm(img_io, config, img_reconstructor=None):
                 imgs_pol = [imBitConvert(img * 10 ** 4, bit=16) for img in imgs_pol]
                 img_dict.update(dict(zip(pol_names, imgs_pol)))
             if save_fluor:
-                fluor_list.append(ImgFluor)
                 ImgFluor = imBitConvert(ImgFluor, bit=16, norm=False)
                 img_dict.update(dict(zip(fluor_names, [ImgFluor[chan, :, :] for chan in range(ImgFluor.shape[0])])))
             exportImg(img_io, img_dict)
-        stokes_param_sm_stack = [np.stack(stack, axis=-1) for stack in stokes_param_sm_stack]
-        stokes_param_sm_stack_tm = img_reconstructor.correct_background(stokes_param_sm_stack)
-        birfring_stacks = \
-            img_reconstructor.reconstruct_birefringence(stokes_param_sm_stack_tm)
-        img_dict = {}
+
+
         if save_stokes or save_birefring:
+            stokes_param_sm_stack = [np.stack(stack, axis=-1) for stack in stokes_param_sm_stack]
+            stokes_param_sm_stack_tm = img_reconstructor.correct_background(stokes_param_sm_stack)
+            birfring_stacks = \
+                img_reconstructor.reconstruct_birefringence(stokes_param_sm_stack_tm)
+            img_dict = {}
             for zIdx in range(z_stack_idx, z_stack_idx + n_slice_local_bg):
                 plt.close("all")  # close all the figures from the last run
                 img_io.zIdx = zIdx
