@@ -13,13 +13,13 @@ class mManagerReader:
     TODO: move file IO methods to imIO modules
     """
 
-    def __init__(self, ImgSmPath, ImgOutPath=None, inputChann=[], outputChann=[]):
+    def __init__(self, ImgSmPath, ImgOutPath=None, input_chan=[], output_chan=[]):
         """
         :param str ImgSmPath: full path of the acquisition folder
         (1 level up of pos folder)
         :param str ImgOutPath: full path of the output folder
-        :param list inputChann: list of input channel names
-        :param list outputChann: list of output channel names
+        :param list input_chan: list of input channel names
+        :param list output_chan: list of output channel names
         """
         subDirName = GetSubDirName(ImgSmPath)          
         
@@ -31,26 +31,29 @@ class mManagerReader:
                 img_in_pos_path = os.path.join(ImgSmPath, subDir)
         metaFileName = os.path.join(img_in_pos_path, 'metadata.txt')
         with open(metaFileName, 'r') as f:
-            metaFile = json.load(f)
-        self.metaFile = metaFile
+            input_meta_file = json.load(f)
+        pos_dict_list = input_meta_file['Summary']['InitialPositionList']
+        self.input_meta_file = input_meta_file
+        self.output_meta_file = []
         self.ImgSmPath = ImgSmPath
         self.img_in_pos_path = img_in_pos_path # input pos path
         self.ImgOutPath = ImgOutPath
-        self.width = metaFile['Summary']['Width']
-        self.height = metaFile['Summary']['Height']
-        self.chNames = metaFile['Summary']['ChNames'] # channels in metadata
-        self.chNamesIn = inputChann  # channels to read
-        self.nChannIn = len(inputChann)
-        self.chNamesOut = outputChann #output channel names
-        self.nChannOut = len(outputChann)
+        self.width = input_meta_file['Summary']['Width']
+        self.height = input_meta_file['Summary']['Height']
+        self.chNames = input_meta_file['Summary']['ChNames'] # channels in metadata
+        self.chNamesIn = input_chan  # channels to read
+        self.nChannIn = len(input_chan)
+        self.chNamesOut = output_chan #output channel names
+        self.nChannOut = len(output_chan)
         self.imgLimits = [[np.Inf,0]]*self.nChannOut
-        self.nPos = metaFile['Summary']['Positions']
-        self.nTime = metaFile['Summary']['Frames']
-        self.nZ = metaFile['Summary']['Slices']
+        self.nPos = input_meta_file['Summary']['Positions']
+        self.pos_names = [pos_dict['Label'] for pos_dict in pos_dict_list]
+        self.nTime = input_meta_file['Summary']['Frames']
+        self.nZ = input_meta_file['Summary']['Slices']
         self.size_x_um = 6.5/63 # (um) for zyla at 63X. mManager metafile currently does not log the correct pixel size
         self.size_y_um = 6.5/63 # (um) for zyla at 63X. Manager metafile currently does not log the correct pixel size
-        self.size_z_um = metaFile['Summary']['z-step_um']
-        self.time_stamp = metaFile['Summary']['Time']
+        self.size_z_um = input_meta_file['Summary']['z-step_um']
+        self.time_stamp = input_meta_file['Summary']['Time']
         self.img_fluor_bg = np.ones((4, self.height, self.width))
         self.posIdx = 0  # assuming only single image for background
         self.tIdx = 0
@@ -73,7 +76,7 @@ class mManagerReader:
         if not z_range:
             z_range = [0, self.nZ]
         img_chann = []  # list of 2D or 3D images from different channels
-        for chanIdx in range(self.nChannOut):
+        for chanIdx in range(self.nChannIn):
             img_stack = []
             self.chanIdx = chanIdx
             for zIdx in range(z_range[0], z_range[1]):
@@ -97,11 +100,15 @@ class mManagerReader:
     def writeMetaData(self):
         if not os.path.exists(self.ImgOutPath): # create folder for processed images
             os.makedirs(self.ImgOutPath)
-        self.metaFile['Summary']['ChNames'] = self.chNamesIn
-        self.metaFile['Summary']['Channels'] = self.nChannIn 
+        self.input_meta_file['Summary']['ChNames'] = self.chNamesIn
+        self.input_meta_file['Summary']['Channels'] = self.nChannIn
         metaFileName = os.path.join(self.ImgOutPath, 'metadata.txt')
         with open(metaFileName, 'w') as f:  
-            json.dump(self.metaFile, f)        
+            json.dump(self.input_meta_file, f)
+        df_pos_path = os.path.join(self.ImgOutPath, 'pos_table.csv')
+        df_pos = pd.DataFrame(list(enumerate(self.pos_names)),
+                          columns=['pos idx', 'pos dir'])
+        df_pos.to_csv(df_pos_path, sep=',')
         
     def save_microDL_format_old(self):
         """
@@ -213,12 +220,14 @@ class PolAcquReader(mManagerReader):
         Extract PolAcquistion specific params from the metafile
         """
         mManagerReader.__init__(self, ImgSmPath, ImgOutPath)
-        metaFile = self.metaFile
+        metaFile = self.input_meta_file
         self.acquScheme = metaFile['Summary']['~ Acquired Using']
         self.bg = metaFile['Summary']['~ Background']
         self.blackLevel = metaFile['Summary']['~ BlackLevel']
         self.mirror = metaFile['Summary']['~ Mirror']
         self.swing = metaFile['Summary']['~ Swing (fraction)']
         self.wavelength = metaFile['Summary']['~ Wavelength (nm)']
+        # PolAcquisition doens't save position list
+        self.pos_names = ['Pos0']
         
     

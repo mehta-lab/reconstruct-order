@@ -12,7 +12,7 @@ if __name__ == '__main__':
     output_chan = ['Orientation_x', 'Orientation_y']
     ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir)  # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
     OutputPath = ImgSmPath
-    img_io = mManagerReader(ImgSmPath, OutputPath, inputChann=input_chan, outputChann=output_chan)
+    img_io = mManagerReader(ImgSmPath, OutputPath, input_chan=input_chan, output_chan=output_chan)
 
     for t_idx in range(img_io.nTime):
         img_io.tIdx = t_idx

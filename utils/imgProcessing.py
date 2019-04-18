@@ -121,13 +121,13 @@ def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
     dst = imBitConvert(dst,bit=bit, norm=True)
     return dst
 
-def imClip(img, tol=1, bit=16,vin=[0,2**16-1]):
+def imClip(img, tol=1):
     """
     Clip the images for better visualization
     """
     limit = np.percentile(img, [tol, 100-tol])
-    imgClpped = np.clip(img, limit[0], limit[1])
-    return imgClpped       
+    img_clpped = np.clip(img, limit[0], limit[1])
+    return img_clpped
     
 def linScale(src,vin, vout):
     scale = (vout[1] - vout[0]) / (vin[1] - vin[0])

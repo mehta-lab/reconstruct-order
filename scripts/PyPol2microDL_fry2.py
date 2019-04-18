@@ -41,11 +41,11 @@ def run_action(args):
     ProcessedPath = config['dataset']['ProcessedPath']
     ImgDir = config['dataset']['ImgDir']
     SmDir = config['dataset']['SmDir']
-    outputChann = config['processing']['outputChann']
+    outputChann = config['processing']['output_chan']
     ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir)  # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
 
     # OutputPath = os.path.join(ImgSmPath,'split_images')
-    # imgSm = mManagerReader(ImgSmPath,OutputPath, outputChann)
+    # imgSm = mManagerReader(ImgSmPath,OutputPath, output_chan)
     # imgSm.save_microDL_format_old()
 
     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir, 'microDL_format')

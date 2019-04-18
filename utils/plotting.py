@@ -293,7 +293,10 @@ def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
     fig.set_size_inches((5 * n_cols, 5 * n_rows))
     axis_count = 0
     for img, title in zip(images, titles):
-        ax_img = ax[axis_count].imshow(imClip(img), cmap='gray')
+        if len(img.shape) == 3:
+            ax_img = ax[axis_count].imshow(img)
+        else:
+            ax_img = ax[axis_count].imshow(imClip(img), cmap='gray')
         ax[axis_count].axis('off')
         ax[axis_count].set_title(title)
         if colorbar:
