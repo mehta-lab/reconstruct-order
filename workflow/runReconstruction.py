@@ -57,9 +57,9 @@ def processImg(RawDataPath, ProcessedPath, ImgDir, SmDir, PosList, BgDir, config
     if flatField:  # find background flourescence for flatField corection
         img_io = compute_flat_field(img_io, config)
     img_io.loopZ ='sample'
-    img_io = loopPos(img_io, config, img_reconstructor)
     img_io.chNamesIn = img_io.chNamesOut
     img_io.writeMetaData()
+    img_io = loopPos(img_io, config, img_reconstructor)
     write_config(config, os.path.join(img_io.ImgOutPath, 'config.yml')) # save the config file in the processed folder
 
 def runReconstruction(configfile):
