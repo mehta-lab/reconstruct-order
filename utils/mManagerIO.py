@@ -32,7 +32,7 @@ class mManagerReader:
         metaFileName = os.path.join(img_in_pos_path, 'metadata.txt')
         with open(metaFileName, 'r') as f:
             input_meta_file = json.load(f)
-        pos_dict_list = input_meta_file['Summary']['InitialPositionList']
+
         self.input_meta_file = input_meta_file
         self.output_meta_file = []
         self.ImgSmPath = ImgSmPath
@@ -47,7 +47,6 @@ class mManagerReader:
         self.nChannOut = len(output_chan)
         self.imgLimits = [[np.Inf,0]]*self.nChannOut
         self.nPos = input_meta_file['Summary']['Positions']
-        self.pos_names = [pos_dict['Label'] for pos_dict in pos_dict_list]
         self.nTime = input_meta_file['Summary']['Frames']
         self.nZ = input_meta_file['Summary']['Slices']
         self.size_x_um = 6.5/63 # (um) for zyla at 63X. mManager metafile currently does not log the correct pixel size
@@ -59,6 +58,11 @@ class mManagerReader:
         self.tIdx = 0
         self.zIdx = 0
         self.bg = None
+
+    @property
+    def pos_names(self):
+        pos_dict_list = self.input_meta_file['Summary']['InitialPositionList']
+        return [pos_dict['Label'] for pos_dict in pos_dict_list]
             
     def read_img(self):
         """read a single image at (c,t,p,z)"""
@@ -228,6 +232,9 @@ class PolAcquReader(mManagerReader):
         self.swing = metaFile['Summary']['~ Swing (fraction)']
         self.wavelength = metaFile['Summary']['~ Wavelength (nm)']
         # PolAcquisition doens't save position list
-        self.pos_names = ['Pos0']
+
+    @property
+    def pos_names(self):
+        return  ['Pos0']
         
     
