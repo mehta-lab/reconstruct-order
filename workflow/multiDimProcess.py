@@ -292,14 +292,14 @@ def loopZSm(img_io, config, img_reconstructor=None):
                                                   dpi=200,
                                                   norm=norm, plot=save_fig)
             if save_stokes:
-                if save_stokes_fig:
-                    plot_stokes(img_io, img_stokes, img_stokes_sm)
+#                if save_stokes_fig:
+#                    plot_stokes(img_io, img_stokes, img_stokes_sm)
                 img_stokes = [x.astype(np.float32, copy=False) for x in img_stokes]
-                img_stokes_sm = [x.astype(np.float32, copy=False) for x in img_stokes_sm]
+#                img_stokes_sm = [x.astype(np.float32, copy=False) for x in img_stokes_sm]
                 img_stokes_dict = dict(zip(stokes_names, img_stokes))
-                img_stokes_sm_dict = dict(zip(stokes_names_sm, img_stokes_sm))
+#                img_stokes_sm_dict = dict(zip(stokes_names_sm, img_stokes_sm))
                 img_dict.update(img_stokes_dict)
-                img_dict.update(img_stokes_sm_dict)
+#                img_dict.update(img_stokes_sm_dict)
 
         if save_pol:
             imgs_pol = []
