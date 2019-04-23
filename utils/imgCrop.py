@@ -3,7 +3,7 @@ sys.path.append("..") # Adds higher directory to python modules path.
 #import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.widgets  import RectangleSelector
-
+from .imgProcessing import imadjust
 #sns.set_context("poster")
 plt.close("all") # close all the figures from the last run
 #%%
