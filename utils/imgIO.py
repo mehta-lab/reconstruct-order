@@ -44,6 +44,7 @@ def process_position_list(img_obj_list, config):
         else:
             assert all(i in metadata_pos_list for i in config_pos_list), \
             'Position list {} for sample in {} is invalid'.format(config_pos_list, io_obj.ImgSmPath)
+            pos_list = config_pos_list
         
         img_obj_list[idx].PosList = pos_list
     return img_obj_list
