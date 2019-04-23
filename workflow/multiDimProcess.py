@@ -43,7 +43,7 @@ def read_metadata(config):
     if len(bg_obj_list) == 1:
         bg_obj_list = bg_obj_list*len(img_obj_list)
 
-    for i in range(config.dataset.n_samples):
+    for i in range(len(config.dataset.samples)):
         img_obj_list[i].bg = bg_obj_list[i].bg
         img_obj_list[i].swing = bg_obj_list[i].swing
         img_obj_list[i].wavelength = bg_obj_list[i].wavelength
@@ -56,7 +56,7 @@ def parse_bg_options(img_obj_list, config):
     Parse background correction options and make output directories
 
     """
-    for i in range(config.dataset.n_samples):
+    for i in range(len(config.dataset.samples)):
         bgCorrect = config.processing.background_correction
         data_dir = config.dataset.data_dir
         processed_dir = os.path.join(config.dataset.processed_dir, os.path.basename(data_dir))

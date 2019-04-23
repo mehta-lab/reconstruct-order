@@ -19,22 +19,28 @@ class ConfigReader:
         with open(path, 'r') as f:
             self.yaml_config = yaml.load(f)
             
-        if 'dataset' in self.yaml_config:
-            for (key, value) in self.yaml_config['dataset'].items():
-                if key == 'processed_dir':
-                    self.dataset.processed_dir = value
-                elif key == 'data_dir':
-                    self.dataset.data_dir = value
-                elif key == 'samples':
-                    self.dataset.samples = value
-                elif key == 'positions':
-                    self.dataset.positions = value
-                elif key == 'background':
-                    self.dataset.background = value
-                else:
-                    raise NameError('Unrecognized parameter {} passed'.format(key))
-        else:
-            raise IOError('dataset is a required field in the config yaml file')
+        assert 'dataset' in self.yaml_config, \
+            'dataset is a required field in the config yaml file'
+        assert 'data_dir' in self.yaml_config['dataset'], \
+            'Please provde data_dir in config file'
+        assert 'processed_dir' in self.yaml_config['dataset'], \
+            'Please provde processed_dir in config file'
+        assert 'samples'  in self.yaml_config['dataset'], \
+            'Please provde samples in config file'
+        
+        # Assign data_dir and processed_dir first to be able to check sample
+        # and background directories
+        self.dataset.data_dir = self.yaml_config['dataset']['data_dir']
+        self.dataset.processed_dir = self.yaml_config['dataset']['processed_dir']
+        for (key, value) in self.yaml_config['dataset'].items():
+            if key == 'samples':
+                self.dataset.samples = value
+            elif key == 'positions':
+                self.dataset.positions = value
+            elif key == 'background':
+                self.dataset.background = value
+            elif key not in ('data_dir', 'processed_dir'):
+                raise NameError('Unrecognized parameter {} passed'.format(key))
              
         if 'processing' in self.yaml_config:
             for (key, value) in self.yaml_config['processing'].items():
@@ -56,7 +62,11 @@ class ConfigReader:
         if 'plotting' in self.yaml_config:
             for (key, value) in self.yaml_config['plotting'].items():
                 if key == 'normalize_color_images':
-                    self.plotting.normalize_color_images = value
+                    self.plotting.normalize_color_images = value                  
+                elif key == 'retardance_scaling':
+                    self.plotting.retardance_scaling = value
+                elif key == 'transmission_scaling':
+                    self.plotting.transmission_scaling = value
                 elif key == 'save_birefringence_fig':
                     self.plotting.save_birefringence_fig = value
                 elif key == 'save_stokes_fig':
@@ -71,13 +81,6 @@ class ConfigReader:
         if self.dataset.background and 'processing' not in self.yaml_config \
             or 'background_correction' not in self.yaml_config['processing']:
             self.processing.background_correction = 'Input'
-                    
-        assert self.dataset.processed_dir, \
-            'Please provde processed_dir in config file'
-        assert self.dataset.data_dir, \
-            'Please provde data_dir in config file'
-        assert self.dataset.samples, \
-            'Please provde samples in config file'
             
         if self.dataset.samples[0] == 'all':
             self.dataset.samples = GetSubDirName(self.dataset.data_dir)         
@@ -92,8 +95,11 @@ class ConfigReader:
             'Length of the background directory list must be one or same as sample directory list'
             
     def write_config(self,path):
+        config_out = {'dataset':{key.strip('_'):value for (key,value) in self.dataset.__dict__.items()},
+                      'processing':{key.strip('_'):value for (key,value) in self.processing.__dict__.items()},
+                      'plotting':{key.strip('_'):value for (key,value) in self.plotting.__dict__.items()}}
         with open(path, 'w') as f:
-            yaml.dump(self.yaml_config, f, default_flow_style=False)
+            yaml.dump(config_out, f, default_flow_style=False)
             
     def __repr__(self):
         out = str(self.__class__) + '\n'
@@ -108,7 +114,6 @@ class ConfigReader:
 
 class Dataset:    
     def __init__(self):
-        self.n_samples = 0
         self._processed_dir = []
         self._data_dir = []
         self._samples = []
@@ -151,7 +156,6 @@ class Dataset:
             value = [value]
         for sm in value:
             assert os.path.exists(os.path.join(self.data_dir,sm)), 'sample directory {} does not exist'.format(sm)
-        self.n_samples = len(value)
         self._samples = value
         
     @positions.setter
@@ -260,6 +264,8 @@ class Processing:
 class Plotting: 
     def __init__(self):
         self.normalize_color_images = True
+        self.transmission_scaling = 1E4
+        self.retardance_scaling = 1E3
         self.save_birefringence_fig = False
         self.save_stokes_fig = False
         self.save_polarization_fig = False
