@@ -2,21 +2,20 @@ import os.path as osp
 from setuptools import setup, find_packages
 
 MIN_PY_VER = '3.6'
-DISTNAME = 'reconstruct order'
+DISTNAME = 'ReconstructOrder'
 DESCRIPTION = 'reconstruct birefringence from polarization intensity images'
-LONG_DESCRIPTION = __doc__
-# LICENSE = 'BSD 3-Clause'
+with open("README.md", "r") as fh:
+    LONG_DESCRIPTION = fh.read()
+    LONG_DESCRIPTION_content_type = "text/markdown"
+    # LONG_DESCRIPTION = __doc__
+LICENSE = 'Chan Zuckerberg Biohub Software License'
 DOWNLOAD_URL = 'https://github.com/czbiohub/ReconstructOrder'
 
 INSTALL_REQUIRES = []
 REQUIRES = []
 
 CLASSIFIERS = [
-    # 'Development Status :: 2 - Pre-Alpha',
-    # 'Environment :: X11 Applications :: Qt',
-    # 'Intended Audience :: Education',
-    # 'Intended Audience :: Science/Research',
-    # 'License :: OSI Approved :: BSD License',
+    'License :: OSI Approved :: BSD License',
     'Programming Language :: Python',
     'Programming Language :: Python :: 3 :: Only',
     'Programming Language :: Python :: 3.6',
@@ -24,7 +23,7 @@ CLASSIFIERS = [
     'Topic :: Scientific/Engineering',
     'Topic :: Scientific/Engineering :: Visualization',
     'Topic :: Scientific/Engineering :: Information Analysis',
-    # 'Topic :: Scientific/Engineering :: Bio-Informatics',
+    'Topic :: Scientific/Engineering :: Bio-Informatics',
     'Topic :: Utilities',
     'Operating System :: Microsoft :: Windows',
     'Operating System :: POSIX',
@@ -33,8 +32,7 @@ CLASSIFIERS = [
 ]
 
 # populate packages
-PACKAGES = [package for package in find_packages()
-            if not package.startswith('gui')]
+PACKAGES = [package for package in find_packages()]
 
 # parse requirements
 with open(osp.join('requirements', 'default.txt')) as f:
@@ -53,15 +51,14 @@ if __name__ == '__main__':
         name=DISTNAME,
         description=DESCRIPTION,
         long_description=LONG_DESCRIPTION,
-        # license=LICENSE,
+        long_description_content_type=LONG_DESCRIPTION_content_type,
+        license=LICENSE,
         download_url=DOWNLOAD_URL,
-        version="0.0.6",
-        # cmdclass=versioneer.get_cmdclass(),
+        version="0.0.5",
         classifiers=CLASSIFIERS,
         install_requires=INSTALL_REQUIRES,
         requires=REQUIRES,
         python_requires=f'>={MIN_PY_VER}',
         packages=PACKAGES,
         include_package_data=True,
-        zip_safe=False  # the package can run out of an .egg file
     )
