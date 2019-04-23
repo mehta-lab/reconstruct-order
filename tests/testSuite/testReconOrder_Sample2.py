@@ -42,7 +42,7 @@ class TestImageReconstruction(unittest.TestCase):
                          condition + \
                          "/img_Scattering_t000_p000_z000.tif"
 
-    source_config_file = '../../config/config_MouseBrainSlice2_unittest.yml'
+    source_config_file = '../../config/config_MouseBrainSlice2_workflow_test.yml'
 
     def __init__(self, *args, **kwargs):
         '''
