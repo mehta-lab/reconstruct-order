@@ -98,21 +98,22 @@ class ConfigReader:
     def __repr__(self):
         out = str(self.__class__) + '\n'
         for (key, value) in self.dataset.__dict__.items():
-            out = out + '{}: {}\n'.format(key,value)
+            out = out + '{}: {}\n'.format(key.strip('_'),value)
         for (key, value) in self.processing.__dict__.items():
-            out = out + '{}: {}\n'.format(key,value)
+            out = out + '{}: {}\n'.format(key.strip('_'),value)
         for (key, value) in self.plotting.__dict__.items():
-            out = out + '{}: {}\n'.format(key,value)
+            out = out + '{}: {}\n'.format(key.strip('_'),value)
         return out
 
 
-class Dataset:
-    n_samples = 0
-    _processed_dir = []
-    _data_dir = []
-    _samples = []
-    _positions = 'all'
-    _background = []
+class Dataset:    
+    def __init__(self):
+        self.n_samples = 0
+        self._processed_dir = []
+        self._data_dir = []
+        self._samples = []
+        self._positions = 'all'
+        self._background = []
     
     @property
     def processed_dir(self):
@@ -170,7 +171,7 @@ class Dataset:
     def __repr__(self):
         out = str(self.__class__) + '\n'
         for (key, value) in self.__dict__.items():
-            out = out + '{}: {}\n'.format(key,value)
+            out = out + '{}: {}\n'.format(key.strip('_'),value)
         return out
         
 class Processing:        
@@ -253,11 +254,10 @@ class Processing:
     def __repr__(self):
         out = str(self.__class__) + '\n'
         for (key, value) in self.__dict__.items():
-            out = out + '{}: {}\n'.format(key,value)
+            out = out + '{}: {}\n'.format(key.strip('_'),value)
         return out
     
-class Plotting:
-    
+class Plotting: 
     def __init__(self):
         self.normalize_color_images = True
         self.save_birefringence_fig = False
@@ -268,5 +268,5 @@ class Plotting:
     def __repr__(self):
         out = str(self.__class__) + '\n'
         for (key, value) in self.__dict__.items():
-            out = out + '{}: {}\n'.format(key,value)
+            out = out + '{}: {}\n'.format(key.strip('_'),value)
         return out

@@ -288,7 +288,7 @@ def loopZSm(img_io, config, img_reconstructor=None):
 
             if save_birefring:
                 imgs = [ImgBF, retard, azimuth, polarization, ImgFluor]
-                img_io, img_dict = plot_birefringence(img_io, imgs, spacing=20, vectorScl=2, zoomin=False,
+                img_io, img_dict = plot_birefringence(img_io, imgs, config, spacing=20, vectorScl=2, zoomin=False,
                                                   dpi=200,
                                                   norm=norm, plot=save_fig)
             if save_stokes:
