@@ -60,6 +60,12 @@ plotting:
   normalize_color_images: True
   # (bool) Scale fluorescence channels in each 'Retardance+Fluorescence' differently for optimal contrast. Set False to apply same scale for all images.
 
+  transmission_scaling: 1E4
+  # (float) scaling factor of transmission channel
+  
+  retardance_scaling: 1E3
+  # (float) scaling factor of retardance channel
+  
   save_birefringence_fig: False 
   # (bool) save figures showing different channels
   
@@ -85,5 +91,7 @@ plotting:
 #   normalize_color_images: True
 #   save_birefringence_fig: False
 #   save_stokes_fig: False
+#   transmission_scaling: 1E4
+#   retardance_scaling: 1E3
 
 
