@@ -50,8 +50,8 @@ def imBitConvert(im,bit=16, norm=False, limit=None):
         if not limit: # if lmit is not provided, perform local normalization, otherwise global (for tiling)
             limit = [np.nanmin(im[:]), np.nanmax(im[:])] # scale each image individually based on its min and max
         im = (im-limit[0])/(limit[1]-limit[0])*(2**bit-1) 
-    else: # only clipping, no scaling        
-        im = np.clip(im, 0, 2**bit-1) # clip the values to avoid wrap-around by np.astype         
+
+    im = np.clip(im, 0, 2**bit-1) # clip the values to avoid wrap-around by np.astype
     if bit==8:        
         im = im.astype(np.uint8, copy=False) # convert to 8 bit
     else:

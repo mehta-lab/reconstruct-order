@@ -27,17 +27,10 @@ def imshow_pair(images, chann_names, OutputPath, fig_name):
 def channel_register(target_images, channels):
     """
     Returns a list of shift vectors for unregistered images.
+    Requires scikit-image 0.15 or above.
     :param target_images: list of target images.
     :return registration_params: dictionary of channel (key) and its translational shifts [z, y, x] (value)
     """
-
-    # Applying sobel edge filter to brightfield and phase images.
-    # target_images[5] = filters.sobel(target_images[5])
-    # target_images[6] = filters.sobel(target_images[6])
-
-    # Finding shift vectors that register first channel to all others. Subpixel registration is achieved by
-    # upsampling by a factor of 4.
-    # no shift for the reference channel
     shifts = [[0,0,0]]
     for image in target_images[1:]:
         shift, error, phase = register_translation(target_images[0], image, 4)
@@ -61,12 +54,13 @@ def translate_3D(images, channels, registration_params, size_z_um):
         if chan in ['Retardance', 'Orientation','Orientation_x',
                     'Orientation_y', 'Polarization', 'Scattering',
                     'Pol_State_0', 'Pol_State_1',
-                    'Pol_State_2', 'Pol_State_3', 'Pol_State_4']:
+                    'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
+                    'Transmission', 'Brightfield']:
             chan = 'Retardance'
 
         # Brightfield registration is not robust
-        elif chan in ['Transmission', 'Brightfield']:
-            chan = '568'
+        # elif chan in ['Transmission', 'Brightfield']:
+        #     chan = '568'
         # !!!!"[:]" is necessary to create a copy rather than a reference of the list in the dict!!!!
         shift = registration_params[chan][:]
         # only warp the image if shift is non-zero

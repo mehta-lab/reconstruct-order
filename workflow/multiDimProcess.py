@@ -230,8 +230,8 @@ def loopZSm(img_io, config, img_reconstructor=None):
     pol_names = ['Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4']
     stokes_names = ['Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3']
     stokes_names_sm = [x + '_sm' for x in stokes_names]
-    birefring_names = ['Brightfield', 'Retardance', '+Orientation',
-                       'Retardance+Orientation', 'Scattering+Orientation', 'Transmission+Retardance+Orientation',
+    birefring_names = ['Brightfield', 'Retardance', 'Orientation', 'Transmission', 'Polarization',
+                       'Retardance+Orientation', 'Polarization+Orientation', 'Transmission+Retardance+Orientation',
                        'Retardance+Fluorescence', 'Retardance+Fluorescence_all']
     fluor_names = ['405', '488', '568', '640']
     save_stokes = any(chan in stokes_names + stokes_names_sm
@@ -257,6 +257,7 @@ def loopZSm(img_io, config, img_reconstructor=None):
                 for stack, img in zip(stokes_param_sm_stack, stokes_param_sm):
                     stack.append(img)
                 # retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images
+            #TODO: Make experimental and computed BF separate channels
             if isinstance(ImgBF, np.ndarray):
                 ImgBF = ImgBF[0, :, :] / img_reconstructor.stokes_param_bg[0]  # flat-field correction
                 img_dict.update({'Brightfield': ImgBF})
