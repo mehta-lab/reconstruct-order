@@ -17,7 +17,7 @@ sys.path.append(".") # Adds current directory to python search path.
 # sys.path.append(os.path.dirname(sys.argv[0]))
 from workflow.multiDimProcess import process_background, loopPos, compute_flat_field, read_metadata, parse_bg_options
 from utils.ConfigReader import ConfigReader
-from utils.imgIO import process_position_list
+from utils.imgIO import process_position_list, process_z_slice_list, process_timepoint_list
 import os
 import argparse
 
@@ -64,6 +64,8 @@ def runReconstruction(configfile):
     # read meta data
     img_obj_list, bg_obj_list = read_metadata(config)
     img_obj_list = process_position_list(img_obj_list, config)
+    img_obj_list = process_z_slice_list(img_obj_list, config)
+    img_obj_list = process_timepoint_list(img_obj_list, config)
     # process background options
     img_obj_list = parse_bg_options(img_obj_list, config)
     
