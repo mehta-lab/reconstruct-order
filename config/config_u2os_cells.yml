@@ -4,6 +4,7 @@ dataset:
     samples: ['2019-4-2-U2OS_plin2_DS1_2']
     background: 'BG_2019_0402_1052_1'
     positions: '4-Pos_000_000'
+    z_slices: !!python/object/apply:builtins.range [10, 30, 5]
 
 processing:
     output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization']
