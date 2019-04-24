@@ -198,13 +198,17 @@ class Dataset:
         
     @z_slices.setter
     def z_slices(self, value):   
-        if not isinstance(value, list):
+        if isinstance(value, Iterable) and value != 'all':
+            value = list(value)
+        else:
             value = [value]
         self._z_slices = value
         
     @timepoints.setter
     def timepoints(self, value):   
-        if not isinstance(value, list):
+        if isinstance(value, Iterable) and value != 'all':
+            value = list(value)
+        else:
             value = [value]
         self._timepoints = value
         
