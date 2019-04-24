@@ -42,7 +42,7 @@ def process_position_list(img_obj_list, config):
             else:
                 pos_list = [metadata_pos_list]
         else:
-            assert all(i in metadata_pos_list for i in config_pos_list), \
+            assert set(config_pos_list).issubset(metadata_pos_list), \
             'Position list {} for sample in {} is invalid'.format(config_pos_list, io_obj.ImgSmPath)
             pos_list = config_pos_list
         
@@ -60,8 +60,8 @@ def process_z_slice_list(img_obj_list, config):
         if config_z_list[0] == 'all':
             z_list = metadata_z_list
         else:
-            assert all(i in metadata_z_list for i in config_z_list), \
-            'Position list {} for sample in {} is invalid'.format(config_z_list, io_obj.ImgSmPath)
+            assert set(config_z_list).issubset(metadata_z_list), \
+            'z_slice list {} for sample in {} is invalid'.format(config_z_list, io_obj.ImgSmPath)
             z_list = config_z_list
         
         img_obj_list[idx].ZList = z_list
@@ -78,8 +78,8 @@ def process_timepoint_list(img_obj_list, config):
         if config_t_list[0] == 'all':
             t_list = metadata_t_list
         else:
-            assert all(i in metadata_t_list for i in config_t_list), \
-            'Position list {} for sample in {} is invalid'.format(config_t_list, io_obj.ImgSmPath)
+            assert set(config_t_list).issubset(metadata_t_list), \
+            'timepoint list {} for sample in {} is invalid'.format(config_t_list, io_obj.ImgSmPath)
             t_list = config_t_list
         
         img_obj_list[idx].TimeList = t_list
