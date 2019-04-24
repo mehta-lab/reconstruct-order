@@ -49,6 +49,42 @@ def process_position_list(img_obj_list, config):
         img_obj_list[idx].PosList = pos_list
     return img_obj_list
 
+def process_z_slice_list(img_obj_list, config):
+    """
+    Make sure all members of z_slices are part of io_obj.
+    If z_slices = 'all', replace with actual list of z_slices
+    """
+    for idx, io_obj in enumerate(img_obj_list):
+        config_z_list = config.dataset.z_slices[idx]
+        metadata_z_list = range(io_obj.nZ)
+        if config_z_list[0] == 'all':
+            z_list = metadata_z_list
+        else:
+            assert all(i in metadata_z_list for i in config_z_list), \
+            'Position list {} for sample in {} is invalid'.format(config_z_list, io_obj.ImgSmPath)
+            z_list = config_z_list
+        
+        img_obj_list[idx].ZList = z_list
+    return img_obj_list
+
+def process_timepoint_list(img_obj_list, config):
+    """
+    Make sure all members of timepoints are part of io_obj.
+    If timepoints = 'all', replace with actual list of timepoints
+    """
+    for idx, io_obj in enumerate(img_obj_list):
+        config_t_list = config.dataset.timepoints[idx]
+        metadata_t_list = range(io_obj.nTime)
+        if config_t_list[0] == 'all':
+            t_list = metadata_t_list
+        else:
+            assert all(i in metadata_t_list for i in config_t_list), \
+            'Position list {} for sample in {} is invalid'.format(config_t_list, io_obj.ImgSmPath)
+            t_list = config_t_list
+        
+        img_obj_list[idx].TimeList = t_list
+    return img_obj_list
+
 
 def loadTiff(acquDirPath, acquFiles):
     """
