@@ -7,6 +7,7 @@ Created on Wed Apr  3 15:31:41 2019
 """
 import yaml
 import os.path
+from collections.abc import Iterable
 from utils.imgIO import GetSubDirName
 
 class ConfigReader:   
@@ -26,17 +27,25 @@ class ConfigReader:
         assert 'processed_dir' in self.yaml_config['dataset'], \
             'Please provde processed_dir in config file'
         assert 'samples'  in self.yaml_config['dataset'], \
-            'Please provde samples in config file'
+            'Please provde samples in config file'         
         
         # Assign data_dir and processed_dir first to be able to check sample
         # and background directories
         self.dataset.data_dir = self.yaml_config['dataset']['data_dir']
         self.dataset.processed_dir = self.yaml_config['dataset']['processed_dir']
+            
         for (key, value) in self.yaml_config['dataset'].items():
             if key == 'samples':
-                self.dataset.samples = value
+                if value == 'all':
+                    self.dataset.samples = GetSubDirName(self.dataset.data_dir) 
+                else:
+                    self.dataset.samples = value
             elif key == 'positions':
                 self.dataset.positions = value
+            elif key == 'z_slices':
+                self.dataset.z_slices = value
+            elif key == 'timepoints':
+                self.dataset.timepoints = value
             elif key == 'background':
                 self.dataset.background = value
             elif key not in ('data_dir', 'processed_dir'):
@@ -80,19 +89,32 @@ class ConfigReader:
                     
         if self.dataset.background and 'processing' not in self.yaml_config \
             or 'background_correction' not in self.yaml_config['processing']:
-            self.processing.background_correction = 'Input'
-            
-        if self.dataset.samples[0] == 'all':
-            self.dataset.samples = GetSubDirName(self.dataset.data_dir)         
+            self.processing.background_correction = 'Input'   
             
         if not any(isinstance(i, list) for i in self.dataset.positions):
             self.dataset.positions = [self.dataset.positions]*len(self.dataset.samples)
+        else:
+            assert all(isinstance(i, list) for i in self.dataset.positions),\
+            'Positions input must be a list of lists'
+                        
+        if not any(isinstance(i, list) for i in self.dataset.z_slices):
+            self.dataset.z_slices = [self.dataset.z_slices]*len(self.dataset.samples)
+        else:
+            assert all(isinstance(i, list) for i in self.dataset.z_slices),\
+            'z_slices input must be a list of lists'
+            
+        if not any(isinstance(i, list) for i in self.dataset.timepoints):
+            self.dataset.timepoints = [self.dataset.timepoints]*len(self.dataset.samples)
+        else:
+            assert all(isinstance(i, list) for i in self.dataset.timepoints),\
+            'timepoints input must be a list of lists'
             
         if len(self.dataset.background) == 1:
             self.dataset.background = self.dataset.background * len(self.dataset.samples)
                 
-        assert len(self.dataset.samples) == len(self.dataset.background) == len(self.dataset.positions), \
-            'Length of the background directory list must be one or same as sample directory list'
+        assert len(self.dataset.samples) == len(self.dataset.background) == len(self.dataset.positions) == \
+                len(self.dataset.z_slices) == len(self.dataset.timepoints), \
+                'Please provide equal number of samples and lists with corresponding background, positions, z_slices, and timepoints'
             
     def write_config(self,path):
         config_out = {'dataset':{key.strip('_'):value for (key,value) in self.dataset.__dict__.items()},
@@ -117,7 +139,9 @@ class Dataset:
         self._processed_dir = []
         self._data_dir = []
         self._samples = []
-        self._positions = 'all'
+        self._positions = ['all']
+        self._z_slices = ['all']
+        self._timepoints = ['all']
         self._background = []
     
     @property
@@ -135,6 +159,14 @@ class Dataset:
     @property
     def positions(self):
         return self._positions
+    
+    @property
+    def z_slices(self):
+        return self._z_slices
+    
+    @property
+    def timepoints(self):
+        return self._timepoints
     
     @property
     def background(self):
@@ -163,6 +195,18 @@ class Dataset:
         if not isinstance(value, list):
             value = [value]
         self._positions = value
+        
+    @z_slices.setter
+    def z_slices(self, value):   
+        if not isinstance(value, list):
+            value = [value]
+        self._z_slices = value
+        
+    @timepoints.setter
+    def timepoints(self, value):   
+        if not isinstance(value, list):
+            value = [value]
+        self._timepoints = value
         
     @background.setter
     def background(self, value):

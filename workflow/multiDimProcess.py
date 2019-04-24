@@ -214,7 +214,7 @@ def loopT(img_io, config, img_reconstructor=None):
     TODO: only process user input list of time points
     """
 
-    for tIdx in range(0, img_io.nTime):
+    for tIdx in img_io.TimeList:
         img_io.tIdx = tIdx
         if img_io.loopZ == 'sample':
             if img_io.bg_method == 'Local_defocus':
@@ -259,7 +259,7 @@ def loopZSm(img_io, config, img_reconstructor=None):
                for chan in img_io.chNamesOut) or save_fig
     save_pol = any(chan in pol_names for chan in img_io.chNamesOut) or save_pol_fig
 
-    for zIdx in range(0, img_io.nZ):
+    for zIdx in img_io.ZList:
         # for zIdx in range(0, 1):
         print('Processing position %03d, time %03d, z %03d ...' % (posIdx, tIdx, zIdx))
         plt.close("all")  # close all the figures from the last run
