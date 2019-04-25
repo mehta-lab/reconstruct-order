@@ -36,7 +36,7 @@ def process_position_list(img_obj_list, config):
     """
     for idx, io_obj in enumerate(img_obj_list):
         config_pos_list = config.dataset.positions[idx]
-        metadata_pos_list = io_obj.PosList
+        metadata_pos_list = io_obj.pos_list
         if config_pos_list[0] == 'all':
             if isinstance(metadata_pos_list, list):
                 pos_list = metadata_pos_list
@@ -47,7 +47,7 @@ def process_position_list(img_obj_list, config):
             'Position list {} for sample in {} is invalid'.format(config_pos_list, io_obj.ImgSmPath)
             pos_list = config_pos_list
         
-        img_obj_list[idx].PosList = pos_list
+        img_obj_list[idx].pos_list = pos_list
     return img_obj_list
 
 def process_z_slice_list(img_obj_list, config):

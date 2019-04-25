@@ -302,7 +302,8 @@ class Processing:
         
     @azimuth_offset.setter
     def azimuth_offset(self, value):   
-        # TODO: Check that input value if right type
+        assert isinstance(value, (int, float)) and 0 <= value <= 180, \
+            "azimuth_offset must be a number in range [0, 180]"
         self._azimuth_offset = value
         
     @separate_positions.setter

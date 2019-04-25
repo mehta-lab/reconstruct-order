@@ -20,8 +20,7 @@ class mManagerReader:
         :param list output_chan: list of output channel names
         """
         subDirName = GetSubDirName(ImgSmPath)
-        
-        ## TODO: track global image limits
+
         img_in_pos_path = ImgSmPath # data structure doesn't have position folders
         if subDirName:
             subDir = subDirName[0] # pos0
@@ -59,7 +58,7 @@ class mManagerReader:
         self.bg = None
 
     @property
-    def pos_names(self):
+    def pos_list(self):
         pos_dict_list = self.input_meta_file['Summary']['InitialPositionList']
         return [pos_dict['Label'] for pos_dict in pos_dict_list]
 
@@ -109,7 +108,7 @@ class mManagerReader:
         with open(metaFileName, 'w') as f:  
             json.dump(self.input_meta_file, f)
         df_pos_path = os.path.join(self.ImgOutPath, 'pos_table.csv')
-        df_pos = pd.DataFrame(list(enumerate(self.pos_names)),
+        df_pos = pd.DataFrame(list(enumerate(self.pos_list)),
                           columns=['pos idx', 'pos dir'])
         df_pos.to_csv(df_pos_path, sep=',')
         
@@ -233,7 +232,7 @@ class PolAcquReader(mManagerReader):
         # PolAcquisition doens't save position list
 
     @property
-    def pos_names(self):
+    def pos_list(self):
         return  ['Pos0']
 
     
