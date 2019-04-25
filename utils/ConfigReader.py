@@ -7,6 +7,7 @@ Created on Wed Apr  3 15:31:41 2019
 """
 import yaml
 import os.path
+from collections.abc import Iterable
 from utils.imgIO import GetSubDirName
 
 class ConfigReader:   
@@ -17,81 +18,131 @@ class ConfigReader:
         
     def read_config(self,path):
         with open(path, 'r') as f:
-            config = yaml.load(f)
+            self.yaml_config = yaml.load(f)
             
-        if 'dataset' in config:
-            for (key, value) in config['dataset'].items():
-                if key == 'processed_dir':
-                    self.dataset.processed_dir = value
-                if key == 'data_dir':
-                    self.dataset.data_dir = value
-                if key == 'samples':
+        assert 'dataset' in self.yaml_config, \
+            'dataset is a required field in the config yaml file'
+        assert 'data_dir' in self.yaml_config['dataset'], \
+            'Please provde data_dir in config file'
+        assert 'processed_dir' in self.yaml_config['dataset'], \
+            'Please provde processed_dir in config file'
+        assert 'samples'  in self.yaml_config['dataset'], \
+            'Please provde samples in config file'         
+        
+        # Assign data_dir and processed_dir first to be able to check sample
+        # and background directories
+        self.dataset.data_dir = self.yaml_config['dataset']['data_dir']
+        self.dataset.processed_dir = self.yaml_config['dataset']['processed_dir']
+            
+        for (key, value) in self.yaml_config['dataset'].items():
+            if key == 'samples':
+                if value == 'all':
+                    self.dataset.samples = GetSubDirName(self.dataset.data_dir) 
+                else:
                     self.dataset.samples = value
-                if key == 'positions':
-                    self.dataset.positions = value
-                if key == 'background':
-                    self.dataset.background = value
+            elif key == 'positions':
+                self.dataset.positions = value
+            elif key == 'z_slices':
+                self.dataset.z_slices = value
+            elif key == 'timepoints':
+                self.dataset.timepoints = value
+            elif key == 'background':
+                self.dataset.background = value
+            elif key not in ('data_dir', 'processed_dir'):
+                raise NameError('Unrecognized parameter {} passed'.format(key))
              
-        if 'processing' in config:
-            for (key, value) in config['processing'].items():
+        if 'processing' in self.yaml_config:
+            for (key, value) in self.yaml_config['processing'].items():
                 if key == 'output_channels':
                     self.processing.output_channels = value
-                if key == 'circularity':
+                elif key == 'circularity':
                     self.processing.circularity = value
-                if key == 'background_correction':
+                elif key == 'background_correction':
                     self.processing.background_correction = value
-                if key == 'flatfield_correction':
+                elif key == 'flatfield_correction':
                     self.processing.flatfield_correction = value
-                if key == 'azimuth_offset':
+                elif key == 'azimuth_offset':
                     self.processing.azimuth_offset = value
-                if key == 'separate_positions':
+                elif key == 'separate_positions':
                     self.processing.separate_positions = value
+                else:
+                    raise NameError('Unrecognized parameter {} passed'.format(key))
          
-        if 'plotting' in config:
-            for (key, value) in config['plotting'].items():
+        if 'plotting' in self.yaml_config:
+            for (key, value) in self.yaml_config['plotting'].items():
                 if key == 'normalize_color_images':
-                    self.plotting.normalize_color_images = value
-                if key == 'save_birefringence_fig':
+                    self.plotting.normalize_color_images = value                  
+                elif key == 'retardance_scaling':
+                    self.plotting.retardance_scaling = value
+                elif key == 'transmission_scaling':
+                    self.plotting.transmission_scaling = value
+                elif key == 'save_birefringence_fig':
                     self.plotting.save_birefringence_fig = value
-                if key == 'save_stokes_fig':
+                elif key == 'save_stokes_fig':
                     self.plotting.save_stokes_fig = value
+                elif key == 'save_polarization_fig':
+                    self.plotting.save_polarization_fig = value
+                elif key == 'save_micromanager_fig':
+                    self.plotting.save_micromanager_fig = value
+                else:
+                    raise NameError('Unrecognized parameter {} passed'.format(key))
                     
-        assert self.dataset.processed_dir, \
-            'Please provde processed_dir in config file'
-        assert self.dataset.data_dir, \
-            'Please provde data_dir in config file'
-        assert self.dataset.samples, \
-            'Please provde samples in config file'
-            
-        if self.dataset.samples[0] == 'all':
-            self.dataset.samples = GetSubDirName(self.dataset.data_dir)         
+        if self.dataset.background and 'processing' not in self.yaml_config \
+            or 'background_correction' not in self.yaml_config['processing']:
+            self.processing.background_correction = 'Input'   
             
         if not any(isinstance(i, list) for i in self.dataset.positions):
-            self.dataset.positions = self.dataset.positions*len(self.dataset.samples)
+            self.dataset.positions = [self.dataset.positions]*len(self.dataset.samples)
+        else:
+            assert all(isinstance(i, list) for i in self.dataset.positions),\
+            'Positions input must be a list of lists'
+                        
+        if not any(isinstance(i, list) for i in self.dataset.z_slices):
+            self.dataset.z_slices = [self.dataset.z_slices]*len(self.dataset.samples)
+        else:
+            assert all(isinstance(i, list) for i in self.dataset.z_slices),\
+            'z_slices input must be a list of lists'
+            
+        if not any(isinstance(i, list) for i in self.dataset.timepoints):
+            self.dataset.timepoints = [self.dataset.timepoints]*len(self.dataset.samples)
+        else:
+            assert all(isinstance(i, list) for i in self.dataset.timepoints),\
+            'timepoints input must be a list of lists'
             
         if len(self.dataset.background) == 1:
             self.dataset.background = self.dataset.background * len(self.dataset.samples)
                 
-        assert len(self.dataset.samples) == len(self.dataset.background) == len(self.dataset.positions), \
-            'Length of the background directory list must be one or same as sample directory list'
+        assert len(self.dataset.samples) == len(self.dataset.background) == len(self.dataset.positions) == \
+                len(self.dataset.z_slices) == len(self.dataset.timepoints), \
+                'Please provide equal number of samples and lists with corresponding background, positions, z_slices, and timepoints'
+            
+    def write_config(self,path):
+        config_out = {'dataset':{key.strip('_'):value for (key,value) in self.dataset.__dict__.items()},
+                      'processing':{key.strip('_'):value for (key,value) in self.processing.__dict__.items()},
+                      'plotting':{key.strip('_'):value for (key,value) in self.plotting.__dict__.items()}}
+        with open(path, 'w') as f:
+            yaml.dump(config_out, f, default_flow_style=False)
             
     def __repr__(self):
         out = str(self.__class__) + '\n'
         for (key, value) in self.dataset.__dict__.items():
-            out = out + '{}: {}\n'.format(key,value)
+            out = out + '{}: {}\n'.format(key.strip('_'),value)
         for (key, value) in self.processing.__dict__.items():
-            out = out + '{}: {}\n'.format(key,value)
+            out = out + '{}: {}\n'.format(key.strip('_'),value)
         for (key, value) in self.plotting.__dict__.items():
-            out = out + '{}: {}\n'.format(key,value)
+            out = out + '{}: {}\n'.format(key.strip('_'),value)
         return out
 
 
-class Dataset:
-    _processed_dir = []
-    _data_dir = []
-    _samples = []
-    _positions = 'all'
-    _background = []
+class Dataset:    
+    def __init__(self):
+        self._processed_dir = []
+        self._data_dir = []
+        self._samples = []
+        self._positions = ['all']
+        self._z_slices = ['all']
+        self._timepoints = ['all']
+        self._background = []
     
     @property
     def processed_dir(self):
@@ -108,6 +159,14 @@ class Dataset:
     @property
     def positions(self):
         return self._positions
+    
+    @property
+    def z_slices(self):
+        return self._z_slices
+    
+    @property
+    def timepoints(self):
+        return self._timepoints
     
     @property
     def background(self):
@@ -127,6 +186,8 @@ class Dataset:
     def samples(self, value):
         if not isinstance(value, list):
             value = [value]
+        for sm in value:
+            assert os.path.exists(os.path.join(self.data_dir,sm)), 'sample directory {} does not exist'.format(sm)
         self._samples = value
         
     @positions.setter
@@ -134,6 +195,22 @@ class Dataset:
         if not isinstance(value, list):
             value = [value]
         self._positions = value
+        
+    @z_slices.setter
+    def z_slices(self, value):   
+        if isinstance(value, Iterable) and value != 'all':
+            value = list(value)
+        else:
+            value = [value]
+        self._z_slices = value
+        
+    @timepoints.setter
+    def timepoints(self, value):   
+        if isinstance(value, Iterable) and value != 'all':
+            value = list(value)
+        else:
+            value = [value]
+        self._timepoints = value
         
     @background.setter
     def background(self, value):
@@ -146,7 +223,7 @@ class Dataset:
     def __repr__(self):
         out = str(self.__class__) + '\n'
         for (key, value) in self.__dict__.items():
-            out = out + '{}: {}\n'.format(key,value)
+            out = out + '{}: {}\n'.format(key.strip('_'),value)
         return out
         
 class Processing:        
@@ -229,18 +306,21 @@ class Processing:
     def __repr__(self):
         out = str(self.__class__) + '\n'
         for (key, value) in self.__dict__.items():
-            out = out + '{}: {}\n'.format(key,value)
+            out = out + '{}: {}\n'.format(key.strip('_'),value)
         return out
     
-class Plotting:
-    normalize_color_images = True
-    save_birefringence_fig = False
-    save_stokes_fig = False
-    save_polarization_fig = False
-    save_micromanager_fig = False
+class Plotting: 
+    def __init__(self):
+        self.normalize_color_images = True
+        self.transmission_scaling = 1E4
+        self.retardance_scaling = 1E3
+        self.save_birefringence_fig = False
+        self.save_stokes_fig = False
+        self.save_polarization_fig = False
+        self.save_micromanager_fig = False
     
     def __repr__(self):
         out = str(self.__class__) + '\n'
         for (key, value) in self.__dict__.items():
-            out = out + '{}: {}\n'.format(key,value)
+            out = out + '{}: {}\n'.format(key.strip('_'),value)
         return out

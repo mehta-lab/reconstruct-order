@@ -19,9 +19,9 @@ class mManagerReader:
         :param list inputChann: list of input channel names
         :param list outputChann: list of output channel names
         """
-        subDirName = GetSubDirName(ImgSmPath)          
+        subDirName = GetSubDirName(ImgSmPath)      
         
-        ## TO DO: track global image limits
+        ## TODO: track global image limits
         img_in_pos_path = ImgSmPath # data structure doesn't have position folders
         if subDirName:
             subDir = subDirName[0] # pos0
@@ -31,6 +31,7 @@ class mManagerReader:
         with open(metaFileName, 'r') as f:
             metaFile = json.load(f)
         self.metaFile = metaFile
+        self.name = metaFile["Summary"]["Prefix"]
         self.ImgSmPath = ImgSmPath
         self.img_in_pos_path = img_in_pos_path # input pos path
         self.ImgOutPath = ImgOutPath
@@ -43,6 +44,10 @@ class mManagerReader:
         self.nChannOut = len(outputChann)
         self.imgLimits = [[np.Inf,0]]*self.nChannOut
         self.nPos = metaFile['Summary']['Positions']
+        if metaFile['Summary']['InitialPositionList'] == None:
+            self.PosList = 'Pos0'
+        else:
+            self.PosList = [metaFile['Summary']['InitialPositionList'][idx]['Label'] for idx in range(self.nPos)]
         self.nTime = metaFile['Summary']['Frames']
         self.nZ = metaFile['Summary']['Slices']
         self.size_x_um = 6.5/63 # (um) for zyla at 63X. mManager metafile currently does not log the correct pixel size
@@ -206,11 +211,11 @@ class mManagerReader:
 
 class PolAcquReader(mManagerReader):
     """PolAcquistion Plugin output format reader"""
-    def __init__(self, ImgSmPath, ImgOutPath=None, verbose=0):
+    def __init__(self, ImgSmPath, ImgOutPath=None, inputChann=[], outputChann=[], verbose=0):
         """
         Extract PolAcquistion specific params from the metafile
         """
-        mManagerReader.__init__(self, ImgSmPath, ImgOutPath)
+        mManagerReader.__init__(self, ImgSmPath, ImgOutPath, inputChann, outputChann)
         metaFile = self.metaFile
         self.acquScheme = metaFile['Summary']['~ Acquired Using']
         self.bg = metaFile['Summary']['~ Background']
