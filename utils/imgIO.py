@@ -28,6 +28,63 @@ def FindDirContainPos(ImgPath):
         return ImgPath
     else:
         return ImgPath
+    
+def process_position_list(img_obj_list, config):
+    """
+    Make sure all members of positions are part of io_obj.
+    If positions = 'all', replace with actual list of positions
+    """
+    for idx, io_obj in enumerate(img_obj_list):
+        config_pos_list = config.dataset.positions[idx]
+        metadata_pos_list = io_obj.PosList
+        if config_pos_list[0] == 'all':
+            if isinstance(metadata_pos_list, list):
+                pos_list = metadata_pos_list
+            else:
+                pos_list = [metadata_pos_list]
+        else:
+            assert set(config_pos_list).issubset(metadata_pos_list), \
+            'Position list {} for sample in {} is invalid'.format(config_pos_list, io_obj.ImgSmPath)
+            pos_list = config_pos_list
+        
+        img_obj_list[idx].PosList = pos_list
+    return img_obj_list
+
+def process_z_slice_list(img_obj_list, config):
+    """
+    Make sure all members of z_slices are part of io_obj.
+    If z_slices = 'all', replace with actual list of z_slices
+    """
+    for idx, io_obj in enumerate(img_obj_list):
+        config_z_list = config.dataset.z_slices[idx]
+        metadata_z_list = range(io_obj.nZ)
+        if config_z_list[0] == 'all':
+            z_list = metadata_z_list
+        else:
+            assert set(config_z_list).issubset(metadata_z_list), \
+            'z_slice list {} for sample in {} is invalid'.format(config_z_list, io_obj.ImgSmPath)
+            z_list = config_z_list
+        
+        img_obj_list[idx].ZList = z_list
+    return img_obj_list
+
+def process_timepoint_list(img_obj_list, config):
+    """
+    Make sure all members of timepoints are part of io_obj.
+    If timepoints = 'all', replace with actual list of timepoints
+    """
+    for idx, io_obj in enumerate(img_obj_list):
+        config_t_list = config.dataset.timepoints[idx]
+        metadata_t_list = range(io_obj.nTime)
+        if config_t_list[0] == 'all':
+            t_list = metadata_t_list
+        else:
+            assert set(config_t_list).issubset(metadata_t_list), \
+            'timepoint list {} for sample in {} is invalid'.format(config_t_list, io_obj.ImgSmPath)
+            t_list = config_t_list
+        
+        img_obj_list[idx].TimeList = t_list
+    return img_obj_list
 
 def copy_files_in_sub_dirs(input_path, output_path):
     assert os.path.exists(input_path), 'Input folder does not exist!'

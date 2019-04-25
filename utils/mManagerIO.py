@@ -9,9 +9,7 @@ import cv2
 from utils.imgIO import GetSubDirName
 
 class mManagerReader:
-    """General mManager Reader
-    TODO: move file IO methods to imIO modules
-    """
+    """General mManager Reader"""
 
     def __init__(self, ImgSmPath, ImgOutPath=None, input_chan=[], output_chan=[]):
         """
@@ -21,9 +19,9 @@ class mManagerReader:
         :param list input_chan: list of input channel names
         :param list output_chan: list of output channel names
         """
-        subDirName = GetSubDirName(ImgSmPath)          
+        subDirName = GetSubDirName(ImgSmPath)
         
-        ## TO DO: track global image limits
+        ## TODO: track global image limits
         img_in_pos_path = ImgSmPath # data structure doesn't have position folders
         if subDirName:
             subDir = subDirName[0] # pos0
@@ -34,6 +32,7 @@ class mManagerReader:
             input_meta_file = json.load(f)
 
         self.input_meta_file = input_meta_file
+        self.name = input_meta_file["Summary"]["Prefix"]
         self.output_meta_file = []
         self.ImgSmPath = ImgSmPath
         self.img_in_pos_path = img_in_pos_path # input pos path
@@ -63,7 +62,7 @@ class mManagerReader:
     def pos_names(self):
         pos_dict_list = self.input_meta_file['Summary']['InitialPositionList']
         return [pos_dict['Label'] for pos_dict in pos_dict_list]
-            
+
     def read_img(self):
         """read a single image at (c,t,p,z)"""
         fileName = 'img_'+self.chNamesIn[self.chanIdx]+'_t%03d_p%03d_z%03d.tif'%(self.tIdx, self.posIdx, self.zIdx)
@@ -219,11 +218,11 @@ class mManagerReader:
 
 class PolAcquReader(mManagerReader):
     """PolAcquistion Plugin output format reader"""
-    def __init__(self, ImgSmPath, ImgOutPath=None, verbose=0):
+    def __init__(self, ImgSmPath, ImgOutPath=None, verbose=0, input_chan=[], output_chan=[]):
         """
         Extract PolAcquistion specific params from the metafile
         """
-        mManagerReader.__init__(self, ImgSmPath, ImgOutPath)
+        mManagerReader.__init__(self, ImgSmPath, ImgOutPath, input_chan, output_chan)
         metaFile = self.input_meta_file
         self.acquScheme = metaFile['Summary']['~ Acquired Using']
         self.bg = metaFile['Summary']['~ Background']
@@ -236,5 +235,5 @@ class PolAcquReader(mManagerReader):
     @property
     def pos_names(self):
         return  ['Pos0']
-        
+
     

@@ -42,7 +42,7 @@ def plotVectorField(I, orientation, R=40, spacing=40, clim=[None, None]):
 #    plt.show()
     return imAx
 
-def plot_birefringence(img_io, imgs, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
+def plot_birefringence(img_io, imgs, config, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
     """ Parses transmission, retardance, orientation, and polarization images, and prepares them for export.  """
     #TODO: refactor name to match the intent of the function. This doesn't seem to plot, but just parse.
 
@@ -85,10 +85,10 @@ def plot_birefringence(img_io, imgs, spacing=20, vectorScl=5, zoomin=False, dpi=
     imgDict = {}
     for chann in outputChann:
         if chann == 'Brightfield':
-            img = imBitConvert(I_trans * 10 ** 4, bit=16, norm=False)  # AU, set norm to False for tiling images
+            img = imBitConvert(I_trans * config.plotting.transmission_scaling, bit=16, norm=False)  # AU, set norm to False for tiling images
             
         elif chann == 'Retardance':
-            img = imBitConvert(retard * 10 ** 3, bit=16)  # scale to pm
+            img = imBitConvert(retard * config.plotting.retardance_scaling, bit=16)  # scale to pm
             
         elif chann == 'Orientation':
             img = imBitConvert(azimuth_degree * 100, bit=16)  # scale to [0, 18000], 100*degree
@@ -111,7 +111,7 @@ def plot_birefringence(img_io, imgs, spacing=20, vectorScl=5, zoomin=False, dpi=
             
         elif chann == 'Transmission+Retardance+Orientation':
             img = I_azi_ret_trans
-            
+
         elif chann == 'Retardance+Fluorescence':
             img = IFluorRetard
             
