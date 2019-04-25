@@ -55,7 +55,7 @@ def translate_3D(images, channels, registration_params, size_z_um):
                     'Orientation_y', 'Polarization', 'Scattering',
                     'Pol_State_0', 'Pol_State_1',
                     'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
-                    'Transmission', 'Brightfield']:
+                    'Transmission', 'Brightfield', 'Brightfield_computed']:
             chan = 'Retardance'
 
         # Brightfield registration is not robust
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     # use edge filter to change BF image to positive contrast (doesn't work for noisy images)
     target_images_filtered = []
     for chan, img in zip(input_chan, target_images_cropped):
-        if chan in ['Transmission', 'Brightfield']:
+        if chan in ['Transmission', 'Brightfield', 'Brightfield_computed']:
             imgs_filtered = []
             for z_idx in range(img.shape[2]):
                 img_filtered = edge_filter_2D(img[:, :, z_idx])

@@ -25,11 +25,8 @@ def parse_args():
 
 def read_config(config_fname):
     """Read the config file in yml format
-
-    TODO: validate config!
-
     :param str config_fname: fname of config yaml with its full path
-    :return:
+    :return: dict dictionary of config parameters
     """
 
     with open(config_fname, 'r') as f:

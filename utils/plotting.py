@@ -42,9 +42,8 @@ def plotVectorField(I, orientation, R=40, spacing=40, clim=[None, None]):
 #    plt.show()
     return imAx
 
-def plot_birefringence(img_io, imgs, config, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
-    """ Parses transmission, retardance, orientation, and polarization images, and prepares them for export.  """
-    #TODO: refactor name to match the intent of the function. This doesn't seem to plot, but just parse.
+def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
+    """ Parses transmission, retardance, orientation, and polarization images, scale and render them for export.  """
 
     outputChann = img_io.chNamesOut
     chann_scale = [0.25, 1, 0.05, 1]  # scale fluor channels for composite images when norm=False
@@ -84,7 +83,7 @@ def plot_birefringence(img_io, imgs, config, spacing=20, vectorScl=5, zoomin=Fal
     
     imgDict = {}
     for chann in outputChann:
-        if chann == 'Brightfield':
+        if chann == 'Brightfield_computed':
             img = imBitConvert(I_trans * config.plotting.transmission_scaling, bit=16, norm=False)  # AU, set norm to False for tiling images
             
         elif chann == 'Retardance':
@@ -135,21 +134,23 @@ def PolColor(I_trans, retardance, orientation, polarization, norm=True):
         I_azi_ret: H=Orientation, V=Retardance.
         I_azi_pol: H=Orientation, V=Polarization.
     """
+
     if norm:
         retardance = imadjust(retardance, tol=1, bit=8)
-        I_trans = imadjust(I_trans, tol=1, bit=8)
+        s0 = imadjust(s0, tol=1, bit=8)
         polarization = imadjust(polarization, tol=1, bit=8)
         # retardance = cv2.convertScaleAbs(retardance, alpha=(2**8-1)/np.max(retardance))
-        # I_trans = cv2.convertScaleAbs(I_trans, alpha=(2**8-1)/np.max(I_trans))
+        # s0 = cv2.convertScaleAbs(s0, alpha=(2**8-1)/np.max(s0))
     else:
+        #TODO: make scaling factors parameters in the config
         retardance = cv2.convertScaleAbs(retardance, alpha=100)
-        I_trans = cv2.convertScaleAbs(I_trans, alpha=100)
+        s0 = cv2.convertScaleAbs(s0, alpha=100)
         polarization = cv2.convertScaleAbs(polarization, alpha=2000)
 #    retardance = histequal(retardance)
 
     orientation = cv2.convertScaleAbs(orientation, alpha=1)
 #    retardAzi = np.stack([orientation, retardance, np.ones(retardance.shape).astype(np.uint8)*255],axis=2)
-    I_azi_ret_trans = np.stack([orientation, retardance, I_trans], axis=2)
+    I_azi_ret_trans = np.stack([orientation, retardance, s0], axis=2)
     I_azi_ret = np.stack([orientation, np.ones(retardance.shape).astype(np.uint8) * 255, retardance], axis=2)
     I_azi_scat = np.stack([orientation, np.ones(retardance.shape).astype(np.uint8) * 255, polarization], axis=2)
     I_azi_ret_trans = cv2.cvtColor(I_azi_ret_trans, cv2.COLOR_HSV2RGB)
@@ -189,7 +190,7 @@ def CompositeImg(images, norm=True):
     return ImgColor
 
 #%%
-def plot_recon_images(I_trans, retard, azimuth, polarization, I_azi_ret, I_azi_scat, zoomin=False, spacing=20, vectorScl=1, dpi=300):
+def plot_recon_images(s0, retard, azimuth, polarization, I_azi_ret, I_azi_scat, zoomin=False, spacing=20, vectorScl=1, dpi=300):
     """ Plot transmission, retardance, orientation, and polarization images, and prepares them for export.  """
 
     R = retard
@@ -200,8 +201,8 @@ def plot_recon_images(I_trans, retard, azimuth, polarization, I_azi_ret, I_azi_s
     fig = plt.figure(figsize=figSize)
     ax1 = plt.subplot(2, 3, 1)
     plt.tick_params(labelbottom=False, labelleft=False)  # labels along the bottom edge are off
-    ax_trans = plt.imshow(imClip(I_trans, tol=1), cmap='gray')
-    plt.title('Brightfield')
+    ax_trans = plt.imshow(imClip(s0, tol=1), cmap='gray')
+    plt.title('Brightfield_computed')
     plt.xticks([]), plt.yticks([])
     divider = make_axes_locatable(ax1)
     cax = divider.append_axes('right', size='5%', pad=0.05)
