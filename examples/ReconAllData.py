@@ -1,7 +1,12 @@
-from workflow.runReconstruction import runReconstruction
+import os,sys,inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir)
 
-configfiles = ['config/config_mousebrainslice.yml', 'config/config_u2os_cells.yml']
-#TODO: analysis runs fine on glass beads and u2os cells, but not on Kidney Tissue data and Mouse Brain slice. Needs debugging.
+from runReconstruction import runReconstruction
+
+configfiles = ['config/config_kidneytissue.yml', 'config/config_u2os_cells.yml']
+#TODO: test analyzing sub-z stack on Kidney Tissue data.
 
 if __name__ == '__main__':
     """

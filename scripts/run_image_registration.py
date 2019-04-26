@@ -25,11 +25,8 @@ def parse_args():
 
 def read_config(config_fname):
     """Read the config file in yml format
-
-    TODO: validate config!
-
     :param str config_fname: fname of config yaml with its full path
-    :return:
+    :return: dict dictionary of config parameters
     """
 
     with open(config_fname, 'r') as f:
@@ -44,15 +41,14 @@ def run_action(args):
     ImgDir = config['dataset']['ImgDir']
     SmDir = config['dataset']['SmDir']
     registration_params_path = config['processing']['registration_params']
-    input_chan = output_chan = config['processing']['outputChann']
+    input_chan = output_chan = config['processing']['output_chan']
     ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir)
 
     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_registered')
-    img_io = mManagerReader(ImgSmPath, OutputPath, inputChann=input_chan, outputChann=output_chan)
+    img_io = mManagerReader(ImgSmPath, OutputPath, input_chan=input_chan, output_chan=output_chan)
     size_z_um = img_io.size_z_um
     with open(registration_params_path, 'r') as f:
         registration_params = json.load(f)
-
 
     if not os.path.exists(img_io.ImgSmPath):
         raise FileNotFoundError(
@@ -61,9 +57,7 @@ def run_action(args):
     os.makedirs(img_io.ImgOutPath, exist_ok=True)
     for t_idx in range(img_io.nTime):
         img_io.tIdx = t_idx
-        # for pos_idx in range(img_io.nPos):  # nXY
-        #TODO: change the pos indexing back
-        for pos_idx in range(24, img_io.nPos):  # nXY
+        for pos_idx in range(img_io.nPos):  # nXY
             img_io.posIdx = pos_idx
             print('Processing position %03d, time %03d ...' % (pos_idx, t_idx))
             images = img_io.read_multi_chan_img_stack()
