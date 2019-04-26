@@ -5,8 +5,6 @@ import cv2
 sys.path.append("..") # Add upper level directory to python modules path.
 #from utils.imgCrop import imcrop
 #%%
-
-
 class ImgReconstructor:
     """
     ImgReconstructor contains methods to compute physical properties Birefringence /
@@ -31,26 +29,25 @@ class ImgReconstructor:
 
     """
 
-    def __init__(self, img_pol_bg=[], bg_method='Global', swing=None, wavelength=532,
+    def __init__(self, img_pol_bg=[], bg_method='Global', n_slice_local_bg=1, swing=None, wavelength=532,
                  kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (100, 100)),
                  output_path=None, azimuth_offset=0, circularity='rcp'):
 
         self.img_pol_bg = img_pol_bg
         self.bg_method = bg_method
+        self.n_slice_local_bg = n_slice_local_bg
         self.swing = swing*2*np.pi # covert swing from fraction of wavelength to radian
-        self.n_chann = np.shape(img_pol_bg)[0]
-        self.height = np.shape(img_pol_bg)[1]
-        self.width = np.shape(img_pol_bg)[2]
+        self.img_shape = np.shape(img_pol_bg)
         self.wavelength = wavelength
         self.kernel = kernel
         self.output_path = output_path
         chi = self.swing
-        if self.n_chann == 4:  # if the images were taken using 4-frame scheme
+        if self._n_chann == 4:  # if the images were taken using 4-frame scheme
             inst_mat = np.array([[1, 0, 0, -1],
                                  [1, 0, np.sin(chi), -np.cos(chi)],
                                  [1, -np.sin(chi), 0, -np.cos(chi)],
                                  [1, 0, -np.sin(chi), -np.cos(chi)]])
-        elif self.n_chann == 5:  # if the images were taken using 5-frame scheme
+        elif self._n_chann == 5:  # if the images were taken using 5-frame scheme
             inst_mat = np.array([[1, 0, 0, -1],
                                  [1, np.sin(chi), 0, -np.cos(chi)],
                                  [1, 0, np.sin(chi), -np.cos(chi)],
@@ -58,8 +55,23 @@ class ImgReconstructor:
                                  [1, 0, -np.sin(chi), -np.cos(chi)]])
         self.inst_mat_inv = np.linalg.pinv(inst_mat)
         self.azimuth_offset = azimuth_offset/180*np.pi
-        self.stokes_param_bg_local = []
+        self.stokes_param_bg_tm = []
+        self.stokes_param_bg_local_tm = []
         self.circularity = circularity
+    @property
+    def img_shape(self):
+        return self._img_shape
+
+    @img_shape.setter
+    def img_shape(self, shape):
+        assert len(shape) == 3 or 4, \
+            'ImgReconstructor only supports 2D image or 3D stack'
+        self._img_shape = shape
+        if len(shape) == 3:
+            [self._n_chann, self._height, self._width] = shape
+            self._depth = 1
+        else:
+            [self._n_chann, self._height, self._width, self._depth] = shape
 
     def compute_stokes(self, img_raw):
         """
@@ -74,10 +86,12 @@ class ImgReconstructor:
         stokes images : list of ndarray.
 
         """
-        img_raw_flat = np.reshape(img_raw, (self.n_chann, self.height * self.width))
+
+        self.img_shape = np.shape(img_raw)
+        img_raw_flat = np.reshape(img_raw, (self._n_chann, -1))
         img_stokes_flat = np.dot(self.inst_mat_inv, img_raw_flat)
-        img_stokes = np.reshape(img_stokes_flat, (img_stokes_flat.shape[0], self.height, self.width))
-        [s0, s1, s2, s3] = [img_stokes[i, :, :] for i in range(0, img_stokes.shape[0])]
+        img_stokes = np.reshape(img_stokes_flat, (4,) + self.img_shape[1:])
+        [s0, s1, s2, s3] = [img_stokes[i, ...] for i in range(4)]
         return [s0, s1, s2, s3]
 
     def stokes_transform(self, stokes_param):
@@ -88,9 +102,11 @@ class ImgReconstructor:
         polarization = np.sqrt(s1 ** 2 + s2 ** 2 + s3 ** 2) / s0
         return [I_trans, polarization, s1_norm, s2_norm, s3]
 
-    def correct_background_stokes(self, stokes_param_sm, stokes_param_bg):
-        [I_trans, polarization, s1_norm, s2_norm, s3] = stokes_param_sm
-        [I_trans_bg, polarization_bg, s1_norm_bg, s2_norm_bg, s3_bg] = stokes_param_bg
+    def correct_background_stokes(self, stokes_param_sm_tm, stokes_param_bg_tm):
+        if len(stokes_param_bg_tm[0].shape) < len(self.img_shape):
+            stokes_param_bg_tm = [img[..., np.newaxis] for img in stokes_param_bg_tm]
+        [I_trans, polarization, s1_norm, s2_norm, s3] = stokes_param_sm_tm
+        [I_trans_bg, polarization_bg, s1_norm_bg, s2_norm_bg, s3_bg] = stokes_param_bg_tm
         I_trans = I_trans / I_trans_bg
         polarization = polarization / polarization_bg
         s1_norm = s1_norm - s1_norm_bg
@@ -98,31 +114,31 @@ class ImgReconstructor:
         # s3_norm = s3 / s3_bg
         return [I_trans, polarization, s1_norm, s2_norm, s3]
 
-    def correct_background(self, stokes_param_sm):
-        if self.stokes_param_bg:
-            stokes_param_sm = self.stokes_transform(stokes_param_sm)
-            stokes_param_bg = self.stokes_transform(self.stokes_param_bg)
-            stokes_param_sm = self.correct_background_stokes(stokes_param_sm, stokes_param_bg)
-            if self.bg_method == 'Local_filter':
-                self.compute_local_background(stokes_param_sm)
-                stokes_param_sm = self.correct_background_stokes(stokes_param_sm, self.stokes_param_bg_local)
-        return stokes_param_sm
+    def correct_background(self, stokes_param_sm_tm):
+        if self.n_slice_local_bg > 1:
+            assert len(np.shape(stokes_param_sm_tm[0])) == 3, \
+                'Input image has to have >1 z-slice for n_slice_local_bg > 1'
+        stokes_param_sm_tm = self.correct_background_stokes(
+            stokes_param_sm_tm, self.stokes_param_bg_tm)
+        if self.bg_method == 'Local_filter':
+            if self.n_slice_local_bg > 1:
+                stokes_param_sm_local_tm = np.mean(stokes_param_sm_tm, -1)
+            else:
+                stokes_param_sm_local_tm = stokes_param_sm_tm
+            self.compute_local_background(stokes_param_sm_local_tm)
+            stokes_param_sm_tm = self.correct_background_stokes(
+                stokes_param_sm_tm, self.stokes_param_bg_local_tm)
+        return stokes_param_sm_tm
 
-    def compute_local_background(self, stokes_param_sm):
-        stokes_param_bg_local = []
+    def compute_local_background(self, stokes_param_sm_local_tm):
+        stokes_param_bg_local_tm = []
         print('Estimating local background...')
-        for img in stokes_param_sm:
-            img_filtered = []
-            if len(img.shape) == 3: # input is a z-stack
-                for z in range(img.shape[0]):
-                    img_filtered += [cv2.GaussianBlur(img[z], (401, 401), 0)]
-                img_filtered = np.stack(img_filtered)
-            else: # input is a 2D image
-                img_filtered = cv2.GaussianBlur(img, (401, 401), 0)
-            stokes_param_bg_local += [img_filtered]
-        self.stokes_param_bg_local = stokes_param_bg_local
+        for img in stokes_param_sm_local_tm:
+            img_filtered = cv2.GaussianBlur(img, (401, 401), 0)
+            stokes_param_bg_local_tm += [img_filtered]
+        self.stokes_param_bg_local_tm = stokes_param_bg_local_tm
 
-    def reconstruct_birefringence(self, stokes_param_sm,
+    def reconstruct_birefringence(self, stokes_param_sm_tm,
                            img_crop_ref=None, extra=False):
         # for low birefringence sample that requires 0 background, set extra=True to manually offset the background
         # Correction based on Eq. 16 in reference using linear approximation assuming small retardance for both sample and background
@@ -135,7 +151,7 @@ class ImgReconstructor:
         #     s1_normSmCrop,s2_normSmCrop = imListCrop
         #     s1_normSmBg = np.nanmean(s1_normSmCrop)
         #     s2_normSmBg = np.nanmean(s2_normSmCrop)
-        [I_trans, polarization, s1_norm, s2_norm, s3] = stokes_param_sm
+        [I_trans, polarization, s1_norm, s2_norm, s3] = stokes_param_sm_tm
         s1 = s1_norm * s3
         s2 = s2_norm * s3
         retard = np.arctan2(np.sqrt(s1 ** 2 + s2 ** 2), s3)

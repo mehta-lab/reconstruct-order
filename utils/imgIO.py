@@ -6,6 +6,7 @@ import numpy as np
 import glob
 import re
 import cv2
+from shutil import copy2
 
 def GetSubDirName(ImgPath):
     assert os.path.exists(ImgPath), 'Input folder does not exist!' 
@@ -35,18 +36,13 @@ def process_position_list(img_obj_list, config):
     """
     for idx, io_obj in enumerate(img_obj_list):
         config_pos_list = config.dataset.positions[idx]
-        metadata_pos_list = io_obj.PosList
-        if config_pos_list[0] == 'all':
-            if isinstance(metadata_pos_list, list):
-                pos_list = metadata_pos_list
-            else:
-                pos_list = [metadata_pos_list]
-        else:
-            assert set(config_pos_list).issubset(metadata_pos_list), \
-            'Position list {} for sample in {} is invalid'.format(config_pos_list, io_obj.ImgSmPath)
-            pos_list = config_pos_list
-        
-        img_obj_list[idx].PosList = pos_list
+
+        if not config_pos_list[0] == 'all':
+            try:
+                img_obj_list[idx].pos_list = config_pos_list
+            except Exception as e:
+                print('Position list {} for sample in {} is invalid'.format(config_pos_list, io_obj.ImgSmPath))
+                ValueError(e)
     return img_obj_list
 
 def process_z_slice_list(img_obj_list, config):
@@ -54,6 +50,7 @@ def process_z_slice_list(img_obj_list, config):
     Make sure all members of z_slices are part of io_obj.
     If z_slices = 'all', replace with actual list of z_slices
     """
+    n_slice_local_bg = config.processing.n_slice_local_bg
     for idx, io_obj in enumerate(img_obj_list):
         config_z_list = config.dataset.z_slices[idx]
         metadata_z_list = range(io_obj.nZ)
@@ -63,7 +60,10 @@ def process_z_slice_list(img_obj_list, config):
             assert set(config_z_list).issubset(metadata_z_list), \
             'z_slice list {} for sample in {} is invalid'.format(config_z_list, io_obj.ImgSmPath)
             z_list = config_z_list
-        
+
+        if not n_slice_local_bg == 'all':
+            # adjust slice number to be multiple of n_slice_local_bg
+            z_list = z_list[0:len(z_list)//n_slice_local_bg * n_slice_local_bg]
         img_obj_list[idx].ZList = z_list
     return img_obj_list
 
@@ -85,6 +85,15 @@ def process_timepoint_list(img_obj_list, config):
         img_obj_list[idx].TimeList = t_list
     return img_obj_list
 
+def copy_files_in_sub_dirs(input_path, output_path):
+    assert os.path.exists(input_path), 'Input folder does not exist!'
+    os.makedirs(output_path, exist_ok=True)
+    sub_dir_paths = glob.glob(os.path.join(input_path, '*/'))
+    for sub_dir_path in sub_dir_paths:
+        src_file_paths = glob.glob(os.path.join(sub_dir_path, '*.*'))
+        for src_file_path in src_file_paths:
+            if os.path.isfile(src_file_path):
+                copy2(src_file_path, output_path)
 
 def loadTiff(acquDirPath, acquFiles):
     """
@@ -245,15 +254,16 @@ def sort_pol_channels(img_pol):
         img_pol = np.stack((I_ext, I_0, I_45, I_90, I_135))  # order the channel following stokes calculus convention
     return img_pol
 
-def exportImg(img_io, imgDict):
+def exportImg(img_io, img_dict):
     tIdx = img_io.tIdx
     zIdx = img_io.zIdx
     posIdx = img_io.posIdx
     output_path = img_io.img_out_pos_path
-    for tiffName in img_io.chNamesOut:
-        fileName = 'img_'+tiffName+'_t%03d_p%03d_z%03d.tif'%(tIdx, posIdx, zIdx)
-        if len(imgDict[tiffName].shape)<3:
-            cv2.imwrite(os.path.join(output_path, fileName), imgDict[tiffName])
-        else:
-            cv2.imwrite(os.path.join(output_path, fileName), cv2.cvtColor(imgDict[tiffName], cv2.COLOR_RGB2BGR))
+    for tiffName in img_dict:
+        if tiffName in img_io.chNamesOut:
+            fileName = 'img_'+tiffName+'_t%03d_p%03d_z%03d.tif'%(tIdx, posIdx, zIdx)
+            if len(img_dict[tiffName].shape)<3:
+                cv2.imwrite(os.path.join(output_path, fileName), img_dict[tiffName])
+            else:
+                cv2.imwrite(os.path.join(output_path, fileName), cv2.cvtColor(img_dict[tiffName], cv2.COLOR_RGB2BGR))
 
