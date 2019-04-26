@@ -5,7 +5,7 @@ sys.path.insert(0,parentdir)
 
 from runReconstruction import runReconstruction
 
-configfiles = ['config/config_mousebrainslice.yml', 'config/config_u2os_cells.yml']
+configfiles = ['config/config_kidneytissue.yml', 'config/config_u2os_cells.yml']
 #TODO: test analyzing sub-z stack on Kidney Tissue data.
 
 if __name__ == '__main__':

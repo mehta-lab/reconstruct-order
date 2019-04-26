@@ -50,7 +50,7 @@ processing:
   ##    'Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3',
   ##    '405', '488', '568', '640',
   ##    'Retardance+Orientation', 'Polarization+Orientation',
-  ##    'Transmission+Retardance+Orientation',
+  ##    'Brightfield+Retardance+Orientation',
   ##    'Retardance+Fluorescence', 'Retardance+Fluorescence_all'
 
   circularity: 'rcp'
@@ -73,6 +73,8 @@ processing:
 
   separate_positions: True
   # (bool) Flag to output processed images from separate positions in separate folders.
+  n_slice_local_bg: 'all'
+  # (str or int) Number of slices averaged for local background estimation
 
 plotting:
   normalize_color_images: True
