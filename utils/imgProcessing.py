@@ -8,6 +8,7 @@ import sys
 sys.path.append("..") # Adds higher directory to python modules path.
 #sns.set_context("poster")
 plt.close("all") # close all the figures from the last run
+
 #%%
 def ImgMin(Img, ImgBg):    
     ImgArr = np.array([Img, ImgBg])
