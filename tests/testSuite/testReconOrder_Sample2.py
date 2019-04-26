@@ -31,7 +31,7 @@ class TestImageReconstruction(unittest.TestCase):
 
     target_ITrans = targetData + \
                          condition + \
-                         "/img_Transmission_t000_p000_z000.tif"
+                         "/img_Brightfield_t000_p000_z000.tif"
     target_retard = targetData + \
                          condition + \
                          "/img_Retardance_t000_p000_z000.tif"
