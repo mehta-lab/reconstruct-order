@@ -112,7 +112,7 @@ if __name__ == '__main__':
     ProcessedPath = r'Z:/ComputationalMicroscopy/Projects/Dragonfly_Calibration'
     ImgDir = '2019_04_09_Argolight'
     SmDir = '2019_04_08_Argolight_488_561_637_Widefield_PolStates_BF_1_2019_04_08_Argolight_488_561_637_Widefield_PolStates_BF_1_flat'
-    input_chan = output_chan = ['568', 'Retardance', 'Transmission', '488', '640'] # first channel is the reference channel
+    input_chan = output_chan = ['568', 'Retardance', 'Brightfield', '488', '640'] # first channel is the reference channel
 
     z_crop_range = [0, 180]
     x_crop_range = [130, 700]

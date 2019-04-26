@@ -118,6 +118,7 @@ class ConfigReader:
                 len(self.dataset.z_slices) == len(self.dataset.timepoints), \
                 'Please provide equal number of samples and lists with corresponding background, positions, z_slices, and timepoints'
 
+
     def write_config(self,path):
         config_out = {'dataset':{key.strip('_'):value for (key,value) in self.dataset.__dict__.items()},
                       'processing':{key.strip('_'):value for (key,value) in self.processing.__dict__.items()},
@@ -229,7 +230,7 @@ class Dataset:
         return out
         
 class Processing:        
-    _allowed_output_channels = ['Brightfield', 'Retardance', 'Orientation', 'Polarization',
+    _allowed_output_channels = ['Brightfield', 'Brightfield_computed', 'Retardance', 'Orientation', 'Polarization',
                                 'Orientation_x', 'Orientation_y',
                                 'Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
                                 'Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3',
@@ -247,7 +248,7 @@ class Processing:
         self._flatfield_correction = False
         self._azimuth_offset = 0
         self._separate_positions = True
-        self._n_slice_local_bg = 1
+        self._n_slice_local_bg = 'all'
 
     @property
     def output_channels(self):
@@ -313,7 +314,8 @@ class Processing:
 
     @n_slice_local_bg.setter
     def n_slice_local_bg(self, value):
-        assert isinstance(value, int), "n_slice_local_bg must be integer"
+        assert isinstance(value, int) or value == 'all',\
+            "n_slice_local_bg must be integer or 'all'"
         self._n_slice_local_bg = value
 
     def __repr__(self):
