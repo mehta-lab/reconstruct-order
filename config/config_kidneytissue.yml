@@ -4,13 +4,15 @@ dataset:
     samples: ['SMS_2018_1227_1433_1']
     background: 'BG_2019_0215_1337_1'
     positions: '2-Pos_017_022'
+    z_slices: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
 
 processing:
-    output_channels: ['Brightfield', 'Retardance', 'Orientation', 'Polarization','Transmission+Retardance+Orientation']
+    output_channels: ['Brightfield', 'Brightfield_computed', 'Retardance', 'Orientation', 'Polarization','Brightfield+Retardance+Orientation']
     circularity: 'rcp'
     background_correction: 'Input'
     flatfield_correction: False
     azimuth_offset: 0
+    n_slice_local_bg: 'all'
     
 plotting:
     normalize_color_images: True

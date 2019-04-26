@@ -54,10 +54,10 @@ def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoo
         I_trans,retard, azimuth = imcrop(imList, I_trans)
     azimuth_degree = azimuth/np.pi*180
 
-    # Compute Retardance+Orientation, Polarization+Orientation, and Transmission+Retardance+Orientation overlays
+    # Compute Retardance+Orientation, Polarization+Orientation, and Retardance+Retardance+Orientation overlays
     # Slow, results in large files
     # Optionally, plot results in tiled image
-    if plot or any(chann in ['Retardance+Orientation', 'Polarization+Orientation', 'Transmission+Retardance+Orientation']
+    if plot or any(chann in ['Retardance+Orientation', 'Polarization+Orientation', 'Brightfield+Retardance+Orientation']
                    for chann in outputChann):
         I_azi_ret_trans, I_azi_ret, I_azi_scat = PolColor(I_trans, retard, azimuth_degree, polarization, norm=norm)
         tIdx = img_io.tIdx; zIdx = img_io.zIdx; posIdx = img_io.posIdx
@@ -65,9 +65,9 @@ def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoo
             plot_recon_images(I_trans, retard, azimuth, polarization, I_azi_ret, I_azi_scat, zoomin=False, spacing=spacing,
                               vectorScl=vectorScl, dpi=dpi)
             if zoomin:
-                figName = 'Transmission+Retardance+Orientation_Zoomin.jpg'
+                figName = 'Retardance+Retardance+Orientation_Zoomin.jpg'
             else:
-                figName = 'Transmission+Retardance+Orientation_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+                figName = 'Retardance+Retardance+Orientation_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
     
             plt.savefig(os.path.join(img_io.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
      
@@ -108,7 +108,7 @@ def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoo
         elif chann == 'Polarization+Orientation':
             img = I_azi_scat
             
-        elif chann == 'Transmission+Retardance+Orientation':
+        elif chann == 'Brightfield+Retardance+Orientation':
             img = I_azi_ret_trans
 
         elif chann == 'Retardance+Fluorescence':
@@ -128,9 +128,9 @@ def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoo
     return img_io, imgDict
 
 
-def PolColor(I_trans, retardance, orientation, polarization, norm=True):
+def PolColor(s0, retardance, orientation, polarization, norm=True):
     """ Generate colormaps with following mappings, where H is Hue, S is Saturation, and V is Value.
-        I_azi_ret_trans: H=Orientation, S=retardance, V=Transmission.
+        I_azi_ret_trans: H=Orientation, S=retardance, V=Brightfield.
         I_azi_ret: H=Orientation, V=Retardance.
         I_azi_pol: H=Orientation, V=Polarization.
     """
@@ -248,7 +248,7 @@ def plot_recon_images(s0, retard, azimuth, polarization, I_azi_ret, I_azi_scat, 
     ax6 = plt.subplot(2, 3, 6)
     plt.tick_params(labelbottom=False, labelleft=False)  # labels along the bottom edge are off
     ax_hsv = plt.imshow(imadjust(I_azi_scat, tol=1, bit=8), cmap='hsv')
-    # plt.title('Transmission+Retardance\n+Orientation')
+    # plt.title('Brightfield+Retardance\n+Orientation')
     plt.title('Polarization+Orientation')
     plt.xticks([]), plt.yticks([])
     plt.show()

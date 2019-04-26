@@ -55,7 +55,7 @@ class ImgReconstructor:
                                  [1, 0, -np.sin(chi), -np.cos(chi)]])
         self.inst_mat_inv = np.linalg.pinv(inst_mat)
         self.azimuth_offset = azimuth_offset/180*np.pi
-        self.stokes_param_bg = []
+        self.stokes_param_bg_tm = []
         self.stokes_param_bg_local_tm = []
         self.circularity = circularity
     @property
@@ -114,14 +114,12 @@ class ImgReconstructor:
         # s3_norm = s3 / s3_bg
         return [I_trans, polarization, s1_norm, s2_norm, s3]
 
-    def correct_background(self, stokes_param_sm):
+    def correct_background(self, stokes_param_sm_tm):
         if self.n_slice_local_bg > 1:
-            assert len(np.shape(stokes_param_sm[0])) == 3, \
+            assert len(np.shape(stokes_param_sm_tm[0])) == 3, \
                 'Input image has to have >1 z-slice for n_slice_local_bg > 1'
-        stokes_param_sm_tm = self.stokes_transform(stokes_param_sm)
-        stokes_param_bg_tm = self.stokes_transform(self.stokes_param_bg)
         stokes_param_sm_tm = self.correct_background_stokes(
-            stokes_param_sm_tm, stokes_param_bg_tm)
+            stokes_param_sm_tm, self.stokes_param_bg_tm)
         if self.bg_method == 'Local_filter':
             if self.n_slice_local_bg > 1:
                 stokes_param_sm_local_tm = np.mean(stokes_param_sm_tm, -1)

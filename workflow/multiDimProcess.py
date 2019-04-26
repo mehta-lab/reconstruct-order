@@ -133,6 +133,8 @@ def process_background(img_io, img_io_bg, config):
     circularity = config.processing.circularity
     azimuth_offset = config.processing.azimuth_offset
     n_slice_local_bg = config.processing.n_slice_local_bg
+    if n_slice_local_bg == 'all':
+        n_slice_local_bg = len(img_io.ZList)
     img_reconstructor = ImgReconstructor(ImgRawBg,
                                          bg_method=img_io.bg_method,
                                          n_slice_local_bg=n_slice_local_bg,
@@ -143,14 +145,15 @@ def process_background(img_io, img_io_bg, config):
                                          circularity=circularity)
     if img_io.bg_correct:
         stokes_param_bg = img_reconstructor.compute_stokes(ImgRawBg)
+        stokes_param_bg_tm = img_reconstructor.stokes_transform(stokes_param_bg)
         # print('denoising the background...')
         # img_stokes_bg = [denoise_tv_chambolle(img, weight=10**6) for img in img_stokes_bg]
         # img_stokes_bg = [cv2.GaussianBlur(img, (5, 5), 0) for img in img_stokes_bg]
         # img_stokes_bg = [cv2.medianBlur(img, 5) for img in img_stokes_bg]
     else:
-        stokes_param_bg = None
+        stokes_param_bg_tm = None
 
-    img_reconstructor.stokes_param_bg = stokes_param_bg
+    img_reconstructor.stokes_param_bg_tm = stokes_param_bg_tm
     return img_io, img_reconstructor
 
 def compute_flat_field(img_io, config):
@@ -244,8 +247,10 @@ def loopZSm(img_io, config, img_reconstructor=None):
     save figures of images if save_fig is True
     """
 
-    tIdx = img_io.tIdx
-    posIdx = img_io.posIdx
+    t_idx = img_io.tIdx
+    pos_idx = img_io.posIdx
+    z_list = img_io.ZList
+    n_slice_local_bg = img_reconstructor.n_slice_local_bg
     norm = config.plotting.normalize_color_images
     save_fig = config.plotting.save_birefringence_fig
     save_stokes_fig = config.plotting.save_stokes_fig
@@ -266,15 +271,15 @@ def loopZSm(img_io, config, img_reconstructor=None):
     save_BF = 'Brightfield' in img_io.chNamesOut
     save_pol = any(chan in pol_names for chan in img_io.chNamesOut) or save_pol_fig
     save_fluor = any(chan in fluor_names for chan in img_io.chNamesOut)
-    n_slice_local_bg = img_reconstructor.n_slice_local_bg
-    # TODO: change img_io.ZList to z range. Only allow continuous z range
-    for z_stack_idx in range(img_io.ZList[0], img_io.ZList[-1], n_slice_local_bg):
+
+    for z_stack_idx in range(0, len(z_list), n_slice_local_bg):
         stokes_param_sm_stack = [[] for i in range(len(stokes_names))]
         fluor_list = []
-        for zIdx in range(z_stack_idx, z_stack_idx + n_slice_local_bg):
-            print('Processing position %03d, time %03d, z %03d ...' % (posIdx, tIdx, zIdx))
+        for z_list_idx in range(z_stack_idx, z_stack_idx + n_slice_local_bg):
+            z_idx = z_list[z_list_idx]
+            print('Processing position %03d, time %03d, z %03d ...' % (pos_idx, t_idx, z_idx))
             plt.close("all")  # close all the figures from the last run
-            img_io.zIdx = zIdx
+            img_io.zIdx = z_idx
             ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
             ImgFluor = correct_flat_field(img_io, ImgFluor)
             fluor_list.append(ImgFluor)
@@ -285,16 +290,17 @@ def loopZSm(img_io, config, img_reconstructor=None):
                     stack.append(img)
                 # retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images
             if save_BF and isinstance(ImgBF, np.ndarray):
-                ImgBF = ImgBF[0, :, :] / img_reconstructor.stokes_param_bg[0]  # flat-field correction
+                ImgBF = ImgBF[0, :, :] / img_reconstructor.stokes_param_bg_tm[0]  # flat-field correction
+                ImgBF = imBitConvert(ImgBF*config.plotting.transmission_scaling, bit=16, norm=False)
                 img_dict.update({'Brightfield': ImgBF})
-            else:  # use brightfield calculated from pol-images if there is no brightfield data
-                ImgBF = s0
+
             if isinstance(ImgProcSm, np.ndarray):
                 retardMMSm = ImgProcSm[0, :, :]
                 azimuthMMSm = ImgProcSm[1, :, :]
                 if save_mm_fig:
                     imgs_mm_py = [retardMMSm, azimuthMMSm, retard, azimuth]
                     plot_Polacquisition_imgs(img_io, imgs_mm_py)
+
             if save_pol:
                 imgs_pol = []
                 for i in range(ImgRawSm.shape[0]):
@@ -310,14 +316,16 @@ def loopZSm(img_io, config, img_reconstructor=None):
 
         if save_stokes or save_birefring:
             stokes_param_sm_stack = [np.stack(stack, axis=-1) for stack in stokes_param_sm_stack]
-            stokes_param_sm_stack_tm = img_reconstructor.correct_background(stokes_param_sm_stack)
+            stokes_param_sm_stack_tm = img_reconstructor.stokes_transform(stokes_param_sm_stack)
+            if not img_io.bg_correct == 'None':
+                stokes_param_sm_stack_tm = img_reconstructor.correct_background(stokes_param_sm_stack_tm)
             birfring_stacks = \
                 img_reconstructor.reconstruct_birefringence(stokes_param_sm_stack_tm)
             img_dict = {}
-            for zIdx in range(z_stack_idx, z_stack_idx + n_slice_local_bg):
+            for z_idx in range(z_stack_idx, z_stack_idx + n_slice_local_bg):
                 plt.close("all")  # close all the figures from the last run
-                img_io.zIdx = zIdx
-                z_sub_idx = zIdx - z_stack_idx
+                img_io.zIdx = z_list[z_idx]
+                z_sub_idx = z_idx - z_stack_idx
                 [s0, retard, azimuth, polarization, s1, s2, s3] = [stack[..., z_sub_idx] for stack in birfring_stacks]
                 ImgFluor = fluor_list[z_sub_idx]
                 if save_birefring:

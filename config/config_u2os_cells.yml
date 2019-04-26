@@ -7,12 +7,12 @@ dataset:
     z_slices: 'all'
 
 processing:
-    output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization']
+    output_channels: ['Brightfield', 'Brightfield_computed', 'Retardance', 'Orientation', 'Polarization']
     circularity: 'rcp'
     background_correction: 'Local_filter'
     flatfield_correction: False
     azimuth_offset: 0
-    n_slice_local_bg: 4
+    n_slice_local_bg: 'all'
 
 plotting:
     normalize_color_images: True

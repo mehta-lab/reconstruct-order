@@ -29,8 +29,9 @@ class mManagerReader:
         metaFileName = os.path.join(img_in_pos_path, 'metadata.txt')
         with open(metaFileName, 'r') as f:
             input_meta_file = json.load(f)
-
         self.input_meta_file = input_meta_file
+        self._meta_pos_list = ['Pos0']
+        self._pos_list = self.meta_pos_list
         self.name = input_meta_file["Summary"]["Prefix"]
         self.output_meta_file = []
         self.ImgSmPath = ImgSmPath
@@ -58,9 +59,20 @@ class mManagerReader:
         self.bg = None
 
     @property
-    def pos_list(self):
+    def meta_pos_list(self):
         pos_dict_list = self.input_meta_file['Summary']['InitialPositionList']
-        return [pos_dict['Label'] for pos_dict in pos_dict_list]
+        self._meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
+        return self._meta_pos_list
+    @property
+    def pos_list(self):
+        return self._pos_list
+
+    @pos_list.setter
+    def pos_list(self, value):
+        assert set(value).issubset(self._meta_pos_list), \
+            'some positions cannot be found in metadata'
+        self._pos_list = value
+
 
     def read_img(self):
         """read a single image at (c,t,p,z)"""
@@ -229,10 +241,12 @@ class PolAcquReader(mManagerReader):
         self.mirror = metaFile['Summary']['~ Mirror']
         self.swing = metaFile['Summary']['~ Swing (fraction)']
         self.wavelength = metaFile['Summary']['~ Wavelength (nm)']
-        # PolAcquisition doens't save position list
 
     @property
-    def pos_list(self):
-        return  ['Pos0']
+    def meta_pos_list(self):
+        return self._meta_pos_list
+        # PolAcquisition doens't save position list
+
+
 
     

@@ -36,18 +36,13 @@ def process_position_list(img_obj_list, config):
     """
     for idx, io_obj in enumerate(img_obj_list):
         config_pos_list = config.dataset.positions[idx]
-        metadata_pos_list = io_obj.pos_list
-        if config_pos_list[0] == 'all':
-            if isinstance(metadata_pos_list, list):
-                pos_list = metadata_pos_list
-            else:
-                pos_list = [metadata_pos_list]
-        else:
-            assert set(config_pos_list).issubset(metadata_pos_list), \
-            'Position list {} for sample in {} is invalid'.format(config_pos_list, io_obj.ImgSmPath)
-            pos_list = config_pos_list
-        
-        img_obj_list[idx].pos_list = pos_list
+
+        if not config_pos_list[0] == 'all':
+            try:
+                img_obj_list[idx].pos_list = config_pos_list
+            except Exception as e:
+                print('Position list {} for sample in {} is invalid'.format(config_pos_list, io_obj.ImgSmPath))
+                ValueError(e)
     return img_obj_list
 
 def process_z_slice_list(img_obj_list, config):
@@ -55,6 +50,7 @@ def process_z_slice_list(img_obj_list, config):
     Make sure all members of z_slices are part of io_obj.
     If z_slices = 'all', replace with actual list of z_slices
     """
+    n_slice_local_bg = config.processing.n_slice_local_bg
     for idx, io_obj in enumerate(img_obj_list):
         config_z_list = config.dataset.z_slices[idx]
         metadata_z_list = range(io_obj.nZ)
@@ -64,7 +60,10 @@ def process_z_slice_list(img_obj_list, config):
             assert set(config_z_list).issubset(metadata_z_list), \
             'z_slice list {} for sample in {} is invalid'.format(config_z_list, io_obj.ImgSmPath)
             z_list = config_z_list
-        
+
+        if not n_slice_local_bg == 'all':
+            # adjust slice number to be multiple of n_slice_local_bg
+            z_list = z_list[0:len(z_list)//n_slice_local_bg * n_slice_local_bg]
         img_obj_list[idx].ZList = z_list
     return img_obj_list
 
