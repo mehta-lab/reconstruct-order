@@ -51,8 +51,8 @@ def imBitConvert(im,bit=16, norm=False, limit=None):
         if not limit: # if lmit is not provided, perform local normalization, otherwise global (for tiling)
             limit = [np.nanmin(im[:]), np.nanmax(im[:])] # scale each image individually based on its min and max
         im = (im-limit[0])/(limit[1]-limit[0])*(2**bit-1) 
-    else: # only clipping, no scaling        
-        im = np.clip(im, 0, 2**bit-1) # clip the values to avoid wrap-around by np.astype         
+
+    im = np.clip(im, 0, 2**bit-1) # clip the values to avoid wrap-around by np.astype
     if bit==8:        
         im = im.astype(np.uint8, copy=False) # convert to 8 bit
     else:
@@ -122,13 +122,13 @@ def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
     dst = imBitConvert(dst,bit=bit, norm=True)
     return dst
 
-def imClip(img, tol=1, bit=16,vin=[0,2**16-1]):
+def imClip(img, tol=1):
     """
     Clip the images for better visualization
     """
     limit = np.percentile(img, [tol, 100-tol])
-    imgClpped = np.clip(img, limit[0], limit[1])
-    return imgClpped       
+    img_clpped = np.clip(img, limit[0], limit[1])
+    return img_clpped
     
 def linScale(src,vin, vout):
     scale = (vout[1] - vout[0]) / (vin[1] - vin[0])

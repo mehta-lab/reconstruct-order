@@ -7,7 +7,7 @@ dataset:
 #    BgDir_local: None
 
 processing:
-    output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization']
+    output_channels: ['Brightfield_computed', 'Retardance', 'Orientation', 'Polarization']
     circularity: 'rcp'
 #    bgCorrect: 'Local_filter'
     background_correction: 'Input'
