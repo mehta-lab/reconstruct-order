@@ -12,7 +12,7 @@ dataset:
   ##   [['all'], ['Pos1', 'Pos2']], in which case all positions from Sample1 and Pos1 and Pos2 from Sample2 will be analyzed
 
   # The full path to the data is  data_dir/sample[n]/positions[m].
-  
+
   z_slices: 'all'
   # (str, list, or range) Z slices to be analyzed.
   # The same set of z-slices will be analyzed for all positions and timepoints within a given sample
@@ -21,7 +21,7 @@ dataset:
   ##   [0, 10, 20]
   ##   !!python/object/apply:builtins.range [10, 50, 5], in which case z slices in range(10,50,5) will be analyzed
   ##   [['all'], [0, 10, 20]], in which case all z slices from Sample1 and slices 0, 10, and 20 from Sample2 will be analyzed
-  
+
   timepoints: 'all'
   # (str, list, or range) Timepoints to be analyzed.
   # The same set of timepoints will be analyzed for all positions and z-slices within a given sample
@@ -41,16 +41,16 @@ dataset:
   # (str) The path of the parent folder where the output will be saved
 
 processing:
-  output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization']
+  output_channels: ['Brightfield_computed', 'Retardance', 'Orientation', 'Polarization']
 
   # (list) Any combination of the following values.
-  ##    'Transmission', 'Retardance', 'Orientation', 'Polarization',
+  ##    'Brightfield', 'Brightfield_computed', 'Retardance', 'Orientation', 'Polarization',
   ##    'Orientation_x', 'Orientation_y',
   ##    'Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
   ##    'Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3',
   ##    '405', '488', '568', '640',
   ##    'Retardance+Orientation', 'Polarization+Orientation',
-  ##    'Transmission+Retardance+Orientation',
+  ##    'Brightfield+Retardance+Orientation',
   ##    'Retardance+Fluorescence', 'Retardance+Fluorescence_all'
 
   circularity: 'rcp'
@@ -71,8 +71,10 @@ processing:
   azimuth_offset: 0
   # (float) offset of the orientation reference axis
 
-  separate_positions: True 
+  separate_positions: True
   # (bool) Flag to output processed images from separate positions in separate folders.
+  n_slice_local_bg: 'all'
+  # (str or int) Number of slices averaged for local background estimation
 
 plotting:
   normalize_color_images: True
@@ -80,19 +82,19 @@ plotting:
 
   transmission_scaling: 1E4
   # (float) scaling factor of transmission channel
-  
+
   retardance_scaling: 1E3
   # (float) scaling factor of retardance channel
-  
-  save_birefringence_fig: False 
+
+  save_birefringence_fig: False
   # (bool) save figures showing different channels
-  
+
   save_stokes_fig: False
   # (bool)
-  
+
   save_polarization_fig: False
   # (bool)
-  
+
   save_micromanager_fig: False
   # (bool)
 
@@ -102,7 +104,7 @@ plotting:
 #   positions: 'all'
 #   z_slices: 'all'
 #   timepoints: 'all'
-#   output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization']
+#   output_channels: ['Brightfield', 'Retardance', 'Orientation', 'Polarization']
 #   circularity: 'rcp'
 #   background_correction: 'None'
 #   flatfield_correction: False

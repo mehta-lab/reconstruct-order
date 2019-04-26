@@ -4,15 +4,16 @@ dataset:
     samples: ['2019-4-2-U2OS_plin2_DS1_2']
     background: 'BG_2019_0402_1052_1'
     positions: '4-Pos_000_000'
-    z_slices: !!python/object/apply:builtins.range [10, 30, 5]
+    z_slices: 'all'
 
 processing:
-    output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization']
+    output_channels: ['Brightfield', 'Brightfield_computed', 'Retardance', 'Orientation', 'Polarization']
     circularity: 'rcp'
     background_correction: 'Local_filter'
     flatfield_correction: False
     azimuth_offset: 0
-    
+    n_slice_local_bg: 'all'
+
 plotting:
     normalize_color_images: True
     save_birefringence_fig: False
