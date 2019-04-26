@@ -6,11 +6,12 @@ dataset:
     positions: 'Pos0'
 
 processing:
-    output_channels: ['Transmission', 'Retardance', 'Orientation', 'Polarization']
+    output_channels: ['Brightfield', 'Retardance', 'Orientation', 'Polarization']
     circularity: 'rcp'
     background_correction: 'Input'
     flatfield_correction: False
     azimuth_offset: 0
+    n_slice_local_bg: 1
     
 plotting:
     normalize_color_images: True
