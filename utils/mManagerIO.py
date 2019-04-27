@@ -11,21 +11,21 @@ from utils.imgIO import GetSubDirName
 class mManagerReader:
     """General mManager Reader"""
 
-    def __init__(self, ImgSmPath, ImgOutPath=None, input_chan=[], output_chan=[]):
+    def __init__(self, img_sample_path, ImgOutPath=None, input_chan=[], output_chan=[]):
         """
-        :param str ImgSmPath: full path of the acquisition folder
+        :param str img_sample_path: full path of the acquisition folder
         (1 level up of pos folder)
         :param str ImgOutPath: full path of the output folder
         :param list input_chan: list of input channel names
         :param list output_chan: list of output channel names
         """
-        subDirName = GetSubDirName(ImgSmPath)
+        subDirName = GetSubDirName(img_sample_path)
 
-        img_in_pos_path = ImgSmPath # data structure doesn't have position folders
+        img_in_pos_path = img_sample_path # data structure doesn't have position folders
         if subDirName:
             subDir = subDirName[0] # pos0
             if 'Pos' in subDir: # mManager format            
-                img_in_pos_path = os.path.join(ImgSmPath, subDir)
+                img_in_pos_path = os.path.join(img_sample_path, subDir)
         metaFileName = os.path.join(img_in_pos_path, 'metadata.txt')
         with open(metaFileName, 'r') as f:
             input_meta_file = json.load(f)
@@ -34,7 +34,7 @@ class mManagerReader:
         self._pos_list = self.meta_pos_list
         self.name = input_meta_file["Summary"]["Prefix"]
         self.output_meta_file = []
-        self.ImgSmPath = ImgSmPath
+        self.ImgSmPath = img_sample_path
         self.img_in_pos_path = img_in_pos_path # input pos path
         self.ImgOutPath = ImgOutPath
         self.width = input_meta_file['Summary']['Width']
@@ -229,11 +229,11 @@ class mManagerReader:
 
 class PolAcquReader(mManagerReader):
     """PolAcquistion Plugin output format reader"""
-    def __init__(self, ImgSmPath, ImgOutPath=None, verbose=0, input_chan=[], output_chan=[]):
+    def __init__(self, img_sample_path, ImgOutPath=None, verbose=0, input_chan=[], output_chan=[]):
         """
         Extract PolAcquistion specific params from the metafile
         """
-        mManagerReader.__init__(self, ImgSmPath, ImgOutPath, input_chan, output_chan)
+        mManagerReader.__init__(self, img_sample_path, ImgOutPath, input_chan, output_chan)
         metaFile = self.input_meta_file
         self.acquScheme = metaFile['Summary']['~ Acquired Using']
         self.bg = metaFile['Summary']['~ Background']

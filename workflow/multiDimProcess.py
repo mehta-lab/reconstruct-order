@@ -11,10 +11,9 @@ import matplotlib.pyplot as plt
 import cv2
 from utils.imgIO import parse_tiff_input, exportImg
 from compute.reconstruct import ImgReconstructor
-from utils.imgProcessing import ImgMin
+from utils.imgProcessing import ImgMin, imBitConvert, correct_flat_field
 from utils.plotting import render_birefringence_imgs, plot_stokes, plot_pol_imgs, plot_Polacquisition_imgs
 from utils.mManagerIO import mManagerReader, PolAcquReader
-from utils.imgProcessing import imBitConvert
 
 
 def create_metadata_object(data_path, config):
