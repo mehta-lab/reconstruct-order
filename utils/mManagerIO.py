@@ -57,6 +57,14 @@ class mManagerReader:
         self.tIdx = 0
         self.zIdx = 0
         self.bg = None
+        self.ff_method = 'open'
+        self.ImgFluorMin = np.full((4, self.height, self.width), np.inf)  # set initial min array to to be Inf
+        self.ImgFluorSum = np.zeros(
+            (4, self.height, self.width))  # set the default background to be Ones (uniform field)
+        self.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
+                                                  (100,
+                                                   100))  # kernel for image opening operation, 100-200 is usually good
+        self.loopZ = 'sample'
 
     @property
     def meta_pos_list(self):
