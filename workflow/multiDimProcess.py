@@ -19,6 +19,7 @@ from utils.mManagerIO import mManagerReader, PolAcquReader
 def create_metadata_object(data_path, config):
     """
     Reads PolAcquisition metadata, if possible. Otherwise, reads MicroManager metadata.
+    TODO: move to imgIO?
 
     Parameters
     __________
@@ -45,6 +46,7 @@ def read_metadata(config):
     Reads the metadata for the sample and background data sets. Passes some
     of the parameters (e.g. swing, wavelength, back level, etc.) from the
     background metadata object into the sample metadata object
+    TODO: move to imgIO?
 
     Parameters
     __________
