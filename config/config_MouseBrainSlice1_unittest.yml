@@ -12,7 +12,6 @@ processing:
 #    bgCorrect: 'Local_filter'
     background_correction: 'Input'
     flatfield_correction: False
-    batchProc: False
     azimuth_offset: 0
     separate_positions: True
 
