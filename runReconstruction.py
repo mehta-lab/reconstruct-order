@@ -13,9 +13,10 @@ Returns
 
 import sys
 sys.path.append(".") # Adds current directory to python search path.
-from workflow.multiDimProcess import process_background, loopPos, compute_flat_field, read_metadata, parse_bg_options
+from workflow.multiDimProcess import process_background, loopPos, read_metadata, parse_bg_options
 from utils.ConfigReader import ConfigReader
 from utils.imgIO import process_position_list, process_z_slice_list, process_timepoint_list
+from utils.imgProcessing import compute_flat_field
 import os
 import argparse
 
@@ -75,7 +76,7 @@ def processImg(img_obj, bg_obj, config):
     img_obj, img_reconstructor = process_background(img_obj, bg_obj, config)
     
     flatField = config.processing.flatfield_correction
-    if flatField:  # find background flourescence for flatField corection
+    if flatField:  # find background fluorescence for flatField correction
         img_obj = compute_flat_field(img_obj, config)
         
     img_obj.loopZ ='sample'

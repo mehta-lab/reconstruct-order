@@ -44,7 +44,7 @@ def create_metadata_object(data_path, config):
 def read_metadata(config):
     """
     Reads the metadata for the sample and background data sets. Passes some
-    of the parameters (e.g. swing, wavelength, back level etc.) from the
+    of the parameters (e.g. swing, wavelength, back level, etc.) from the
     background metadata object into the sample metadata object
 
     Parameters
@@ -202,39 +202,6 @@ def process_background(img_io, img_io_bg, config):
     img_reconstructor.stokes_param_bg_tm = stokes_param_bg_tm
     return img_io, img_reconstructor
 
-def compute_flat_field(img_io, config):
-    """
-    Compute illumination function of fluorescence channels
-    for flat-field correction
-
-    """
-    print('Calculating illumination function for flatfield correction...')
-    ff_method = config.processing.ff_method
-    img_io.ff_method = ff_method
-    img_io.ImgFluorMin = np.full((4, img_io.height, img_io.width), np.inf)  # set initial min array to to be Inf
-    img_io.ImgFluorSum = np.zeros(
-        (4, img_io.height, img_io.width))  # set the default background to be Ones (uniform field)
-    img_io.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
-                                              (100, 100))  # kernel for image opening operation, 100-200 is usually good
-    img_io.loopZ = 'background'
-    img_io = loopPos(img_io, config)
-    if ff_method == 'open':
-        img_fluor_bg = img_io.ImgFluorSum
-    elif ff_method == 'empty':
-        img_fluor_bg = img_io.ImgFluorMin
-    for channel in range(img_fluor_bg.shape[0]):
-        img_fluor_bg[channel] = img_fluor_bg[channel] - min(np.nanmin(img_fluor_bg[channel]), 0) + 1 #add 1 to avoid 0
-        img_fluor_bg[channel] /= np.mean(img_fluor_bg[channel])  # normalize the background to have mean = 1
-    img_io.img_fluor_bg = img_fluor_bg
-    return img_io
-
-def correct_flat_field(img_io, ImgFluor):
-    """ flat-field correction for fluorescence channels """
-
-    for i in range(ImgFluor.shape[0]):
-        if np.any(ImgFluor[i, :, :]):  # if the flour channel exists
-            ImgFluor[i, :, :] = ImgFluor[i, :, :] / img_io.img_fluor_bg[i, :, :]
-    return ImgFluor
 
 def loopPos(img_io, config, img_reconstructor=None):
     """
