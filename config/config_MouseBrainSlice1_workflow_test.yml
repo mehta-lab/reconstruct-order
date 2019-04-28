@@ -1,6 +1,6 @@
 dataset:
-    data_dir: '../TestData/rawData/2018_10_02_MouseBrainSlice'
-    processed_dir: '../TestData/reconData/'
+    data_dir: 'tests/TestData/rawData/2018_10_02_MouseBrainSlice'
+    processed_dir: 'tests/TestData/reconData/'
     samples: ['SM_2018_1002_1633_1']
     positions: 'all'
     background: 'BG_2018_1002_1625_1'
