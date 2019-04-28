@@ -1,12 +1,12 @@
 import sys
 sys.path.append("..") # Adds parent directory to python search path.
 import os
-from utils.mManagerIO import mManagerReader
+from ReconstructOrder.utils import mManagerReader
 import argparse
 import yaml
 from scripts.channel_registration_3D import translate_3D
 import json
-from utils.imgProcessing import imBitConvert
+from ReconstructOrder.utils import imBitConvert
 
 def parse_args():
     """Parse command line arguments
