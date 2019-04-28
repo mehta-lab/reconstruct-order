@@ -17,4 +17,5 @@ from .utils import ConfigReader, Dataset, Processing, Plotting, \
 
 from .workflow import parse_args, write_config, processImg, runReconstruction, \
     create_metadata_object, parse_tiff_input, parse_bg_options, process_background, \
-    compute_flat_field, correct_flat_field, loopPos, loopT, loopZBg, loopZSm
+    compute_flat_field, loopPos, loopT, loopZBg, loopZSm
+from utils.imgProcessing import correct_flat_field
