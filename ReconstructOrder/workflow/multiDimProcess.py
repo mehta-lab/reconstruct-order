@@ -1,16 +1,11 @@
 import os
 import numpy as np
-import matplotlib
-
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import cv2
-from utils.imgIO import parse_tiff_input, exportImg
-from compute.reconstruct import ImgReconstructor
-from utils.imgProcessing import ImgMin
-from utils.plotting import render_birefringence_imgs, plot_stokes, plot_pol_imgs, plot_Polacquisition_imgs
-from utils.mManagerIO import mManagerReader, PolAcquReader
-from utils.imgProcessing import imBitConvert
+
+from ..utils import *
+from ..compute import ImgReconstructor
+
 
 def create_metadata_object(data_path, config):
     """
@@ -20,6 +15,7 @@ def create_metadata_object(data_path, config):
     except:
         img_obj = mManagerReader(data_path, output_chan = config.processing.output_channels)
     return img_obj
+
 
 def read_metadata(config):
     img_obj_list = []; bg_obj_list = []
@@ -50,6 +46,7 @@ def read_metadata(config):
         img_obj_list[i].blackLevel = bg_obj_list[i].blackLevel
 
     return img_obj_list, bg_obj_list
+
 
 def parse_bg_options(img_obj_list, config):
     """
@@ -120,6 +117,7 @@ def parse_bg_options(img_obj_list, config):
         os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
     return img_obj_list
 
+
 # similar pattern to "create_metadata_object":
 #   - we call 'process_background' but nothing it does is specific to the background.
 #   - more accurately, this function assigns attributes to the input "img_io" and to the output "img_reconstructor"
@@ -156,6 +154,7 @@ def process_background(img_io, img_io_bg, config):
     img_reconstructor.stokes_param_bg_tm = stokes_param_bg_tm
     return img_io, img_reconstructor
 
+
 def compute_flat_field(img_io, config):
     """
     Compute illumination function of fluorescence channels
@@ -182,6 +181,7 @@ def compute_flat_field(img_io, config):
     img_io.img_fluor_bg = img_fluor_bg
     return img_io
 
+
 def correct_flat_field(img_io, ImgFluor):
     """ flat-field correction for fluorescence channels """
 
@@ -189,6 +189,7 @@ def correct_flat_field(img_io, ImgFluor):
         if np.any(ImgFluor[i, :, :]):  # if the flour channel exists
             ImgFluor[i, :, :] = ImgFluor[i, :, :] / img_io.img_fluor_bg[i, :, :]
     return ImgFluor
+
 
 def loopPos(img_io, config, img_reconstructor=None):
     """
@@ -346,6 +347,7 @@ def loopZSm(img_io, config, img_reconstructor=None):
                     img_dict.update(img_stokes_sm_dict)
                 exportImg(img_io, img_dict)
     return img_io
+
 
 def loopZBg(img_io):
     """
