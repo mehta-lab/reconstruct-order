@@ -1,33 +1,69 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Wed Apr  3 15:31:41 2019
+Module to read yaml config file and return python object after input parameter consistency is first checked
+"""
 
-@author: ivan.ivanov
-"""
 import yaml
 import os.path
 from collections.abc import Iterable
 from utils.imgIO import GetSubDirName
 
-class ConfigReader:   
-    def __init__(self):
+
+class ConfigReader:
+    """
+    Parser of the yaml ReconstructOrder configuration file
+
+    The reader checks that the user-provided data directories exist and that
+    the provided parameters are within the allowed values. See
+    config/config_example.yml for description of the parameters and expected
+    input values.
+
+    """
+
+    def __init__(self, path=[]):
+        """
+        ConfigReader __init__ method.
+
+        Initializes the ConfigReader object with default parameters.
+        Optionally, if the path to the config file is provided in `path`, the
+        config yaml file is read at initialization. Otherwise, the method
+        `read_config` needs to be called.
+
+        Parameters
+        ----------
+        path : str, optional
+            Path to yaml config file.
+
+        """
+
         self.dataset = Dataset()
         self.processing = Processing()
         self.plotting = Plotting()
+
+        if path:
+            self.read_config(path)
         
     def read_config(self,path):
+        """
+        Reads yaml config file provided in `path`
+
+        Parameters
+        ----------
+        path: str
+            Path to yaml config file
+
+        """
+
         with open(path, 'r') as f:
             self.yaml_config = yaml.load(f)
             
         assert 'dataset' in self.yaml_config, \
             'dataset is a required field in the config yaml file'
         assert 'data_dir' in self.yaml_config['dataset'], \
-            'Please provde data_dir in config file'
+            'Please provide data_dir in config file'
         assert 'processed_dir' in self.yaml_config['dataset'], \
-            'Please provde processed_dir in config file'
+            'Please provide processed_dir in config file'
         assert 'samples'  in self.yaml_config['dataset'], \
-            'Please provde samples in config file'
+            'Please provide samples in config file'
 
         # Assign data_dir and processed_dir first to be able to check sample
         # and background directories
@@ -89,6 +125,9 @@ class ConfigReader:
                 else:
                     raise NameError('Unrecognized parameter {} passed'.format(key))
 
+        self.__check_input_consistency__()
+
+    def __check_input_consistency__(self):
         if self.dataset.background and 'processing' not in self.yaml_config \
             or 'background_correction' not in self.yaml_config['processing']:
             self.processing.background_correction = 'Input'
@@ -118,8 +157,17 @@ class ConfigReader:
                 len(self.dataset.z_slices) == len(self.dataset.timepoints), \
                 'Please provide equal number of samples and lists with corresponding background, positions, z_slices, and timepoints'
 
-
     def write_config(self,path):
+        """
+        Writes the fully-parameterized config file in output location given by `path`
+
+        Parameters
+        ----------
+        path: str
+            Path to output file
+
+        """
+
         config_out = {'dataset':{key.strip('_'):value for (key,value) in self.dataset.__dict__.items()},
                       'processing':{key.strip('_'):value for (key,value) in self.processing.__dict__.items()},
                       'plotting':{key.strip('_'):value for (key,value) in self.plotting.__dict__.items()}}
