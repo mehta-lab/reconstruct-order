@@ -1,3 +1,7 @@
+"""
+Process data collected over multiple positions, timepoints and z slices
+"""
+
 import os
 import numpy as np
 import matplotlib
@@ -7,24 +11,58 @@ import matplotlib.pyplot as plt
 import cv2
 from utils.imgIO import parse_tiff_input, exportImg
 from compute.reconstruct import ImgReconstructor
-from utils.imgProcessing import ImgMin
+from utils.imgProcessing import ImgMin, imBitConvert, correct_flat_field
 from utils.plotting import render_birefringence_imgs, plot_stokes, plot_pol_imgs, plot_Polacquisition_imgs
 from utils.mManagerIO import mManagerReader, PolAcquReader
-from utils.imgProcessing import imBitConvert
+
 
 def create_metadata_object(data_path, config):
     """
+    Reads PolAcquisition metadata, if possible. Otherwise, reads MicroManager metadata.
+    TODO: move to imgIO?
+
+    Parameters
+    __________
+    data_path : str
+        Path to data directory
+    config : obj
+        ConfigReader object
+
+    Returns
+    _______
+    obj
+        Metadata object
     """
+
     try:
-        img_obj = PolAcquReader(data_path, output_chan = config.processing.output_channels)
+        img_obj = PolAcquReader(data_path, output_chan=config.processing.output_channels)
     except:
-        img_obj = mManagerReader(data_path, output_chan = config.processing.output_channels)
+        img_obj = mManagerReader(data_path, output_chan=config.processing.output_channels)
     return img_obj
 
-def read_metadata(config):
-    img_obj_list = []; bg_obj_list = []
 
-    # If one background is used for all samplem, read only once
+def read_metadata(config):
+    """
+    Reads the metadata for the sample and background data sets. Passes some
+    of the parameters (e.g. swing, wavelength, back level, etc.) from the
+    background metadata object into the sample metadata object
+    TODO: move to imgIO?
+
+    Parameters
+    __________
+    config : obj
+        ConfigReader object
+
+    Returns
+    _______
+    obj
+        Metadata object
+    """
+
+    img_obj_list = []
+    bg_obj_list = []
+
+    # If one background is used for all samples, read only once
     if len(set(config.dataset.background)) <= 1:
         background_path = os.path.join(config.dataset.data_dir,config.dataset.background[0])
         bg_obj = create_metadata_object(background_path, config)
@@ -51,11 +89,20 @@ def read_metadata(config):
 
     return img_obj_list, bg_obj_list
 
+
 def parse_bg_options(img_obj_list, config):
     """
     Parse background correction options and make output directories
 
+    Parameters
+    __________
+    img_obj_list: list
+        List of img_obj objects
+    config : obj
+        ConfigReader object
+
     """
+
     for i in range(len(config.dataset.samples)):
         bgCorrect = config.processing.background_correction
         data_dir = config.dataset.data_dir
