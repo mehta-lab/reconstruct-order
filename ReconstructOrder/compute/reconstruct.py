@@ -1,10 +1,9 @@
 import numpy as np
 import sys
 import cv2
-# from utils.plotting import plot_sub_images
 sys.path.append("..") # Add upper level directory to python modules path.
-#from utils.imgCrop import imcrop
-#%%
+
+
 class ImgReconstructor:
     """
     ImgReconstructor contains methods to compute physical properties Birefringence /
@@ -118,16 +117,16 @@ class ImgReconstructor:
         if self.n_slice_local_bg > 1:
             assert len(np.shape(stokes_param_sm_tm[0])) == 3, \
                 'Input image has to have >1 z-slice for n_slice_local_bg > 1'
-        stokes_param_sm_tm = self.correct_background_stokes(
-            stokes_param_sm_tm, self.stokes_param_bg_tm)
+        stokes_param_sm_tm = self.correct_background_stokes(stokes_param_sm_tm,
+                                                            self.stokes_param_bg_tm)
         if self.bg_method == 'Local_filter':
             if self.n_slice_local_bg > 1:
                 stokes_param_sm_local_tm = np.mean(stokes_param_sm_tm, -1)
             else:
                 stokes_param_sm_local_tm = stokes_param_sm_tm
             self.compute_local_background(stokes_param_sm_local_tm)
-            stokes_param_sm_tm = self.correct_background_stokes(
-                stokes_param_sm_tm, self.stokes_param_bg_local_tm)
+            stokes_param_sm_tm = self.correct_background_stokes(stokes_param_sm_tm,
+                                                                self.stokes_param_bg_local_tm)
         return stokes_param_sm_tm
 
     def compute_local_background(self, stokes_param_sm_local_tm):

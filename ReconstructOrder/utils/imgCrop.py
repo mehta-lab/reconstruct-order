@@ -1,13 +1,11 @@
 import sys
-sys.path.append("..") # Adds higher directory to python modules path.
-#import seaborn as sns
+# sys.path.append("..") # Adds higher directory to python modules path.
 import matplotlib.pyplot as plt
 from matplotlib.widgets  import RectangleSelector
+
 from .imgProcessing import imadjust
-#sns.set_context("poster")
-plt.close("all") # close all the figures from the last run
-#%%
-  
+
+
 def imcrop(imList,imV): # interactively select an ROI in imV, crop the same ROI for each image in imList
     figSize = (8,8)
     fig = plt.figure(figsize = figSize) 
@@ -42,6 +40,7 @@ def imcrop(imList,imV): # interactively select an ROI in imV, crop the same ROI 
     
     return imListCrop
 
+
 def toggle_selector(event):
     print(' Key pressed.')
     if event.key in ['Q', 'q'] and toggle_selector.RS.active:
@@ -50,6 +49,7 @@ def toggle_selector(event):
     if event.key in ['A', 'a'] and not toggle_selector.RS.active:
         print(' RectangleSelector activated.')
         toggle_selector.RS.set_active(True)
+
 
 def line_select_callback(eclick, erelease):
     x1, y1 = eclick.xdata, eclick.ydata

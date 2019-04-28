@@ -1,20 +1,16 @@
 import numpy as np
-#import seaborn as sns
 import matplotlib.pyplot as plt
 import cv2
-import bisect
-import warnings
-import sys
-sys.path.append("..") # Adds higher directory to python modules path.
-#sns.set_context("poster")
-plt.close("all") # close all the figures from the last run
+import bisect, warnings, sys
+# sys.path.append("..") # Adds higher directory to python modules path.
 
-#%%
-def ImgMin(Img, ImgBg):    
+
+def ImgMin(Img, ImgBg):
     ImgArr = np.array([Img, ImgBg])
     ImgMeanArr = np.array([np.mean(Img), np.mean(ImgBg)])
     ImgBg = ImgArr[np.argmin(ImgMeanArr)]
     return ImgBg
+
 
 def ImgLimit(imgs,imgLimits): # tracking the global image limit 
     imgLimitsNew = []
@@ -27,6 +23,7 @@ def ImgLimit(imgs,imgLimits): # tracking the global image limit
         imgLimitsNew += [imgLimitNew]
     return imgLimitsNew               
 
+
 def nanRobustBlur(I, dim):
     V=I.copy()
     V[I!=I]=0
@@ -36,7 +33,8 @@ def nanRobustBlur(I, dim):
     WW=cv2.blur(W,dim)    
     Z=VV/WW
     return Z  
-  
+
+
 def histequal(ImgSm0): # histogram eaqualiztion for contrast enhancement
     ImgSm0 = ImgSm0/ImgSm0.max()*255 # rescale to 8 bit as OpenCV only takes 8 bit (REALLY????)
     ImgSm0 = ImgSm0.astype(np.uint8, copy=False) # convert to 8 bit
@@ -44,6 +42,7 @@ def histequal(ImgSm0): # histogram eaqualiztion for contrast enhancement
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20,20)) # Contrast Limited Adaptive Histogram Equalization
     ImgAd = clahe.apply(ImgSm0)
     return ImgAd
+
 
 def imBitConvert(im,bit=16, norm=False, limit=None):    
     im = im.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
@@ -59,11 +58,13 @@ def imBitConvert(im,bit=16, norm=False, limit=None):
         im = im.astype(np.uint16, copy=False) # convert to 16 bit
     return im
 
+
 def imadjustStack(imStk, tol=1, bit=16,vin=[0,2**16-1]):
     for i in range(imStk.shape[2]):
         imStk[:,:,i] = imadjust(imStk[:,:,i])
     return imStk    
-#%%
+
+
 def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
     # Python implementation of "imadjust" from MATLAB for stretching intensity histogram. Slow
     # src : input one-layer image (numpy array)
@@ -122,6 +123,7 @@ def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
     dst = imBitConvert(dst,bit=bit, norm=True)
     return dst
 
+
 def imClip(img, tol=1):
     """
     Clip the images for better visualization
@@ -129,7 +131,8 @@ def imClip(img, tol=1):
     limit = np.percentile(img, [tol, 100-tol])
     img_clpped = np.clip(img, limit[0], limit[1])
     return img_clpped
-    
+
+
 def linScale(src,vin, vout):
     scale = (vout[1] - vout[0]) / (vin[1] - vin[0])
     vs = src-vin[0]
@@ -137,7 +140,8 @@ def linScale(src,vin, vout):
     vd = vs*scale + 0.5 + vout[0]
     vd[vd>vout[1]] = vout[1]
     return vd
-#%%
+
+
 def removeBubbles(I, kernelSize = (11,11)): # remove bright spots (mostly bubbles) in retardance images. Need to add a size filter
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,  kernelSize)
     Bg = cv2.morphologyEx(I, cv2.MORPH_OPEN, kernel)
@@ -180,4 +184,4 @@ def removeBubbles(I, kernelSize = (11,11)): # remove bright spots (mostly bubble
     plt.title('Orientation (Py)')                                     
     plt.show()    
     
-    return INoBub    
+    return INoBub

@@ -1,12 +1,11 @@
 """
 Read and write Tiff in mManager format. Will be replaced by mManagerIO.py 
 """
-import os
-import numpy as np
-import glob
-import re
-import cv2
+import os, glob, re
 from shutil import copy2
+import numpy as np
+import cv2
+
 
 def GetSubDirName(ImgPath):
     assert os.path.exists(ImgPath), 'Input folder does not exist!' 
@@ -14,6 +13,7 @@ def GetSubDirName(ImgPath):
     subDirName = [os.path.split(subdir[:-1])[1] for subdir in subDirPath]
 #    assert subDirName, 'No sub directories found'
     return subDirName
+
 
 def FindDirContainPos(ImgPath):
     """
@@ -28,7 +28,8 @@ def FindDirContainPos(ImgPath):
         return ImgPath
     else:
         return ImgPath
-    
+
+
 def process_position_list(img_obj_list, config):
     """
     Make sure all members of positions are part of io_obj.
@@ -85,6 +86,7 @@ def process_timepoint_list(img_obj_list, config):
         img_obj_list[idx].TimeList = t_list
     return img_obj_list
 
+
 def copy_files_in_sub_dirs(input_path, output_path):
     assert os.path.exists(input_path), 'Input folder does not exist!'
     os.makedirs(output_path, exist_ok=True)
@@ -94,6 +96,7 @@ def copy_files_in_sub_dirs(input_path, output_path):
         for src_file_path in src_file_paths:
             if os.path.isfile(src_file_path):
                 copy2(src_file_path, output_path)
+
 
 def loadTiff(acquDirPath, acquFiles):
     """
@@ -107,6 +110,7 @@ def loadTiff(acquDirPath, acquFiles):
     img = img.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
     # img = img.reshape(img.shape[0], img.shape[1],1)
     return img
+
 
 def ParseFileList(acquDirPath):
     acquFiles = os.listdir(acquDirPath) 

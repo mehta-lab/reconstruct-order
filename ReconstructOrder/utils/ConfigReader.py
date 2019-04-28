@@ -8,7 +8,8 @@ Created on Wed Apr  3 15:31:41 2019
 import yaml
 import os.path
 from collections.abc import Iterable
-from utils.imgIO import GetSubDirName
+from .imgIO import GetSubDirName
+
 
 class ConfigReader:   
     def __init__(self):
@@ -49,7 +50,7 @@ class ConfigReader:
             elif key == 'background':
                 self.dataset.background = value
             elif key not in ('data_dir', 'processed_dir'):
-                raise NameError('Unrecognized parameter {} passed'.format(key))
+                raise NameError('Unrecognized configfile field:{}, key:{}'.format('dataset', key))
              
         if 'processing' in self.yaml_config:
             for (key, value) in self.yaml_config['processing'].items():
@@ -68,7 +69,7 @@ class ConfigReader:
                 elif key == 'n_slice_local_bg':
                     self.processing.n_slice_local_bg = value
                 else:
-                    raise NameError('Unrecognized parameter {} passed'.format(key))
+                    raise NameError('Unrecognized configfile field:{}, key:{}'.format('processing', key))
 
         if 'plotting' in self.yaml_config:
             for (key, value) in self.yaml_config['plotting'].items():
@@ -87,7 +88,7 @@ class ConfigReader:
                 elif key == 'save_micromanager_fig':
                     self.plotting.save_micromanager_fig = value
                 else:
-                    raise NameError('Unrecognized parameter {} passed'.format(key))
+                    raise NameError('Unrecognized configfile field:{}, key:{}'.format('plotting', key))
 
         if self.dataset.background and 'processing' not in self.yaml_config \
             or 'background_correction' not in self.yaml_config['processing']:
@@ -228,8 +229,9 @@ class Dataset:
         for (key, value) in self.__dict__.items():
             out = out + '{}: {}\n'.format(key.strip('_'),value)
         return out
-        
-class Processing:        
+
+
+class Processing:
     _allowed_output_channels = ['Brightfield', 'Brightfield_computed', 'Retardance', 'Orientation', 'Polarization',
                                 'Orientation_x', 'Orientation_y',
                                 'Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
@@ -323,7 +325,8 @@ class Processing:
         for (key, value) in self.__dict__.items():
             out = out + '{}: {}\n'.format(key.strip('_'),value)
         return out
-    
+
+
 class Plotting:
     def __init__(self):
         self.normalize_color_images = True

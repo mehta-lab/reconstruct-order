@@ -3,9 +3,10 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
 
-from runReconstruction import runReconstruction
+from ReconstructOrder.workflow import runReconstruction
 
-configfiles = ['config/config_kidneytissue.yml', 'config/config_u2os_cells.yml']
+configfiles = ['/Users/bryant.chhun/PycharmProjects/ReconOrder/ReconstructOrder/examples/example_configs/config_kidneytissue.yml',
+               '/Users/bryant.chhun/PycharmProjects/ReconOrder/ReconstructOrder/examples/example_configs/config_u2os_cells.yml']
 #TODO: test analyzing sub-z stack on Kidney Tissue data.
 
 if __name__ == '__main__':

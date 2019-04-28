@@ -1,18 +1,18 @@
 dataset:
-    data_dir: '../TestData/rawData/2018_10_02_MouseBrainSlice'
-    processed_dir: '../TestData/reconData/'
+    data_dir: './example_data/TestData/rawData/2018_10_02_MouseBrainSlice'
+    processed_dir: './example_data/TestData/reconData/2018_10_02_MouseBrainSlice'
     samples: ['SM_2018_1002_1640_1']
     positions: 'all'
     background: 'BG_2018_1002_1625_1'
 #    BgDir_local: None
 
 processing:
-    outputChann: ['Brightfield_computed', 'Retardance', 'Orientation', 'Polarization']
+    output_channels: ['Brightfield_computed', 'Retardance', 'Orientation', 'Polarization']
     circularity: 'rcp'
 #    bgCorrect: 'Local_filter'
     background_correction: 'Input'
     flatfield_correction: False
-    batchProc: False
+#    batchProc: False
     azimuth_offset: 0
     separate_positions: True
 
