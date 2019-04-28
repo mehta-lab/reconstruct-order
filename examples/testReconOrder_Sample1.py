@@ -1,37 +1,30 @@
 #!/usr/bin/env python
-# title           : testReconOrder_Sample1.py
-# description     :This will create a header for a python script.
-# author          :bryant.chhun
-# date            :12/12/18
-# version         :0.0
-# usage           :python this_python_file.py -flags
-# notes           :
-# python_version  :3.6
+
 
 import unittest
 import os
 import cv2
 import numpy as np
 
-from workflow.multiDimProcess import process_background, create_metadata_object, parse_bg_options
-from utils.ConfigReader import ConfigReader
-from utils.imgIO import parse_tiff_input
-from utils.imgProcessing import imBitConvert
-from tests.testMetrics import mse
+from ReconstructOrder.workflow import process_background, read_metadata, parse_bg_options
+from ReconstructOrder.utils import ConfigReader, parse_tiff_input, imBitConvert, \
+    process_position_list, process_timepoint_list, process_z_slice_list
+from ReconstructOrder.tests.testMetrics import mse
 
 
 '''
 Methods to check that reconstruction procedure correctly constructs test data.
 '''
 
+
 class TestImageReconstruction(unittest.TestCase):
 
-    targetData = "../testData/reconData/2018_10_02_MouseBrainSlice/"
+    targetData = "./example_data/TestData/reconData/2018_10_02_MouseBrainSlice/"
     condition = "SM_2018_1002_1633_1_BG_2018_1002_1625_1"
 
     target_ITrans = targetData + \
                          condition + \
-                         "/img_Brightfield_t000_p000_z000.tif"
+                         "/img_Transmission_t000_p000_z000.tif"
     target_retard = targetData + \
                          condition + \
                          "/img_Retardance_t000_p000_z000.tif"
@@ -42,7 +35,8 @@ class TestImageReconstruction(unittest.TestCase):
                          condition + \
                          "/img_Scattering_t000_p000_z000.tif"
 
-    source_config_file = '../../config/config_MouseBrainSlice1_workflow_test.yml'
+    source_config_file = './example_configs/config_MouseBrainSlice1_workflow_test.yml'
+
     def __init__(self, *args, **kwargs):
         '''
         Loads source/raw data configuration file.
@@ -76,18 +70,29 @@ class TestImageReconstruction(unittest.TestCase):
 
         :return: None
         '''
-        img_io, img_io_bg = create_metadata_object(self.config, self.RawDataPath,
-                                                   self.ImgDir, self.SmDir, self.BgDir)
-        img_io, img_io_bg = parse_bg_options(img_io, img_io_bg, self.config,
-                                             self.RawDataPath, self.ProcessedPath,
-                                             self.ImgDir, self.SmDir, self.BgDir)
 
-        self.img_io, img_reconstructor = process_background(img_io, img_io_bg, self.config)
-        self.img_io.posIdx = 0
-        self.img_io.tIdx = 0
-        self.img_io.zIdx = 0
-        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(self.img_io)
+        img_obj_list, bg_obj_list = read_metadata(self.config)
+        img_obj_list = process_position_list(img_obj_list, self.config)
+        img_obj_list = process_z_slice_list(img_obj_list, self.config)
+        img_obj_list = process_timepoint_list(img_obj_list, self.config)
+        img_obj_list = parse_bg_options(img_obj_list, self.config)
+
+        # img_io, img_io_bg = create_metadata_object(self.RawDataPath, self.config)
+        # img_io, img_io_bg = parse_bg_options(img_io, img_io_bg, self.config)
+
+        # for img_obj, bg_obj in zip(img_obj_list, bg_obj_list):
+        img_obj = img_obj_list[0]
+        bg_obj = bg_obj_list[0]
+        img_obj, img_reconstructor = process_background(img_obj, bg_obj, self.config)
+
+        # self.img_io, img_reconstructor = process_background(img_io, img_io_bg, self.config)
+        img_obj.posIdx = 0
+        img_obj.tIdx = 0
+        img_obj.zIdx = 0
+        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_obj)
         img_stokes_sm = img_reconstructor.compute_stokes(ImgRawSm)
+        img_stokes_sm = img_reconstructor.stokes_transform(img_stokes_sm)
+        img_stokes_sm = [img[..., np.newaxis] for img in img_stokes_sm]
         img_stokes_sm = img_reconstructor.correct_background(img_stokes_sm)
         img_computed_sm = img_reconstructor.reconstruct_birefringence(img_stokes_sm)
         [I_trans, retard, azimuth, polarization, _, _, _] = img_computed_sm
@@ -104,19 +109,27 @@ class TestImageReconstruction(unittest.TestCase):
 
     def test_mse_Itrans(self):
         self.construct_all()
-        self.assertLessEqual(mse(self.I_trans, cv2.imread(self.target_ITrans, -1)), 50000)
+        target = cv2.imread(self.target_ITrans, -1)
+        target = np.reshape(target, (target.shape[0], target.shape[1], 1))
+        self.assertLessEqual(mse(self.I_trans, target), 50000)
 
     def test_mse_retard(self):
         self.construct_all()
-        self.assertLessEqual(mse(self.retard, cv2.imread(self.target_retard, -1)), 100)
+        target = cv2.imread(self.target_retard, -1)
+        target = np.reshape(target, (target.shape[0], target.shape[1], 1))
+        self.assertLessEqual(mse(self.retard, target), 100)
 
     def test_mse_orientation(self):
         self.construct_all()
-        self.assertLessEqual(mse(self.azimuth_degree, cv2.imread(self.target_Orientation, -1)), 65000)
+        target = cv2.imread(self.target_Orientation, -1)
+        target = np.reshape(target, (target.shape[0], target.shape[1], 1))
+        self.assertLessEqual(mse(self.azimuth_degree, target), 65000)
 
     def test_mse_scattering(self):
         self.construct_all()
-        self.assertLessEqual(mse(self.scattering, cv2.imread(self.target_Scattering, -1)), 100)
+        target = cv2.imread(self.target_Scattering, -1)
+        target = np.reshape(target, (target.shape[0], target.shape[1], 1))
+        self.assertLessEqual(mse(self.scattering, target), 100)
 
 
 if __name__ == '__main__':

@@ -1,12 +1,12 @@
 """
 Class to read mManager format images saved separately and their metadata (JSON) .
 """
-import json
+import json, os
 import numpy as np
-import os
 import pandas as pd
 import cv2
-from utils.imgIO import GetSubDirName
+from ..utils import GetSubDirName
+
 
 class mManagerReader:
     """General mManager Reader"""
@@ -72,7 +72,6 @@ class mManagerReader:
         assert set(value).issubset(self._meta_pos_list), \
             'some positions cannot be found in metadata'
         self._pos_list = value
-
 
     def read_img(self):
         """read a single image at (c,t,p,z)"""
@@ -226,6 +225,7 @@ class mManagerReader:
                     tIdx, chanIdx
                 )
                 self._log_info(msg)
+
 
 class PolAcquReader(mManagerReader):
     """PolAcquistion Plugin output format reader"""

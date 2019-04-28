@@ -1,18 +1,13 @@
-#%matplotlib inline
 import os
 import numpy as np
-# import matplotlib
-# matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import cv2
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from utils.imgProcessing import nanRobustBlur, imadjust, imBitConvert, imClip
-from utils.imgCrop import imcrop
-#import sys
-#sys.path.append("..") # Adds higher directory to python modules path.
 
-#%%
+from ..utils import nanRobustBlur, imadjust, imBitConvert, imClip, imcrop
+
+
 def plotVectorField(I, orientation, R=40, spacing=40, clim=[None, None]):
     """Overlays orientation field  on image I. Returns matplotlib image axes. """
 
@@ -24,13 +19,9 @@ def plotVectorField(I, orientation, R=40, spacing=40, clim=[None, None]):
     RSmooth = np.sqrt(USmooth**2+VSmooth**2)
     USmooth, VSmooth = RSmooth*np.cos(azimuthSmooth), RSmooth*np.sin(azimuthSmooth)
 
-#    azimuthSmooth  = orientation
     nY, nX = I.shape
     Y, X = np.mgrid[0:nY, 0:nX] # notice the inversed order of X and Y
 
-#    I = histequal(I)
-#    figSize = (10,10)
-#    fig = plt.figure(figsize = figSize)
     imAx = plt.imshow(I, cmap='gray', vmin=clim[0], vmax=clim[1])
     plt.title('Orientation map')
     plt.quiver(X[::spacing, ::spacing], Y[::spacing,::spacing],
@@ -39,8 +30,8 @@ def plotVectorField(I, orientation, R=40, spacing=40, clim=[None, None]):
                headwidth = 0, headlength = 0, headaxislength = 0,
                scale_units = 'xy',scale = 1 )
 
-#    plt.show()
     return imAx
+
 
 def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
     """ Parses transmission, retardance, orientation, and polarization images, scale and render them for export.  """
@@ -159,6 +150,7 @@ def PolColor(s0, retardance, orientation, polarization, norm=True):
 #    retardAzi = np.stack([orientation, retardance],axis=2)
     return I_azi_ret_trans, I_azi_ret, I_azi_scat
 
+
 def CompositeImg(images, norm=True):
     """ Generate overlay of multiple images.  """
     #TODO: update name and docstring to clarify intent.
@@ -189,7 +181,7 @@ def CompositeImg(images, norm=True):
 
     return ImgColor
 
-#%%
+
 def plot_recon_images(s0, retard, azimuth, polarization, I_azi_ret, I_azi_scat, zoomin=False, spacing=20, vectorScl=1, dpi=300):
     """ Plot transmission, retardance, orientation, and polarization images, and prepares them for export.  """
 
@@ -257,6 +249,7 @@ def plot_recon_images(s0, retard, azimuth, polarization, I_azi_ret, I_azi_scat, 
     cbar = fig.colorbar(ax_hsv, cax=cax, orientation='vertical', ticks=np.linspace(0, 255, 5))
     cbar.ax.set_yticklabels([r'$0^o$', r'$45^o$', r'$90^o$', r'$135^o$', r'$180^o$'])  # vertically oriented colorbar
 
+
 def plot_stokes(img_io, img_stokes, img_stokes_sm):
     tIdx = img_io.tIdx
     zIdx = img_io.zIdx
@@ -267,12 +260,14 @@ def plot_stokes(img_io, img_stokes, img_stokes_sm):
     fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
     plot_sub_images(img_stokes_sm, titles, img_io.ImgOutPath, fig_name, colorbar=True)
 
+
 def plot_pol_imgs(img_io, imgs_pol, titles):
     tIdx = img_io.tIdx
     zIdx = img_io.zIdx
     posIdx = img_io.posIdx
     fig_name = 'imgs_pol_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
     plot_sub_images(imgs_pol, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+
 
 def plot_Polacquisition_imgs(img_io, imgs_mm_py):
     """compare python v.s. Polacquisition output"""
@@ -282,6 +277,7 @@ def plot_Polacquisition_imgs(img_io, imgs_mm_py):
     titles = ['Retardance (MM)','Orientation (MM)','Retardance (Py)','Orientation (Py)']
     fig_name = 'imgs_mm_py_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
     plot_sub_images(imgs_mm_py, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+
 
 def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
     n_imgs = len(images)
