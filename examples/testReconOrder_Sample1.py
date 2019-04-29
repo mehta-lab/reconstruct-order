@@ -114,24 +114,30 @@ class TestImageReconstruction(unittest.TestCase):
         target = cv2.imread(self.target_ITrans, -1)
         target = np.reshape(target, (target.shape[0], target.shape[1], 1))
         self.assertLessEqual(mse(self.I_trans, target), 50000)
+        print('test passed: Itrans')
 
     def test_mse_retard(self):
         self.construct_all()
         target = cv2.imread(self.target_retard, -1)
         target = np.reshape(target, (target.shape[0], target.shape[1], 1))
         self.assertLessEqual(mse(self.retard, target), 100)
+        print('test passed: retard')
+
 
     def test_mse_orientation(self):
         self.construct_all()
         target = cv2.imread(self.target_Orientation, -1)
         target = np.reshape(target, (target.shape[0], target.shape[1], 1))
         self.assertLessEqual(mse(self.azimuth_degree, target), 65000)
+        print('test passed: orientation')
+
 
     def test_mse_scattering(self):
         self.construct_all()
         target = cv2.imread(self.target_Scattering, -1)
         target = np.reshape(target, (target.shape[0], target.shape[1], 1))
         self.assertLessEqual(mse(self.scattering, target), 100)
+        print('test passed: scattering')
 
 
 if __name__ == '__main__':
