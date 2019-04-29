@@ -5,7 +5,7 @@ import json, os
 import numpy as np
 import pandas as pd
 import cv2
-from ..utils import GetSubDirName
+from ..utils.imgIO import GetSubDirName
 
 
 class mManagerReader:

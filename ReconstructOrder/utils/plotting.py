@@ -1,11 +1,14 @@
 import os
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import cv2
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-from ..utils import nanRobustBlur, imadjust, imBitConvert, imClip, imcrop
+from ..utils.imgProcessing import nanRobustBlur, imadjust, imBitConvert, imClip
+from ..utils.imgProcessing import imcrop
 
 
 def plotVectorField(I, orientation, R=40, spacing=40, clim=[None, None]):
