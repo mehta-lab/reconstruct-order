@@ -6,9 +6,11 @@ import os
 import cv2
 import numpy as np
 
-from ReconstructOrder.workflow import process_background, read_metadata, parse_bg_options
-from ReconstructOrder.utils import ConfigReader, parse_tiff_input, imBitConvert, \
-    process_position_list, process_timepoint_list, process_z_slice_list
+from ReconstructOrder.workflow.multiDimProcess import process_background, read_metadata, parse_bg_options
+from ReconstructOrder.utils.ConfigReader import ConfigReader
+from ReconstructOrder.utils.imgIO import (parse_tiff_input, process_position_list,
+                                          process_timepoint_list, process_z_slice_list)
+from ReconstructOrder.utils.plotting import imBitConvert
 from ReconstructOrder.tests.testMetrics import mse
 
 

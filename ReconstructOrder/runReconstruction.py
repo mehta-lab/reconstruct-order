@@ -13,7 +13,7 @@ Returns
 """
 
 import argparse
-from .workflow import runReconstruction
+from .workflow.reconstructBatch import reconstructBatch
 
 
 def parse_args():
@@ -34,4 +34,4 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    runReconstruction(args.config)
+    reconstructBatch(args.config)
