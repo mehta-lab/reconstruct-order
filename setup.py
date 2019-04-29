@@ -54,7 +54,7 @@ if __name__ == '__main__':
         long_description_content_type=LONG_DESCRIPTION_content_type,
         license=LICENSE,
         download_url=DOWNLOAD_URL,
-        version="0.0.20",
+        version="0.0.29",
         classifiers=CLASSIFIERS,
         install_requires=INSTALL_REQUIRES,
         requires=REQUIRES,

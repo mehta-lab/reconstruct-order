@@ -1,6 +1,7 @@
 # bchhun, {4/26/19}
-from .multiDimProcess import process_background, loopPos, compute_flat_field, read_metadata, parse_bg_options
-from ..utils import ConfigReader, process_position_list, process_z_slice_list, process_timepoint_list
+from ..workflow.multiDimProcess import process_background, loopPos, compute_flat_field, read_metadata, parse_bg_options
+from ..utils.ConfigReader import ConfigReader
+from ..utils.imgIO import process_position_list, process_z_slice_list, process_timepoint_list
 import os
 
 
@@ -24,7 +25,7 @@ def _processImg(img_obj, bg_obj, config):
     img_obj = loopPos(img_obj, config, img_reconstructor)
 
 
-def runReconstruction(configfile):
+def reconstructBatch(configfile):
     config = ConfigReader()
     config.read_config(configfile)
 

@@ -1,7 +1,7 @@
 import numpy as np
 import sys
 import cv2
-sys.path.append("..") # Add upper level directory to python modules path.
+# sys.path.append("..") # Add upper level directory to python modules path.
 
 
 class ImgReconstructor:
