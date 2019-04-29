@@ -19,7 +19,7 @@ class ImgReconstructor:
     swing : float
         swing of the elliptical polarization states in unit of fraction of wavelength
     wavelength : int
-        wavelenhth of the illumination light
+        wavelenhth of the illumination light (nm)
     kernel_size : int
         size of the Gaussian kernel for local background estimation
     azimuth_offset : float

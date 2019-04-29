@@ -7,8 +7,8 @@ from .tests import *
 
 from .utils import ConfigReader, Dataset, Processing, Plotting, \
     imcrop, toggle_selector, line_select_callback, \
-    GetSubDirName, FindDirContainPos, loadTiff, ParseFileList, \
-    ParseTiffInput_old, parse_tiff_input, sort_pol_channels, exportImg, \
+    GetSubDirName, FindDirContainPos, loadTiff, \
+    parse_tiff_input, sort_pol_channels, exportImg, \
     ImgMin, ImgLimit, nanRobustBlur, histequal, imBitConvert, \
     imadjust, imadjustStack, imClip, linScale, removeBubbles, \
     mManagerReader, PolAcquReader, \
