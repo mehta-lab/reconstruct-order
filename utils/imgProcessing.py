@@ -1,10 +1,10 @@
 import numpy as np
-#import seaborn as sns
 import matplotlib.pyplot as plt
 import cv2
 import bisect
 import warnings
 import sys
+from workflow.multiDimProcess import loopPos
 sys.path.append("..") # Adds higher directory to python modules path.
 #sns.set_context("poster")
 plt.close("all") # close all the figures from the last run
@@ -188,16 +188,24 @@ def compute_flat_field(img_io, config):
     Compute illumination function of fluorescence channels
     for flat-field correction
 
+    Parameters
+    ----------
+    img_io: object
+        mManagerReader object that holds the image parameters
+    config: object
+        ConfigReader object that holds the user input config parameters
+
+    Returns
+    -------
+    img_io: object
+        mManagerReader object that holds the image parameters with
+        illumination function saved in img_io.img_fluor_bg
+
     """
     print('Calculating illumination function for flatfield correction...')
     ff_method = config.processing.ff_method
     img_io.ff_method = ff_method
-    img_io.ImgFluorMin = np.full((4, img_io.height, img_io.width), np.inf)  # set initial min array to to be Inf
-    img_io.ImgFluorSum = np.zeros(
-        (4, img_io.height, img_io.width))  # set the default background to be Ones (uniform field)
-    img_io.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
-                                              (100, 100))  # kernel for image opening operation, 100-200 is usually good
-    img_io.loopZ = 'background'
+    img_io.loopZ = 'flat_field'
     img_io = loopPos(img_io, config)
     if ff_method == 'open':
         img_fluor_bg = img_io.ImgFluorSum
@@ -209,9 +217,21 @@ def compute_flat_field(img_io, config):
     img_io.img_fluor_bg = img_fluor_bg
     return img_io
 
-
 def correct_flat_field(img_io, ImgFluor):
-    """ flat-field correction for fluorescence channels """
+    """
+    flat-field correction for fluorescence channels
+    Parameters
+    ----------
+    img_io: object
+        mManagerReader object that holds the image parameters
+    ImgFluor: float32 array
+        stack of fluorescence images with with shape (channel, y, x)
+
+    Returns
+    -------
+    ImgFluor: array
+        flat-field corrected fluorescence images
+    """
 
     for i in range(ImgFluor.shape[0]):
         if np.any(ImgFluor[i, :, :]):  # if the flour channel exists

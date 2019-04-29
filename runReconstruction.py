@@ -79,7 +79,7 @@ def processImg(img_obj, bg_obj, config):
     if flatField:  # find background fluorescence for flatField correction
         img_obj = compute_flat_field(img_obj, config)
         
-    img_obj.loopZ ='sample'
+    img_obj.loopZ = 'reconstruct'
     img_obj = loopPos(img_obj, config, img_reconstructor) 
 
 
