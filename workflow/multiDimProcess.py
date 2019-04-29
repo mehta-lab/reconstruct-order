@@ -192,60 +192,6 @@ def process_background(img_io, img_io_bg, config):
     img_reconstructor.stokes_param_bg_tm = stokes_param_bg_tm
     return img_io, img_reconstructor
 
-def compute_flat_field(img_io, config):
-    """
-    Compute illumination function of fluorescence channels
-    for flat-field correction
-
-    Parameters
-    ----------
-    img_io: object
-        mManagerReader object that holds the image parameters
-    config: object
-        ConfigReader object that holds the user input config parameters
-
-    Returns
-    -------
-    img_io: object
-        mManagerReader object that holds the image parameters with
-        illumination function saved in img_io.img_fluor_bg
-
-    """
-    print('Calculating illumination function for flatfield correction...')
-    ff_method = config.processing.ff_method
-    img_io.ff_method = ff_method
-    img_io.loopZ = 'background'
-    img_io = loopPos(img_io, config)
-    if ff_method == 'open':
-        img_fluor_bg = img_io.ImgFluorSum
-    elif ff_method == 'empty':
-        img_fluor_bg = img_io.ImgFluorMin
-    for channel in range(img_fluor_bg.shape[0]):
-        img_fluor_bg[channel] = img_fluor_bg[channel] - min(np.nanmin(img_fluor_bg[channel]), 0) + 1 #add 1 to avoid 0
-        img_fluor_bg[channel] /= np.mean(img_fluor_bg[channel])  # normalize the background to have mean = 1
-    img_io.img_fluor_bg = img_fluor_bg
-    return img_io
-
-def correct_flat_field(img_io, ImgFluor):
-    """
-    flat-field correction for fluorescence channels
-    Parameters
-    ----------
-    img_io: object
-        mManagerReader object that holds the image parameters
-    ImgFluor: float32 array
-        stack of fluorescence images with with shape (channel, y, x)
-
-    Returns
-    -------
-    ImgFluor: array
-        flat-field corrected fluorescence images
-    """
-
-    for i in range(ImgFluor.shape[0]):
-        if np.any(ImgFluor[i, :, :]):  # if the flour channel exists
-            ImgFluor[i, :, :] = ImgFluor[i, :, :] / img_io.img_fluor_bg[i, :, :]
-    return ImgFluor
 
 def loopPos(img_io, config, img_reconstructor=None):
     """
@@ -291,10 +237,10 @@ def loopT(img_io, config, img_reconstructor=None):
     """
     for tIdx in img_io.TimeList:
         img_io.tIdx = tIdx
-        if img_io.loopZ == 'sample':
+        if img_io.loopZ == 'reconstruct':
             img_io = loopZSm(img_io, config, img_reconstructor)
 
-        else:
+        elif img_io.loopZ == 'flat_field':
             img_io = loopZBg(img_io)
     return img_io
 
