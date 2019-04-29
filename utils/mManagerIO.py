@@ -79,7 +79,7 @@ class mManagerReader:
     zIdx : int
         current z index to process
     bg : str
-        background folder name in the meta file
+        background folder name
     bg_method : str
         "Global" or "Local". Type of background correction. "Global" will correct each image
          using the same background. "Local" will do correction with locally estimated
@@ -265,11 +265,31 @@ class mManagerReader:
                         cv2.imwrite(cur_fname, img)
 
 class PolAcquReader(mManagerReader):
-    """PolAcquistion Plugin output format reader"""
+    """PolAcquistion mManager metadata and image reader
+    Parameters
+    ----------
+    mManagerReader : class
+        General mManager metadata and image reader for data saved as separate 2D tiff files
+
+    Attributes
+    ----------
+    acquScheme : str
+        Pol images acquiring schemes. '4-Frame' or '5-Frame'
+    bg : str
+        background folder name in metadata
+    blackLevel : int
+        black level of the camera
+    mirror : str
+        'Yes' or 'No'. Changing this flag will flip the slow axis horizontally
+    swing : float
+        swing of the elliptical polarization states in unit of fraction of wavelength
+    wavelength : int
+        wavelenhth of the illumination light (nm)
+
+
+    """
     def __init__(self, img_sample_path, ImgOutPath=None, input_chan=[], output_chan=[]):
-        """
-        PolAcquistion mManager metadata and image reader
-        """
+
         mManagerReader.__init__(self, img_sample_path, ImgOutPath, input_chan, output_chan)
         metaFile = self.input_meta_file
         self.acquScheme = metaFile['Summary']['~ Acquired Using']
