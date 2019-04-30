@@ -13,10 +13,9 @@ Returns
 
 import sys
 sys.path.append(".") # Adds current directory to python search path.
-from workflow.multiDimProcess import process_background, loopPos, read_metadata, parse_bg_options
+from workflow.multiDimProcess import process_background, loopPos, read_metadata, parse_bg_options, compute_flat_field
 from utils.ConfigReader import ConfigReader
 from utils.imgIO import process_position_list, process_z_slice_list, process_timepoint_list
-from utils.imgProcessing import compute_flat_field
 import os
 import argparse
 
