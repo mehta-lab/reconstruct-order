@@ -8,7 +8,6 @@ from collections.abc import Iterable
 from .imgIO import GetSubDirName
 
 
-
 class ConfigReader:
     """
     Parser of the yaml ReconstructOrder configuration file
