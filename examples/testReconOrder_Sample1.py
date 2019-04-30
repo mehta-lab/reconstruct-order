@@ -19,9 +19,13 @@ Methods to check that reconstruction procedure correctly constructs test data.
 '''
 
 
+def this_path():
+    return os.path.dirname(os.path.abspath(__file__))
+
+
 class TestImageReconstruction(unittest.TestCase):
 
-    targetData = "./example_data/TestData/reconData/2018_10_02_MouseBrainSlice/"
+    targetData = this_path() + "/example_data/TestData/reconData/2018_10_02_MouseBrainSlice/"
     condition = "SM_2018_1002_1633_1_BG_2018_1002_1625_1"
 
     target_ITrans = targetData + \
@@ -37,7 +41,7 @@ class TestImageReconstruction(unittest.TestCase):
                          condition + \
                          "/img_Scattering_t000_p000_z000.tif"
 
-    source_config_file = './example_configs/config_MouseBrainSlice1_workflow_test.yml'
+    source_config_file = this_path() + '/example_configs/config_MouseBrainSlice1_workflow_test.yml'
 
     def __init__(self, *args, **kwargs):
         '''

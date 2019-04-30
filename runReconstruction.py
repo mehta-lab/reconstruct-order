@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 runReconstruction:
 Reconstruct birefringence, slow axis, transmission, and degree of polarization from polarization-resolved images.
@@ -13,8 +15,7 @@ Returns
 """
 
 import argparse
-from .workflow.reconstructBatch import reconstructBatch
-
+from ReconstructOrder.workflow import reconstructBatch
 
 def parse_args():
     """Parse command line arguments
