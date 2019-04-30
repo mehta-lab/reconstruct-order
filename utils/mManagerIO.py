@@ -9,19 +9,101 @@ import cv2
 from utils.imgIO import GetSubDirName
 
 class mManagerReader:
-    """General mManager Reader"""
+    """General mManager metadata and image reader for data saved as separate 2D tiff files
+
+    Parameters
+    ----------
+    img_sample_path : str
+        full path of the acquisition folder (parent folder of pos folder)
+    ImgOutPath : str
+        full path of the output folder
+    input_chan : list
+        list of input channel names
+    output_chan : list
+        list of output channel names
+
+    Attributes
+    ----------
+    input_meta_file : dict
+        input mManager meta file of the acquistion
+    _meta_pos_list : list
+        position list in the meta file
+    _pos_list : list
+        position list to process
+    name : str
+        acquisition folder name
+    output_meta_file : dict
+        output meta file
+    ImgSmPath : str
+        path of the acquisition folder
+    img_in_pos_path : str
+        path of the current position folder
+    ImgOutPath : str
+        full path of the output folder
+    width : int
+        width of the input image
+    height : int
+        height of the input image
+    chNames : list
+        channels in the meta file
+    chNamesIn : list
+        channels to read
+    nChannIn : int
+        number of channels to read
+    chNamesOut : list
+        output channels
+    nChannOut : int
+        number of output channels
+    imgLimits : list
+        min and max intensity values of all the images
+    nPos : int
+        number of positions in the meta file
+    nTime : int
+        number of time points in the meta file
+    nZ :
+        number of time slices in the meta file
+    size_x_um : float
+        pixel size in x
+    size_y_um : float
+        pixel size in y
+    size_z_um : float
+        z step
+    time_stamp : list
+        time points in the meta file
+    img_fluor_bg : array
+        Fluorescence channel background for flat-field correction
+    posIdx : int
+        current postion index to process
+    tIdx : int
+        current time index to process
+    zIdx : int
+        current z index to process
+    bg : str
+        background folder name
+    bg_method : str
+        "Global" or "Local". Type of background correction. "Global" will correct each image
+         using the same background. "Local" will do correction with locally estimated
+         background in addition to global background
+    bg_correct : bool
+        Perform background correct (True) or not (False)
+    ff_method : str
+        flat-field correction method. Using morphological opening if 'open' and empty image if 'empty'
+    ImgFluorMin : array
+        array of empty flourescence images for each channel
+    ImgFluorSum : array
+        array of sum of morphologically opened flourescence images for each channel
+    kernel : obj
+      kernel for image opening operation
+    loopZ : str
+        flag determine which loopZ function to call for processing.
+        'reconstruct' calls LoopZSm and 'flat-field' calls loopZBg
+
+    """
 
     def __init__(self, img_sample_path, ImgOutPath=None, input_chan=[], output_chan=[]):
-        """
-        :param str img_sample_path: full path of the acquisition folder
-        (1 level up of pos folder)
-        :param str ImgOutPath: full path of the output folder
-        :param list input_chan: list of input channel names
-        :param list output_chan: list of output channel names
-        """
-        subDirName = GetSubDirName(img_sample_path)
 
-        img_in_pos_path = img_sample_path # data structure doesn't have position folders
+        img_in_pos_path = img_sample_path
+        subDirName = GetSubDirName(img_sample_path)
         if subDirName:
             subDir = subDirName[0] # pos0
             if 'Pos' in subDir: # mManager format            
@@ -35,7 +117,7 @@ class mManagerReader:
         self.name = input_meta_file["Summary"]["Prefix"]
         self.output_meta_file = []
         self.ImgSmPath = img_sample_path
-        self.img_in_pos_path = img_in_pos_path # input pos path
+        self.img_in_pos_path = img_in_pos_path
         self.ImgOutPath = ImgOutPath
         self.width = input_meta_file['Summary']['Width']
         self.height = input_meta_file['Summary']['Height']
@@ -56,7 +138,17 @@ class mManagerReader:
         self.posIdx = 0  # assuming only single image for background
         self.tIdx = 0
         self.zIdx = 0
-        self.bg = None
+        self.bg = 'No Background'
+        self.bg_method = 'Global'
+        self.bg_correct = True
+        self.ff_method = 'open'
+        self.ImgFluorMin = np.full((4, self.height, self.width), np.inf)  # set initial min array to to be Inf
+        self.ImgFluorSum = np.zeros(
+            (4, self.height, self.width))  # set the default background to be Ones (uniform field)
+        self.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
+                                                  (100,
+                                                   100))  # kernel for image opening operation, 100-200 is usually good
+        self.loopZ = 'reconstruct'
 
     @property
     def meta_pos_list(self):
@@ -69,6 +161,14 @@ class mManagerReader:
 
     @pos_list.setter
     def pos_list(self, value):
+        """position list to process
+
+        Parameters
+        ----------
+        value: list
+        position list to process
+
+        """
         assert set(value).issubset(self._meta_pos_list), \
             'some positions cannot be found in metadata'
         self._pos_list = value
@@ -123,62 +223,6 @@ class mManagerReader:
         df_pos = pd.DataFrame(list(enumerate(self.pos_list)),
                           columns=['pos idx', 'pos dir'])
         df_pos.to_csv(df_pos_path, sep=',')
-        
-    def save_microDL_format_old(self):
-        """
-        Save the images in old microDL (https://github.com/czbiohub/microDL) input format
-        microDL input structure:
-        ImgOutPath
-         |-split_images, split_images_info.csv
-            |-tp0
-                |-channel0
-         |-img_512_512_8_.., cropped_images_info.csv
-            |-tp-0
-                |-channel0: contains all npy files for cropped images from channel0
-                |-channel1: contains all npy files for cropped images from channel1..
-                and so on
-        
-        Saves the individual images as a npy file
-        """
-
-        if not os.path.exists(self.ImgSmPath):
-            raise FileNotFoundError(
-                "image file doesn't exist at:", self.ImgSmPath
-            )
-        os.makedirs(self.ImgOutPath, exist_ok=True)
-        self.logger = self._init_logger()        
-        records = []
-        for tIdx in range(self.nTime):
-            self.tIdx = tIdx
-            timepoint_dir = os.path.join(self.ImgOutPath,
-                                         'timepoint_{}'.format(tIdx))
-            os.makedirs(timepoint_dir, exist_ok=True)
-
-            for chanIdx in range(self.nChannOut):
-                self.chanIdx = chanIdx
-                self.channel_dir = os.path.join(timepoint_dir,
-                                           'channel_{}'.format(chanIdx))
-                os.makedirs(self.channel_dir, exist_ok=True)
-
-                # for posIdx in range(0, 37):  # nXY
-                for posIdx in range(self.nPos):  # nXY
-
-                    self.posIdx = posIdx
-                    cur_records = self.save_npy_2D()
-                    records.extend(cur_records)
-                msg = 'Wrote files for tp:{}, channel:{}'.format(
-                    tIdx, chanIdx
-                )
-                self._log_info(msg)
-        df = pd.DataFrame.from_records(
-            records,
-            columns=['timepoint', 'channel_num', 'sample_num', 'slice_num',
-                     'fname', 'size_x_microns', 'size_y_microns',
-                     'size_z_microns','mean', 'std']
-        )
-        metadata_fname = os.path.join(self.ImgOutPath,
-                                      'split_images_info.csv')
-        df.to_csv(metadata_fname, sep=',')
 
     def save_microDL_format_new(self):
         """
@@ -200,8 +244,7 @@ class mManagerReader:
                 "image file doesn't exist at:", self.ImgSmPath
             )
         os.makedirs(self.ImgOutPath, exist_ok=True)
-        self.logger = self._init_logger()
-        records = []
+
         for tIdx in range(self.nTime):
             self.tIdx = tIdx
             for chanIdx in range(self.nChannOut):
@@ -220,19 +263,33 @@ class mManagerReader:
                         self.mean = np.nanmean(img)
                         self.std = np.nanstd(img)
                         cv2.imwrite(cur_fname, img)
-                        msg = 'Generated file:{}'.format(cur_fname)
-                        self._log_info(msg)
-                msg = 'Wrote files for tp:{}, channel:{}'.format(
-                    tIdx, chanIdx
-                )
-                self._log_info(msg)
 
 class PolAcquReader(mManagerReader):
-    """PolAcquistion Plugin output format reader"""
-    def __init__(self, img_sample_path, ImgOutPath=None, verbose=0, input_chan=[], output_chan=[]):
-        """
-        Extract PolAcquistion specific params from the metafile
-        """
+    """PolAcquistion mManager metadata and image reader
+    Parameters
+    ----------
+    mManagerReader : class
+        General mManager metadata and image reader for data saved as separate 2D tiff files
+
+    Attributes
+    ----------
+    acquScheme : str
+        Pol images acquiring schemes. '4-Frame' or '5-Frame'
+    bg : str
+        background folder name in metadata
+    blackLevel : int
+        black level of the camera
+    mirror : str
+        'Yes' or 'No'. Changing this flag will flip the slow axis horizontally
+    swing : float
+        swing of the elliptical polarization states in unit of fraction of wavelength
+    wavelength : int
+        wavelenhth of the illumination light (nm)
+
+
+    """
+    def __init__(self, img_sample_path, ImgOutPath=None, input_chan=[], output_chan=[]):
+
         mManagerReader.__init__(self, img_sample_path, ImgOutPath, input_chan, output_chan)
         metaFile = self.input_meta_file
         self.acquScheme = metaFile['Summary']['~ Acquired Using']
@@ -246,7 +303,3 @@ class PolAcquReader(mManagerReader):
     def meta_pos_list(self):
         return self._meta_pos_list
         # PolAcquisition doens't save position list
-
-
-
-    
