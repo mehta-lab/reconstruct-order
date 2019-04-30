@@ -3,13 +3,7 @@ import matplotlib.pyplot as plt
 import cv2
 import bisect
 import warnings
-import sys
-from workflow.multiDimProcess import loopPos
-sys.path.append("..") # Adds higher directory to python modules path.
-#sns.set_context("poster")
-plt.close("all") # close all the figures from the last run
 
-#%%
 def ImgMin(Img, ImgBg):
     """Given 2 arrays, return the array with smaller mean value
 
@@ -272,41 +266,6 @@ def removeBubbles(I, kernelSize = (11,11)):
     plt.show()    
     
     return INoBub
-
-
-def compute_flat_field(img_io, config):
-    """
-    Compute illumination function of fluorescence channels
-    for flat-field correction
-
-    Parameters
-    ----------
-    img_io: object
-        mManagerReader object that holds the image parameters
-    config: object
-        ConfigReader object that holds the user input config parameters
-
-    Returns
-    -------
-    img_io: object
-        mManagerReader object that holds the image parameters with
-        illumination function saved in img_io.img_fluor_bg
-
-    """
-    print('Calculating illumination function for flatfield correction...')
-    ff_method = config.processing.ff_method
-    img_io.ff_method = ff_method
-    img_io.loopZ = 'flat_field'
-    img_io = loopPos(img_io, config)
-    if ff_method == 'open':
-        img_fluor_bg = img_io.ImgFluorSum
-    elif ff_method == 'empty':
-        img_fluor_bg = img_io.ImgFluorMin
-    for channel in range(img_fluor_bg.shape[0]):
-        img_fluor_bg[channel] = img_fluor_bg[channel] - min(np.nanmin(img_fluor_bg[channel]), 0) + 1 #add 1 to avoid 0
-        img_fluor_bg[channel] /= np.mean(img_fluor_bg[channel])  # normalize the background to have mean = 1
-    img_io.img_fluor_bg = img_fluor_bg
-    return img_io
 
 def correct_flat_field(img_io, ImgFluor):
     """

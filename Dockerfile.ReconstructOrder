@@ -1,0 +1,31 @@
+FROM python:3.7
+
+# Install from requirements
+COPY requirements/default.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Install Jupyter
+RUN pip install --no-cache-dir jupyter
+
+RUN apt-get update && \
+        apt-get install -y \
+        build-essential \
+        cmake \
+        git \
+        vim \
+        wget \
+        pkg-config \
+        libswscale-dev \
+        libtbb2 \
+        libtbb-dev \
+        libjpeg-dev \
+        libpng-dev \
+        libtiff-dev \
+        tmux
+
+WORKDIR /ReconstructOrder
+
+ENV PYTHONPATH /ReconstructOrder
+
+# Expose Jupyter port
+EXPOSE 8888

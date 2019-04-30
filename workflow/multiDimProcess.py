@@ -361,6 +361,40 @@ def loopZSm(img_io, config, img_reconstructor=None):
                 exportImg(img_io, img_dict)
     return img_io
 
+def compute_flat_field(img_io, config):
+    """
+    Compute illumination function of fluorescence channels
+    for flat-field correction
+
+    Parameters
+    ----------
+    img_io: object
+        mManagerReader object that holds the image parameters
+    config: object
+        ConfigReader object that holds the user input config parameters
+
+    Returns
+    -------
+    img_io: object
+        mManagerReader object that holds the image parameters with
+        illumination function saved in img_io.img_fluor_bg
+
+    """
+    print('Calculating illumination function for flatfield correction...')
+    ff_method = config.processing.ff_method
+    img_io.ff_method = ff_method
+    img_io.loopZ = 'flat_field'
+    img_io = loopPos(img_io, config)
+    if ff_method == 'open':
+        img_fluor_bg = img_io.ImgFluorSum
+    elif ff_method == 'empty':
+        img_fluor_bg = img_io.ImgFluorMin
+    for channel in range(img_fluor_bg.shape[0]):
+        img_fluor_bg[channel] = img_fluor_bg[channel] - min(np.nanmin(img_fluor_bg[channel]), 0) + 1 #add 1 to avoid 0
+        img_fluor_bg[channel] /= np.mean(img_fluor_bg[channel])  # normalize the background to have mean = 1
+    img_io.img_fluor_bg = img_fluor_bg
+    return img_io
+
 def loopZBg(img_io):
     """
     Loop through each z in the sample metadata; computes the illumination function
