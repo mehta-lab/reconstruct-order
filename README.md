@@ -1,32 +1,47 @@
 # ReconstructOrder
-Reconstruct birefringence, slow axis, transmission, and degree of polarization from polarization-resolved images.
-The data is acquired with Micro-Manager and OpenPolScope acquisition plugin.
+Reconstruct birefringence, slow axis, bright-field, and degree of polarization from polarization images acquired with 
+Micro-Manager and OpenPolScope acquisition plugin.
 
 ## Getting Started
-### Installation 
-First, git clone the repository to your home directory. 
+
+### Install through pip install 
+
+### Install through git clone 
+First, git clone the repository to your home directory by doing:
+
+```buildoutcfg
+git clone https://github.com/czbiohub/ReconstructOrder.git
+```
+ 
 If you are running ReconstructOrder on your own machine, install the python library dependency by:
 
 ```buildoutcfg
 pip install -r requirements.txt
 ```
 
-If you are running ReconstructOrder on a compute node (e.g., fry2@czbiohub), it is recommended to run it in a Docker container. 
+If you are running ReconstructOrder on a compute node (e.g., fry2@czbiohub), it is recommended to run it in 
+a Docker container. 
 Docker is the virtual environment with all the required libraries pre-installed so you can run your copy of 
-ReconstructOrder without recreating the environment. 
-ReconstructOrder can be run inside the imaging Docker container that has been built on fry2. 
+ReconstructOrder without recreating the environment.
+The docker image for ReconstructOrder has been built on fry2@czbiohub. 
+If you are running ReconstructOrder on other servers, you can build the docker image after cloning the repository 
+by doing :    
 
-To start a docker container, do 
 ```buildoutcfg
-nvidia-docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ -v ~/ReconstructOrder:/ReconstructOrder imaging_docker:gpu_py36_cu90 bash
+docker build -t reconstruct_order:py37 -f Dockerfile.ReconstructOrder .
+```
+
+Now, to start a docker container, do 
+```buildoutcfg
+docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ -v ~/ReconstructOrder:/ReconstructOrder reconstruct_order:py37 bash
 ```
 ### Run reconstruction
-To run reconstruction, do
+To run reconstruction, go to ReconstructOrder repository directory (e.g. /ReconstructOrder) and do
 ```buildoutcfg
-python /ReconstructOrder/runReconstruction.py --config <your config file>.yml
+python runReconstruction.py --config <your config file>.yml
 ```
 
-See /ReconstructOrder/config/config_example.yml file for an example and explanation of parameters. 
+See /ReconstructOrder/config/config_example.yml for an example config file and explanation of parameters. 
 
 ## License
 Chan Zuckerberg Biohub Software License
