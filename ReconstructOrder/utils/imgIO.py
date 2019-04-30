@@ -8,6 +8,7 @@ import re
 import cv2
 from shutil import copy2
 
+
 def GetSubDirName(ImgPath):
     """Return sub-directory names in a directory
 
@@ -26,6 +27,7 @@ def GetSubDirName(ImgPath):
     subDirName = [os.path.split(subdir[:-1])[1] for subdir in subDirPath]
 #    assert subDirName, 'No sub directories found'
     return subDirName
+
 
 def FindDirContainPos(ImgPath):
     """Recursively find the parent directory of "Pos#" directory
@@ -49,7 +51,8 @@ def FindDirContainPos(ImgPath):
         return ImgPath
     else:
         return ImgPath
-    
+
+
 def process_position_list(img_obj_list, config):
     """Make sure all members of positions are part of io_obj.
     If positions = 'all', replace with actual list of positions
@@ -77,6 +80,7 @@ def process_position_list(img_obj_list, config):
                 print('Position list {} for sample in {} is invalid'.format(config_pos_list, io_obj.ImgSmPath))
                 ValueError(e)
     return img_obj_list
+
 
 def process_z_slice_list(img_obj_list, config):
     """Make sure all members of z_slices are part of io_obj.
@@ -112,6 +116,7 @@ def process_z_slice_list(img_obj_list, config):
         img_obj_list[idx].ZList = z_list
     return img_obj_list
 
+
 def process_timepoint_list(img_obj_list, config):
     """Make sure all members of timepoints are part of io_obj.
     If timepoints = 'all', replace with actual list of timepoints
@@ -141,6 +146,7 @@ def process_timepoint_list(img_obj_list, config):
         img_obj_list[idx].TimeList = t_list
     return img_obj_list
 
+
 def copy_files_in_sub_dirs(input_path, output_path):
     """copy files in each sub-directory in the input path to
     output path
@@ -161,6 +167,7 @@ def copy_files_in_sub_dirs(input_path, output_path):
         for src_file_path in src_file_paths:
             if os.path.isfile(src_file_path):
                 copy2(src_file_path, output_path)
+
 
 def loadTiff(acquDirPath, acquFiles):
     """Load a single tiff file
@@ -183,6 +190,7 @@ def loadTiff(acquDirPath, acquFiles):
     img = img.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
     # img = img.reshape(img.shape[0], img.shape[1],1)
     return img
+
 
 def parse_tiff_input(img_io):
     """Parse tiff file name following mManager/Polacquisition output format
@@ -252,6 +260,7 @@ def parse_tiff_input(img_io):
         ImgBF = np.stack(ImgBF)
     return ImgPol, ImgProc, ImgFluor, ImgBF
 
+
 def sort_pol_channels(img_pol):
     """sort Polacquisition output images according to their polarization states
 
@@ -276,6 +285,7 @@ def sort_pol_channels(img_pol):
         I_0 = img_pol[4, :, :]
         img_pol = np.stack((I_ext, I_0, I_45, I_90, I_135))  # order the channel following stokes calculus convention
     return img_pol
+
 
 def exportImg(img_io, img_dict):
     """export images in tiff format
