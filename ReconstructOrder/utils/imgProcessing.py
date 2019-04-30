@@ -1,8 +1,12 @@
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from matplotlib.widgets import RectangleSelector
 import cv2
 import bisect
 import warnings
+
 
 def ImgMin(Img, ImgBg):
     """Given 2 arrays, return the array with smaller mean value
@@ -21,6 +25,7 @@ def ImgMin(Img, ImgBg):
     ImgBg = ImgArr[np.argmin(ImgMeanArr)]
     return ImgBg
 
+
 def ImgLimit(imgs,imgLimits): # tracking the global image limit 
     imgLimitsNew = []
     for img, imgLimit in zip(imgs,imgLimits):
@@ -31,6 +36,7 @@ def ImgLimit(imgs,imgLimits): # tracking the global image limit
             imgLimitNew = imgLimit
         imgLimitsNew += [imgLimitNew]
     return imgLimitsNew               
+
 
 def nanRobustBlur(I, dim):
     """Blur image with mean filter that is robust to NaN in the image
@@ -56,7 +62,8 @@ def nanRobustBlur(I, dim):
     WW=cv2.blur(W,dim)    
     Z=VV/WW
     return Z  
-  
+
+
 def histequal(ImgSm0):
     """histogram eaqualiztion for contrast enhancement
 
@@ -74,6 +81,7 @@ def histequal(ImgSm0):
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(20,20)) # Contrast Limited Adaptive Histogram Equalization
     ImgAd = clahe.apply(ImgSm0)
     return ImgAd
+
 
 def imBitConvert(im,bit=16, norm=False, limit=None):
     """covert bit depth of the image
@@ -109,10 +117,12 @@ def imBitConvert(im,bit=16, norm=False, limit=None):
         im = im.astype(np.uint16, copy=False) # convert to 16 bit
     return im
 
+
 def imadjustStack(imStk, tol=1, bit=16,vin=[0,2**16-1]):
     for i in range(imStk.shape[2]):
         imStk[:,:,i] = imadjust(imStk[:,:,i])
     return imStk    
+
 
 def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
     """Python implementation of "imadjust" from MATLAB for stretching intensity histogram. Slow
@@ -184,6 +194,7 @@ def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
     dst = imBitConvert(dst,bit=bit, norm=True)
     return dst
 
+
 def imClip(img, tol=1):
     """
     Clip the images for better visualization
@@ -191,7 +202,8 @@ def imClip(img, tol=1):
     limit = np.percentile(img, [tol, 100-tol])
     img_clpped = np.clip(img, limit[0], limit[1])
     return img_clpped
-    
+
+
 def linScale(src,vin, vout):
     """Scale the source image according to input and output ranges
 
@@ -211,7 +223,8 @@ def linScale(src,vin, vout):
     vd = vs*scale + 0.5 + vout[0]
     vd[vd>vout[1]] = vout[1]
     return vd
-#%%
+
+
 def removeBubbles(I, kernelSize = (11,11)):
     """remove bright spots (mostly bubbles) in retardance images. Need to add a size filter
 
@@ -267,6 +280,7 @@ def removeBubbles(I, kernelSize = (11,11)):
     
     return INoBub
 
+
 def correct_flat_field(img_io, ImgFluor):
     """
     flat-field correction for fluorescence channels
@@ -287,3 +301,59 @@ def correct_flat_field(img_io, ImgFluor):
         if np.any(ImgFluor[i, :, :]):  # if the flour channel exists
             ImgFluor[i, :, :] = ImgFluor[i, :, :] / img_io.img_fluor_bg[i, :, :]
     return ImgFluor
+
+
+def imcrop(imList, imV):  # interactively select an ROI in imV, crop the same ROI for each image in imList
+    figSize = (8, 8)
+    fig = plt.figure(figsize=figSize)
+    ax = plt.subplot()
+    #    r = cv2.selectROI(imadjust(im),fromCenter)
+    ax.imshow(imadjust(imV), cmap='gray')
+
+    mouse_click = True
+    pts = []
+
+    toggle_selector.RS = RectangleSelector(ax, line_select_callback,
+                                           drawtype='box', useblit=False, button=[1],
+                                           minspanx=5, minspany=5, spancoords='pixels',
+                                           interactive=True)
+    #    pts = np.asarray(plt.ginput(2, timeout=-1))
+    plt.connect('key_press_event', toggle_selector)
+    plt.show()
+    plt.waitforbuttonpress()
+    mouse_click = plt.waitforbuttonpress()
+    r = toggle_selector.RS.extents
+
+    print(r)
+    imListCrop = []
+    # Crop image
+    for im in imList:
+        if len(im.shape) > 2:
+            imC = im[int(r[2]):int(r[3]), int(r[0]):int(r[1]), :]
+        else:
+            imC = im[int(r[2]):int(r[3]), int(r[0]):int(r[1])]
+
+        imListCrop.append(imC)
+
+    return imListCrop
+
+
+def toggle_selector(event):
+    print(' Key pressed.')
+    if event.key in ['Q', 'q'] and toggle_selector.RS.active:
+        print(' RectangleSelector deactivated.')
+        toggle_selector.RS.set_active(False)
+    if event.key in ['A', 'a'] and not toggle_selector.RS.active:
+        print(' RectangleSelector activated.')
+        toggle_selector.RS.set_active(True)
+
+
+def line_select_callback(eclick, erelease):
+    x1, y1 = eclick.xdata, eclick.ydata
+    x2, y2 = erelease.xdata, erelease.ydata
+    print(' startposition : (%f, %f)' % (eclick.xdata, eclick.ydata))
+    print(' endposition   : (%f, %f)' % (erelease.xdata, erelease.ydata))
+    print(' used button   : ', eclick.button)
+
+#    rect = plt.Rectangle( (min(x1,x2),min(y1,y2)), np.abs(x1-x2), np.abs(y1-y2) )
+#    ax.add_patch(rect)
