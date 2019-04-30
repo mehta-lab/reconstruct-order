@@ -1,45 +1,72 @@
 import numpy as np
-import sys
 import cv2
-# sys.path.append("..") # Add upper level directory to python modules path.
-
 
 class ImgReconstructor:
     """
-    ImgReconstructor contains methods to compute physical properties Birefringence /
-    polarization and transmission given intensity data collected at 4 or 5 polarization orientations
+    ImgReconstructor contains methods to compute physical properties of birefringence
+    given images collected with 4 or 5 polarization states
 
     Parameters
     ----------
-    img_pol_bg : list = [s0, s1, s2, s3]
-        stokes images for background data.  Same as values returned by compute_stokes
+    img_shape : tuple
+        Shape of the input image (channel, y, x)
     bg_method : str
-        "Global", "Local".  type of background correction
+        "Global" or "Local". Type of background correction. "Global" will correct each image
+         using the same background. "Local" will do correction with locally estimated
+         background in addition to global background
+    n_slice_local_bg : int
+        Number of slices averaged for local background estimation
     swing : float
+        swing of the elliptical polarization states in unit of fraction of wavelength
     wavelength : int
-    kernel : np.ndarray
-    output_path : str
-    azimuth_offset : int
+        wavelenhth of the illumination light (nm)
+    kernel_size : int
+        size of the Gaussian kernel for local background estimation
+    azimuth_offset : float
+        offset of the orientation reference axis
     circularity : str
+         ('lcp' or 'rcp') the circularity of the analyzer looking from the detector's point of view.
+        Changing this flag will flip the slow axis horizontally.
 
     Attributes
     ----------
-
+    img_shape : tuple
+        Shape of the input image (channel, y, x)
+    bg_method : str
+        "Global" or "Local". Type of background correction. "Global" will correct each image
+         using the same background. "Local" will do correction with locally estimated
+         background in addition to global background
+    n_slice_local_bg : int
+        Number of slices averaged for local background estimation
+    swing : float
+        swing of the elliptical polarization states in unit of radian
+    wavelength : int
+        wavelenhth of the illumination light
+    kernel_size : int
+        size of the Gaussian kernel for local background estimation
+    azimuth_offset : float
+        offset of the orientation reference axis
+    circularity : str
+         ('lcp' or 'rcp') the circularity of the analyzer looking from the detector's point of view.
+        Changing this flag will flip the slow axis horizontally.
+    inst_mat_inv : 2d array
+        inverse of the instrument matrix
+    stokes_param_bg_tm :
+        transformed global background Stokes parameters
+    stokes_param_bg_local_tm :
+        transformed local background Stokes parameters
 
     """
 
-    def __init__(self, img_pol_bg=[], bg_method='Global', n_slice_local_bg=1, swing=None, wavelength=532,
-                 kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (100, 100)),
-                 output_path=None, azimuth_offset=0, circularity='rcp'):
+    def __init__(self, img_shape=None, bg_method='Global', n_slice_local_bg=1, swing=None, wavelength=532,
+                 kernel_size=401, azimuth_offset=0, circularity='rcp'):
 
-        self.img_pol_bg = img_pol_bg
+        self.img_shape = img_shape
         self.bg_method = bg_method
         self.n_slice_local_bg = n_slice_local_bg
-        self.swing = swing*2*np.pi # covert swing from fraction of wavelength to radian
-        self.img_shape = np.shape(img_pol_bg)
+        self.swing = swing * 2 * np.pi # covert swing from fraction of wavelength to radian
         self.wavelength = wavelength
-        self.kernel = kernel
-        self.output_path = output_path
+        self.kernel_size = kernel_size
         chi = self.swing
         if self._n_chann == 4:  # if the images were taken using 4-frame scheme
             inst_mat = np.array([[1, 0, 0, -1],
@@ -74,15 +101,17 @@ class ImgReconstructor:
 
     def compute_stokes(self, img_raw):
         """
-        Given raw image intensity, compute stokes images
+        Given raw polarization images, compute stokes images
 
         Parameters
         ----------
-        img_raw : list of ndarray.  First element of output of utils.imgIO.parse_tiff_input
+        img_raw : nd array.
+            input image with shape (channel, y, x) or (channel, z, y, x)
 
         Returns
         -------
-        stokes images : list of ndarray.
+        stokes parameters : list of nd array.
+            [s0, s1, s2, s3]
 
         """
 
@@ -94,6 +123,20 @@ class ImgReconstructor:
         return [s0, s1, s2, s3]
 
     def stokes_transform(self, stokes_param):
+        """
+        Transform Stokes parameters for background correction
+
+        Parameters
+        ----------
+        stokes_param : list of nd array.
+            [s0, s1, s2, s3]
+
+        Returns
+        -------
+        list of nd array
+            Transformed Stokes parameters
+
+        """
         [s0, s1, s2, s3] = stokes_param
         s1_norm = s1 / s3
         s2_norm = s2 / s3
@@ -102,6 +145,21 @@ class ImgReconstructor:
         return [I_trans, polarization, s1_norm, s2_norm, s3]
 
     def correct_background_stokes(self, stokes_param_sm_tm, stokes_param_bg_tm):
+        """
+        correct background of transformed Stokes parameters
+
+        Parameters
+        ----------
+        stokes_param_sm_tm : list of nd array.
+            Transformed sample Stokes parameters
+        stokes_param_bg_tm
+            Transformed background Stokes parameters
+
+        Returns
+        -------
+        list of nd array.
+            Background corrected transformed sample Stokes parameters
+        """
         if len(stokes_param_bg_tm[0].shape) < len(self.img_shape):
             stokes_param_bg_tm = [img[..., np.newaxis] for img in stokes_param_bg_tm]
         [I_trans, polarization, s1_norm, s2_norm, s3] = stokes_param_sm_tm
@@ -114,31 +172,69 @@ class ImgReconstructor:
         return [I_trans, polarization, s1_norm, s2_norm, s3]
 
     def correct_background(self, stokes_param_sm_tm):
+        """
+        correct background of transformed Stokes parameters globally or locally
+
+        Parameters
+        ----------
+        stokes_param_sm_tm : list of nd array.
+            Transformed sample Stokes parameters
+
+        Returns
+        -------
+        list of nd array.
+            Background corrected transformed sample Stokes parameters
+
+        """
         if self.n_slice_local_bg > 1:
             assert len(np.shape(stokes_param_sm_tm[0])) == 3, \
                 'Input image has to have >1 z-slice for n_slice_local_bg > 1'
-        stokes_param_sm_tm = self.correct_background_stokes(stokes_param_sm_tm,
-                                                            self.stokes_param_bg_tm)
+        stokes_param_sm_tm = self.correct_background_stokes(
+            stokes_param_sm_tm, self.stokes_param_bg_tm)
         if self.bg_method == 'Local_filter':
             if self.n_slice_local_bg > 1:
                 stokes_param_sm_local_tm = np.mean(stokes_param_sm_tm, -1)
             else:
                 stokes_param_sm_local_tm = stokes_param_sm_tm
             self.compute_local_background(stokes_param_sm_local_tm)
-            stokes_param_sm_tm = self.correct_background_stokes(stokes_param_sm_tm,
-                                                                self.stokes_param_bg_local_tm)
+            stokes_param_sm_tm = self.correct_background_stokes(
+                stokes_param_sm_tm, self.stokes_param_bg_local_tm)
         return stokes_param_sm_tm
 
     def compute_local_background(self, stokes_param_sm_local_tm):
+        """
+        Estimate local Stokes background using Guassian filter
+        Parameters
+        ----------
+        stokes_param_sm_local_tm : list of nd array.
+            Transformed sample Stokes parameters
+
+        Returns
+        -------
+        list of nd array
+            local background Stokes parameters
+        """
         stokes_param_bg_local_tm = []
         print('Estimating local background...')
         for img in stokes_param_sm_local_tm:
-            img_filtered = cv2.GaussianBlur(img, (401, 401), 0)
+            img_filtered = cv2.GaussianBlur(img, (self.kernel_size, self.kernel_size), 0)
             stokes_param_bg_local_tm += [img_filtered]
         self.stokes_param_bg_local_tm = stokes_param_bg_local_tm
 
     def reconstruct_birefringence(self, stokes_param_sm_tm,
                            img_crop_ref=None, extra=False):
+        """compute physical properties of birefringence
+
+        Parameters
+        ----------
+        stokes_param_sm_tm: list of nd array.
+            Transformed sample Stokes parameters
+
+        Returns
+        -------
+        list of nd array.
+              Brightfield_computed, Retardance, Orientation, Polarization, 'Stokes_1', 'Stokes_2', 'Stokes_3'
+        """
         # for low birefringence sample that requires 0 background, set extra=True to manually offset the background
         # Correction based on Eq. 16 in reference using linear approximation assuming small retardance for both sample and background
 
@@ -162,6 +258,8 @@ class ImgReconstructor:
         return [I_trans, retard, azimuth, polarization, s1, s2, s3]
 
     def calibrate_inst_mat(self):
+        raise NotImplementedError
+
         return
 
 

@@ -1,19 +1,25 @@
 import numpy as np
-import matplotlib
-from matplotlib.widgets import RectangleSelector
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import cv2
-import bisect, warnings, sys
-# sys.path.append("..") # Adds higher directory to python modules path.
-
+import bisect
+import warnings
 
 def ImgMin(Img, ImgBg):
+    """Given 2 arrays, return the array with smaller mean value
+
+    Parameters
+    ----------
+    Img
+    ImgBg
+
+    Returns
+    -------
+
+    """
     ImgArr = np.array([Img, ImgBg])
     ImgMeanArr = np.array([np.mean(Img), np.mean(ImgBg)])
     ImgBg = ImgArr[np.argmin(ImgMeanArr)]
     return ImgBg
-
 
 def ImgLimit(imgs,imgLimits): # tracking the global image limit 
     imgLimitsNew = []
@@ -26,8 +32,22 @@ def ImgLimit(imgs,imgLimits): # tracking the global image limit
         imgLimitsNew += [imgLimitNew]
     return imgLimitsNew               
 
-
 def nanRobustBlur(I, dim):
+    """Blur image with mean filter that is robust to NaN in the image
+
+    Parameters
+    ----------
+    I : array
+        image to blur
+    dim: tuple
+        size of the filter (n, n)
+
+    Returns
+    Z : array
+        filtered image
+    -------
+
+    """
     V=I.copy()
     V[I!=I]=0
     VV=cv2.blur(V,dim)    
@@ -36,9 +56,18 @@ def nanRobustBlur(I, dim):
     WW=cv2.blur(W,dim)    
     Z=VV/WW
     return Z  
+  
+def histequal(ImgSm0):
+    """histogram eaqualiztion for contrast enhancement
 
+    Parameters
+    ----------
+    ImgSm0
 
-def histequal(ImgSm0): # histogram eaqualiztion for contrast enhancement
+    Returns
+    -------
+
+    """
     ImgSm0 = ImgSm0/ImgSm0.max()*255 # rescale to 8 bit as OpenCV only takes 8 bit (REALLY????)
     ImgSm0 = ImgSm0.astype(np.uint8, copy=False) # convert to 8 bit
 #    ImgAd = cv2.equalizeHist(ImgSm0)
@@ -46,8 +75,27 @@ def histequal(ImgSm0): # histogram eaqualiztion for contrast enhancement
     ImgAd = clahe.apply(ImgSm0)
     return ImgAd
 
+def imBitConvert(im,bit=16, norm=False, limit=None):
+    """covert bit depth of the image
 
-def imBitConvert(im,bit=16, norm=False, limit=None):    
+    Parameters
+    ----------
+    im : array
+        input image
+    bit : int
+        output bit depth. 8 or 16
+    norm : bool
+        scale the image intensity range specified by limit to the full bit depth if True.
+        Use min and max of the image if limit is not provided
+    limit: list
+        lower and upper limits of the image intensity
+
+    Returns
+        im : array
+        converted image
+    -------
+
+    """
     im = im.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
     if norm: # local or global normalization (for tiling)
         if not limit: # if lmit is not provided, perform local normalization, otherwise global (for tiling)
@@ -61,22 +109,32 @@ def imBitConvert(im,bit=16, norm=False, limit=None):
         im = im.astype(np.uint16, copy=False) # convert to 16 bit
     return im
 
-
 def imadjustStack(imStk, tol=1, bit=16,vin=[0,2**16-1]):
     for i in range(imStk.shape[2]):
         imStk[:,:,i] = imadjust(imStk[:,:,i])
     return imStk    
 
-
 def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
-    # Python implementation of "imadjust" from MATLAB for stretching intensity histogram. Slow
-    # src : input one-layer image (numpy array)
-    # tol : tolerance, from 0 to 100.
-    # bit : bits of the I/O
-    # vin  : src image bounds
-    # vout : dst image bounds
-    # return : output img
-    bitTemp = 16 # temporary bit depth for calculation. Convert to 32bit for calculation to minimize the info loss
+    """Python implementation of "imadjust" from MATLAB for stretching intensity histogram. Slow
+
+    Parameters
+    ----------
+    src : array
+        input image
+    tol : int
+        tolerance in [0, 100]
+    bit : int
+        output bit depth. 8 or 16
+    vin : list
+        src image bounds
+
+    Returns
+    -------
+
+    """
+    # TODO: rewrite using np.clip
+
+    bitTemp = 16 # temporary bit depth for calculation.
     vout=(0,2**bitTemp-1)       
     if src.dtype == 'uint8':
         bit = 8
@@ -126,7 +184,6 @@ def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
     dst = imBitConvert(dst,bit=bit, norm=True)
     return dst
 
-
 def imClip(img, tol=1):
     """
     Clip the images for better visualization
@@ -134,18 +191,39 @@ def imClip(img, tol=1):
     limit = np.percentile(img, [tol, 100-tol])
     img_clpped = np.clip(img, limit[0], limit[1])
     return img_clpped
-
-
+    
 def linScale(src,vin, vout):
+    """Scale the source image according to input and output ranges
+
+    Parameters
+    ----------
+    src
+    vin
+    vout
+
+    Returns
+    -------
+
+    """
     scale = (vout[1] - vout[0]) / (vin[1] - vin[0])
     vs = src-vin[0]
     vs[src<vin[0]]=0
     vd = vs*scale + 0.5 + vout[0]
     vd[vd>vout[1]] = vout[1]
     return vd
+#%%
+def removeBubbles(I, kernelSize = (11,11)):
+    """remove bright spots (mostly bubbles) in retardance images. Need to add a size filter
 
+    Parameters
+    ----------
+    I
+    kernelSize
 
-def removeBubbles(I, kernelSize = (11,11)): # remove bright spots (mostly bubbles) in retardance images. Need to add a size filter
+    Returns
+    -------
+
+    """
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,  kernelSize)
     Bg = cv2.morphologyEx(I, cv2.MORPH_OPEN, kernel)
     I8bit = I/np.nanmax(I[:])*255 # rescale to 8 bit as OpenCV only takes 8 bit (REALLY????)
@@ -189,55 +267,23 @@ def removeBubbles(I, kernelSize = (11,11)): # remove bright spots (mostly bubble
     
     return INoBub
 
+def correct_flat_field(img_io, ImgFluor):
+    """
+    flat-field correction for fluorescence channels
+    Parameters
+    ----------
+    img_io: object
+        mManagerReader object that holds the image parameters
+    ImgFluor: float32 array
+        stack of fluorescence images with with shape (channel, y, x)
 
-def line_select_callback(eclick, erelease):
-    x1, y1 = eclick.xdata, eclick.ydata
-    x2, y2 = erelease.xdata, erelease.ydata
-    print(' startposition : (%f, %f)' % (eclick.xdata, eclick.ydata))
-    print(' endposition   : (%f, %f)' % (erelease.xdata, erelease.ydata))
-    print(' used button   : ', eclick.button)
+    Returns
+    -------
+    ImgFluor: array
+        flat-field corrected fluorescence images
+    """
 
-
-def toggle_selector(event):
-    print(' Key pressed.')
-    if event.key in ['Q', 'q'] and toggle_selector.RS.active:
-        print(' RectangleSelector deactivated.')
-        toggle_selector.RS.set_active(False)
-    if event.key in ['A', 'a'] and not toggle_selector.RS.active:
-        print(' RectangleSelector activated.')
-        toggle_selector.RS.set_active(True)
-
-
-def imcrop(imList,imV): # interactively select an ROI in imV, crop the same ROI for each image in imList
-    figSize = (8,8)
-    fig = plt.figure(figsize = figSize)
-    ax = plt.subplot()
-#    r = cv2.selectROI(imadjust(im),fromCenter)
-    ax.imshow(imadjust(imV),cmap='gray')
-
-    mouse_click = True
-    pts = []
-
-    toggle_selector.RS = RectangleSelector(ax, line_select_callback,
-                                           drawtype='box', useblit=False, button=[1],
-                                           minspanx=5, minspany=5, spancoords='pixels',
-                                           interactive=True)
-#    pts = np.asarray(plt.ginput(2, timeout=-1))
-    plt.connect('key_press_event', toggle_selector)
-    plt.show()
-    plt.waitforbuttonpress()
-    mouse_click =  plt.waitforbuttonpress()
-    r= toggle_selector.RS.extents
-
-    print(r)
-    imListCrop = []
-    # Crop image
-    for im in imList:
-        if len(im.shape)>2:
-            imC =  im[int(r[2]):int(r[3]), int(r[0]):int(r[1]),:]
-        else:
-            imC =  im[int(r[2]):int(r[3]), int(r[0]):int(r[1])]
-
-        imListCrop.append(imC)
-
-    return imListCrop
+    for i in range(ImgFluor.shape[0]):
+        if np.any(ImgFluor[i, :, :]):  # if the flour channel exists
+            ImgFluor[i, :, :] = ImgFluor[i, :, :] / img_io.img_fluor_bg[i, :, :]
+    return ImgFluor
