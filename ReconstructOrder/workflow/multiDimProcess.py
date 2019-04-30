@@ -156,10 +156,7 @@ def parse_bg_options(img_obj_list, config):
         os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
     return img_obj_list
 
-# similar pattern to "create_metadata_object":
-#   - we call 'process_background' but nothing it does is specific to the background.
-#   - more accurately, this function assigns attributes to the input "img_io" and to the output "img_reconstructor"
-#   - img_io is an input only for the attribute "bg_method", and to have bg-stokes appended.
+
 def process_background(img_io, img_io_bg, config):
     """
     Read backgorund images, initiate ImgReconstructor to compute background stokes parameters
