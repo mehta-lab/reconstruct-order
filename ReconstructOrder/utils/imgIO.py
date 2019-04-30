@@ -1,23 +1,44 @@
 """
 Read and write Tiff in mManager format. Will be replaced by mManagerIO.py 
 """
-import os, glob, re
-from shutil import copy2
+import os
 import numpy as np
+import glob
+import re
 import cv2
-
+from shutil import copy2
 
 def GetSubDirName(ImgPath):
+    """Return sub-directory names in a directory
+
+    Parameters
+    ----------
+    ImgPath: str
+        Path to the input directory
+
+    Returns
+    -------
+    subDirName: list
+        list of sub-directory names
+    """
     assert os.path.exists(ImgPath), 'Input folder does not exist!' 
     subDirPath = glob.glob(os.path.join(ImgPath, '*/'))    
     subDirName = [os.path.split(subdir[:-1])[1] for subdir in subDirPath]
 #    assert subDirName, 'No sub directories found'
     return subDirName
 
-
 def FindDirContainPos(ImgPath):
-    """
-    Recursively find the parent directory of "Pos#" directory
+    """Recursively find the parent directory of "Pos#" directory
+    Parameters
+    ----------
+    ImgPath: str
+        Path to the input directory
+
+    Returns
+    -------
+    ImgPath: str
+        Path to the parent directory of "Pos#" directory
+
     """
     subDirName = GetSubDirName(ImgPath)
     assert subDirName, 'No "Pos" directories found. Check if the input folder contains "Pos"'
@@ -28,12 +49,23 @@ def FindDirContainPos(ImgPath):
         return ImgPath
     else:
         return ImgPath
-
-
+    
 def process_position_list(img_obj_list, config):
-    """
-    Make sure all members of positions are part of io_obj.
+    """Make sure all members of positions are part of io_obj.
     If positions = 'all', replace with actual list of positions
+
+    Parameters
+    ----------
+    img_obj_list: list
+        list of mManagerReader instances
+    config: obj
+        ConfigReader instance
+
+    Returns
+    -------
+        img_obj_list: list
+        list of modified mManagerReader instances
+
     """
     for idx, io_obj in enumerate(img_obj_list):
         config_pos_list = config.dataset.positions[idx]
@@ -47,9 +79,21 @@ def process_position_list(img_obj_list, config):
     return img_obj_list
 
 def process_z_slice_list(img_obj_list, config):
-    """
-    Make sure all members of z_slices are part of io_obj.
+    """Make sure all members of z_slices are part of io_obj.
     If z_slices = 'all', replace with actual list of z_slices
+
+      Parameters
+    ----------
+    img_obj_list: list
+        list of mManagerReader instances
+    config: obj
+        ConfigReader instance
+
+    Returns
+    -------
+        img_obj_list: list
+        list of modified mManagerReader instances
+
     """
     n_slice_local_bg = config.processing.n_slice_local_bg
     for idx, io_obj in enumerate(img_obj_list):
@@ -69,9 +113,20 @@ def process_z_slice_list(img_obj_list, config):
     return img_obj_list
 
 def process_timepoint_list(img_obj_list, config):
-    """
-    Make sure all members of timepoints are part of io_obj.
+    """Make sure all members of timepoints are part of io_obj.
     If timepoints = 'all', replace with actual list of timepoints
+
+      Parameters
+    ----------
+    img_obj_list: list
+        list of mManagerReader instances
+    config: obj
+        ConfigReader instance
+
+    Returns
+    -------
+        img_obj_list: list
+        list of modified mManagerReader instances
     """
     for idx, io_obj in enumerate(img_obj_list):
         config_t_list = config.dataset.timepoints[idx]
@@ -86,8 +141,18 @@ def process_timepoint_list(img_obj_list, config):
         img_obj_list[idx].TimeList = t_list
     return img_obj_list
 
-
 def copy_files_in_sub_dirs(input_path, output_path):
+    """copy files in each sub-directory in the input path to
+    output path
+
+    Parameters
+    ----------
+    input_path: str
+        input path
+    output_path:
+        output path
+
+    """
     assert os.path.exists(input_path), 'Input folder does not exist!'
     os.makedirs(output_path, exist_ok=True)
     sub_dir_paths = glob.glob(os.path.join(input_path, '*/'))
@@ -97,108 +162,49 @@ def copy_files_in_sub_dirs(input_path, output_path):
             if os.path.isfile(src_file_path):
                 copy2(src_file_path, output_path)
 
-
 def loadTiff(acquDirPath, acquFiles):
+    """Load a single tiff file
+
+    Parameters
+    ----------
+    acquDirPath : str
+        directory of the tiff file
+    acquFiles
+        name of the tiff file
+    Returns
+    -------
+    img : 2D float32 array
+        image
+
     """
-    Load single tiff file
-    :param acquDirPath str: directory of the tiff
-    :param acquFiles str: file name of the tiff
-    :return 2D float32 array: image
-    """
+
     TiffFile = os.path.join(acquDirPath, acquFiles)
     img = cv2.imread(TiffFile,-1) # flag -1 to preserve the bit dept of the raw image
     img = img.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
     # img = img.reshape(img.shape[0], img.shape[1],1)
     return img
 
-
-def ParseFileList(acquDirPath):
-    acquFiles = os.listdir(acquDirPath) 
-    PolChan = []
-    PolZ = []
-    FluorChan = []
-    FluorZ =[]
-    for fileName in acquFiles:
-        matchObjRaw = re.match( r'img_000000000_(State|PolAcquisition|Zyla_PolState)(\d+)( - Acquired Image|_Confocal40|_Widefield|)_(\d+).tif', fileName, re.M|re.I) # read images with "state" string in the filename
-#        matchObjProc = re.match( r'img_000000000_(.*) - Computed Image_000.tif', fileName, re.M|re.I) # read computed images 
-        matchObjFluor = re.match( r'img_000000000_Zyla_(Confocal40|Widefield|widefield)_(.*)_(\d+).tif', fileName, re.M|re.I) # read computed images 
-        
-        if matchObjRaw:                   
-            PolChan += [matchObjRaw.group(2)]
-            PolZ += [matchObjRaw.group(4)]        
-        elif matchObjFluor:
-            FluorChan += [matchObjFluor.group(1)]
-            FluorZ += [matchObjFluor.group(2)]
-        
-            
-    PolChan = list(set(PolChan))
-    PolZ = list(set(PolZ))
-    PolZ = [int(zIdx) for zIdx in PolZ]
-    FluorChan = list(set(FluorChan))
-    FluorZ = list(set(FluorZ))    
-    return PolChan, PolZ, FluorChan, FluorZ
-            
-        
-def ParseTiffInput_old(img_io):
-    """
-    Parse tiff file name following mManager/Polacquisition output format
-    :param img_io instance: instance of mManagerIO class holding imaging metadata
-    :return 3D float32 arrays: stack of images parsed based on their imaging modalities with axis order (channel, row,
-    column)
-    """
-    acquDirPath = img_io.img_in_pos_path
-    acquFiles = os.listdir(acquDirPath)
-    ImgPol = []
-    ImgProc = []
-    ImgBF = []
-    ImgFluor = np.zeros((4, img_io.height,img_io.width)) # assuming 4 flour channels for now
-    tIdx = img_io.tIdx
-    zIdx = img_io.zIdx
-    for fileName in acquFiles: # load raw images with Sigma0, 1, 2, 3 states, and processed images        
-        matchObjRaw = re.match( r'img_000000%03d_(State|PolAcquisition|Zyla_PolState|EMCCD_PolState)(\d+)( - Acquired Image|_Confocal40|_Widefield|)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read images with "state" string in the filename
-        matchObjProc = re.match( r'img_000000%03d_(.*) - Computed Image_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read computed images
-        matchObjFluor1 = re.match(
-            r'img_000000%03d_(Zyla|EMCCD)_(Confocal40|Widefield|widefield|BF)_(.*)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I)
-        matchObjFluor2 = re.match(
-            r'img_000000%03d_(Zyla|EMCCD)_(.*)_(Confocal40|Widefield|widefield|BF)_%03d.tif' % (tIdx, zIdx), fileName,
-            re.M | re.I)  # read computed images
-        matchObjBF = re.match( r'img_000000%03d_(Zyla|EMCCD)_(BF)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read computed images
-        if any([matchObjRaw, matchObjProc, matchObjFluor1, matchObjFluor2, matchObjBF]):
-            img = loadTiff(acquDirPath, fileName)
-            img -= img_io.blackLevel
-            if matchObjRaw:
-                ImgPol += [img]
-            elif matchObjProc:
-                ImgProc += [img]
-            elif matchObjFluor1 or matchObjFluor2:
-                if matchObjFluor1:
-                    FluorChannName = matchObjFluor1.group(3)
-                elif matchObjFluor2:
-                    FluorChannName = matchObjFluor2.group(2)
-                if FluorChannName in ['DAPI','405', '405nm']:
-                    ImgFluor[0,:,:] = img
-                elif FluorChannName in ['GFP','488', '488nm']:
-                    ImgFluor[1,:,:] = img
-                elif FluorChannName in ['TxR', 'TXR', '568', '568nm', '560']:
-                    ImgFluor[2,:,:] = img
-                elif FluorChannName in ['Cy5', 'IFP', '640', '640nm']:
-                    ImgFluor[3,:,:] = img
-            elif matchObjBF:
-                ImgBF += [img]
-    if ImgPol:
-        ImgPol = np.stack(ImgPol)
-    if ImgProc:
-        ImgProc = np.stack(ImgProc)
-    if ImgBF:
-        ImgBF = np.stack(ImgBF)
-    return ImgPol, ImgProc, ImgFluor, ImgBF
-
 def parse_tiff_input(img_io):
-    """
-    Parse tiff file name following mManager/Polacquisition output format
-    :param img_io instance: instance of mManagerIO class holding imaging metadata
-    :return 3D float32 arrays: stack of images parsed based on their imaging modalities with axis order (channel, row,
-    column)
+    """Parse tiff file name following mManager/Polacquisition output format
+    return images parsed based on their imaging modalities with shape (channel, height,
+    width)
+
+    Parameters
+    ----------
+    img_io : obj
+        mManagerReader instance
+
+    Returns
+    -------
+    ImgPol : 3d float32 arrays
+        images from polarization state channels
+    ImgProc : 3d float32 arrays
+        Polacquisition processed images. Retardance and slow axis
+    ImgFluor : 3d float32 arrays
+        images from fluorescence channels. Currently only parse '405', '488', '568', '640' channels
+    ImgBF : 3d float32 arrays
+        images from bright-field channels
+
     """
     acquDirPath = img_io.img_in_pos_path
     acquFiles = os.listdir(acquDirPath)
@@ -247,6 +253,19 @@ def parse_tiff_input(img_io):
     return ImgPol, ImgProc, ImgFluor, ImgBF
 
 def sort_pol_channels(img_pol):
+    """sort Polacquisition output images according to their polarization states
+
+    Parameters
+    ----------
+    img_pol : 3d float32 arrays
+        images of polarization state channels output by Polacquisition plug-in
+
+    Returns
+    img_pol : 3d float32 arrays
+        sorted polarization images in order of I_ext, I_0, I_45, I_90, I_135
+    -------
+
+    """
     I_ext = img_pol[0, :, :]  # Sigma0 in Fig.2
     I_90 = img_pol[1, :, :]  # Sigma2 in Fig.2
     I_135 = img_pol[2, :, :]  # Sigma4 in Fig.2
@@ -259,6 +278,17 @@ def sort_pol_channels(img_pol):
     return img_pol
 
 def exportImg(img_io, img_dict):
+    """export images in tiff format
+
+    Parameters
+    ----------
+    img_io : obj
+        mManagerReader instance
+    img_dict:  dict
+        dictionary of images with (key, value) = (channel, image array)
+    -------
+
+    """
     tIdx = img_io.tIdx
     zIdx = img_io.zIdx
     posIdx = img_io.posIdx

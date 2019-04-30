@@ -1,32 +1,68 @@
+"""
+Process data collected over multiple positions, timepoints and z slices
+"""
+
 import os
 import numpy as np
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import cv2
-
-from ..utils.imgIO import parse_tiff_input, exportImg
-from ..utils.imgProcessing import ImgMin, imBitConvert
-from ..utils.mManagerIO import mManagerReader, PolAcquReader
-from ..utils.plotting import plot_stokes, plot_pol_imgs, plot_Polacquisition_imgs, \
-    render_birefringence_imgs
-from ..compute.reconstruct import ImgReconstructor
+from utils.imgIO import parse_tiff_input, exportImg
+from compute.reconstruct import ImgReconstructor
+from utils.imgProcessing import ImgMin, imBitConvert, correct_flat_field
+from utils.plotting import render_birefringence_imgs, plot_stokes, plot_pol_imgs, plot_Polacquisition_imgs
+from utils.mManagerIO import mManagerReader, PolAcquReader
 
 
 def create_metadata_object(data_path, config):
     """
+    Reads PolAcquisition metadata, if possible. Otherwise, reads MicroManager metadata.
+    TODO: move to imgIO?
+
+    Parameters
+    __________
+    data_path : str
+        Path to data directory
+    config : obj
+        ConfigReader object
+
+    Returns
+    _______
+    obj
+        Metadata object
     """
+
     try:
-        img_obj = PolAcquReader(data_path, output_chan = config.processing.output_channels)
+        img_obj = PolAcquReader(data_path, output_chan=config.processing.output_channels)
     except:
-        img_obj = mManagerReader(data_path, output_chan = config.processing.output_channels)
+        img_obj = mManagerReader(data_path, output_chan=config.processing.output_channels)
     return img_obj
 
 
 def read_metadata(config):
-    img_obj_list = []; bg_obj_list = []
+    """
+    Reads the metadata for the sample and background data sets. Passes some
+    of the parameters (e.g. swing, wavelength, back level, etc.) from the
+    background metadata object into the sample metadata object
+    TODO: move to imgIO?
 
-    # If one background is used for all samplem, read only once
+    Parameters
+    __________
+    config : obj
+        ConfigReader object
+
+    Returns
+    _______
+    obj
+        Metadata object
+    """
+
+    img_obj_list = []
+    bg_obj_list = []
+
+    # If one background is used for all samples, read only once
     if len(set(config.dataset.background)) <= 1:
         background_path = os.path.join(config.dataset.data_dir,config.dataset.background[0])
         bg_obj = create_metadata_object(background_path, config)
@@ -58,7 +94,15 @@ def parse_bg_options(img_obj_list, config):
     """
     Parse background correction options and make output directories
 
+    Parameters
+    __________
+    img_obj_list: list
+        List of img_obj objects
+    config : obj
+        ConfigReader object
+
     """
+
     for i in range(len(config.dataset.samples)):
         bgCorrect = config.processing.background_correction
         data_dir = config.dataset.data_dir
@@ -87,16 +131,6 @@ def parse_bg_options(img_obj_list, config):
 
         elif bgCorrect == 'Local_defocus':
             raise RuntimeError('Local_defocus is not longer supported')
-#                print('Background correction mode set as "Local_defocus". Use images from' + BgDir +
-#                      'at the same position as background')
-#                img_bg_path = os.path.join(RawDataPath, ImgDir,
-#                                           BgDir)
-#                OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir + '_' + BgDir)
-#                img_obj_list[i].bg_method = 'Local_defocus'
-#                img_io.bg_correct = True
-#                img_io_bg_local = mManagerReader(img_bg_path, OutputPath)
-#                img_io_bg_local.blackLevel = img_io.blackLevel
-#                img_io.bg_local = img_io_bg_local
 
         elif bgCorrect == 'Auto':
             if hasattr(img_obj_list[i], 'bg'):
@@ -123,7 +157,6 @@ def parse_bg_options(img_obj_list, config):
         os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
     return img_obj_list
 
-
 # similar pattern to "create_metadata_object":
 #   - we call 'process_background' but nothing it does is specific to the background.
 #   - more accurately, this function assigns attributes to the input "img_io" and to the output "img_reconstructor"
@@ -139,12 +172,11 @@ def process_background(img_io, img_io_bg, config):
     n_slice_local_bg = config.processing.n_slice_local_bg
     if n_slice_local_bg == 'all':
         n_slice_local_bg = len(img_io.ZList)
-    img_reconstructor = ImgReconstructor(ImgRawBg,
+    img_reconstructor = ImgReconstructor(ImgRawBg.shape,
                                          bg_method=img_io.bg_method,
                                          n_slice_local_bg=n_slice_local_bg,
                                          swing=img_io.swing,
                                          wavelength=img_io.wavelength,
-                                         output_path=img_io.ImgOutPath,
                                          azimuth_offset=azimuth_offset,
                                          circularity=circularity)
     if img_io.bg_correct:
@@ -159,42 +191,6 @@ def process_background(img_io, img_io_bg, config):
 
     img_reconstructor.stokes_param_bg_tm = stokes_param_bg_tm
     return img_io, img_reconstructor
-
-
-def compute_flat_field(img_io, config):
-    """
-    Compute illumination function of fluorescence channels
-    for flat-field correction
-
-    """
-    print('Calculating illumination function for flatfield correction...')
-    ff_method = config.processing.ff_method
-    img_io.ff_method = ff_method
-    img_io.ImgFluorMin = np.full((4, img_io.height, img_io.width), np.inf)  # set initial min array to to be Inf
-    img_io.ImgFluorSum = np.zeros(
-        (4, img_io.height, img_io.width))  # set the default background to be Ones (uniform field)
-    img_io.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
-                                              (100, 100))  # kernel for image opening operation, 100-200 is usually good
-    img_io.loopZ = 'background'
-    img_io = loopPos(img_io, config)
-    if ff_method == 'open':
-        img_fluor_bg = img_io.ImgFluorSum
-    elif ff_method == 'empty':
-        img_fluor_bg = img_io.ImgFluorMin
-    for channel in range(img_fluor_bg.shape[0]):
-        img_fluor_bg[channel] = img_fluor_bg[channel] - min(np.nanmin(img_fluor_bg[channel]), 0) + 1 #add 1 to avoid 0
-        img_fluor_bg[channel] /= np.mean(img_fluor_bg[channel])  # normalize the background to have mean = 1
-    img_io.img_fluor_bg = img_fluor_bg
-    return img_io
-
-
-def correct_flat_field(img_io, ImgFluor):
-    """ flat-field correction for fluorescence channels """
-
-    for i in range(ImgFluor.shape[0]):
-        if np.any(ImgFluor[i, :, :]):  # if the flour channel exists
-            ImgFluor[i, :, :] = ImgFluor[i, :, :] / img_io.img_fluor_bg[i, :, :]
-    return ImgFluor
 
 
 def loopPos(img_io, config, img_reconstructor=None):
@@ -225,33 +221,44 @@ def loopPos(img_io, config, img_reconstructor=None):
 
 def loopT(img_io, config, img_reconstructor=None):
     """
-    Loop through each time point in the sample metadata, call loopZSm or loopZBg
+    Loop through each time point supplied in the config, call loopZSm or loopZBg
     depending on the looZ mode
-    """
 
+    Parameters
+    ----------
+    img_io: object
+        mManagerReader object that holds the image parameters
+    config: object
+        ConfigReader object that holds the user input config parameters
+    img_reconstructor: object
+        ImgReconstructor object for image reconstruction
+    -------
+
+    """
     for tIdx in img_io.TimeList:
         img_io.tIdx = tIdx
-        if img_io.loopZ == 'sample':
-            # if img_io.bg_method == 'Local_defocus':
-            #     img_io_bg = img_io.bg_local
-            #     print('compute defocused backgorund at pos{} ...'.format(img_io_bg.posIdx))
-            #     img_io_bg.tIdx = tIdx
-            #     img_io_bg.zIdx = 0
-            #     ImgRawBg, ImgProcBg, ImgFluor, ImgBF = parse_tiff_input(img_io_bg)  # 0 for z-index
-            #     img_stokes_bg = img_reconstructor.compute_stokes(ImgRawBg)
-            #     img_io.param_bg = img_stokes_bg
+        if img_io.loopZ == 'reconstruct':
             img_io = loopZSm(img_io, config, img_reconstructor)
 
-        else:
+        elif img_io.loopZ == 'flat_field':
             img_io = loopZBg(img_io)
     return img_io
 
 
 def loopZSm(img_io, config, img_reconstructor=None):
     """
-    Loop through each z in the sample metadata; computes and export only images in the
+    Loop through each z supplied in the config; computes and export only images in the
     supplied output channels (stokes, birefringence, background corrected raw pol images);
-    save figures of images if save_fig is True
+
+    Parameters
+    ----------
+    img_io: object
+        mManagerReader object that holds the image parameters
+    config: object
+        ConfigReader object that holds the user input config parameters
+    img_reconstructor: object
+        ImgReconstructor object for image reconstruction
+    -------
     """
 
     t_idx = img_io.tIdx
@@ -354,14 +361,57 @@ def loopZSm(img_io, config, img_reconstructor=None):
                 exportImg(img_io, img_dict)
     return img_io
 
+def compute_flat_field(img_io, config):
+    """
+    Compute illumination function of fluorescence channels
+    for flat-field correction
+
+    Parameters
+    ----------
+    img_io: object
+        mManagerReader object that holds the image parameters
+    config: object
+        ConfigReader object that holds the user input config parameters
+
+    Returns
+    -------
+    img_io: object
+        mManagerReader object that holds the image parameters with
+        illumination function saved in img_io.img_fluor_bg
+
+    """
+    print('Calculating illumination function for flatfield correction...')
+    ff_method = config.processing.ff_method
+    img_io.ff_method = ff_method
+    img_io.loopZ = 'flat_field'
+    img_io = loopPos(img_io, config)
+    if ff_method == 'open':
+        img_fluor_bg = img_io.ImgFluorSum
+    elif ff_method == 'empty':
+        img_fluor_bg = img_io.ImgFluorMin
+    for channel in range(img_fluor_bg.shape[0]):
+        img_fluor_bg[channel] = img_fluor_bg[channel] - min(np.nanmin(img_fluor_bg[channel]), 0) + 1 #add 1 to avoid 0
+        img_fluor_bg[channel] /= np.mean(img_fluor_bg[channel])  # normalize the background to have mean = 1
+    img_io.img_fluor_bg = img_fluor_bg
+    return img_io
 
 def loopZBg(img_io):
     """
     Loop through each z in the sample metadata; computes the illumination function
     of fluorescence channels using image opening or looking for empty images,
     currently only process the first Z for speed
+    Parameters
+    ----------
+    img_io: object
+        mManagerReader object that holds the image parameters
+
+    Returns
+    -------
+    img_io: object
+        mManagerReader object that holds the image parameters
 
     """
+
     for zIdx in range(0, 1):  # only use the first z
         img_io.zIdx = zIdx
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
