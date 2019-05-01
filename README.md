@@ -1,23 +1,23 @@
 # ReconstructOrder
-Reconstruct birefringence, slow axis, bright-field, and degree of polarization from polarization images acquired with 
-Micro-Manager and OpenPolScope acquisition plugin.
+Reconstruct birefringence, slow axis, bright-field, and degree of polarization from polarization-resolved images. The core algorithm employs Stokes representation for reconstruction and background correction. The repository also provides utilities for batch analysis of multi-dimensional datasets acquired with Micro-Manager (https://micro-manager.org/) and OpenPolScope acquisition plugin (https://openpolscope.org/).
 
 ## Getting Started
 
-### Install through pip install 
-
-### Install through git clone 
+### Install via git  
 First, git clone the repository to your home directory by doing:
 
 ```buildoutcfg
 git clone https://github.com/czbiohub/ReconstructOrder.git
 ```
  
+### Obtain dependencies via pip
 If you are running ReconstructOrder on your own machine, install the python library dependency by:
 
 ```buildoutcfg
 pip install -r requirements.txt
 ```
+
+### Obtain dependencies via docker
 
 If you are running ReconstructOrder on a compute node (e.g., fry2@czbiohub), it is recommended to run it in 
 a Docker container. 
