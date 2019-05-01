@@ -84,7 +84,7 @@
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">compute</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-compute.reconstruct">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a></li>
 </ul>
 </li>
 </ul>
@@ -154,77 +154,8 @@
   <div class="section" id="compute">
 <h1>compute<a class="headerlink" href="#compute" title="Permalink to this headline">¶</a></h1>
 <p>contains methods to calculate stokes and physical images from intensity images</p>
-<div class="section" id="module-compute.reconstruct">
-<span id="subpackages"></span><h2>Subpackages<a class="headerlink" href="#module-compute.reconstruct" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="compute.reconstruct.ImgReconstructor">
-<em class="property">class </em><code class="descclassname">compute.reconstruct.</code><code class="descname">ImgReconstructor</code><span class="sig-paren">(</span><em>img_pol_bg=[], bg_method='Global', swing=None, wavelength=532, kernel=array([[0, 0, 0, ..., 0, 0, 0],        [0, 0, 0, ..., 0, 0, 0],        [0, 0, 0, ..., 0, 0, 0],        ...,        [0, 0, 0, ..., 0, 0, 0],        [0, 0, 0, ..., 0, 0, 0],        [0, 0, 0, ..., 0, 0, 0]], dtype=uint8), output_path=None, azimuth_offset=0, circularity='rcp'</em><span class="sig-paren">)</span><a class="headerlink" href="#compute.reconstruct.ImgReconstructor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>ImgReconstructor contains methods to compute physical properties Birefringence /
-polarization and transmission given intensity data collected at 4 or 5 polarization orientations</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>img_pol_bg</strong> (<em>list =</em><em> [</em><em>s0</em><em>, </em><em>s1</em><em>, </em><em>s2</em><em>, </em><em>s3</em><em>]</em>) – stokes images for background data.  Same as values returned by compute_stokes</p></li>
-<li><p><strong>bg_method</strong> (<em>str</em>) – “Global”, “Local”.  type of background correction</p></li>
-<li><p><strong>swing</strong> (<em>float</em>) – </p></li>
-<li><p><strong>wavelength</strong> (<em>int</em>) – </p></li>
-<li><p><strong>kernel</strong> (<em>np.ndarray</em>) – </p></li>
-<li><p><strong>output_path</strong> (<em>str</em>) – </p></li>
-<li><p><strong>azimuth_offset</strong> (<em>int</em>) – </p></li>
-<li><p><strong>circularity</strong> (<em>str</em>) – </p></li>
-</ul>
-</dd>
-</dl>
-<dl class="method">
-<dt id="compute.reconstruct.ImgReconstructor.calibrate_inst_mat">
-<code class="descname">calibrate_inst_mat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#compute.reconstruct.ImgReconstructor.calibrate_inst_mat" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="compute.reconstruct.ImgReconstructor.compute_local_background">
-<code class="descname">compute_local_background</code><span class="sig-paren">(</span><em>stokes_param_sm</em><span class="sig-paren">)</span><a class="headerlink" href="#compute.reconstruct.ImgReconstructor.compute_local_background" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="compute.reconstruct.ImgReconstructor.compute_stokes">
-<code class="descname">compute_stokes</code><span class="sig-paren">(</span><em>img_raw</em><span class="sig-paren">)</span><a class="headerlink" href="#compute.reconstruct.ImgReconstructor.compute_stokes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given raw image intensity, compute stokes images</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>img_raw</strong> (<em>list of ndarray.  First element of output of utils.imgIO.parse_tiff_input</em>) – </p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>stokes images</strong></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list of ndarray.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="compute.reconstruct.ImgReconstructor.correct_background">
-<code class="descname">correct_background</code><span class="sig-paren">(</span><em>stokes_param_sm</em><span class="sig-paren">)</span><a class="headerlink" href="#compute.reconstruct.ImgReconstructor.correct_background" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="compute.reconstruct.ImgReconstructor.correct_background_stokes">
-<code class="descname">correct_background_stokes</code><span class="sig-paren">(</span><em>stokes_param_sm</em>, <em>stokes_param_bg</em><span class="sig-paren">)</span><a class="headerlink" href="#compute.reconstruct.ImgReconstructor.correct_background_stokes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="compute.reconstruct.ImgReconstructor.reconstruct_birefringence">
-<code class="descname">reconstruct_birefringence</code><span class="sig-paren">(</span><em>stokes_param_sm</em>, <em>img_crop_ref=None</em>, <em>extra=False</em><span class="sig-paren">)</span><a class="headerlink" href="#compute.reconstruct.ImgReconstructor.reconstruct_birefringence" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="compute.reconstruct.ImgReconstructor.stokes_transform">
-<code class="descname">stokes_transform</code><span class="sig-paren">(</span><em>stokes_param</em><span class="sig-paren">)</span><a class="headerlink" href="#compute.reconstruct.ImgReconstructor.stokes_transform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 

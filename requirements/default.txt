@@ -4,4 +4,4 @@ pandas>=0.24.2
 pyyaml>=3.13
 matplotlib>=3.0.3
 scikit-image>=0.15
-scipy
+scipy>=1.2.1
