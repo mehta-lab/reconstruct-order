@@ -1,5 +1,5 @@
 """Covert data structure from hierarchical to flat"""
-from utils.imgIO import copy_files_in_sub_dirs
+from ReconstructOrder.utils import copy_files_in_sub_dirs
 import argparse
 import os
 from shutil import copy2

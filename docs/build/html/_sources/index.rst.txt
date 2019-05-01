@@ -5,12 +5,72 @@
 
 Reconstruct Order
 =============================================
+Reconstruct birefringence, slow axis, transmission, and degree of polarization from polarization-resolved images.
+The data is acquired with Micro-Manager and OpenPolScope acquisition plugin.
 
-Quick start or other intro page stuff
--------------------------------------
 
-Maybe add some attribution here
--------------------------------
+Quick start
+-----------
+
+ReconstructOrder is available on Python Package Index using Pip.
+We highly recommend you install to a separate environment
+
+.. code-block:: bash
+
+   # USING venv
+   python3 -m venv /path/to/new/virtual/environment
+   cd /path/to/new/virtual/environment
+   activate
+
+.. code-block:: bash
+
+   # USING anaconda
+   # from anaconda command prompt, or terminal
+   conda create -n name-of-new-environment
+   source activate name-of-new-environment
+
+Then install ReconstructOrder to this environment
+
+.. code-block:: bash
+
+   pip install ReconstructOrder
+
+If you wish to run ReconstructOrder from command line, and not from the python interpreter,
+you will need to clone this github repo, and run commands from within.
+
+.. code-block:: bash
+
+   git clone https://github.com/czbiohub/ReconstructOrder.git
+
+
+Running Reconstruction on your data
+-----------------------------------
+
+To reconstruct birefringence images, you will need to create a configuration file that reflects your experiment's
+parameters.  You can see example configurations in this github repo under examples/example_configs.
+
+Modify paths to your data in there.  See "config_example.yml" for detailed description of the fields.  It's important
+that your data is organized in a hierarchy as described.
+
+finally, when the config file is ready, run the following:
+
+FROM PYTHON
+
+.. code-block:: python
+
+   from ReconstructOrder import workflow as wf
+
+   wf.runReconstruction('path_to_your_config_file')
+
+
+FROM COMMAND LINE
+
+.. code-block:: bash
+
+   # first navigate to your cloned ReconstructOrder directory
+   cd ReconstructOrder
+   python runReconstruction.py --config path_to_your_config_file
+
 
 .. toctree::
    :maxdepth: 2
@@ -21,21 +81,11 @@ Maybe add some attribution here
    compute
 
 
+Thanks
+------
 
-Some code block tests
----------------------
+This work is made possible by the Chan-Zuckerberg Biohub
 
-.. code-block:: python
-
-    #insert some python code here
-    import numpy as np
-    from compute.reconstruct import ImgReconstructor
-
-.. code-block:: bash
-
-   # bash script code block
-    some code here
-    python runReconstruction.py --config path
 
 
 Indices and tables
