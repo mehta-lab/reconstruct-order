@@ -1,7 +1,7 @@
 import os
 import numpy as np
-from utils.mManagerIO import mManagerReader
-from utils.imgProcessing import imBitConvert
+from ReconstructOrder.utils import mManagerReader
+from ReconstructOrder.utils import imBitConvert
 
 if __name__ == '__main__':
     RawDataPath = '/flexo/ComputationalMicroscopy/Projects/brainarchitecture'

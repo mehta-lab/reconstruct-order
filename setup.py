@@ -54,11 +54,15 @@ if __name__ == '__main__':
         long_description_content_type=LONG_DESCRIPTION_content_type,
         license=LICENSE,
         download_url=DOWNLOAD_URL,
-        version="0.0.5",
+        version="0.0.42",
         classifiers=CLASSIFIERS,
         install_requires=INSTALL_REQUIRES,
         requires=REQUIRES,
         python_requires=f'>={MIN_PY_VER}',
         packages=PACKAGES,
         include_package_data=True,
+        entry_points={
+            'console_scripts': ['runReconstruction=ReconstructOrder.cli_module:main']
+        }
+        # scripts=['cli_module.py']
     )
