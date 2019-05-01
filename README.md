@@ -1,23 +1,33 @@
 # ReconstructOrder
-Reconstruct birefringence, slow axis, bright-field, and degree of polarization from polarization images acquired with 
-Micro-Manager and OpenPolScope acquisition plugin.
+Reconstruct birefringence, slow axis, bright-field, and degree of polarization from polarization-resolved images. The core algorithm employs Stokes representation for reconstruction and background correction. The repository also provides utilities for batch analysis of multi-dimensional datasets acquired with Micro-Manager (https://micro-manager.org/) and OpenPolScope acquisition plugin (https://openpolscope.org/).
 
-## Getting Started
+## Installation
 
-### Install through pip install 
+### Create a new conda environment (optional, but recommended)
+Install conda package management system by installing anaconda or miniconda (https://conda.io/). 
+Creating a conda environment dedicated to ReconstructOrder will avoid version conflicts among packages required by ReconstructOrder and packaged required by other python software.
 
-### Install through git clone 
-First, git clone the repository to your home directory by doing:
+```buildoutcfg
+conda create -n <reconstructorder> python=3.7
+conda activate <reconstructorder>
+```
+
+### install source code via git  
+
+Clone the git repository to your home directory by running:
 
 ```buildoutcfg
 git clone https://github.com/czbiohub/ReconstructOrder.git
 ```
  
+#### install dependencies via pip
 If you are running ReconstructOrder on your own machine, install the python library dependency by:
 
 ```buildoutcfg
 pip install -r requirements.txt
 ```
+
+#### install dependencies via docker
 
 If you are running ReconstructOrder on a compute node (e.g., fry2@czbiohub), it is recommended to run it in 
 a Docker container. 
@@ -35,13 +45,19 @@ Now, to start a docker container, do
 ```buildoutcfg
 docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ -v ~/ReconstructOrder:/ReconstructOrder reconstruct_order:py37 bash
 ```
-### Run reconstruction
-To run reconstruction, go to ReconstructOrder repository directory (e.g. /ReconstructOrder) and do
+
+### install released version via pip
+
+pypi distribution coming soon...
+
+## Run reconstruction
+To run reconstruction, go to ReconstructOrder repository directory (e.g. /ReconstructOrder) and run
+
 ```buildoutcfg
-python runReconstruction.py --config <your config file>.yml
+python runReconstruction.py --config <config/config_MouseBrainSlice1_workflow_test>.yml
 ```
 
-See /ReconstructOrder/config/config_example.yml for an example config file and explanation of parameters. 
+See /ReconstructOrder/config/config_example.yml for an example config file with detailed explanation of parameters. 
 
 ## License
 Chan Zuckerberg Biohub Software License
