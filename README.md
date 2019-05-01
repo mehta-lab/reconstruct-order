@@ -4,32 +4,42 @@ Reconstruct birefringence, slow axis, bright-field, and degree of polarization f
 ## Installation
 
 ### Create a new conda environment (optional, but recommended)
-Install conda package management system by installing anaconda or miniconda (https://conda.io/). 
-Creating a conda environment dedicated to ReconstructOrder will avoid version conflicts among packages required by ReconstructOrder and packaged required by other python software.
+>Install conda package management system by installing anaconda or miniconda (https://conda.io/). 
+>Creating a conda environment dedicated to ReconstructOrder will avoid version conflicts among packages required by ReconstructOrder and packages required by other python software.
+>
+>```bash
+>conda create -n <your-environment-name> python=3.7
+>conda activate <your-environment-name>
+>```
+### Option 1: install released version via pip
+>ReconstructOrder is available on pip.  Running pip install will also install dependencies.
+>From your environment created above, type:
+>```bash
+>pip install ReconstructOrder
+>```
 
-```buildoutcfg
-conda create -n <reconstructorder> python=3.7
-conda activate <reconstructorder>
-```
+### Option 2: install developer version via git
+>Install the git version control system git : https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+>
+>Use git to clone this repository to your current directory:
+>```bash
+>git clone https://github.com/czbiohub/ReconstructOrder.git
+>```
 
-### install source code via git  
+>* #### install dependencies 
+>  You have two options to install dependencies: via pip (python index package) or via docker
+>
+>>  * ##### install dependencies via pip
+>>    If you are running ReconstructOrder on your own machine, navigate to the cloned repository 
+>>  and install python library dependencies:
+>>
+>>    ```bash
+>>    pip install -r requirements.txt
+>>    ```
 
-Clone the git repository to your home directory by running:
-
-```buildoutcfg
-git clone https://github.com/czbiohub/ReconstructOrder.git
-```
- 
-#### install dependencies via pip
-If you are running ReconstructOrder on your own machine, install the python library dependency by:
-
-```buildoutcfg
-pip install -r requirements.txt
-```
-
-#### install dependencies via docker
-
-If you are running ReconstructOrder on a compute node (e.g., fry2@czbiohub), it is recommended to run it in 
+>>  * ##### install dependencies via docker
+>>
+>>    If you are running ReconstructOrder on a compute node (e.g., fry2@czbiohub), it is recommended to run it in 
 a Docker container. 
 Docker is the virtual environment with all the required libraries pre-installed so you can run your copy of 
 ReconstructOrder without recreating the environment.
@@ -37,27 +47,47 @@ The docker image for ReconstructOrder has been built on fry2@czbiohub.
 If you are running ReconstructOrder on other servers, you can build the docker image after cloning the repository 
 by doing :    
 
-```buildoutcfg
-docker build -t reconstruct_order:py37 -f Dockerfile.ReconstructOrder .
-```
+>>    ```bash
+>>    docker build -t reconstruct_order:py37 -f Dockerfile.ReconstructOrder .
+>>    ```
 
-Now, to start a docker container, do 
-```buildoutcfg
-docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ -v ~/ReconstructOrder:/ReconstructOrder reconstruct_order:py37 bash
-```
+>>    Now, to start a docker container, do 
+>>    ```bash
+>>    docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ -v ~/ReconstructOrder:/ReconstructOrder reconstruct_order:py37 bash
+>>    ```
 
-### install released version via pip
 
-pypi distribution coming soon...
 
-## Run reconstruction
-To run reconstruction, go to ReconstructOrder repository directory (e.g. /ReconstructOrder) and run
+## Usage
+>To run reconstruction, you will need to create a configuration file.  The configuration file is a .yml file and specifies parameters for:
+> * 'dataset'
+> * 'processing'
+> * 'plotting'
+>
+> Examples can be found https://github.com/czbiohub/ReconstructOrder under "examples/example_configs" folder
+> 
+> See /ReconstructOrder/config/config_example.yml for an example config file with detailed explanation of parameters. 
+>
+> Before running, you should modify the dataset:data_dir and dataset:processed_dir paths to point to source data path and output path, respectively.  Example data is located at examples/example_data 
+>
+> ####There are two ways to run reconstruction:
+>>* #### from command line
+>>   If you pip installed the library, from any folder, simply type:
+>>   ```bash
+>>   runReconstruction --config path-and-name-to-your-config.yml
+>>   ```
+>>   If you cloned the developer repo, navigate to the repo and call the script:
+>>   ```bash
+>>   (C:\ReconstructOrder\) python runReconstruction.py --config path-and-name-to-your-config.yml
+>>   ```
+>
+>>* #### from IPython
+>>   If you are writing your own code and want to use the ReconstructOrder library, you can reconstruct as follows:
+>>   ```python
+>>   import ReconstructOrder.workflow as wf
+>>   wf.reconstructBatch('path-and-name-to-your-config.yml')
+>>   ```
 
-```buildoutcfg
-python runReconstruction.py --config <config/config_MouseBrainSlice1_workflow_test>.yml
-```
-
-See /ReconstructOrder/config/config_example.yml for an example config file with detailed explanation of parameters. 
 
 ## License
 Chan Zuckerberg Biohub Software License
