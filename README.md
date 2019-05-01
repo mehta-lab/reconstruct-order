@@ -51,10 +51,10 @@ docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ -v ~/Re
 To run reconstruction, go to ReconstructOrder repository directory (e.g. /ReconstructOrder) and run
 
 ```buildoutcfg
-python runReconstruction.py --config <your config file>.yml
+python runReconstruction.py --config <config/config_MouseBrainSlice1_workflow_test>.yml
 ```
 
-See /ReconstructOrder/config/config_example.yml for an example config file and explanation of parameters. 
+See /ReconstructOrder/config/config_example.yml for an example config file with detailed explanation of parameters. 
 
 ## License
 Chan Zuckerberg Biohub Software License
