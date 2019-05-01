@@ -1,7 +1,7 @@
 # ReconstructOrder
 Reconstruct birefringence, slow axis, bright-field, and degree of polarization from polarization-resolved images. The core algorithm employs Stokes representation for reconstruction and background correction. The repository also provides utilities for batch analysis of multi-dimensional datasets acquired with Micro-Manager (https://micro-manager.org/) and OpenPolScope acquisition plugin (https://openpolscope.org/).
 
-## Getting Started
+## Installation
 
 ### Create a new conda environment (optional, but recommended)
 Install conda package management system by installing anaconda or miniconda (https://conda.io/). 
@@ -20,16 +20,14 @@ Clone the git repository to your home directory by running:
 git clone https://github.com/czbiohub/ReconstructOrder.git
 ```
  
-### Obtain dependencies 
-
-#### via pip
+#### Obtain dependencies via pip
 If you are running ReconstructOrder on your own machine, install the python library dependency by:
 
 ```buildoutcfg
 pip install -r requirements.txt
 ```
 
-#### Or via docker
+#### Obtain dependencies via pip
 
 If you are running ReconstructOrder on a compute node (e.g., fry2@czbiohub), it is recommended to run it in 
 a Docker container. 
@@ -47,7 +45,7 @@ Now, to start a docker container, do
 ```buildoutcfg
 docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ -v ~/ReconstructOrder:/ReconstructOrder reconstruct_order:py37 bash
 ```
-### Run reconstruction
+## Run reconstruction
 To run reconstruction, go to ReconstructOrder repository directory (e.g. /ReconstructOrder) and run
 
 ```buildoutcfg
