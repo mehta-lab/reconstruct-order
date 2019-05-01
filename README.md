@@ -3,21 +3,33 @@ Reconstruct birefringence, slow axis, bright-field, and degree of polarization f
 
 ## Getting Started
 
+### Create a new conda environment (optional, but recommended)
+Install conda package management system by installing anaconda or miniconda (https://conda.io/). 
+Creating a conda environment dedicated to ReconstructOrder will avoid version conflicts among packages required by ReconstructOrder and packaged required by other python software.
+
+```buildoutcfg
+conda create -n <reconstructorder> python=3.7
+conda activate <reconstructorder>
+```
+
 ### Install via git  
-First, git clone the repository to your home directory by doing:
+
+Clone the git repository to your home directory by running:
 
 ```buildoutcfg
 git clone https://github.com/czbiohub/ReconstructOrder.git
 ```
  
-### Obtain dependencies via pip
+### Obtain dependencies 
+
+#### via pip
 If you are running ReconstructOrder on your own machine, install the python library dependency by:
 
 ```buildoutcfg
 pip install -r requirements.txt
 ```
 
-### Obtain dependencies via docker
+#### Or via docker
 
 If you are running ReconstructOrder on a compute node (e.g., fry2@czbiohub), it is recommended to run it in 
 a Docker container. 
@@ -36,7 +48,8 @@ Now, to start a docker container, do
 docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ -v ~/ReconstructOrder:/ReconstructOrder reconstruct_order:py37 bash
 ```
 ### Run reconstruction
-To run reconstruction, go to ReconstructOrder repository directory (e.g. /ReconstructOrder) and do
+To run reconstruction, go to ReconstructOrder repository directory (e.g. /ReconstructOrder) and run
+
 ```buildoutcfg
 python runReconstruction.py --config <your config file>.yml
 ```
