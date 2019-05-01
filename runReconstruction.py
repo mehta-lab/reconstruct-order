@@ -1,5 +1,18 @@
-# bchhun, {5/1/19}
+#!/usr/bin/env python
 
+"""
+runReconstruction:
+Reconstruct birefringence, slow axis, transmission, and degree of polarization from polarization-resolved images.
+This script provides a convenient method to workflow process multi-dimensional images acquired with Micro-Manager and OpenPolScope acquisition plugin.
+
+Parameters
+----------
+    --config: path to configuration file.
+Returns
+-------
+    None: the script writes data to disk.
+
+"""
 
 import argparse
 
@@ -22,6 +35,9 @@ def parse_args():
     return args
 
 
-def main():
+if __name__ == '__main__':
     args = parse_args()
     reconstructBatch(args.config)
+
+
+
