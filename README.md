@@ -12,7 +12,7 @@ conda create -n <reconstructorder> python=3.7
 conda activate <reconstructorder>
 ```
 
-### Install via git  
+### install source code via git  
 
 Clone the git repository to your home directory by running:
 
@@ -20,14 +20,14 @@ Clone the git repository to your home directory by running:
 git clone https://github.com/czbiohub/ReconstructOrder.git
 ```
  
-#### Obtain dependencies via pip
+#### install dependencies via pip
 If you are running ReconstructOrder on your own machine, install the python library dependency by:
 
 ```buildoutcfg
 pip install -r requirements.txt
 ```
 
-#### Obtain dependencies via pip
+#### install dependencies via docker
 
 If you are running ReconstructOrder on a compute node (e.g., fry2@czbiohub), it is recommended to run it in 
 a Docker container. 
@@ -45,6 +45,11 @@ Now, to start a docker container, do
 ```buildoutcfg
 docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ -v ~/ReconstructOrder:/ReconstructOrder reconstruct_order:py37 bash
 ```
+
+### install released version via pip
+
+pypi distribution coming soon...
+
 ## Run reconstruction
 To run reconstruction, go to ReconstructOrder repository directory (e.g. /ReconstructOrder) and run
 
