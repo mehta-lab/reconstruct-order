@@ -72,7 +72,7 @@ class TestImageReconstruction(unittest.TestCase):
 
     def construct_all(self):
         '''
-        Reconstruct raw data for comparison with target (Recon) data.  Follows procedures outlined in "runReconstruction.py"
+        Reconstruct raw data for comparison with target (Recon) data.  Follows procedures outlined in "cli_module.py"
 
         :return: None
         '''

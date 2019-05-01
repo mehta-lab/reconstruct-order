@@ -1,6 +1,6 @@
 dataset:
-    data_dir: './examples/example_data/TestData/rawData/2018_10_02_MouseBrainSlice'
-    processed_dir: './examples/example_data/TestData/reconData/2018_10_02_MouseBrainSlice'
+    data_dir: '/Users/bryant.chhun/PycharmProjects/ReconOrder/ReconstructOrder/examples/example_data/TestData/rawData/2018_10_02_MouseBrainSlice'
+    processed_dir: '/Users/bryant.chhun/PycharmProjects/ReconOrder/ReconstructOrder/examples/example_data/TestData/reconData/2018_10_02_MouseBrainSlice'
     samples: ['SM_2018_1002_1633_1']
     positions: 'all'
     background: 'BG_2018_1002_1625_1'
