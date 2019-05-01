@@ -7,14 +7,14 @@ Reconstruct birefringence, slow axis, bright-field, and degree of polarization f
 >Install conda package management system by installing anaconda or miniconda (https://conda.io/). 
 >Creating a conda environment dedicated to ReconstructOrder will avoid version conflicts among packages required by ReconstructOrder and packages required by other python software.
 >
->```bash
+>```buildoutcfg
 >conda create -n <your-environment-name> python=3.7
 >conda activate <your-environment-name>
 >```
 ### Option 1: install released version via pip
 >ReconstructOrder is available on pip.  Running pip install will also install dependencies.
 >From your environment created above, type:
->```bash
+>```buildoutcfg
 >pip install ReconstructOrder
 >```
 
@@ -22,18 +22,18 @@ Reconstruct birefringence, slow axis, bright-field, and degree of polarization f
 >Install the git version control system git : https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 >
 >Use git to clone this repository to your current directory:
->```bash
+>```buildoutcfg
 >git clone https://github.com/czbiohub/ReconstructOrder.git
 >```
 
->* #### install dependencies 
+> * #### install dependencies
 >  You have two options to install dependencies: via pip (python index package) or via docker
 >
 >>  * ##### install dependencies via pip
 >>    If you are running ReconstructOrder on your own machine, navigate to the cloned repository 
 >>  and install python library dependencies:
 >>
->>    ```bash
+>>    ```buildoutcfg
 >>    pip install -r requirements.txt
 >>    ```
 
@@ -47,12 +47,12 @@ The docker image for ReconstructOrder has been built on fry2@czbiohub.
 If you are running ReconstructOrder on other servers, you can build the docker image after cloning the repository 
 by doing :    
 
->>    ```bash
+>>    ```buildoutcfg
 >>    docker build -t reconstruct_order:py37 -f Dockerfile.ReconstructOrder .
 >>    ```
 
 >>    Now, to start a docker container, do 
->>    ```bash
+>>    ```buildoutcfg
 >>    docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ -v ~/ReconstructOrder:/ReconstructOrder reconstruct_order:py37 bash
 >>    ```
 
@@ -70,20 +70,20 @@ by doing :
 >
 > Before running, you should modify the dataset:data_dir and dataset:processed_dir paths to point to source data path and output path, respectively.  Example data is located at examples/example_data 
 >
-> ####There are two ways to run reconstruction:
+> #### There are two ways to run reconstruction:
 >>* #### from command line
 >>   If you pip installed the library, from any folder, simply type:
->>   ```bash
+>>   ```buildoutcfg
 >>   runReconstruction --config path-and-name-to-your-config.yml
 >>   ```
 >>   If you cloned the developer repo, navigate to the repo and call the script:
->>   ```bash
+>>   ```buildoutcfg
 >>   (C:\ReconstructOrder\) python runReconstruction.py --config path-and-name-to-your-config.yml
 >>   ```
 >
 >>* #### from IPython
 >>   If you are writing your own code and want to use the ReconstructOrder library, you can reconstruct as follows:
->>   ```python
+>>   ```buildoutcfg
 >>   import ReconstructOrder.workflow as wf
 >>   wf.reconstructBatch('path-and-name-to-your-config.yml')
 >>   ```
