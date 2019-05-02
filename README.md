@@ -11,6 +11,9 @@ Reconstruct birefringence, slow axis, bright-field, and degree of polarization f
 >conda create -n <your-environment-name> python=3.7
 >conda activate <your-environment-name>
 >```
+
+#### All code blocks below assume you are in the above environment
+
 ### Option 1: install released version via pip
 >ReconstructOrder is available on pip.  Running pip install will also install dependencies.
 >From your environment created above, type:
@@ -76,6 +79,7 @@ by doing :
 >>   ```buildoutcfg
 >>   runReconstruction --config path-and-name-to-your-config.yml
 >>   ```
+>>
 >>   If you cloned the developer repo, navigate to the repo and call the script:
 >>   ```buildoutcfg
 >>   (C:\ReconstructOrder\) python runReconstruction.py --config path-and-name-to-your-config.yml
