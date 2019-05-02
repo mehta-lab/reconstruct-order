@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 MIN_PY_VER = '3.6'
 DISTNAME = 'ReconstructOrder'
-DESCRIPTION = 'reconstruct birefringence from polarization intensity images'
+DESCRIPTION = 'Reconstruct birefringence, slow axis, bright-field, and degree of polarization from polarization-resolved images.'
 with open("README.md", "r") as fh:
     LONG_DESCRIPTION = fh.read()
     LONG_DESCRIPTION_content_type = "text/markdown"
@@ -54,7 +54,7 @@ if __name__ == '__main__':
         long_description_content_type=LONG_DESCRIPTION_content_type,
         license=LICENSE,
         download_url=DOWNLOAD_URL,
-        version="0.0.42",
+        version="0.0.1",
         classifiers=CLASSIFIERS,
         install_requires=INSTALL_REQUIRES,
         requires=REQUIRES,
@@ -64,5 +64,4 @@ if __name__ == '__main__':
         entry_points={
             'console_scripts': ['runReconstruction=ReconstructOrder.cli_module:main']
         }
-        # scripts=['cli_module.py']
     )
