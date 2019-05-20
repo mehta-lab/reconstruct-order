@@ -340,7 +340,7 @@ def loopZSm(img_io, config, img_reconstructor=None):
                 ImgFluor = fluor_list[z_sub_idx]
                 if save_birefring:
                     imgs = [s0, retard, azimuth, polarization, ImgFluor]
-                    img_io, img_dict = render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=2, zoomin=False,
+                    img_io, img_dict = render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=8, zoomin=False,
                                                                  dpi=200,
                                                                  norm=norm, plot=save_fig)
                 if save_stokes:
