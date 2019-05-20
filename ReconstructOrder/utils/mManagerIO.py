@@ -153,8 +153,10 @@ class mManagerReader:
     @property
     def meta_pos_list(self):
         pos_dict_list = self.input_meta_file['Summary']['InitialPositionList']
-        self._meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
+        if pos_dict_list:
+            self._meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
         return self._meta_pos_list
+
     @property
     def pos_list(self):
         return self._pos_list

@@ -247,7 +247,7 @@ def parse_tiff_input(img_io):
                     ImgFluor[0,:,:] = img
                 elif any(substring in matchObj.group(1) for substring in ['GFP', '488', '488nm']):
                     ImgFluor[1,:,:] = img
-                elif any(substring in matchObj.group(1) for substring in ['TxR', 'TXR', 'TX', '568', '561', '560']):
+                elif any(substring in matchObj.group(1) for substring in ['TxR', 'TXR', 'TX', '568', '561', '560', 'FM464']):
                     ImgFluor[2,:,:] = img
                 elif any(substring in matchObj.group(1) for substring in ['Cy5', 'IFP', '640', '637']):
                     ImgFluor[3,:,:] = img
