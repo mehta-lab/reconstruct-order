@@ -111,9 +111,9 @@ class ConfigReader:
                 if key == 'normalize_color_images':
                     self.plotting.normalize_color_images = value
                 elif key == 'retardance_scaling':
-                    self.plotting.retardance_scaling = value
+                    self.plotting.retardance_scaling = float(value)
                 elif key == 'transmission_scaling':
-                    self.plotting.transmission_scaling = value
+                    self.plotting.transmission_scaling = float(value)
                 elif key == 'save_birefringence_fig':
                     self.plotting.save_birefringence_fig = value
                 elif key == 'save_stokes_fig':
@@ -283,7 +283,7 @@ class Processing:
                                 'Orientation_x', 'Orientation_y',
                                 'Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
                                 'Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3',
-                                '405', '488', '568', '640',
+                                '405', '488', '568', '640', 'ex561em700',
                                 'Retardance+Orientation', 'Polarization+Orientation', 
                                 'Brightfield+Retardance+Orientation',
                                 'Retardance+Fluorescence', 'Retardance+Fluorescence_all']  
