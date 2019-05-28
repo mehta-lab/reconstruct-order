@@ -273,7 +273,7 @@ def loopZSm(img_io, config, img_reconstructor=None):
                        'Retardance+Orientation', 'Polarization+Orientation', 'Brightfield+Retardance+Orientation',
                        'Brightfield_computed+Retardance+Orientation',
                        'Retardance+Fluorescence', 'Retardance+Fluorescence_all']
-    fluor_names = ['405', '488', '568', '640']
+    fluor_names = ['405', '488', '568', '640', 'ex561em700']
     save_stokes = any(chan in stokes_names + stokes_names_sm
                for chan in img_io.chNamesOut) or any([save_stokes_fig, save_mm_fig])
     save_birefring = any(chan in birefring_names
@@ -327,7 +327,7 @@ def loopZSm(img_io, config, img_reconstructor=None):
         if save_stokes or save_birefring:
             stokes_param_sm_stack = [np.stack(stack, axis=-1) for stack in stokes_param_sm_stack]
             stokes_param_sm_stack_tm = img_reconstructor.stokes_transform(stokes_param_sm_stack)
-            if not img_io.bg_correct == 'None':
+            if img_io.bg_correct:
                 stokes_param_sm_stack_tm = img_reconstructor.correct_background(stokes_param_sm_stack_tm)
             birfring_stacks = \
                 img_reconstructor.reconstruct_birefringence(stokes_param_sm_stack_tm)
