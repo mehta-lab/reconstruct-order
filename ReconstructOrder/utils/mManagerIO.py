@@ -134,7 +134,7 @@ class mManagerReader:
         self.size_y_um = 6.5/63 # (um) for zyla at 63X. Manager metafile currently does not log the correct pixel size
         self.size_z_um = input_meta_file['Summary']['z-step_um']
         self.time_stamp = input_meta_file['Summary']['Time']
-        self.img_fluor_bg = np.ones((4, self.height, self.width))
+        self.img_fluor_bg = np.ones((5, self.height, self.width))
         self.posIdx = 0  # assuming only single image for background
         self.tIdx = 0
         self.zIdx = 0
@@ -142,9 +142,9 @@ class mManagerReader:
         self.bg_method = 'Global'
         self.bg_correct = True
         self.ff_method = 'open'
-        self.ImgFluorMin = np.full((4, self.height, self.width), np.inf)  # set initial min array to to be Inf
+        self.ImgFluorMin = np.full((5, self.height, self.width), np.inf)  # set initial min array to to be Inf
         self.ImgFluorSum = np.zeros(
-            (4, self.height, self.width))  # set the default background to be Ones (uniform field)
+            (5, self.height, self.width))  # set the default background to be Ones (uniform field)
         self.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
                                                   (100,
                                                    100))  # kernel for image opening operation, 100-200 is usually good
@@ -199,7 +199,6 @@ class mManagerReader:
                 img = self.read_img()
                 img_stack += [img]
             img_stack = np.stack(img_stack)  # follow zyx order
-            img_stack = np.squeeze(img_stack)
             img_chann += [img_stack]
         return img_chann
     
