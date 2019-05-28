@@ -111,9 +111,9 @@ class ConfigReader:
                 if key == 'normalize_color_images':
                     self.plotting.normalize_color_images = value
                 elif key == 'retardance_scaling':
-                    self.plotting.retardance_scaling = value
+                    self.plotting.retardance_scaling = float(value)
                 elif key == 'transmission_scaling':
-                    self.plotting.transmission_scaling = value
+                    self.plotting.transmission_scaling = float(value)
                 elif key == 'save_birefringence_fig':
                     self.plotting.save_birefringence_fig = value
                 elif key == 'save_stokes_fig':
