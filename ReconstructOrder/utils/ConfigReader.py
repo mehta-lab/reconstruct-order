@@ -283,6 +283,7 @@ class Processing:
                                 'Orientation_x', 'Orientation_y',
                                 'Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
                                 'Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3',
+                                'Stokes_0_sm', 'Stokes_1_sm', 'Stokes_2_sm', 'Stokes_3_sm',
                                 '405', '488', '568', '640', 'ex561em700',
                                 'Retardance+Orientation', 'Polarization+Orientation', 
                                 'Brightfield+Retardance+Orientation',
