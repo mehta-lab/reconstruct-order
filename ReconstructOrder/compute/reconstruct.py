@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+from ..utils.background_estimator import BackgroundEstimator2D
 
 class ImgReconstructor:
     """
@@ -191,7 +192,7 @@ class ImgReconstructor:
                 'Input image has to have >1 z-slice for n_slice_local_bg > 1'
         stokes_param_sm_tm = self.correct_background_stokes(
             stokes_param_sm_tm, self.stokes_param_bg_tm)
-        if self.bg_method == 'Local_filter':
+        if self.bg_method in ['Local_filter', 'Local_fit']:
             if self.n_slice_local_bg > 1:
                 stokes_param_sm_local_tm = np.mean(stokes_param_sm_tm, -1)
             else:
@@ -216,10 +217,26 @@ class ImgReconstructor:
         """
         stokes_param_bg_local_tm = []
         print('Estimating local background...')
+        if self.bg_method == 'Local_filter':
+            estimate_bg = self._gaussian_blur
+        elif self.bg_method == 'Local_fit':
+            estimate_bg = self._fit_background
+        else:
+            ValueError('background method has to be "Local_filter" or "Local_fit"')
+
         for img in stokes_param_sm_local_tm:
-            img_filtered = cv2.GaussianBlur(img, (self.kernel_size, self.kernel_size), 0)
-            stokes_param_bg_local_tm += [img_filtered]
+            background = estimate_bg(img)
+            stokes_param_bg_local_tm += [background]
         self.stokes_param_bg_local_tm = stokes_param_bg_local_tm
+
+    def _gaussian_blur(self, img):
+        background = cv2.GaussianBlur(img, (self.kernel_size, self.kernel_size), 0)
+        return background
+
+    def _fit_background(self, img):
+        bg_estimator = BackgroundEstimator2D()
+        background  = bg_estimator.get_background(img, order=2, normalize=False)
+        return background
 
     def reconstruct_birefringence(self, stokes_param_sm_tm,
                            img_crop_ref=None, extra=False):
