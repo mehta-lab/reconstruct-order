@@ -40,7 +40,7 @@ def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoo
     """ Parses transmission, retardance, orientation, and polarization images, scale and render them for export.  """
 
     outputChann = img_io.chNamesOut
-    chann_scale = [0.25, 1, 0.05, 1]  # scale fluor channels for composite images when norm=False
+    chann_scale = [0.25, 1, 0.05, 1, 1]  # scale fluor channels for composite images when norm=False
     
     I_trans,retard, azimuth, polarization, ImgFluor = imgs
     if zoomin: # crop the images
@@ -70,6 +70,7 @@ def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoo
     if any(chann in ['Retardance+Fluorescence', 'Retardance+Fluorescence_all'] for chann in outputChann):
         IFluorRetard = CompositeImg([100*retard, ImgFluor[2,:,:]*chann_scale[2], ImgFluor[0,:,:]*chann_scale[0]], norm=norm)
         I_fluor_all_retard = CompositeImg([100 * retard,
+                                           ImgFluor[4, :, :] * chann_scale[4],
                                            ImgFluor[3, :, :] * chann_scale[3],
                                            ImgFluor[2, :, :] * chann_scale[2],
                                            ImgFluor[1, :, :] * chann_scale[1],
