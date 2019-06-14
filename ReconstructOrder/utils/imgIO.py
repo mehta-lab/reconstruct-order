@@ -219,7 +219,7 @@ def parse_tiff_input(img_io):
     ImgPol = np.zeros((4, img_io.height,img_io.width)) # pol channels has minimum 4 channels
     ImgProc = []
     ImgBF = []
-    ImgFluor = np.zeros((4, img_io.height,img_io.width)) # assuming 4 flour channels for now
+    ImgFluor = np.zeros((5, img_io.height,img_io.width)) # assuming 4 flour channels for now
     tIdx = img_io.tIdx
     zIdx = img_io.zIdx
     for fileName in acquFiles: # load raw images with Sigma0, 1, 2, 3 states, and processed images
@@ -251,6 +251,8 @@ def parse_tiff_input(img_io):
                     ImgFluor[2,:,:] = img
                 elif any(substring in matchObj.group(1) for substring in ['Cy5', 'IFP', '640', '637']):
                     ImgFluor[3,:,:] = img
+                elif any(substring in matchObj.group(1) for substring in ['FM464', 'fm464']):
+                    ImgFluor[4,:,:] = img
             elif any(substring in matchObj.group(1) for substring in ['BF']):
                 ImgBF += [img]
     ImgPol = sort_pol_channels(ImgPol)
