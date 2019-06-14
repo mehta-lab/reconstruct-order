@@ -7,7 +7,7 @@ import os
 import json
 import numpy as np
 import matplotlib.pyplot as plt
-from ReconstructOrder.utils import mManagerReader
+from ReconstructOrder.utils.mManagerIO import mManagerReader
 from ReconstructOrder.utils.plotting import CompositeImg, plot_sub_images
 
 def imshow_pair(images, chann_names, OutputPath, fig_name):
@@ -57,6 +57,8 @@ def translate_3D(images, channels, registration_params, size_z_um):
                     'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
                     'Transmission', 'Brightfield', 'Brightfield_computed']:
             chan = 'Retardance'
+        elif chan == 'ex561em700':
+            chan = '640'
 
         # Brightfield registration is not robust
         # elif chan in ['Transmission', 'Brightfield']:
@@ -65,8 +67,11 @@ def translate_3D(images, channels, registration_params, size_z_um):
         shift = registration_params[chan][:]
         # only warp the image if shift is non-zero
         if any(shift):
-            # scale z-shift according to the z-step size
-            shift[0] = shift[0]*registration_params['size_z_um']/size_z_um
+            if size_z_um == 0: # 2D translation
+                shift[0] = 0
+            else:
+                # 3D translation. Scale z-shift according to the z-step size.
+                shift[0] = shift[0]*registration_params['size_z_um']/size_z_um
             image = affine_transform(image, np.ones(3), [-x for x in shift], order=1)
         registered_images.append(image)
     return registered_images
@@ -86,7 +91,7 @@ def imshow_xy_xz_slice(img_stacks, img_io, y_crop_range, z_crop_range,
 
     for yIdx in range(y_plot_range[0], y_plot_range[1]):
         img_io.yIdx = yIdx
-        img_stack = [np.squeeze(img[:, yIdx - y_crop_range[0], :]) for img in img_stacks]
+        img_stack = [img[:, yIdx - y_crop_range[0], :] for img in img_stacks]
         fig_name = 'img_pair_y%03d.png' % (yIdx)
         imshow_pair(img_stack, output_chan, OutputPath, fig_name)
         fig_name = 'img_pair_y%03d_2.png' % (yIdx)
@@ -104,21 +109,19 @@ def edge_filter_2D(img):
 
 
 if __name__ == '__main__':
-    # RawDataPath = r'D:/Box Sync/Data'
-    # ProcessedPath = r'D:/Box Sync/Processed/'
-    RawDataPath = '//flexo/MicroscopyData/ComputationalMicroscopy\SpinningDisk\RawData/Dragonfly_Calibration'
+    # RawDataPath = '//flexo/MicroscopyData/ComputationalMicroscopy\SpinningDisk\RawData/Dragonfly_Calibration'
     # ProcessedPath = '/flexo/ComputationalMicroscopy/Projects/Dragonfly_Calibration'
     RawDataPath = r'Z:/ComputationalMicroscopy/SpinningDisk/RawData/Dragonfly_Calibration'
     ProcessedPath = r'Z:/ComputationalMicroscopy/Projects/Dragonfly_Calibration'
-    ImgDir = '2019_04_09_Argolight'
-    SmDir = '2019_04_08_Argolight_488_561_637_Widefield_PolStates_BF_1_2019_04_08_Argolight_488_561_637_Widefield_PolStates_BF_1_flat'
-    input_chan = output_chan = ['568', 'Retardance', 'Brightfield', '488', '640'] # first channel is the reference channel
+    ImgDir = '2019_05_21_Argolight_20X_binning_2_widefield_zyla'
+    SmDir = 'SMS_20190521_1229_2_SMS_20190521_1229_2'
+    input_chan = output_chan = ['568', 'Retardance', 'Brightfield_computed', '405', '488', '640'] # first channel is the reference channel
 
-    z_crop_range = [0, 180]
-    x_crop_range = [130, 700]
-    y_crop_range = [120, 700]
-    z_plot_range = [7,11]
-    y_plot_range = [194, 204]
+    z_crop_range = [0, 1]
+    x_crop_range = [0, 1024]
+    y_crop_range = [0, 1024]
+    z_plot_range = [0, 1]
+    y_plot_range = [0, 1]
     ImgSmPath = os.path.join(ProcessedPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
     OutputPath = os.path.join(ImgSmPath,'registration', 'raw')
     shift_file_path = os.path.join(ImgSmPath, 'registration', 'registration_param_ref_568_63X.json')
