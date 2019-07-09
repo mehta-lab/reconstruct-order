@@ -103,6 +103,8 @@ class ConfigReader:
                     self.processing.separate_positions = value
                 elif key == 'n_slice_local_bg':
                     self.processing.n_slice_local_bg = value
+                elif key == 'local_fit_order':
+                    self.processing.local_fit_order = value
                 else:
                     raise NameError('Unrecognized configfile field:{}, key:{}'.format('processing', key))
 
@@ -283,12 +285,13 @@ class Processing:
                                 'Orientation_x', 'Orientation_y',
                                 'Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
                                 'Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3',
+                                'Stokes_0_sm', 'Stokes_1_sm', 'Stokes_2_sm', 'Stokes_3_sm',
                                 '405', '488', '568', '640', 'ex561em700',
                                 'Retardance+Orientation', 'Polarization+Orientation', 
                                 'Brightfield+Retardance+Orientation',
                                 'Retardance+Fluorescence', 'Retardance+Fluorescence_all']  
     _allowed_circularity_values = ['rcp', 'lcp']
-    _allowed_background_correction_values = ['None', 'Input', 'Local_filter', 'Local_defocus', 'Auto']
+    _allowed_background_correction_values = ['None', 'Input', 'Local_filter', 'Local_fit', 'Local_defocus', 'Auto']
     
     def __init__(self):
         self._output_channels = ['Brightfield', 'Retardance', 'Orientation', 'Polarization']
@@ -298,6 +301,7 @@ class Processing:
         self._azimuth_offset = 0
         self._separate_positions = True
         self._n_slice_local_bg = 'all'
+        self._local_fit_order = 2
 
     @property
     def output_channels(self):
@@ -326,6 +330,10 @@ class Processing:
     @property
     def n_slice_local_bg(self):
         return self._n_slice_local_bg
+
+    @property
+    def local_fit_order(self):
+        return self._local_fit_order
 
     @output_channels.setter
     def output_channels(self, value):     
@@ -366,6 +374,12 @@ class Processing:
         assert isinstance(value, int) or value == 'all',\
             "n_slice_local_bg must be integer or 'all'"
         self._n_slice_local_bg = value
+
+    @local_fit_order.setter
+    def local_fit_order(self, value):
+        assert isinstance(value, int) and value >= 0, \
+            "local_fit_order must be a non-negative integer"
+        self._local_fit_order = value
 
     def __repr__(self):
         out = str(self.__class__) + '\n'

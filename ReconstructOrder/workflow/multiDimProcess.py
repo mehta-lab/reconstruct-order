@@ -121,11 +121,11 @@ def parse_bg_options(img_obj_list, config):
             img_obj_list[i].bg_method = 'Global'
             img_obj_list[i].bg_correct = True
 
-        elif bgCorrect == 'Local_filter':
-            print('Background correction mode set as "Local_filter". Additional background correction using local '
-                  'background estimated from sample images will be performed')
-            OutputPath = os.path.join(processed_dir, sample + '_' + sample)
-            img_obj_list[i].bg_method = 'Local_filter'
+        elif bgCorrect in ['Local_filter', 'Local_fit']:
+            print('Background correction mode set as "{}". Additional background correction using local '
+                  'background estimated from sample images will be performed'.format(bgCorrect))
+            OutputPath = os.path.join(processed_dir, sample + '_' + sample + '_fit_order2')
+            img_obj_list[i].bg_method = bgCorrect
             img_obj_list[i].bg_correct = True
 
         elif bgCorrect == 'Local_defocus':
@@ -166,11 +166,13 @@ def process_background(img_io, img_io_bg, config):
     circularity = config.processing.circularity
     azimuth_offset = config.processing.azimuth_offset
     n_slice_local_bg = config.processing.n_slice_local_bg
+    local_fit_order = config.processing.local_fit_order
     if n_slice_local_bg == 'all':
         n_slice_local_bg = len(img_io.ZList)
     img_reconstructor = ImgReconstructor(ImgRawBg.shape,
                                          bg_method=img_io.bg_method,
                                          n_slice_local_bg=n_slice_local_bg,
+                                         poly_fit_order=local_fit_order,
                                          swing=img_io.swing,
                                          wavelength=img_io.wavelength,
                                          azimuth_offset=azimuth_offset,
