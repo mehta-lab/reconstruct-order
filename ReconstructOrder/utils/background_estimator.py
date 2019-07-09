@@ -69,12 +69,14 @@ class BackgroundEstimator2D:
 
         :return np.array poly_surface: 2D surface of shape im_shape
         """
-        assert (order + 1) ** 2 <= len(sample_values), \
+        assert (order + 1)*(order + 2)/2 <= len(sample_values), \
             "Can't fit a higher degree polynomial than there are sampled values"
-        # Number of coefficients in determined by order + 1 squared
+        # Number of coefficients is determined by (order + 1)*(order + 2)/2
         orders = np.arange(order + 1)
-        variable_matrix = np.zeros((sample_coords.shape[0], (order + 1) ** 2))
-        variable_iterator = itertools.product(orders, orders)
+        variable_matrix = np.zeros((sample_coords.shape[0], int((order + 1)*(order + 2)/2)))
+        order_pairs = list(itertools.product(orders, orders))
+        # sum of orders of x,y <= order of the polynomial
+        variable_iterator = itertools.filterfalse(lambda x: sum(x) > order, order_pairs)
         for idx, (m, n) in enumerate(variable_iterator):
             variable_matrix[:, idx] = sample_coords[:, 0] ** n * sample_coords[:, 1] ** m
         # Least squares fit of the points to the polynomial
@@ -84,7 +86,9 @@ class BackgroundEstimator2D:
                                      np.linspace(0, im_shape[0] - 1, im_shape[0]))
         # Reconstruct the surface from the coefficients
         poly_surface = np.zeros(im_shape, np.float)
-        variable_iterator = itertools.product(orders, orders)
+        order_pairs = list(itertools.product(orders, orders))
+        # sum of orders of x,y <= order of the polynomial
+        variable_iterator = itertools.filterfalse(lambda x: sum(x) > order, order_pairs)
         for coeff, (m, n) in zip(coeffs, variable_iterator):
             poly_surface += coeff * x_mesh ** m * y_mesh ** n
 

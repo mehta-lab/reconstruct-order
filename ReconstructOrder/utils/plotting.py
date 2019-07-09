@@ -138,7 +138,7 @@ def PolColor(s0, retardance, orientation, polarization, norm=True):
         # s0 = cv2.convertScaleAbs(s0, alpha=(2**8-1)/np.max(s0))
     else:
         #TODO: make scaling factors parameters in the config
-        retardance = cv2.convertScaleAbs(retardance, alpha=100)
+        retardance = cv2.convertScaleAbs(retardance, alpha=50)
         s0 = cv2.convertScaleAbs(s0, alpha=100)
         polarization = cv2.convertScaleAbs(polarization, alpha=2000)
 #    retardance = histequal(retardance)
