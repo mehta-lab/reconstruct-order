@@ -31,6 +31,7 @@ def channel_register(target_images, channels):
     :param target_images: list of target images.
     :return registration_params: dictionary of channel (key) and its translational shifts [z, y, x] (value)
     """
+    channels = ['640' if channel == 'ex561em700' else channel for channel in channels]
     shifts = [[0,0,0]]
     for image in target_images[1:]:
         shift, error, phase = register_translation(target_images[0], image, 4)
@@ -113,18 +114,18 @@ if __name__ == '__main__':
     # ProcessedPath = '/flexo/ComputationalMicroscopy/Projects/Dragonfly_Calibration'
     RawDataPath = r'Z:/ComputationalMicroscopy/SpinningDisk/RawData/Dragonfly_Calibration'
     ProcessedPath = r'Z:/ComputationalMicroscopy/Projects/Dragonfly_Calibration'
-    ImgDir = '2019_05_21_Argolight_20X_binning_2_widefield_zyla'
-    SmDir = 'SMS_20190521_1229_2_SMS_20190521_1229_2'
-    input_chan = output_chan = ['568', 'Retardance', 'Brightfield_computed', '405', '488', '640'] # first channel is the reference channel
+    ImgDir = '2019_05_20_Argolight_10X_widefield_zyla'
+    SmDir = 'SMS_052019_1842_1_SMS_052019_1842_1_fit_order2'
+    input_chan = output_chan = ['640', 'Retardance', 'Brightfield_computed', '405', '488', '568'] # first channel is the reference channel
 
     z_crop_range = [0, 1]
-    x_crop_range = [0, 1024]
-    y_crop_range = [0, 1024]
+    x_crop_range = [0, 1281]
+    y_crop_range = [0, 1262]
     z_plot_range = [0, 1]
     y_plot_range = [0, 1]
     ImgSmPath = os.path.join(ProcessedPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
     OutputPath = os.path.join(ImgSmPath,'registration', 'raw')
-    shift_file_path = os.path.join(ImgSmPath, 'registration', 'registration_param_ref_568_63X.json')
+    shift_file_path = os.path.join(ImgSmPath, 'registration', 'registration_param_10X.json')
     img_io = mManagerReader(ImgSmPath, OutputPath, input_chan=input_chan, output_chan=output_chan)
     img_io.posIdx = 0
     img_io.tIdx = 0

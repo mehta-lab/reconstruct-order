@@ -23,6 +23,8 @@ class ImgReconstructor:
         wavelenhth of the illumination light (nm)
     kernel_size : int
         size of the Gaussian kernel for local background estimation
+    poly_fit_order : int
+        order of the polynomial used for 'Local_fit' background correction
     azimuth_offset : float
         offset of the orientation reference axis
     circularity : str
@@ -60,7 +62,7 @@ class ImgReconstructor:
     """
 
     def __init__(self, img_shape=None, bg_method='Global', n_slice_local_bg=1, swing=None, wavelength=532,
-                 kernel_size=401, azimuth_offset=0, circularity='rcp'):
+                 kernel_size=401, poly_fit_order=2, azimuth_offset=0, circularity='rcp'):
 
         self.img_shape = img_shape
         self.bg_method = bg_method
@@ -68,6 +70,7 @@ class ImgReconstructor:
         self.swing = swing * 2 * np.pi # covert swing from fraction of wavelength to radian
         self.wavelength = wavelength
         self.kernel_size = kernel_size
+        self.poly_fit_order = poly_fit_order
         chi = self.swing
         if self._n_chann == 4:  # if the images were taken using 4-frame scheme
             inst_mat = np.array([[1, 0, 0, -1],
@@ -193,10 +196,7 @@ class ImgReconstructor:
         stokes_param_sm_tm = self.correct_background_stokes(
             stokes_param_sm_tm, self.stokes_param_bg_tm)
         if self.bg_method in ['Local_filter', 'Local_fit']:
-            if self.n_slice_local_bg > 1:
-                stokes_param_sm_local_tm = np.mean(stokes_param_sm_tm, -1)
-            else:
-                stokes_param_sm_local_tm = stokes_param_sm_tm
+            stokes_param_sm_local_tm = np.mean(stokes_param_sm_tm, -1)
             self.compute_local_background(stokes_param_sm_local_tm)
             stokes_param_sm_tm = self.correct_background_stokes(
                 stokes_param_sm_tm, self.stokes_param_bg_local_tm)
@@ -235,7 +235,7 @@ class ImgReconstructor:
 
     def _fit_background(self, img):
         bg_estimator = BackgroundEstimator2D()
-        background  = bg_estimator.get_background(img, order=2, normalize=False)
+        background = bg_estimator.get_background(img, order=self.poly_fit_order, normalize=False)
         return background
 
     def reconstruct_birefringence(self, stokes_param_sm_tm,
