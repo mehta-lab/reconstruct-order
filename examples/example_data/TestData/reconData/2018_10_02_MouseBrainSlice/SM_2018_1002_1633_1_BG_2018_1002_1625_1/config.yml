@@ -1,0 +1,33 @@
+dataset:
+  background:
+  - BG_2018_1002_1625_1
+  data_dir: examples/example_data/TestData/rawData/2018_10_02_MouseBrainSlice
+  positions:
+  - - all
+  processed_dir: examples/example_data/TestData/reconData
+  samples:
+  - SM_2018_1002_1633_1
+  timepoints:
+  - - all
+  z_slices:
+  - - all
+plotting:
+  normalize_color_images: true
+  retardance_scaling: 1000.0
+  save_birefringence_fig: false
+  save_micromanager_fig: false
+  save_polarization_fig: false
+  save_stokes_fig: false
+  transmission_scaling: 10000.0
+processing:
+  azimuth_offset: 0
+  background_correction: Input
+  circularity: rcp
+  flatfield_correction: false
+  n_slice_local_bg: all
+  output_channels:
+  - Brightfield
+  - Retardance
+  - Orientation
+  - Polarization
+  separate_positions: true

@@ -59,6 +59,13 @@ by doing :
 >>    docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ -v ~/ReconstructOrder:/ReconstructOrder reconstruct_order:py37 bash
 >>    ```
 
+>> * Demo
+>>
+>> To test that the developer version works as expected, run the following script:
+>>   ```buildoutcfg
+>>   python runReconstruction.py --config examples/example_configs/config_MouseBrainSlice_demo.yml
+>>   ```
+>> Check that there are newly created files and folders in examples/example_data/reconData.
 
 
 ## Usage
