@@ -11,8 +11,19 @@ from ..utils.imgProcessing import nanRobustBlur, imadjust, imBitConvert, imClip
 from ..utils.imgProcessing import imcrop
 
 
-def plotVectorField(I, orientation, R=40, spacing=40, clim=[None, None]):
-    """Overlays orientation field  on image I. Returns matplotlib image axes. """
+
+def plotVectorField(I, orientation, R=40, spacing=40, linecolor='g',\
+                             threshold=None, alpha=1, clim=[None, None], colorline=False, linemap='hsv'):
+    """
+    
+    Overlays orientation field on image I. Returns matplotlib image axes.
+    
+    Option: 
+        threshold: a 0-1 map of nparray, wherever the map is 0, ignore the plotting of the line
+        colorline: if it is True, then associate the additional orientation color on the lines
+        
+    
+    """
 
     # plot vector field representaiton of the orientation map
     U, V = R * spacing * np.cos(2 * orientation), R * spacing * np.sin(2 * orientation)
@@ -24,14 +35,37 @@ def plotVectorField(I, orientation, R=40, spacing=40, clim=[None, None]):
 
     nY, nX = I.shape
     Y, X = np.mgrid[0:nY, 0:nX] # notice the inversed order of X and Y
-
-    imAx = plt.imshow(I, cmap='gray', vmin=clim[0], vmax=clim[1])
-    plt.title('Orientation map')
-    plt.quiver(X[::spacing, ::spacing], Y[::spacing,::spacing],
-               USmooth[::spacing,::spacing], VSmooth[::spacing,::spacing],
-               edgecolor='g',facecolor='g',units='xy', alpha=1, width=2,
-               headwidth = 0, headlength = 0, headaxislength = 0,
-               scale_units = 'xy',scale = 1 )
+    
+    
+    # Plot sparsely sampled vector lines
+    Plotting_X = X[::spacing, ::spacing]
+    Plotting_Y = Y[::spacing, ::spacing]
+    Plotting_U = USmooth[::spacing, ::spacing]
+    Plotting_V = VSmooth[::spacing, ::spacing]
+    Plotting_R = RSmooth[::spacing, ::spacing]
+    
+    if threshold is None:
+        threshold = np.ones_like(X) # no threshold
+    Plotting_thres = threshold[::spacing, ::spacing]
+    Plotting_orien = ((azimuthSmooth[::spacing, ::spacing])%np.pi)*180/np.pi
+    
+    
+    if colorline:
+        imAx = plt.imshow(I, cmap='gray', vmin=clim[0], vmax=clim[1])
+        plt.title('Orientation map')
+        plt.quiver(Plotting_X[Plotting_thres==1], Plotting_Y[Plotting_thres==1],
+                   Plotting_U[Plotting_thres==1], Plotting_V[Plotting_thres==1], Plotting_orien[Plotting_thres==1],cmap=linemap,
+                   edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=2,
+                   headwidth = 0, headlength = 0, headaxislength = 0,
+                   scale_units = 'xy',scale = 1 )
+    else:
+        imAx = plt.imshow(I, cmap='gray', vmin=clim[0], vmax=clim[1])
+        plt.title('Orientation map')
+        plt.quiver(Plotting_X[Plotting_thres==1], Plotting_Y[Plotting_thres==1],
+                   Plotting_U[Plotting_thres==1], Plotting_V[Plotting_thres==1],
+                   edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=2,
+                   headwidth = 0, headlength = 0, headaxislength = 0,
+                   scale_units = 'xy',scale = 1 )
 
     return imAx
 
