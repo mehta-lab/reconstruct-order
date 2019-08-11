@@ -12,36 +12,39 @@ from ..utils.imgProcessing import imcrop
 
 
 
-def plotVectorField(I, orientation, R=40, spacing=40, linecolor='g',\
-                             threshold=None, alpha=1, clim=[None, None], colorline=False, linemap='hsv'):
+def plotVectorField(I, orientation, anisotropy = 1, spacing=20, binning=20, linelength=20, \
+                            linewidth=3, linecolor='g', colorOrient=True, cmapOrient='hsv', \
+                    threshold=None, alpha=1, clim=[None, None], cmapImage='gray'):
     """
     
     Overlays orientation field on image I. Returns matplotlib image axes.
     
-    Option: 
-        threshold: a 0-1 map of nparray, wherever the map is 0, ignore the plotting of the line
-        colorline: if it is True, then associate the additional orientation color on the lines
-        
+    Options: 
+        threshold: a binary numpy array, wherever the map is 0, ignore the plotting of the line
+        colorOrient: if it is True, then color the lines by their orientation.
+        linelength : can be a scalar or an image the same size as the orientation. 
+                
     
     """
 
     # plot vector field representaiton of the orientation map
-    U, V = R * spacing * np.cos(2 * orientation), R * spacing * np.sin(2 * orientation)
-    USmooth = nanRobustBlur(U,(spacing,spacing)) # plot smoothed vector field
-    VSmooth = nanRobustBlur(V,(spacing,spacing)) # plot smoothed vector field
+    
+    # Compute U, V such that they are as long as line-length when anisotropy = 1.
+    U, V =  anisotropy*linelength * np.cos(2 * orientation), anisotropy*linelength * np.sin(2 * orientation)
+    USmooth = nanRobustBlur(U,(binning,binning)) # plot smoothed vector field
+    VSmooth = nanRobustBlur(V,(binning,binning)) # plot smoothed vector field
     azimuthSmooth = 0.5*np.arctan2(VSmooth,USmooth)
     RSmooth = np.sqrt(USmooth**2+VSmooth**2)
     USmooth, VSmooth = RSmooth*np.cos(azimuthSmooth), RSmooth*np.sin(azimuthSmooth)
 
     nY, nX = I.shape
-    Y, X = np.mgrid[0:nY, 0:nX] # notice the inversed order of X and Y
-    
+    Y, X = np.mgrid[0:nY,0:nX] # notice the reversed order of X and Y
     
     # Plot sparsely sampled vector lines
     Plotting_X = X[::spacing, ::spacing]
     Plotting_Y = Y[::spacing, ::spacing]
-    Plotting_U = USmooth[::spacing, ::spacing]
-    Plotting_V = VSmooth[::spacing, ::spacing]
+    Plotting_U = linelength * USmooth[::spacing, ::spacing]
+    Plotting_V = linelength * VSmooth[::spacing, ::spacing]
     Plotting_R = RSmooth[::spacing, ::spacing]
     
     if threshold is None:
@@ -50,22 +53,23 @@ def plotVectorField(I, orientation, R=40, spacing=40, linecolor='g',\
     Plotting_orien = ((azimuthSmooth[::spacing, ::spacing])%np.pi)*180/np.pi
     
     
-    if colorline:
-        imAx = plt.imshow(I, cmap='gray', vmin=clim[0], vmax=clim[1])
+    if colorOrient:
+        imAx = plt.imshow(I, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
         plt.title('Orientation map')
         plt.quiver(Plotting_X[Plotting_thres==1], Plotting_Y[Plotting_thres==1],
-                   Plotting_U[Plotting_thres==1], Plotting_V[Plotting_thres==1], Plotting_orien[Plotting_thres==1],cmap=linemap,
-                   edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=2,
+                   Plotting_U[Plotting_thres==1], Plotting_V[Plotting_thres==1], Plotting_orien[Plotting_thres==1],
+                   cmap=cmapOrient,
+                   edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=linewidth,
                    headwidth = 0, headlength = 0, headaxislength = 0,
-                   scale_units = 'xy',scale = 1 )
+                   scale_units = 'xy',scale = 1, angles = 'uv', pivot = 'mid')
     else:
-        imAx = plt.imshow(I, cmap='gray', vmin=clim[0], vmax=clim[1])
+        imAx = plt.imshow(I, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
         plt.title('Orientation map')
         plt.quiver(Plotting_X[Plotting_thres==1], Plotting_Y[Plotting_thres==1],
                    Plotting_U[Plotting_thres==1], Plotting_V[Plotting_thres==1],
-                   edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=2,
+                   edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=linewidth,
                    headwidth = 0, headlength = 0, headaxislength = 0,
-                   scale_units = 'xy',scale = 1 )
+                   scale_units = 'xy',scale = 1, angles = 'uv', pivot = 'mid')
 
     return imAx
 
