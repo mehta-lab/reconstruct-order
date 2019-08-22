@@ -11,29 +11,104 @@ from ..utils.imgProcessing import nanRobustBlur, imadjust, imBitConvert, imClip
 from ..utils.imgProcessing import imcrop
 
 
-def plotVectorField(I, orientation, R=40, spacing=40, clim=[None, None]):
-    """Overlays orientation field  on image I. Returns matplotlib image axes. """
+
+def plotVectorField(img,
+                    orientation,
+                    anisotropy=1,
+                    spacing=20,
+                    window=20,
+                    linelength=20,
+                    linewidth=3,
+                    linecolor='g',
+                    colorOrient=True,
+                    cmapOrient='hsv',
+                    threshold=None,
+                    alpha=1,
+                    clim=[None, None],
+                    cmapImage='gray'):
+    """Overlays orientation field on the image. Returns matplotlib image axes.
+
+    Options:
+        threshold:
+        colorOrient: if it is True, then color the lines by their orientation.
+        linelength : can be a scalar or an image the same size as the orientation.
+    Parameters
+    ----------
+    img: nparray
+        image to overlay orientation lines on
+    orientation: nparray
+        orientation in radian
+    anisotropy: nparray
+    spacing: int
+
+    window: int
+    linelength: int
+        can be a scalar or an image the same size as the orientation
+    linewidth: int
+        width of the orientation line
+    linecolor: str
+    colorOrient: bool
+        if it is True, then color the lines by their orientation.
+    cmapOrient:
+    threshold: nparray
+        a binary numpy array, wherever the map is 0, ignore the plotting of the line
+    alpha: int
+        line transparency. [0,1]. lower is more transparent
+    clim: list
+        [min, max], min and max intensities for displaying img
+    cmapImage:
+        colormap for displaying the image
+    Returns
+    -------
+    im_ax: obj
+        matplotlib image axes
+    """
 
     # plot vector field representaiton of the orientation map
-    U, V = R * spacing * np.cos(2 * orientation), R * spacing * np.sin(2 * orientation)
-    USmooth = nanRobustBlur(U,(spacing,spacing)) # plot smoothed vector field
-    VSmooth = nanRobustBlur(V,(spacing,spacing)) # plot smoothed vector field
+    
+    # Compute U, V such that they are as long as line-length when anisotropy = 1.
+    U, V =  anisotropy*linelength * np.cos(2 * orientation), anisotropy*linelength * np.sin(2 * orientation)
+    USmooth = nanRobustBlur(U, (window, window)) # plot smoothed vector field
+    VSmooth = nanRobustBlur(V, (window, window)) # plot smoothed vector field
     azimuthSmooth = 0.5*np.arctan2(VSmooth,USmooth)
     RSmooth = np.sqrt(USmooth**2+VSmooth**2)
     USmooth, VSmooth = RSmooth*np.cos(azimuthSmooth), RSmooth*np.sin(azimuthSmooth)
 
-    nY, nX = I.shape
-    Y, X = np.mgrid[0:nY, 0:nX] # notice the inversed order of X and Y
+    nY, nX = img.shape
+    Y, X = np.mgrid[0:nY,0:nX] # notice the reversed order of X and Y
+    
+    # Plot sparsely sampled vector lines
+    Plotting_X = X[::spacing, ::spacing]
+    Plotting_Y = Y[::spacing, ::spacing]
+    Plotting_U = linelength * USmooth[::spacing, ::spacing]
+    Plotting_V = linelength * VSmooth[::spacing, ::spacing]
+    Plotting_R = RSmooth[::spacing, ::spacing]
+    
+    if threshold is None:
+        threshold = np.ones_like(X) # no threshold
+    Plotting_thres = threshold[::spacing, ::spacing]
+    Plotting_orien = ((azimuthSmooth[::spacing, ::spacing])%np.pi)*180/np.pi
+    
+    
+    if colorOrient:
+        im_ax = plt.imshow(img, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
+        plt.title('Orientation map')
+        plt.quiver(Plotting_X[Plotting_thres==1], Plotting_Y[Plotting_thres==1],
+                   Plotting_U[Plotting_thres==1], Plotting_V[Plotting_thres==1], Plotting_orien[Plotting_thres==1],
+                   cmap=cmapOrient,
+                   edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=linewidth,
+                   headwidth = 0, headlength = 0, headaxislength = 0,
+                   scale_units = 'xy',scale = 1, angles = 'uv', pivot = 'mid')
+    else:
+        im_ax = plt.imshow(img, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
+        plt.title('Orientation map')
+        plt.quiver(Plotting_X[Plotting_thres==1], Plotting_Y[Plotting_thres==1],
+                   Plotting_U[Plotting_thres==1], Plotting_V[Plotting_thres==1],
+                   edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=linewidth,
+                   headwidth = 0, headlength = 0, headaxislength = 0,
+                   scale_units = 'xy',scale = 1, angles = 'uv', pivot = 'mid')
 
-    imAx = plt.imshow(I, cmap='gray', vmin=clim[0], vmax=clim[1])
-    plt.title('Orientation map')
-    plt.quiver(X[::spacing, ::spacing], Y[::spacing,::spacing],
-               USmooth[::spacing,::spacing], VSmooth[::spacing,::spacing],
-               edgecolor='g',facecolor='g',units='xy', alpha=1, width=2,
-               headwidth = 0, headlength = 0, headaxislength = 0,
-               scale_units = 'xy',scale = 1 )
-
-    return imAx
+    return im_ax
 
 
 def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
@@ -189,9 +264,8 @@ def CompositeImg(images, norm=True):
 def plot_recon_images(s0, retard, azimuth, polarization, I_azi_ret, I_azi_scat, zoomin=False, spacing=20, vectorScl=1, dpi=300):
     """ Plot transmission, retardance, orientation, and polarization images, and prepares them for export.  """
 
-    R = retard
-    R = R / np.nanmean(R)  # normalization
-    R = vectorScl * R
+    anisotropy = retard
+    anisotropy = anisotropy / np.nanmean(anisotropy)  # normalization
     # %%
     figSize = (18, 12)
     fig = plt.figure(figsize=figSize)
@@ -236,7 +310,7 @@ def plot_recon_images(s0, retard, azimuth, polarization, I_azi_ret, I_azi_scat, 
     #    plt.show()
 
     ax5 = plt.subplot(2, 3, 5)
-    imAx = plotVectorField(imClip(retard / 1000, tol=1), azimuth, R=R, spacing=spacing)
+    im_ax = plotVectorField(imClip(retard / 1000, tol=1), azimuth, anisotropy=anisotropy, spacing=spacing)
     plt.tick_params(labelbottom=False, labelleft=False)  # labels along the bottom edge are off
     plt.title('Retardance(nm)+Orientation')
     plt.xticks([]), plt.yticks([])
