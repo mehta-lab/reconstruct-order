@@ -12,8 +12,8 @@ from ..utils.imgProcessing import imcrop
 
 
 
-def plotVectorField(I, orientation, anisotropy = 1, spacing=20, binning=20, linelength=20, \
-                            linewidth=3, linecolor='g', colorOrient=True, cmapOrient='hsv', \
+def plotVectorField(I, orientation, anisotropy=1, spacing=20, window=20, linelength=20, \
+                    linewidth=3, linecolor='g', colorOrient=True, cmapOrient='hsv', \
                     threshold=None, alpha=1, clim=[None, None], cmapImage='gray'):
     """
     
@@ -31,8 +31,8 @@ def plotVectorField(I, orientation, anisotropy = 1, spacing=20, binning=20, line
     
     # Compute U, V such that they are as long as line-length when anisotropy = 1.
     U, V =  anisotropy*linelength * np.cos(2 * orientation), anisotropy*linelength * np.sin(2 * orientation)
-    USmooth = nanRobustBlur(U,(binning,binning)) # plot smoothed vector field
-    VSmooth = nanRobustBlur(V,(binning,binning)) # plot smoothed vector field
+    USmooth = nanRobustBlur(U, (window, window)) # plot smoothed vector field
+    VSmooth = nanRobustBlur(V, (window, window)) # plot smoothed vector field
     azimuthSmooth = 0.5*np.arctan2(VSmooth,USmooth)
     RSmooth = np.sqrt(USmooth**2+VSmooth**2)
     USmooth, VSmooth = RSmooth*np.cos(azimuthSmooth), RSmooth*np.sin(azimuthSmooth)
@@ -227,9 +227,8 @@ def CompositeImg(images, norm=True):
 def plot_recon_images(s0, retard, azimuth, polarization, I_azi_ret, I_azi_scat, zoomin=False, spacing=20, vectorScl=1, dpi=300):
     """ Plot transmission, retardance, orientation, and polarization images, and prepares them for export.  """
 
-    R = retard
-    R = R / np.nanmean(R)  # normalization
-    R = vectorScl * R
+    anisotropy = retard
+    anisotropy = anisotropy / np.nanmean(anisotropy)  # normalization
     # %%
     figSize = (18, 12)
     fig = plt.figure(figsize=figSize)
@@ -274,7 +273,7 @@ def plot_recon_images(s0, retard, azimuth, polarization, I_azi_ret, I_azi_scat, 
     #    plt.show()
 
     ax5 = plt.subplot(2, 3, 5)
-    imAx = plotVectorField(imClip(retard / 1000, tol=1), azimuth, R=R, spacing=spacing)
+    imAx = plotVectorField(imClip(retard / 1000, tol=1), azimuth, anisotropy=anisotropy, spacing=spacing)
     plt.tick_params(labelbottom=False, labelleft=False)  # labels along the bottom edge are off
     plt.title('Retardance(nm)+Orientation')
     plt.xticks([]), plt.yticks([])
