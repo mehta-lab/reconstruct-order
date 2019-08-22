@@ -12,19 +12,56 @@ from ..utils.imgProcessing import imcrop
 
 
 
-def plotVectorField(I, orientation, anisotropy=1, spacing=20, window=20, linelength=20, \
-                    linewidth=3, linecolor='g', colorOrient=True, cmapOrient='hsv', \
-                    threshold=None, alpha=1, clim=[None, None], cmapImage='gray'):
-    """
-    
-    Overlays orientation field on image I. Returns matplotlib image axes.
-    
-    Options: 
-        threshold: a binary numpy array, wherever the map is 0, ignore the plotting of the line
+def plotVectorField(img,
+                    orientation,
+                    anisotropy=1,
+                    spacing=20,
+                    window=20,
+                    linelength=20,
+                    linewidth=3,
+                    linecolor='g',
+                    colorOrient=True,
+                    cmapOrient='hsv',
+                    threshold=None,
+                    alpha=1,
+                    clim=[None, None],
+                    cmapImage='gray'):
+    """Overlays orientation field on the image. Returns matplotlib image axes.
+
+    Options:
+        threshold:
         colorOrient: if it is True, then color the lines by their orientation.
-        linelength : can be a scalar or an image the same size as the orientation. 
-                
-    
+        linelength : can be a scalar or an image the same size as the orientation.
+    Parameters
+    ----------
+    img: nparray
+        image to overlay orientation lines on
+    orientation: nparray
+        orientation in radian
+    anisotropy: nparray
+    spacing: int
+
+    window: int
+    linelength: int
+        can be a scalar or an image the same size as the orientation
+    linewidth: int
+        width of the orientation line
+    linecolor: str
+    colorOrient: bool
+        if it is True, then color the lines by their orientation.
+    cmapOrient:
+    threshold: nparray
+        a binary numpy array, wherever the map is 0, ignore the plotting of the line
+    alpha: int
+        line transparency. [0,1]. lower is more transparent
+    clim: list
+        [min, max], min and max intensities for displaying img
+    cmapImage:
+        colormap for displaying the image
+    Returns
+    -------
+    im_ax: obj
+        matplotlib image axes
     """
 
     # plot vector field representaiton of the orientation map
@@ -37,7 +74,7 @@ def plotVectorField(I, orientation, anisotropy=1, spacing=20, window=20, linelen
     RSmooth = np.sqrt(USmooth**2+VSmooth**2)
     USmooth, VSmooth = RSmooth*np.cos(azimuthSmooth), RSmooth*np.sin(azimuthSmooth)
 
-    nY, nX = I.shape
+    nY, nX = img.shape
     Y, X = np.mgrid[0:nY,0:nX] # notice the reversed order of X and Y
     
     # Plot sparsely sampled vector lines
@@ -54,7 +91,7 @@ def plotVectorField(I, orientation, anisotropy=1, spacing=20, window=20, linelen
     
     
     if colorOrient:
-        imAx = plt.imshow(I, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
+        im_ax = plt.imshow(img, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
         plt.title('Orientation map')
         plt.quiver(Plotting_X[Plotting_thres==1], Plotting_Y[Plotting_thres==1],
                    Plotting_U[Plotting_thres==1], Plotting_V[Plotting_thres==1], Plotting_orien[Plotting_thres==1],
@@ -63,7 +100,7 @@ def plotVectorField(I, orientation, anisotropy=1, spacing=20, window=20, linelen
                    headwidth = 0, headlength = 0, headaxislength = 0,
                    scale_units = 'xy',scale = 1, angles = 'uv', pivot = 'mid')
     else:
-        imAx = plt.imshow(I, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
+        im_ax = plt.imshow(img, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
         plt.title('Orientation map')
         plt.quiver(Plotting_X[Plotting_thres==1], Plotting_Y[Plotting_thres==1],
                    Plotting_U[Plotting_thres==1], Plotting_V[Plotting_thres==1],
@@ -71,7 +108,7 @@ def plotVectorField(I, orientation, anisotropy=1, spacing=20, window=20, linelen
                    headwidth = 0, headlength = 0, headaxislength = 0,
                    scale_units = 'xy',scale = 1, angles = 'uv', pivot = 'mid')
 
-    return imAx
+    return im_ax
 
 
 def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
@@ -273,7 +310,7 @@ def plot_recon_images(s0, retard, azimuth, polarization, I_azi_ret, I_azi_scat, 
     #    plt.show()
 
     ax5 = plt.subplot(2, 3, 5)
-    imAx = plotVectorField(imClip(retard / 1000, tol=1), azimuth, anisotropy=anisotropy, spacing=spacing)
+    im_ax = plotVectorField(imClip(retard / 1000, tol=1), azimuth, anisotropy=anisotropy, spacing=spacing)
     plt.tick_params(labelbottom=False, labelleft=False)  # labels along the bottom edge are off
     plt.title('Retardance(nm)+Orientation')
     plt.xticks([]), plt.yticks([])
