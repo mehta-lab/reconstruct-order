@@ -83,6 +83,10 @@ class ImgReconstructor:
                                  [1, 0, np.sin(chi), -np.cos(chi)],
                                  [1, -np.sin(chi), 0, -np.cos(chi)],
                                  [1, 0, -np.sin(chi), -np.cos(chi)]])
+        else:
+            raise Exception('Expected image shape is (channel, y, x, z)...'
+                            'The number of channels is {}, but allowed values are 4 or 5'.format(self._n_chann))
+
         self.inst_mat_inv = np.linalg.pinv(inst_mat)
         self.azimuth_offset = azimuth_offset/180*np.pi
         self.stokes_param_bg_tm = []
