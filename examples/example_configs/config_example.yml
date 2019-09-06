@@ -77,8 +77,12 @@ processing:
 
   separate_positions: True
   # (bool) Flag to output processed images from separate positions in separate folders.
+
   n_slice_local_bg: 'all'
   # (str or int) Number of slices averaged for local background estimation
+
+  binning: 1
+  # (int) Number of pixels to sum in X and Y in raw images to increase S/N.
 
 plotting:
   normalize_color_images: True

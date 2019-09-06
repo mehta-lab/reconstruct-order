@@ -100,7 +100,7 @@ class mManagerReader:
 
     """
 
-    def __init__(self, img_sample_path, ImgOutPath=None, input_chan=[], output_chan=[]):
+    def __init__(self, img_sample_path, ImgOutPath=None, input_chan=[], output_chan=[], binning=1):
 
         img_in_pos_path = img_sample_path
         subDirName = GetSubDirName(img_sample_path)
@@ -134,7 +134,7 @@ class mManagerReader:
         self.size_y_um = 6.5/63 # (um) for zyla at 63X. Manager metafile currently does not log the correct pixel size
         self.size_z_um = input_meta_file['Summary']['z-step_um']
         self.time_stamp = input_meta_file['Summary']['Time']
-        self.img_fluor_bg = np.ones((5, self.height, self.width))
+        self.img_fluor_bg = np.ones((5, self.height//binning, self.width//binning))
         self.posIdx = 0  # assuming only single image for background
         self.tIdx = 0
         self.zIdx = 0
@@ -142,9 +142,9 @@ class mManagerReader:
         self.bg_method = 'Global'
         self.bg_correct = True
         self.ff_method = 'open'
-        self.ImgFluorMin = np.full((5, self.height, self.width), np.inf)  # set initial min array to to be Inf
+        self.ImgFluorMin = np.full((5, self.height//binning, self.width//binning), np.inf)  # set initial min array to to be Inf
         self.ImgFluorSum = np.zeros(
-            (5, self.height, self.width))  # set the default background to be Ones (uniform field)
+            (5, self.height//binning, self.width//binning))  # set the default background to be Ones (uniform field)
         self.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
                                                   (100,
                                                    100))  # kernel for image opening operation, 100-200 is usually good
@@ -182,19 +182,19 @@ class mManagerReader:
         img = cv2.imread(TiffFile,-1) # flag -1 to preserve the bit dept of the raw image
         return img
 
-    def read_multi_chan_img_stack(self, z_range=None):
+    def read_multi_chan_img_stack(self, z_ids=None):
         """read multi-channel image stack at a given (t,p)"""
         if not os.path.exists(self.ImgSmPath):
             raise FileNotFoundError(
                 "image file doesn't exist at:", self.ImgSmPath
             )
-        if not z_range:
-            z_range = [0, self.nZ]
+        if z_ids is None:
+            z_ids = list(range(0, self.nZ))
         img_chann = []  # list of 2D or 3D images from different channels
         for chanIdx in range(self.nChannIn):
             img_stack = []
             self.chanIdx = chanIdx
-            for zIdx in range(z_range[0], z_range[1]):
+            for zIdx in z_ids:
                 self.zIdx = zIdx
                 img = self.read_img()
                 img_stack += [img]
@@ -289,9 +289,9 @@ class PolAcquReader(mManagerReader):
 
 
     """
-    def __init__(self, img_sample_path, ImgOutPath=None, input_chan=[], output_chan=[]):
+    def __init__(self, img_sample_path, ImgOutPath=None, input_chan=[], output_chan=[], binning=1):
 
-        mManagerReader.__init__(self, img_sample_path, ImgOutPath, input_chan, output_chan)
+        mManagerReader.__init__(self, img_sample_path, ImgOutPath, input_chan, output_chan, binning)
         metaFile = self.input_meta_file
         self.acquScheme = metaFile['Summary']['~ Acquired Using']
         self.bg = metaFile['Summary']['~ Background']

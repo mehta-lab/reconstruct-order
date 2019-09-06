@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import cv2
 from ..utils.imgIO import parse_tiff_input, exportImg
 from ..compute.reconstruct import ImgReconstructor
-from ..utils.imgProcessing import ImgMin, imBitConvert, correct_flat_field
+from ..utils.imgProcessing import ImgMin, imBitConvert, correct_flat_field, mean_pooling_2d_stack
 from ..utils.plotting import render_birefringence_imgs, plot_stokes, plot_pol_imgs, plot_Polacquisition_imgs
 from ..utils.mManagerIO import mManagerReader, PolAcquReader
 
@@ -34,9 +34,14 @@ def create_metadata_object(data_path, config):
     """
 
     try:
-        img_obj = PolAcquReader(data_path, output_chan=config.processing.output_channels)
+        img_obj = PolAcquReader(data_path,
+                                output_chan=config.processing.output_channels,
+                                binning=config.processing.binning
+                                )
     except:
-        img_obj = mManagerReader(data_path, output_chan=config.processing.output_channels)
+        img_obj = mManagerReader(data_path,
+                                 output_chan=config.processing.output_channels,
+                                 binning=config.processing.binning)
     return img_obj
 
 
@@ -124,7 +129,8 @@ def parse_bg_options(img_obj_list, config):
         elif bgCorrect in ['Local_filter', 'Local_fit']:
             print('Background correction mode set as "{}". Additional background correction using local '
                   'background estimated from sample images will be performed'.format(bgCorrect))
-            OutputPath = os.path.join(processed_dir, sample + '_' + sample + '_fit_order2')
+            OutputPath = os.path.join(
+                processed_dir, ''.join([sample, '_', sample]))
             img_obj_list[i].bg_method = bgCorrect
             img_obj_list[i].bg_correct = True
 
@@ -152,6 +158,9 @@ def parse_bg_options(img_obj_list, config):
                 img_obj_list[i].bg_method = 'Global'
                 img_obj_list[i].bg_correct = True
 
+        if not config.processing.binning == 1:
+            OutputPath = ''.join([OutputPath, '_binning_', str(config.processing.binning)])
+
         img_obj_list[i].ImgOutPath = OutputPath
         os.makedirs(OutputPath, exist_ok=True)  # create folder for processed images
     return img_obj_list
@@ -167,6 +176,7 @@ def process_background(img_io, img_io_bg, config):
     azimuth_offset = config.processing.azimuth_offset
     n_slice_local_bg = config.processing.n_slice_local_bg
     local_fit_order = config.processing.local_fit_order
+    binning = config.processing.binning
     if n_slice_local_bg == 'all':
         n_slice_local_bg = len(img_io.ZList)
     img_reconstructor = ImgReconstructor(ImgRawBg.shape,
@@ -176,7 +186,8 @@ def process_background(img_io, img_io_bg, config):
                                          swing=img_io.swing,
                                          wavelength=img_io.wavelength,
                                          azimuth_offset=azimuth_offset,
-                                         circularity=circularity)
+                                         circularity=circularity,
+                                         binning=binning)
     if img_io.bg_correct:
         stokes_param_bg = img_reconstructor.compute_stokes(ImgRawBg)
         stokes_param_bg_tm = img_reconstructor.stokes_transform(stokes_param_bg)
@@ -239,7 +250,7 @@ def loopT(img_io, config, img_reconstructor=None):
             img_io = loopZSm(img_io, config, img_reconstructor)
 
         elif img_io.loopZ == 'flat_field':
-            img_io = loopZBg(img_io)
+            img_io = loopZBg(img_io, config)
     return img_io
 
 
@@ -263,6 +274,7 @@ def loopZSm(img_io, config, img_reconstructor=None):
     pos_idx = img_io.posIdx
     z_list = img_io.ZList
     n_slice_local_bg = img_reconstructor.n_slice_local_bg
+    binning = config.processing.binning
     norm = config.plotting.normalize_color_images
     save_fig = config.plotting.save_birefringence_fig
     save_stokes_fig = config.plotting.save_stokes_fig
@@ -293,6 +305,10 @@ def loopZSm(img_io, config, img_reconstructor=None):
             plt.close("all")  # close all the figures from the last run
             img_io.zIdx = z_idx
             ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
+            if isinstance(ImgFluor, np.ndarray):
+                ImgFluor = mean_pooling_2d_stack(ImgFluor, binning)
+            if isinstance(ImgBF, np.ndarray):
+                ImgBF = mean_pooling_2d_stack(ImgBF, binning)
             ImgFluor = correct_flat_field(img_io, ImgFluor)
             fluor_list.append(ImgFluor)
             img_dict = {}
@@ -393,7 +409,7 @@ def compute_flat_field(img_io, config):
     img_io.img_fluor_bg = img_fluor_bg
     return img_io
 
-def loopZBg(img_io):
+def loopZBg(img_io, config):
     """
     Loop through each z in the sample metadata; computes the illumination function
     of fluorescence channels using image opening or looking for empty images,
@@ -409,10 +425,12 @@ def loopZBg(img_io):
         mManagerReader object that holds the image parameters
 
     """
-
+    binning = config.processing.binning
     for zIdx in range(0, 1):  # only use the first z
         img_io.zIdx = zIdx
         ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
+        if isinstance(ImgFluor, np.ndarray):
+            ImgFluor = mean_pooling_2d_stack(ImgFluor, binning)
         for i in range(ImgFluor.shape[0]):
             if np.any(ImgFluor[i, :, :]):  # if the flour channel exists
                 if img_io.ff_method == 'open':

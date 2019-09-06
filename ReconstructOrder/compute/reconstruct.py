@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 from ..utils.background_estimator import BackgroundEstimator2D
-
+from ..utils.imgProcessing import mean_pooling_2d_stack
 class ImgReconstructor:
     """
     ImgReconstructor contains methods to compute physical properties of birefringence
@@ -61,8 +61,17 @@ class ImgReconstructor:
 
     """
 
-    def __init__(self, img_shape=None, bg_method='Global', n_slice_local_bg=1, swing=None, wavelength=532,
-                 kernel_size=401, poly_fit_order=2, azimuth_offset=0, circularity='rcp'):
+    def __init__(self,
+                 img_shape=None,
+                 bg_method='Global',
+                 n_slice_local_bg=1,
+                 swing=None,
+                 wavelength=532,
+                 kernel_size=401,
+                 poly_fit_order=2,
+                 azimuth_offset=0,
+                 circularity='rcp',
+                 binning=1):
 
         self.img_shape = img_shape
         self.bg_method = bg_method
@@ -92,6 +101,7 @@ class ImgReconstructor:
         self.stokes_param_bg_tm = []
         self.stokes_param_bg_local_tm = []
         self.circularity = circularity
+        self.binning = binning
     @property
     def img_shape(self):
         return self._img_shape
@@ -123,6 +133,7 @@ class ImgReconstructor:
 
         """
 
+        img_raw = mean_pooling_2d_stack(img_raw, self.binning)
         self.img_shape = np.shape(img_raw)
         img_raw_flat = np.reshape(img_raw, (self._n_chann, -1))
         img_stokes_flat = np.dot(self.inst_mat_inv, img_raw_flat)
@@ -168,7 +179,8 @@ class ImgReconstructor:
         list of nd array.
             Background corrected transformed sample Stokes parameters
         """
-        if len(stokes_param_bg_tm[0].shape) < len(self.img_shape):
+        # add a dummy z-dimension to background if sample image has xyz dimension
+        if len(stokes_param_bg_tm[0].shape) < len(stokes_param_sm_tm[0].shape):
             stokes_param_bg_tm = [img[..., np.newaxis] for img in stokes_param_bg_tm]
         [I_trans, polarization, s1_norm, s2_norm, s3] = stokes_param_sm_tm
         [I_trans_bg, polarization_bg, s1_norm_bg, s2_norm_bg, s3_bg] = stokes_param_bg_tm

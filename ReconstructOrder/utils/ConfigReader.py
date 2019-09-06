@@ -105,6 +105,8 @@ class ConfigReader:
                     self.processing.n_slice_local_bg = value
                 elif key == 'local_fit_order':
                     self.processing.local_fit_order = value
+                elif key == 'binning':
+                    self.processing.binning = value
                 else:
                     raise NameError('Unrecognized configfile field:{}, key:{}'.format('processing', key))
 
@@ -302,6 +304,7 @@ class Processing:
         self._separate_positions = True
         self._n_slice_local_bg = 'all'
         self._local_fit_order = 2
+        self._binning = 1
 
     @property
     def output_channels(self):
@@ -334,6 +337,10 @@ class Processing:
     @property
     def local_fit_order(self):
         return self._local_fit_order
+
+    @property
+    def binning(self):
+        return self._binning
 
     @output_channels.setter
     def output_channels(self, value):     
@@ -380,6 +387,12 @@ class Processing:
         assert isinstance(value, int) and value >= 0, \
             "local_fit_order must be a non-negative integer"
         self._local_fit_order = value
+
+    @binning.setter
+    def binning(self, value):
+        assert isinstance(value, int) and value > 0, \
+            "binning must be a positive integer"
+        self._binning = value
 
     def __repr__(self):
         out = str(self.__class__) + '\n'

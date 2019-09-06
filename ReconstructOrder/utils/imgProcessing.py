@@ -117,13 +117,21 @@ def imBitConvert(im,bit=16, norm=False, limit=None):
         im = im.astype(np.uint16, copy=False) # convert to 16 bit
     return im
 
-def mean_pooling(im, block_size):
+def mean_pooling_2d(im, block_size):
     width, height = im.shape
     width_new = width // block_size
     height_new = height // block_size
     im_pooled = im[:width_new * block_size, :height_new * block_size]\
         .reshape(width_new, block_size, height_new, block_size).mean(axis=(1, 3))
     return im_pooled
+
+def mean_pooling_2d_stack(im, block_size):
+    if block_size == 1:
+        return im
+    im = [mean_pooling_2d(im[i, ...], block_size)
+               for i in range(im.shape[0])]
+    im = np.stack(im)
+    return im
 
 def imadjustStack(imStk, tol=1, bit=16,vin=[0,2**16-1]):
     for i in range(imStk.shape[2]):

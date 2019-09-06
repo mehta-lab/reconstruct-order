@@ -39,12 +39,34 @@ def channel_register(target_images, channels):
     registration_params = dict(zip(channels, shifts))
     return registration_params
 
-def translate_3D(images, channels, registration_params, size_z_um):
+def translate_3D(images,
+                 channels,
+                 registration_params,
+                 size_z_um,
+                 binning):
     """
-    Warps images using the provided transformation objects, and displays the overlaid images.
+    
+    Parameters
+    ----------
+    images : list
+        list of images to translate
+    channels : list 
+        list of channels corresponding to the images
+    registration_params : dict 
+        dictionary of channel (key) and its translational shifts [z, y, x] (value)
+    size_z_um : float 
+        z step size in um
+    binning : int 
+        total xy binning that has been applied during processing compared to the raw images.  
+
+    Returns
+    -------
+    registered_images : 
+    """"""
+    
 
     @param images: list of images.
-    @param registration_params: dictionary of channel (key) and its translational shifts [z, y, x] (value)
+    @param registration_params: 
     @return: reg_img - list of registered images.
     """
 
@@ -56,7 +78,7 @@ def translate_3D(images, channels, registration_params, size_z_um):
                     'Orientation_y', 'Polarization', 'Scattering',
                     'Pol_State_0', 'Pol_State_1',
                     'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
-                    'Transmission', 'Brightfield', 'Brightfield_computed']:
+                    'Transmission', 'Brightfield', 'Brightfield_computed', 'phase']:
             chan = 'Retardance'
         elif chan == 'ex561em700':
             chan = '640'
@@ -73,6 +95,9 @@ def translate_3D(images, channels, registration_params, size_z_um):
             else:
                 # 3D translation. Scale z-shift according to the z-step size.
                 shift[0] = shift[0]*registration_params['size_z_um']/size_z_um
+            if not binning == 1:
+                shift[1] = shift[1] / binning
+                shift[2] = shift[2] / binning
             image = affine_transform(image, np.ones(3), [-x for x in shift], order=1)
         registered_images.append(image)
     return registered_images
