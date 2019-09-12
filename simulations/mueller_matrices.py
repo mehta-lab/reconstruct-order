@@ -1,12 +1,34 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Fri May 24 17:49:42 2019
-
-@author: ivan.ivanov
-"""
 
 import sympy as sp
 import numpy as np
+
+
+def stokes2ellipse(S):
+    """
+    Compute ellipticity and orientation of a polarization state specified by four Stokes parameters.
+
+    :param S: Stokes vector
+    :return: ellipticity: -1,...,0,...,1 for left circular, linear,  and right circular states
+    :return: orientation: Orientation of polarization ellipse in radian.
+    """
+    s1Norm = S[1] / S[0]
+    s2Norm = S[2] / S[0]
+    s3Norm = S[3] / S[0]
+    linearity = np.sqrt(s1Norm ** 2 + s2Norm ** 2)
+    
+    if linearity:
+        ellipseAngle = np.arctan2(s3Norm, linearity)
+        ellipt = np.sin(ellipseAngle)
+
+    else:
+        ellipt = np.sign(s3Norm)
+    ellipt = np.asscalar(ellipt)
+
+    orient = 0.5 * np.arctan2(s2Norm, s1Norm)
+    orient = np.asscalar(orient)
+    
+    return (ellipt, orient)
 
 def M_LinearPolarizer(theta=0):
     """
