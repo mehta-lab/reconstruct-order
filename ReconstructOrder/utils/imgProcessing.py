@@ -88,7 +88,7 @@ def imBitConvert(im,bit=16, norm=False, limit=None):
 
     Parameters
     ----------
-    im : array
+    im : np.array
         input image
     bit : int
         output bit depth. 8 or 16

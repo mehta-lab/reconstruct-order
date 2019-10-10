@@ -8,6 +8,8 @@ import re
 import cv2
 from shutil import copy2
 
+from ReconstructOrder.datastructures import IntensityData
+
 
 def GetSubDirName(ImgPath):
     """Return sub-directory names in a directory
@@ -144,6 +146,7 @@ def process_timepoint_list(img_obj_list, config):
             t_list = config_t_list
         
         img_obj_list[idx].TimeList = t_list
+
     return img_obj_list
 
 
@@ -216,10 +219,15 @@ def parse_tiff_input(img_io):
     """
     acquDirPath = img_io.img_in_pos_path
     acquFiles = os.listdir(acquDirPath)
-    ImgPol = np.zeros((4, img_io.height,img_io.width)) # pol channels has minimum 4 channels
+
+    # ImgPol = np.zeros((4, img_io.height,img_io.width)) # pol channels has minimum 4 channels
+    ImgPol = IntensityData()
+    ImgPol.channel_names = ['IExt', 'I90', 'I135', 'I45', 'I0']
+
     ImgProc = []
     ImgBF = []
     ImgFluor = np.zeros((5, img_io.height,img_io.width)) # assuming 4 flour channels for now
+
     tIdx = img_io.tIdx
     zIdx = img_io.zIdx
     for fileName in acquFiles: # load raw images with Sigma0, 1, 2, 3 states, and processed images
@@ -228,17 +236,29 @@ def parse_tiff_input(img_io):
             img = loadTiff(acquDirPath, fileName)
             img -= img_io.blackLevel
             if any(substring in matchObj.group(1) for substring in ['State', 'state', 'Pol']):
+
                 if '0' in matchObj.group(1):
-                    ImgPol[0, :, :] = img
+                    # ImgPol[0, :, :] = img
+                    ImgPol.replace_image(img, 'IExt')
+
                 elif '1' in matchObj.group(1):
-                    ImgPol[1, :, :] = img
+                    # ImgPol[1, :, :] = img
+                    ImgPol.replace_image(img, 'I90')
+
                 elif '2' in matchObj.group(1):
-                    ImgPol[2, :, :] = img
+                    # ImgPol[2, :, :] = img
+                    ImgPol.replace_image(img, 'I135')
+
                 elif '3' in matchObj.group(1):
-                    ImgPol[3, :, :] = img
+                    # ImgPol[3, :, :] = img
+                    ImgPol.replace_image(img, 'I45')
+
                 elif '4' in matchObj.group(1):
-                    img = np.reshape(img, (1, img_io.height, img_io.width))
-                    ImgPol = np.concatenate((ImgPol, img))
+                    # img = np.reshape(img, (1, img_io.height, img_io.width))
+                    # ImgPol = np.concatenate((ImgPol, img))
+                    ImgPol.replace_image(img, 'I0')
+
+
             elif any(substring in matchObj.group(1) for substring in ['Computed Image']):
                 ImgProc += [img]
             elif any(substring in matchObj.group(1) for substring in
@@ -255,11 +275,13 @@ def parse_tiff_input(img_io):
                     ImgFluor[4,:,:] = img
             elif any(substring in matchObj.group(1) for substring in ['BF']):
                 ImgBF += [img]
-    ImgPol = sort_pol_channels(ImgPol)
+
+    # ImgPol = sort_pol_channels(ImgPol)
     if ImgProc:
         ImgProc = np.stack(ImgProc)
     if ImgBF:
         ImgBF = np.stack(ImgBF)
+
     return ImgPol, ImgProc, ImgFluor, ImgBF
 
 

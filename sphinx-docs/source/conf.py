@@ -21,8 +21,8 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Reconstruct Order'
-copyright = '2019, Shalin Mehta'
-author = 'Shalin Mehta'
+copyright = '2019, MehtaLab'
+author = 'MehtaLab, CZ Biohub'
 
 # The full version, including alpha/beta/rc tags
 release = '0'

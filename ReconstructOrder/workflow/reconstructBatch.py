@@ -15,14 +15,15 @@ def _processImg(img_obj, bg_obj, config):
     # Write config file in processed folder
     config.write_config(os.path.join(img_obj.ImgOutPath, 'config.yml'))  # save the config file in the processed folder
 
-    img_obj, img_reconstructor = process_background(img_obj, bg_obj, config)
+    # img_obj, img_reconstructor = process_background(img_obj, bg_obj, config)
+    background_corrected_data, img_reconstructor = process_background(img_obj, bg_obj, config)
 
     flatField = config.processing.flatfield_correction
     if flatField:  # find background fluorescence for flatField correction
-        img_obj = compute_flat_field(img_obj, config)
+        img_obj = compute_flat_field(img_obj, config, background_corrected_data, img_reconstructor)
 
     img_obj.loopZ = 'reconstruct'
-    img_obj = loopPos(img_obj, config, img_reconstructor)
+    img_obj = loopPos(img_obj, config, img_reconstructor, background_corrected_data)
 
 
 def reconstructBatch(configfile):

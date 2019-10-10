@@ -1,1 +1,0 @@
-Download the test data from https://bit.ly/2XHttWn and extract it in this folder as TestData/

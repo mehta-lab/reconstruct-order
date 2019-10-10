@@ -5,7 +5,6 @@ Process data collected over multiple positions, timepoints and z slices
 import os
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import cv2
 from ..utils.imgIO import parse_tiff_input, exportImg
@@ -13,6 +12,12 @@ from ..compute.reconstruct import ImgReconstructor
 from ..utils.imgProcessing import ImgMin, imBitConvert, correct_flat_field, mean_pooling_2d_stack
 from ..utils.plotting import render_birefringence_imgs, plot_stokes, plot_pol_imgs, plot_Polacquisition_imgs
 from ..utils.mManagerIO import mManagerReader, PolAcquReader
+
+from ..datastructures import StokesData
+from ..utils.ConfigReader import ConfigReader
+from typing import Union
+
+matplotlib.use('Agg')
 
 
 def create_metadata_object(data_path, config):
@@ -158,6 +163,9 @@ def parse_bg_options(img_obj_list, config):
                 img_obj_list[i].bg_method = 'Global'
                 img_obj_list[i].bg_correct = True
 
+        else:
+            raise AttributeError("Must define a background correction method")
+
         if not config.processing.binning == 1:
             OutputPath = ''.join([OutputPath, '_binning_', str(config.processing.binning)])
 
@@ -168,7 +176,7 @@ def parse_bg_options(img_obj_list, config):
 
 def process_background(img_io, img_io_bg, config):
     """
-    Read backgorund images, initiate ImgReconstructor to compute background stokes parameters
+    Read background images, initiate ImgReconstructor to compute background stokes parameters
 
     """
     ImgRawBg = parse_tiff_input(img_io_bg)[0]  # 0 for z-index
@@ -179,7 +187,8 @@ def process_background(img_io, img_io_bg, config):
     binning = config.processing.binning
     if n_slice_local_bg == 'all':
         n_slice_local_bg = len(img_io.ZList)
-    img_reconstructor = ImgReconstructor(ImgRawBg.shape,
+
+    img_reconstructor = ImgReconstructor(ImgRawBg.data.shape,
                                          bg_method=img_io.bg_method,
                                          n_slice_local_bg=n_slice_local_bg,
                                          poly_fit_order=local_fit_order,
@@ -189,20 +198,72 @@ def process_background(img_io, img_io_bg, config):
                                          circularity=circularity,
                                          binning=binning)
     if img_io.bg_correct:
-        stokes_param_bg = img_reconstructor.compute_stokes(ImgRawBg)
-        stokes_param_bg_tm = img_reconstructor.stokes_transform(stokes_param_bg)
+        background_stokes = img_reconstructor.compute_stokes(ImgRawBg)
+        background_stokes_normalized = img_reconstructor.stokes_normalization(background_stokes)
         # print('denoising the background...')
         # img_stokes_bg = [denoise_tv_chambolle(img, weight=10**6) for img in img_stokes_bg]
         # img_stokes_bg = [cv2.GaussianBlur(img, (5, 5), 0) for img in img_stokes_bg]
         # img_stokes_bg = [cv2.medianBlur(img, 5) for img in img_stokes_bg]
     else:
-        stokes_param_bg_tm = None
+        background_stokes_normalized = None
 
-    img_reconstructor.stokes_param_bg_tm = stokes_param_bg_tm
-    return img_io, img_reconstructor
+    # img_reconstructor.stokes_param_bg_tm = stokes_param_bg_tm
+    # return img_io, img_reconstructor
+    return background_stokes_normalized, img_reconstructor
 
 
-def loopPos(img_io, config, img_reconstructor=None):
+def compute_flat_field(img_io: Union[mManagerReader, PolAcquReader],
+                       config: ConfigReader,
+                       img_reconstructor: ImgReconstructor,
+                       background_data):
+    """
+    Compute illumination function of fluorescence channels
+    for flat-field correction
+
+    Parameters
+    ----------
+    img_io: object
+        mManagerReader object that holds the image parameters
+    config: object
+        ConfigReader object that holds the user input config parameters
+    img_reconstructor: ImgReconstructor
+        ImgReconstructor object for image reconstruction
+    background_data: StokesData
+        object of type StokesData
+    Returns
+    -------
+    img_io: object
+        mManagerReader object that holds the image parameters with
+        illumination function saved in img_io.img_fluor_bg
+
+    """
+
+    print('Calculating illumination function for flatfield correction...')
+    ff_method = config.processing.ff_method
+    img_io.ff_method = ff_method
+    img_io.loopZ = 'flat_field'
+
+    img_io = loopPos(img_io, config, img_reconstructor, background_data)
+
+    if ff_method == 'open':
+        img_fluor_bg = img_io.ImgFluorSum
+    elif ff_method == 'empty':
+        img_fluor_bg = img_io.ImgFluorMin
+    else:
+        raise ValueError("ff_method must be 'open' or 'empty'")
+
+    for channel in range(img_fluor_bg.shape[0]):
+        img_fluor_bg[channel] = img_fluor_bg[channel] - min(np.nanmin(img_fluor_bg[channel]), 0) + 1 #add 1 to avoid 0
+        img_fluor_bg[channel] /= np.mean(img_fluor_bg[channel])  # normalize the background to have mean = 1
+    img_io.img_fluor_bg = img_fluor_bg
+
+    return img_io
+
+
+def loopPos(img_io: Union[mManagerReader, PolAcquReader],
+            config: ConfigReader,
+            img_reconstructor: ImgReconstructor,
+            background_corrected_data=None):
     """
     Loop through each position in the sample metadata, check if it is on the user input
     position list; make separate folder for each position if separate_pos == True
@@ -224,49 +285,60 @@ def loopPos(img_io, config, img_reconstructor=None):
             img_io_bg.posIdx = posIdx
         img_io.posIdx = posIdx
 
-        img_io = loopT(img_io, config, img_reconstructor)
+        img_io = loopT(img_io, config, img_reconstructor, background=background_corrected_data)
+
     return img_io
 
 
-def loopT(img_io, config, img_reconstructor=None):
+def loopT(img_io: Union[mManagerReader, PolAcquReader],
+          config: ConfigReader,
+          img_reconstructor: ImgReconstructor,
+          background=None):
     """
     Loop through each time point supplied in the config, call loopZSm or loopZBg
     depending on the looZ mode
 
     Parameters
     ----------
-    img_io: object
+    img_io: Union[mManagerReader, PolAcquReader]
         mManagerReader object that holds the image parameters
-    config: object
+    config: ConfigReader
         ConfigReader object that holds the user input config parameters
-    img_reconstructor: object
+    img_reconstructor: ImgReconstructor
         ImgReconstructor object for image reconstruction
+    background: BackgroundData
+        object of type BackgroundData
     -------
 
     """
     for tIdx in img_io.TimeList:
         img_io.tIdx = tIdx
         if img_io.loopZ == 'reconstruct':
-            img_io = loopZSm(img_io, config, img_reconstructor)
+            img_io = loopZSm(img_io, config, img_reconstructor, background=background)
 
         elif img_io.loopZ == 'flat_field':
             img_io = loopZBg(img_io, config)
     return img_io
 
 
-def loopZSm(img_io, config, img_reconstructor=None):
+def loopZSm(img_io: Union[mManagerReader, PolAcquReader],
+            config: ConfigReader,
+            img_reconstructor: ImgReconstructor,
+            background=None):
     """
     Loop through each z supplied in the config; computes and export only images in the
     supplied output channels (stokes, birefringence, background corrected raw pol images);
 
     Parameters
     ----------
-    img_io: object
+    img_io: mManagerReader
         mManagerReader object that holds the image parameters
-    config: object
+    config: ConfigReader
         ConfigReader object that holds the user input config parameters
-    img_reconstructor: object
+    img_reconstructor: ImgReconstructor
         ImgReconstructor object for image reconstruction
+    background: BackgroundData
+        BackgroundData object containing normalized stokes images
     -------
     """
 
@@ -280,6 +352,8 @@ def loopZSm(img_io, config, img_reconstructor=None):
     save_stokes_fig = config.plotting.save_stokes_fig
     save_pol_fig = config.plotting.save_polarization_fig
     save_mm_fig = config.plotting.save_micromanager_fig
+
+    # 1) define allowed config values
     pol_names = ['Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4']
     stokes_names = ['Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3']
     stokes_names_sm = [x + '_sm' for x in stokes_names]
@@ -288,22 +362,27 @@ def loopZSm(img_io, config, img_reconstructor=None):
                        'Brightfield_computed+Retardance+Orientation',
                        'Retardance+Fluorescence', 'Retardance+Fluorescence_all']
     fluor_names = ['405', '488', '568', '640', 'ex561em700']
-    save_stokes = any(chan in stokes_names + stokes_names_sm
-               for chan in img_io.chNamesOut) or any([save_stokes_fig, save_mm_fig])
-    save_birefring = any(chan in birefring_names
-               for chan in img_io.chNamesOut) or save_fig
+
+    # 2 )set flags based on names defined in 1)
+    save_stokes = any(chan in stokes_names + stokes_names_sm for chan in img_io.chNamesOut) \
+                  or any([save_stokes_fig, save_mm_fig])
+    save_birefring = any(chan in birefring_names for chan in img_io.chNamesOut) or save_fig
     save_BF = 'Brightfield' in img_io.chNamesOut
     save_pol = any(chan in pol_names for chan in img_io.chNamesOut) or save_pol_fig
     save_fluor = any(chan in fluor_names for chan in img_io.chNamesOut)
 
     for z_stack_idx in range(0, len(z_list), n_slice_local_bg):
+
         stokes_param_sm_stack = [[] for i in range(len(stokes_names))]
         fluor_list = []
+
         for z_list_idx in range(z_stack_idx, z_stack_idx + n_slice_local_bg):
             z_idx = z_list[z_list_idx]
             print('Processing position %03d, time %03d, z %03d ...' % (pos_idx, t_idx, z_idx))
             plt.close("all")  # close all the figures from the last run
             img_io.zIdx = z_idx
+
+            # load raw intensity data
             ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
             if isinstance(ImgFluor, np.ndarray):
                 ImgFluor = mean_pooling_2d_stack(ImgFluor, binning)
@@ -311,14 +390,17 @@ def loopZSm(img_io, config, img_reconstructor=None):
                 ImgBF = mean_pooling_2d_stack(ImgBF, binning)
             ImgFluor = correct_flat_field(img_io, ImgFluor)
             fluor_list.append(ImgFluor)
+
             img_dict = {}
             if save_stokes or save_birefring:
+                # compute stokes
                 stokes_param_sm = img_reconstructor.compute_stokes(ImgRawSm)
-                for stack, img in zip(stokes_param_sm_stack, stokes_param_sm):
+                for stack, img in zip(stokes_param_sm_stack, stokes_param_sm.data):
                     stack.append(img)
                 # retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images
+
             if save_BF and isinstance(ImgBF, np.ndarray):
-                ImgBF = ImgBF[0, :, :] / img_reconstructor.stokes_param_bg_tm[0]  # flat-field correction
+                ImgBF = ImgBF[0, :, :] / background.s0  # flat-field correction
                 ImgBF = imBitConvert(ImgBF*config.plotting.transmission_scaling, bit=16, norm=False)
                 img_dict.update({'Brightfield': ImgBF})
 
@@ -326,44 +408,69 @@ def loopZSm(img_io, config, img_reconstructor=None):
                 retardMMSm = ImgProcSm[0, :, :]
                 azimuthMMSm = ImgProcSm[1, :, :]
                 if save_mm_fig:
+                    # todo: retard and azimuth are called before definitiion here
                     imgs_mm_py = [retardMMSm, azimuthMMSm, retard, azimuth]
                     plot_Polacquisition_imgs(img_io, imgs_mm_py)
 
             if save_pol:
                 imgs_pol = []
                 for i in range(ImgRawSm.shape[0]):
+                    #todo: I don't know where "img_raw_bg" comes from.  where is it assigned?
                     imgs_pol += [ImgRawSm[i, ...] / img_reconstructor.img_raw_bg[i, ...]]
                 if save_pol_fig:
                     plot_pol_imgs(img_io, imgs_pol, pol_names)
                 imgs_pol = [imBitConvert(img * 10 ** 4, bit=16) for img in imgs_pol]
                 img_dict.update(dict(zip(pol_names, imgs_pol)))
+
             if save_fluor:
                 ImgFluor = imBitConvert(ImgFluor, bit=16, norm=False)
                 img_dict.update(dict(zip(fluor_names, [ImgFluor[chan, :, :] for chan in range(ImgFluor.shape[0])])))
             exportImg(img_io, img_dict)
 
+        # generate images?
         if save_stokes or save_birefring:
-            stokes_param_sm_stack = [np.stack(stack, axis=-1) for stack in stokes_param_sm_stack]
-            stokes_param_sm_stack_tm = img_reconstructor.stokes_transform(stokes_param_sm_stack)
+
+            # build StokesData
+            stk_dat = StokesData()
+            [stk_dat.s0,
+             stk_dat.s1,
+             stk_dat.s2,
+             stk_dat.s3] = [np.stack(stack, axis=-1) for stack in stokes_param_sm_stack]
+
+            norm_sample = img_reconstructor.stokes_normalization(stk_dat)
             if img_io.bg_correct:
-                stokes_param_sm_stack_tm = img_reconstructor.correct_background(stokes_param_sm_stack_tm)
-            birfring_stacks = \
-                img_reconstructor.reconstruct_birefringence(stokes_param_sm_stack_tm)
+                norm_sample = img_reconstructor.correct_background(norm_sample, background)
+
+            physical_data = img_reconstructor.reconstruct_birefringence(norm_sample)
+
             img_dict = {}
             for z_idx in range(z_stack_idx, z_stack_idx + n_slice_local_bg):
                 plt.close("all")  # close all the figures from the last run
                 img_io.zIdx = z_list[z_idx]
                 z_sub_idx = z_idx - z_stack_idx
-                [s0, retard, azimuth, polarization, s1, s2, s3] = [stack[..., z_sub_idx] for stack in birfring_stacks]
+
+                # extract the relevant z slice out of the data
+                s0 = physical_data.I_trans[..., z_sub_idx]
+                retard = physical_data.retard[..., z_sub_idx]
+                azimuth = physical_data.azimuth[..., z_sub_idx]
+                polarization = physical_data.polarization[..., z_sub_idx]
+                s1 = (norm_sample.s1_norm * norm_sample.s3)[..., z_sub_idx]
+                s2 = (norm_sample.s2_norm * norm_sample.s3)[..., z_sub_idx]
+                s3 = (norm_sample.s3)[..., z_sub_idx]
+
                 ImgFluor = fluor_list[z_sub_idx]
+
                 if save_birefring:
+
                     imgs = [s0, retard, azimuth, polarization, ImgFluor]
+
                     img_io, img_dict = render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=8, zoomin=False,
                                                                  dpi=200,
                                                                  norm=norm, plot=save_fig)
                 if save_stokes:
                     img_stokes = [s0, s1, s2, s3]
-                    img_stokes_sm = [stack[..., z_sub_idx] for stack in stokes_param_sm_stack]
+                    img_stokes_sm = [stack[..., z_sub_idx] for stack in norm_sample.data]
+
                     if save_stokes_fig:
                         plot_stokes(img_io, img_stokes, img_stokes_sm)
                     img_stokes = [x.astype(np.float32, copy=False) for x in img_stokes]
@@ -373,41 +480,9 @@ def loopZSm(img_io, config, img_reconstructor=None):
                     img_dict.update(img_stokes_dict)
                     img_dict.update(img_stokes_sm_dict)
                 exportImg(img_io, img_dict)
+
     return img_io
 
-def compute_flat_field(img_io, config):
-    """
-    Compute illumination function of fluorescence channels
-    for flat-field correction
-
-    Parameters
-    ----------
-    img_io: object
-        mManagerReader object that holds the image parameters
-    config: object
-        ConfigReader object that holds the user input config parameters
-
-    Returns
-    -------
-    img_io: object
-        mManagerReader object that holds the image parameters with
-        illumination function saved in img_io.img_fluor_bg
-
-    """
-    print('Calculating illumination function for flatfield correction...')
-    ff_method = config.processing.ff_method
-    img_io.ff_method = ff_method
-    img_io.loopZ = 'flat_field'
-    img_io = loopPos(img_io, config)
-    if ff_method == 'open':
-        img_fluor_bg = img_io.ImgFluorSum
-    elif ff_method == 'empty':
-        img_fluor_bg = img_io.ImgFluorMin
-    for channel in range(img_fluor_bg.shape[0]):
-        img_fluor_bg[channel] = img_fluor_bg[channel] - min(np.nanmin(img_fluor_bg[channel]), 0) + 1 #add 1 to avoid 0
-        img_fluor_bg[channel] /= np.mean(img_fluor_bg[channel])  # normalize the background to have mean = 1
-    img_io.img_fluor_bg = img_fluor_bg
-    return img_io
 
 def loopZBg(img_io, config):
     """
@@ -416,12 +491,12 @@ def loopZBg(img_io, config):
     currently only process the first Z for speed
     Parameters
     ----------
-    img_io: object
+    img_io: mManagerReader
         mManagerReader object that holds the image parameters
 
     Returns
     -------
-    img_io: object
+    img_io: mManagerReader
         mManagerReader object that holds the image parameters
 
     """
