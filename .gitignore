@@ -8,3 +8,8 @@ __pycache__/
 .idea/ReconstructOrder.iml
 .idea/workspace.xml
 *idea
+
+ReconstructOrder.egg-info/
+dist/
+build/
+

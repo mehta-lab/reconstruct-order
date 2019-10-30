@@ -5,6 +5,7 @@ from ..utils.imgProcessing import mean_pooling_2d_stack
 
 from ..datastructures import IntensityData, StokesData, PhysicalData
 
+
 from typing import Union
 
 
@@ -69,25 +70,39 @@ class ImgReconstructor:
 
     def __init__(self,
                  img_shape,
-                 bg_method='Global',
-                 n_slice_local_bg=1,
-                 swing=None,
-                 wavelength=532,
-                 kernel_size=401,
-                 poly_fit_order=2,
-                 azimuth_offset=0,
-                 circularity='rcp',
-                 binning=1):
+                 bg_method        = 'Global',
+                 n_slice_local_bg = 1,
+                 swing            = None,
+                 wavelength       = 532,
+                 kernel_size      = 401,
+                 poly_fit_order   = 2,
+                 azimuth_offset   = 0,
+                 circularity      = 'rcp',
+                 binning          = 1,
+                 use_gpu          = False,
+                 gpu_id           = 0):
 
         # image params
-        self.img_shape = img_shape
+        self.img_shape        = img_shape
 
-        self.bg_method = bg_method
+        self.bg_method        = bg_method
         self.n_slice_local_bg = n_slice_local_bg
-        self.swing = swing * 2 * np.pi # covert swing from fraction of wavelength to radian
-        self.wavelength = wavelength
-        self.kernel_size = kernel_size
-        self.poly_fit_order = poly_fit_order
+        self.swing            = swing * 2 * np.pi # covert swing from fraction of wavelength to radian
+        self.wavelength       = wavelength
+        self.kernel_size      = kernel_size
+        self.poly_fit_order   = poly_fit_order
+        self.use_gpu          = use_gpu
+        self.gpu_id           = gpu_id
+        
+        if self.use_gpu:
+            
+            try:
+                globals()['cp'] = __import__("cupy")
+                cp.cuda.Device(self.gpu_id).use()
+            except ModuleNotFoundError:
+                print("cupy not installed, using CPU instead")
+                self.use_gpu = False
+
 
         # compute instrument matrix only once
         chi = self.swing
@@ -202,14 +217,27 @@ class ImgReconstructor:
             raise TypeError("stokes_param must be of type StokesData")
 
         norm_dat = StokesData()
-
+        
         [s0, s1, s2, s3] = stokes_param.data
+        
+        if self.use_gpu:
+            s0 = cp.array(s0)
+            s1 = cp.array(s1)
+            s2 = cp.array(s2)
+            s3 = cp.array(s3)
+            
+            # set norm_dat's normalized data
+            norm_dat.s1_norm      = cp.asnumpy(s1 / s3)
+            norm_dat.s2_norm      = cp.asnumpy(s2 / s3)
+            norm_dat.polarization = cp.asnumpy(cp.sqrt(s1 ** 2 + s2 ** 2 + s3 ** 2) / s0)
+            
+        else:
+            
+            # set norm_dat's normalized data
+            norm_dat.s1_norm      = s1 / s3
+            norm_dat.s2_norm      = s2 / s3
+            norm_dat.polarization = np.sqrt(s1 ** 2 + s2 ** 2 + s3 ** 2) / s0
 
-        # set norm_dat's normalized data
-        norm_dat.s1_norm = s1 / s3
-        norm_dat.s2_norm = s2 / s3
-        # norm_dat.I_trans = s0
-        norm_dat.polarization = np.sqrt(s1 ** 2 + s2 ** 2 + s3 ** 2) / s0
 
         # set norm_dat's stokes data
         [norm_dat.s0,
@@ -238,16 +266,17 @@ class ImgReconstructor:
         # add a dummy z-dimension to background if sample image has xyz dimension
         if len(bg_norm_obj.s0.shape) < len(sample_norm_obj.s0.shape):
             # add blank axis to end of background images so it matches dim of input image
-            bg_norm_obj.s0 = bg_norm_obj.s0[..., np.newaxis]
+            bg_norm_obj.s0           = bg_norm_obj.s0[..., np.newaxis]
             bg_norm_obj.polarization = bg_norm_obj.polarization[..., np.newaxis]
-            bg_norm_obj.s1_norm = bg_norm_obj.s1_norm[..., np.newaxis]
-            bg_norm_obj.s2_norm = bg_norm_obj.s2_norm[..., np.newaxis]
+            bg_norm_obj.s1_norm      = bg_norm_obj.s1_norm[..., np.newaxis]
+            bg_norm_obj.s2_norm      = bg_norm_obj.s2_norm[..., np.newaxis]
 
         # perform the correction
-        sample_norm_obj.s0 = sample_norm_obj.s0 / bg_norm_obj.s0
+        sample_norm_obj.s0           = sample_norm_obj.s0 / bg_norm_obj.s0
         sample_norm_obj.polarization = sample_norm_obj.polarization / bg_norm_obj.polarization
-        sample_norm_obj.s1_norm = sample_norm_obj.s1_norm - bg_norm_obj.s1_norm
-        sample_norm_obj.s2_norm = sample_norm_obj.s2_norm - bg_norm_obj.s2_norm
+        sample_norm_obj.s1_norm      = sample_norm_obj.s1_norm - bg_norm_obj.s1_norm
+        sample_norm_obj.s2_norm      = sample_norm_obj.s2_norm - bg_norm_obj.s2_norm
+
 
         return sample_norm_obj
 
@@ -293,6 +322,7 @@ class ImgReconstructor:
 
             local_background = self.compute_local_background(sample_stokes_norm_local)
 
+
             sample_stokes_norm_corrected = self.correct_background_stokes(sample_stokes_norm_corrected, local_background)
 
         return sample_stokes_norm_corrected
@@ -330,6 +360,7 @@ class ImgReconstructor:
          stokes_param_bg_local_tm.s2_norm,
          stokes_param_bg_local_tm.s3] = [estimate_bg(img) for img in
                                          [stokes_param_sm_local_tm.__getattribute__(corr) for corr in correction]]
+
 
         return stokes_param_bg_local_tm
 
@@ -369,22 +400,39 @@ class ImgReconstructor:
         #     s2_normSmBg = np.nanmean(s2_normSmCrop)
 
         phys_data = PhysicalData()
+        
+        if self.use_gpu:
+            s3 = cp.array(stokes_param_sm_tm.s3)
+            s1 = cp.array(stokes_param_sm_tm.s1_norm) * s3
+            s2 = cp.array(stokes_param_sm_tm.s2_norm) * s3
+            
+            retard = cp.arctan2(cp.sqrt(s1 ** 2 + s2 ** 2), s3)
+            retard = cp.asnumpy(retard / (2 * np.pi) * self.wavelength)  # convert the unit to [nm]
 
-        s1 = stokes_param_sm_tm.s1_norm * stokes_param_sm_tm.s3
-        s2 = stokes_param_sm_tm.s2_norm * stokes_param_sm_tm.s3
-        retard = np.arctan2(np.sqrt(s1 ** 2 + s2 ** 2), stokes_param_sm_tm.s3)
-        retard = retard / (2 * np.pi) * self.wavelength  # convert the unit to [nm]
-
-        if self.circularity == 'lcp':
-            azimuth = (0.5 * np.arctan2(s1, -s2) + self.azimuth_offset) % (np.pi)  # make azimuth fall in [0,pi]
-        elif self.circularity == 'rcp':
-            azimuth = (0.5 * np.arctan2(-s1, -s2) + self.azimuth_offset) % (np.pi)  # make azimuth fall in [0,pi]
+            if self.circularity == 'lcp':
+                azimuth = cp.asnumpy((0.5 * cp.arctan2(s1, -s2) + self.azimuth_offset) % (np.pi))  # make azimuth fall in [0,pi]
+            elif self.circularity == 'rcp':
+                azimuth = cp.asnumpy((0.5 * cp.arctan2(-s1, -s2) + self.azimuth_offset) % (np.pi))  # make azimuth fall in [0,pi]
+            else:
+                raise AttributeError("unable to compute azimuth, circularity parameter is not defined")
         else:
-            raise AttributeError("unable to compute azimuth, circularity parameter is not defined")
+            s1 = stokes_param_sm_tm.s1_norm * stokes_param_sm_tm.s3
+            s2 = stokes_param_sm_tm.s2_norm * stokes_param_sm_tm.s3
 
-        phys_data.I_trans = stokes_param_sm_tm.s0
-        phys_data.retard = retard
-        phys_data.azimuth = azimuth
+            retard = np.arctan2(np.sqrt(s1 ** 2 + s2 ** 2), stokes_param_sm_tm.s3)
+            retard = retard / (2 * np.pi) * self.wavelength  # convert the unit to [nm]
+
+            if self.circularity == 'lcp':
+                azimuth = (0.5 * np.arctan2(s1, -s2) + self.azimuth_offset) % (np.pi)  # make azimuth fall in [0,pi]
+            elif self.circularity == 'rcp':
+                azimuth = (0.5 * np.arctan2(-s1, -s2) + self.azimuth_offset) % (np.pi)  # make azimuth fall in [0,pi]
+            else:
+                raise AttributeError("unable to compute azimuth, circularity parameter is not defined")
+
+        phys_data.I_trans      = stokes_param_sm_tm.s0
+        phys_data.retard       = retard
+        phys_data.azimuth      = azimuth
+
         phys_data.polarization = stokes_param_sm_tm.polarization
 
         return phys_data

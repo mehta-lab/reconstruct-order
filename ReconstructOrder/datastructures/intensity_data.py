@@ -59,6 +59,7 @@ class IntensityData(object):
     def check_shape(self, input_shape=None):
         """
         compare the supplied input_shape with the shape of images already in the self.__data
+
         self.__current_shape is updated at "append_image" and "replace_image"
 
         Parameters
@@ -70,6 +71,7 @@ class IntensityData(object):
         -------
 
         """
+
 
         # check for empty __data possibilities:
         if len(self.__data) == 0:
@@ -202,6 +204,7 @@ class IntensityData(object):
             raise TypeError("image is not ndarray")
         if not self.check_shape(image.shape):
             raise ValueError("image does not conform to current data dimensions")
+
         if self.__channel_names:
             raise ValueError("channel names are already defined for this IntensityData object."
                              "Append first, then assign channel names.  Or use replace_image instead")
@@ -227,6 +230,7 @@ class IntensityData(object):
         # data checks
         if not self.check_dtype(image):
             raise TypeError("image is not ndarray")
+
         if not self.check_shape(image.shape):
             raise ValueError("image does not conform to current data dimensions")
         self.__current_shape = image.shape

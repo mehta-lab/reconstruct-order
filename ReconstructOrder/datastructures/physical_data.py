@@ -14,6 +14,12 @@ class PhysicalData(object):
     __azimuth = None
     __azimuth_vector = None
     __azimuth_degree = None
+    __absorption_2D = None
+    __phase_2D = None
+    __absorption_semi3D = None
+    __phase_semi3D = None
+    __phase_3D = None
+
 
     def __setattr__(self, name, value):
         """
@@ -40,6 +46,13 @@ class PhysicalData(object):
         self.__azimuth = None
         self.__azimuth_vector = None
         self.__azimuth_degree = None
+        self.__absorption_2D = None
+        self.__phase_2D = None
+        self.__absorption_semi3D = None
+        self.__phase_semi3D = None
+        self.__phase_3D = None
+        
+
 
     @property
     def I_trans(self):
@@ -96,5 +109,49 @@ class PhysicalData(object):
     @depolarization.setter
     def depolarization(self, data: np.ndarray):
         self.__depolarization = data
+        
+    @property
+    def absorption_2D(self):
+        return self.__absorption_2D
+
+    @absorption_2D.setter
+    def absorption_2D(self, data: np.ndarray):
+        self.__absorption_2D = data
+        
+    @property
+    def phase_2D(self):
+        return self.__phase_2D
+
+    @phase_2D.setter
+    def phase_2D(self, data: np.ndarray):
+        self.__phase_2D = data
+        
+    @property
+    def absorption_semi3D(self):
+        return self.__absorption_semi3D
+
+    @absorption_semi3D.setter
+    def absorption_semi3D(self, data: np.ndarray):
+        self.__absorption_semi3D = data
+        
+    @property
+    def phase_semi3D(self):
+        return self.__phase_semi3D
+
+    @phase_semi3D.setter
+    def phase_semi3D(self, data: np.ndarray):
+        self.__phase_semi3D = data
+        
+    @property
+    def phase_3D(self):
+        return self.__phase_3D
+
+    @phase_3D.setter
+    def phase_3D(self, data: np.ndarray):
+        self.__phase_3D = data
+        
+    
+        
+    
 
 

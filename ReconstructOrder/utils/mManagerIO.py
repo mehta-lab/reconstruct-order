@@ -130,8 +130,8 @@ class mManagerReader:
         self.nPos = input_meta_file['Summary']['Positions']
         self.nTime = input_meta_file['Summary']['Frames']
         self.nZ = input_meta_file['Summary']['Slices']
-        self.size_x_um = 6.5/63 # (um) for zyla at 63X. mManager metafile currently does not log the correct pixel size
-        self.size_y_um = 6.5/63 # (um) for zyla at 63X. Manager metafile currently does not log the correct pixel size
+        self.size_x_um = 6.5 # (um) for zyla at 63X. mManager metafile currently does not log the correct pixel size
+        self.size_y_um = 6.5 # (um) for zyla at 63X. Manager metafile currently does not log the correct pixel size
         self.size_z_um = input_meta_file['Summary']['z-step_um']
         self.time_stamp = input_meta_file['Summary']['Time']
         self.img_fluor_bg = np.ones((5, self.height//binning, self.width//binning))

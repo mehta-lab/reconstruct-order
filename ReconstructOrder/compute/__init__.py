@@ -2,6 +2,6 @@
 
 name = "compute"
 
-from . import reconstruct
+from . import (reconstruct, reconstruct_phase)
 
-__all__ = ["reconstruct"]
+__all__ = ["reconstruct", "reconstruct_phase"]

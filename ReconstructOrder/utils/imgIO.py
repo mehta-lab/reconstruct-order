@@ -195,7 +195,7 @@ def loadTiff(acquDirPath, acquFiles):
     return img
 
 
-def parse_tiff_input(img_io):
+def parse_tiff_input(img_io, ROI=None):
     """Parse tiff file name following mManager/Polacquisition output format
     return images parsed based on their imaging modalities with shape (channel, height,
     width)
@@ -204,6 +204,10 @@ def parse_tiff_input(img_io):
     ----------
     img_io : obj
         mManagerReader instance
+        
+    ROI    : list
+        region of interest for reconstruction in format of [n_start_y, n_start_x, Ny, Nx]
+        
 
     Returns
     -------
@@ -223,17 +227,25 @@ def parse_tiff_input(img_io):
     # ImgPol = np.zeros((4, img_io.height,img_io.width)) # pol channels has minimum 4 channels
     ImgPol = IntensityData()
     ImgPol.channel_names = ['IExt', 'I90', 'I135', 'I45', 'I0']
+    
+    if ROI is None:
+        ROI = [0,0, img_io.height, img_io.width]
+    
+    assert ROI[0]+ROI[2] <= img_io.height and ROI[1]+ROI[3] <= img_io.width, \
+    "Region of interest is beyond the size of the actual image"
+        
 
     ImgProc = []
     ImgBF = []
-    ImgFluor = np.zeros((5, img_io.height,img_io.width)) # assuming 4 flour channels for now
+    ImgFluor = np.zeros((5, ROI[2], ROI[3])) # assuming 4 flour channels for now
+
 
     tIdx = img_io.tIdx
     zIdx = img_io.zIdx
     for fileName in acquFiles: # load raw images with Sigma0, 1, 2, 3 states, and processed images
         matchObj = re.match( r'img_000000%03d_(.*)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read images with "state" string in the filename
         if matchObj:
-            img = loadTiff(acquDirPath, fileName)
+            img = loadTiff(acquDirPath, fileName)[ROI[0]:ROI[0]+ROI[2],ROI[1]:ROI[1]+ROI[3]]
             img -= img_io.blackLevel
             if any(substring in matchObj.group(1) for substring in ['State', 'state', 'Pol']):
 

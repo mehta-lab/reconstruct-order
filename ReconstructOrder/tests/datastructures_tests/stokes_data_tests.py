@@ -152,6 +152,7 @@ def test_instances():
         assert(stk1 == stk2)
 
     with pytest.raises(AssertionError):
+
         stk1.s0 = np.ones((512,512))
         stk2.s0 = 2*np.ones((512,512))
         assert_array_equal(stk1.s0, stk2.s0)
@@ -179,6 +180,7 @@ def test_data_dims():
     b = np.ones((256, 256))
 
     stk_data.s0 = a
+
     stk_data.s1 = a
     stk_data.s2 = a
 
@@ -186,10 +188,12 @@ def test_data_dims():
     with pytest.raises(ValueError):
         dat = stk_data.data
 
+
     stk_data.s3 = a
 
     # data dim check
     with pytest.raises(ValueError):
+
         stk_data.s2 = b
         dat = stk_data.data
 

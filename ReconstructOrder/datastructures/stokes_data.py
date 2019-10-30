@@ -12,6 +12,7 @@ class StokesData(object):
     __s2_norm = None
     __polarization = None
     __data = None
+
     # __current_shape = None
 
     def __setattr__(self, name, value):
@@ -39,6 +40,7 @@ class StokesData(object):
             if provided with inv_inst_matrix, automatically compute stokes matrices
         """
         super(StokesData, self).__init__()
+
         # self.__current_shape = ()
         if inv_inst_matrix is not None and intensity_data is not None:
             self.__data = [None, None, None, None]
@@ -46,6 +48,7 @@ class StokesData(object):
         else:
             self.__s1_norm = None
             self.__s2_norm = None
+
             self.__polarization = None
             self.__data = [None, None, None, None]
 
@@ -63,6 +66,7 @@ class StokesData(object):
         [self.s0, self.s1, self.s2, self.s3] = [img_stokes[i, ...] for i in range(4)]
         self.s1_norm = self.s1/self.s3
         self.s2_norm = self.s2/self.s3
+
 
     def check_shape(self, input_shape=None):
         # check for empty __data possibilities:
@@ -98,6 +102,7 @@ class StokesData(object):
     def data(self):
         if not self.check_shape():
             raise ValueError("Inconsistent data dimensions or data not assigned\n")
+
         # check for blank entries, None or array types exist
         # if True in [True for value in self.__data if value is None or value.any() is None]:
         #     raise ValueError("None present:  Not all stokes types are assigned")
@@ -110,6 +115,7 @@ class StokesData(object):
 
     @s1_norm.setter
     def s1_norm(self, image):
+
         if not self.check_dtype(image):
             raise TypeError("image is not ndarray")
         # if not self.check_shape(image.shape):
@@ -125,12 +131,14 @@ class StokesData(object):
 
     @s2_norm.setter
     def s2_norm(self, image):
+
         if not self.check_dtype(image):
             raise TypeError("image is not ndarray")
         # if not self.check_shape(image.shape):
         #     raise ValueError("image does not conform to current data dimensions")
         #
         # self.__current_shape = image.shape
+
         self.__s2_norm = image
 
     # polarization based on other stokes params
@@ -139,6 +147,7 @@ class StokesData(object):
         return self.__polarization
 
     @polarization.setter
+
     def polarization(self, image):
         if not self.check_dtype(image):
             raise TypeError("image is not ndarray")
@@ -155,6 +164,7 @@ class StokesData(object):
 
     @s0.setter
     def s0(self, image: np.ndarray):
+
         if not self.check_dtype(image):
             raise TypeError("image is not ndarray")
         # if not self.check_shape(image.shape):
@@ -169,6 +179,7 @@ class StokesData(object):
 
     @s1.setter
     def s1(self, image: np.ndarray):
+
         if not self.check_dtype(image):
             raise TypeError("image is not ndarray")
         # if not self.check_shape(image.shape):
@@ -183,6 +194,7 @@ class StokesData(object):
 
     @s2.setter
     def s2(self, image: np.ndarray):
+
         if not self.check_dtype(image):
             raise TypeError("image is not ndarray")
         # if not self.check_shape(image.shape):
@@ -197,6 +209,7 @@ class StokesData(object):
 
     @s3.setter
     def s3(self, image: np.ndarray):
+
         if not self.check_dtype(image):
             raise TypeError("image is not ndarray")
         # if not self.check_shape(image.shape):

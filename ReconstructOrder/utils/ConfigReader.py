@@ -35,9 +35,9 @@ class ConfigReader:
 
         """
 
-        self.dataset = Dataset()
+        self.dataset    = Dataset()
         self.processing = Processing()
-        self.plotting = Plotting()
+        self.plotting   = Plotting()
 
         if path:
             self.read_config(path)
@@ -67,7 +67,7 @@ class ConfigReader:
 
         # Assign data_dir and processed_dir first to be able to check sample
         # and background directories
-        self.dataset.data_dir = self.yaml_config['dataset']['data_dir']
+        self.dataset.data_dir      = self.yaml_config['dataset']['data_dir']
         self.dataset.processed_dir = self.yaml_config['dataset']['processed_dir']
 
         for (key, value) in self.yaml_config['dataset'].items():
@@ -78,6 +78,8 @@ class ConfigReader:
                     self.dataset.samples = value
             elif key == 'positions':
                 self.dataset.positions = value
+            elif key == 'ROI':
+                self.dataset.ROI = value
             elif key == 'z_slices':
                 self.dataset.z_slices = value
             elif key == 'timepoints':
@@ -91,6 +93,10 @@ class ConfigReader:
             for (key, value) in self.yaml_config['processing'].items():
                 if key == 'output_channels':
                     self.processing.output_channels = value
+                    if 'Phase2D' in value or 'Phase_semi3D' in value  or 'Phase3D' in value:
+                        phase_processing = True
+                    else:
+                        phase_processing = False
                 elif key == 'circularity':
                     self.processing.circularity = value
                 elif key == 'background_correction':
@@ -107,8 +113,85 @@ class ConfigReader:
                     self.processing.local_fit_order = value
                 elif key == 'binning':
                     self.processing.binning = value
+                elif key == 'use_gpu':
+                    self.processing.use_gpu = value
+                elif key == 'gpu_id':
+                    self.processing.gpu_id = value
+                elif key == 'pixel_size':
+                    self.processing.pixel_size = value
+                elif key == 'magnification':
+                    self.processing.magnification = value
+                elif key == 'NA_objective':
+                    self.processing.NA_objective = value
+                elif key == 'NA_condenser':
+                    self.processing.NA_condenser = value
+                elif key == 'n_objective_media':
+                    self.processing.n_objective_media = value
+                elif key == 'focus_zidx':
+                    self.processing.focus_zidx = value
+                elif key == 'phase_denoiser_2D':
+                    self.processing.phase_denoiser_2D = value
+                elif key == 'Tik_reg_abs_2D':
+                    self.processing.Tik_reg_abs_2D = value
+                elif key == 'Tik_reg_ph_2D':
+                    self.processing.Tik_reg_ph_2D = value
+                elif key == 'rho_2D':
+                    self.processing.rho_2D = value
+                elif key == 'itr_2D':
+                    self.processing.itr_2D = value
+                elif key == 'TV_reg_abs_2D':
+                    self.processing.TV_reg_abs_2D = value
+                elif key == 'TV_reg_ph_2D':
+                    self.processing.TV_reg_ph_2D = value
+                elif key == 'phase_denoiser_3D':
+                    self.processing.phase_denoiser_3D = value
+                elif key == 'rho_3D':
+                    self.processing.rho_3D = value
+                elif key == 'itr_3D':
+                    self.processing.itr_3D = value
+                elif key == 'Tik_reg_ph_3D':
+                    self.processing.Tik_reg_ph_3D = value
+                elif key == 'TV_reg_ph_3D':
+                    self.processing.TV_reg_ph_3D = value
+                elif key == 'pad_z':
+                    self.pad_z = value
                 else:
                     raise NameError('Unrecognized configfile field:{}, key:{}'.format('processing', key))
+                    
+            if phase_processing:
+                
+                assert self.processing.pixel_size is not None, \
+                "pixel_size (camera pixel size) has to be specified to run phase reconstruction"
+                
+                assert self.processing.magnification is not None, \
+                "magnification (microscope magnification) has to be specified to run phase reconstruction"
+                
+                assert self.processing.NA_objective is not None, \
+                "NA_objective (numerical aperture of the objective) has to be specified to run phase reconstruction"
+                
+                assert self.processing.NA_condenser is not None, \
+                "NA_condenser (numerical aperture of the condenser) has to be specified to run phase reconstruction"
+                
+                assert self.processing.n_objective_media is not None, \
+                "n_objective_media (refractive index of the immersing media) has to be specified to run phase reconstruction"
+                
+                assert self.processing.n_objective_media >= self.processing.NA_objective and self.processing.n_objective_media >= self.processing.NA_condenser, \
+                "n_objective_media (refractive index of the immersing media) has to be larger than the NA of the objective and condenser"
+                
+                assert self.processing.n_slice_local_bg == 'all', \
+                "n_slice_local_bg has to be 'all' in order to run phase reconstruction properly"
+                
+                assert self.dataset.z_slices[0] == 'all', \
+                "z_slices has to be 'all' in order to run phase reconstruction properly"
+                
+            
+            if 'Phase2D' in self.processing.output_channels:
+                
+                assert self.processing.focus_zidx is not None, \
+                "focus_zidx has to be specified to run 2D phase reconstruction"
+                    
+                
+                
 
         if 'plotting' in self.yaml_config:
             for (key, value) in self.yaml_config['plotting'].items():
@@ -118,6 +201,10 @@ class ConfigReader:
                     self.plotting.retardance_scaling = float(value)
                 elif key == 'transmission_scaling':
                     self.plotting.transmission_scaling = float(value)
+                elif key == 'phase_2D_scaling':
+                    self.plotting.phase_2D_scaling = float(value)
+                elif key == 'phase_3D_scaling':
+                    self.plotting.phase_3D_scaling = float(value)
                 elif key == 'save_birefringence_fig':
                     self.plotting.save_birefringence_fig = value
                 elif key == 'save_stokes_fig':
@@ -192,12 +279,13 @@ class ConfigReader:
 class Dataset:
     def __init__(self):
         self._processed_dir = []
-        self._data_dir = []
-        self._samples = []
-        self._positions = ['all']
-        self._z_slices = ['all']
-        self._timepoints = ['all']
-        self._background = []
+        self._data_dir      = []
+        self._samples       = []
+        self._positions     = ['all']
+        self._ROI           = None
+        self._z_slices      = ['all']
+        self._timepoints    = ['all']
+        self._background    = []
     
     @property
     def processed_dir(self):
@@ -214,6 +302,10 @@ class Dataset:
     @property
     def positions(self):
         return self._positions
+    
+    @property
+    def ROI(self):
+        return self._ROI
     
     @property
     def z_slices(self):
@@ -250,6 +342,12 @@ class Dataset:
         if not isinstance(value, list):
             value = [value]
         self._positions = value
+    
+    @ROI.setter
+    def ROI(self, value):   
+        assert isinstance(value, list), \
+        "ROI should be a list contains [n_start_y, n_start_x, Ny, Nx]"
+        self._ROI = value
         
     @z_slices.setter
     def z_slices(self, value):
@@ -284,6 +382,7 @@ class Dataset:
 
 class Processing:
     _allowed_output_channels = ['Brightfield', 'Brightfield_computed', 'Retardance', 'Orientation', 'Polarization',
+                                'Phase2D', 'Phase_semi3D', 'Phase3D',
                                 'Orientation_x', 'Orientation_y',
                                 'Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
                                 'Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3',
@@ -294,17 +393,48 @@ class Processing:
                                 'Retardance+Fluorescence', 'Retardance+Fluorescence_all']  
     _allowed_circularity_values = ['rcp', 'lcp']
     _allowed_background_correction_values = ['None', 'Input', 'Local_filter', 'Local_fit', 'Local_defocus', 'Auto']
+    _allowed_phase_denoiser_values = ['Tikhonov', 'TV']
     
     def __init__(self):
-        self._output_channels = ['Brightfield', 'Retardance', 'Orientation', 'Polarization']
-        self._circularity = 'rcp'
+        self._output_channels       = ['Brightfield', 'Retardance', 'Orientation', 'Polarization']
+        self._circularity           = 'rcp'
         self._background_correction = 'None'
-        self._flatfield_correction = False
-        self._azimuth_offset = 0
-        self._separate_positions = True
-        self._n_slice_local_bg = 'all'
-        self._local_fit_order = 2
-        self._binning = 1
+        self._flatfield_correction  = False
+        self._azimuth_offset        = 0
+        self._separate_positions    = True
+        self._n_slice_local_bg      = 'all'
+        self._local_fit_order       = 2
+        self._binning               = 1
+        
+        self._use_gpu = False
+        self._gpu_id  = 0
+        
+        self._pixel_size    = None
+        self._magnification = None
+        self._NA_objective  = None
+        self._NA_condenser  = None
+        self._n_objective_media       = None
+        self._focus_zidx    = None
+        
+        self._phase_denoiser_2D = 'Tikhonov'
+
+        self._Tik_reg_abs_2D = 1e-6
+        self._Tik_reg_ph_2D  = 1e-6
+
+        self._rho_2D        = 1
+        self._itr_2D        = 50
+        self._TV_reg_abs_2D = 1e-3
+        self._TV_reg_ph_2D  = 1e-5
+
+        self._phase_denoiser_3D = 'Tikhonov'
+
+        self._rho_3D        = 1e-3
+        self._itr_3D        = 50
+        self._Tik_reg_ph_3D = 1e-4
+        self._TV_reg_ph_3D  = 5e-5
+        
+        self._pad_z = 0
+        
 
     @property
     def output_channels(self):
@@ -341,6 +471,91 @@ class Processing:
     @property
     def binning(self):
         return self._binning
+    
+    @property
+    def use_gpu(self):
+        return self._use_gpu
+    
+    @property
+    def gpu_id(self):
+        return self._gpu_id
+    
+    @property
+    def pixel_size(self):
+        return self._pixel_size
+    
+    @property
+    def magnification(self):
+        return self._magnification
+    
+    @property
+    def NA_objective(self):
+        return self._NA_objective
+    
+    @property
+    def NA_condenser(self):
+        return self._NA_condenser
+    
+    @property
+    def n_objective_media(self):
+        return self._n_objective_media
+    
+    @property
+    def focus_zidx(self):
+        return self._focus_zidx
+    
+    @property
+    def phase_denoiser_2D(self):
+        return self._phase_denoiser_2D
+    
+    @property
+    def Tik_reg_abs_2D(self):
+        return self._Tik_reg_abs_2D
+    
+    @property
+    def Tik_reg_ph_2D(self):
+        return self._Tik_reg_ph_2D
+    
+    @property
+    def rho_2D(self):
+        return self._rho_2D
+    
+    @property
+    def itr_2D(self):
+        return self._itr_2D
+    
+    @property
+    def TV_reg_abs_2D(self):
+        return self._TV_reg_abs_2D
+    
+    @property
+    def TV_reg_ph_2D(self):
+        return self._TV_reg_ph_2D
+    
+    @property
+    def phase_denoiser_3D(self):
+        return self._phase_denoiser_3D
+    
+    @property
+    def rho_3D(self):
+        return self._rho_3D
+    
+    @property
+    def itr_3D(self):
+        return self._itr_3D
+    
+    @property
+    def Tik_reg_ph_3D(self):
+        return self._Tik_reg_ph_3D
+    
+    @property
+    def TV_reg_ph_3D(self):
+        return self._TV_reg_ph_3D
+    
+    @property
+    def pad_z(self):
+        return self._pad_z
+    
 
     @output_channels.setter
     def output_channels(self, value):     
@@ -393,6 +608,129 @@ class Processing:
         assert isinstance(value, int) and value > 0, \
             "binning must be a positive integer"
         self._binning = value
+        
+    @use_gpu.setter
+    def use_gpu(self, value):   
+        assert isinstance(value, bool), "use_gpu must be boolean"
+        self._use_gpu = value
+        
+    @gpu_id.setter
+    def gpu_id(self, value):
+        assert isinstance(value, int) and value >= 0, \
+            "gpu_id must be a non-negative integer"
+        self._gpu_id = value
+    
+    @pixel_size.setter
+    def pixel_size(self, value):
+        assert isinstance(value, (int, float)) and value > 0, \
+            "pixel_size must be a number > 0"
+        self._pixel_size = value 
+    
+    @magnification.setter
+    def magnification(self, value):   
+        assert isinstance(value, (int, float)) and value > 0, \
+            "magnification must be a number > 0"
+        self._magnification = value
+        
+    @NA_objective.setter
+    def NA_objective(self, value):   
+        assert isinstance(value, (int, float)) and 0 < value < 2, \
+            "NA_objective must be a number in range [0, 2]"
+        self._NA_objective = value
+        
+    @NA_condenser.setter
+    def NA_condenser(self, value):   
+        assert isinstance(value, (int, float)) and 0 < value < 2, \
+            "NA_condenser must be a number in range [0, 2]"
+        self._NA_condenser = value
+        
+    @n_objective_media.setter
+    def n_objective_media(self, value):
+        assert isinstance(value, (int, float)) and value >=1, \
+            "n_objective_media must be a number >= 1"
+        self._n_objective_media = value
+        
+    @focus_zidx.setter
+    def focus_zidx(self, value):
+        assert isinstance(value, int) and value >= 0, \
+            "focus_zidx must be a non-negative integer"
+        self._focus_zidx = value
+    
+    @phase_denoiser_2D.setter
+    def phase_denoiser_2D(self, value):     
+        assert value in self._allowed_phase_denoiser_values, "{} is not an allowed 2D phase denoiser setting".format(value)
+        self._phase_denoiser_2D = value
+    
+    @Tik_reg_abs_2D.setter
+    def Tik_reg_abs_2D(self, value):   
+        assert isinstance(value, (int, float)) and value > 0, \
+            "Tik_reg_abs_2D must be a number > 0"
+        self._Tik_reg_abs_2D = value
+        
+    @Tik_reg_ph_2D.setter
+    def Tik_reg_ph_2D(self, value):   
+        assert isinstance(value, (int, float)) and value > 0, \
+            "Tik_reg_ph_2D must be a number > 0"
+        self._Tik_reg_ph_2D = value
+        
+    @rho_2D.setter
+    def rho_2D(self, value):   
+        assert isinstance(value, (int, float)) and value > 0, \
+            "rho_2D must be a number > 0"
+        self._rho_2D = value
+    
+    @itr_2D.setter
+    def itr_2D(self, value):   
+        assert isinstance(value, int) and value > 0, \
+            "itr_2D must be a non-negative integer"
+        self._itr_2D = value
+        
+    @TV_reg_abs_2D.setter
+    def TV_reg_abs_2D(self, value):   
+        assert isinstance(value, (int, float)) and value > 0, \
+            "TV_reg_abs_2D must be a number > 0"
+        self._TV_reg_abs_2D = value
+        
+    @TV_reg_ph_2D.setter
+    def TV_reg_ph_2D(self, value):   
+        assert isinstance(value, (int, float)) and value > 0, \
+            "TV_reg_ph_2D must be a number > 0"
+        self._TV_reg_ph_2D = value
+    
+    @phase_denoiser_3D.setter
+    def phase_denoiser_3D(self, value):     
+        assert value in self._allowed_phase_denoiser_values, "{} is not an allowed 3D phase denoiser setting".format(value)
+        self._phase_denoiser_3D = value
+        
+    @rho_3D.setter
+    def rho_3D(self, value):   
+        assert isinstance(value, (int, float)) and value > 0, \
+            "rho_3D must be a number > 0"
+        self._rho_3D = value
+    
+    @itr_3D.setter
+    def itr_3D(self, value):   
+        assert isinstance(value, int) and value > 0, \
+            "itr_3D must be a non-negative integer"
+        self._itr_3D = value
+        
+    @Tik_reg_ph_3D.setter
+    def Tik_reg_ph_3D(self, value):   
+        assert isinstance(value, (int, float)) and value > 0, \
+            "Tik_reg_ph_3D must be a number > 0"
+        self._Tik_reg_ph_3D = value
+        
+    @TV_reg_ph_3D.setter
+    def TV_reg_ph_3D(self, value):   
+        assert isinstance(value, (int, float)) and value > 0, \
+            "TV_reg_ph_3D must be a number > 0"
+        self._TV_reg_ph_3D = value
+        
+    @pad_z.setter
+    def pad_z(self, value):   
+        assert isinstance(value, int) and value >= 0, \
+            "pad_z must be an integer >= 0"
+        self._pad_z = value
 
     def __repr__(self):
         out = str(self.__class__) + '\n'
@@ -404,12 +742,14 @@ class Processing:
 class Plotting:
     def __init__(self):
         self.normalize_color_images = True
-        self.transmission_scaling = 1E4
-        self.retardance_scaling = 1E3
+        self.transmission_scaling   = 1E4
+        self.retardance_scaling     = 1E3
+        self.phase_2D_scaling       = 1
+        self.phase_3D_scaling       = 1
         self.save_birefringence_fig = False
-        self.save_stokes_fig = False
-        self.save_polarization_fig = False
-        self.save_micromanager_fig = False
+        self.save_stokes_fig        = False
+        self.save_polarization_fig  = False
+        self.save_micromanager_fig  = False
     
     def __repr__(self):
         out = str(self.__class__) + '\n'

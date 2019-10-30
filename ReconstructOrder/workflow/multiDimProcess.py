@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import cv2
 from ..utils.imgIO import parse_tiff_input, exportImg
 from ..compute.reconstruct import ImgReconstructor
+from ..compute.reconstruct_phase import phase_reconstructor
 from ..utils.imgProcessing import ImgMin, imBitConvert, correct_flat_field, mean_pooling_2d_stack
 from ..utils.plotting import render_birefringence_imgs, plot_stokes, plot_pol_imgs, plot_Polacquisition_imgs
 from ..utils.mManagerIO import mManagerReader, PolAcquReader
@@ -179,24 +180,30 @@ def process_background(img_io, img_io_bg, config):
     Read background images, initiate ImgReconstructor to compute background stokes parameters
 
     """
-    ImgRawBg = parse_tiff_input(img_io_bg)[0]  # 0 for z-index
-    circularity = config.processing.circularity
-    azimuth_offset = config.processing.azimuth_offset
+    ImgRawBg         = parse_tiff_input(img_io_bg, config.dataset.ROI)[0]  # 0 for z-index
+    circularity      = config.processing.circularity
+    azimuth_offset   = config.processing.azimuth_offset
     n_slice_local_bg = config.processing.n_slice_local_bg
-    local_fit_order = config.processing.local_fit_order
-    binning = config.processing.binning
+    local_fit_order  = config.processing.local_fit_order
+    binning          = config.processing.binning
+    use_gpu          = config.processing.use_gpu
+    gpu_id           = config.processing.gpu_id
+    
     if n_slice_local_bg == 'all':
         n_slice_local_bg = len(img_io.ZList)
 
     img_reconstructor = ImgReconstructor(ImgRawBg.data.shape,
-                                         bg_method=img_io.bg_method,
-                                         n_slice_local_bg=n_slice_local_bg,
-                                         poly_fit_order=local_fit_order,
-                                         swing=img_io.swing,
-                                         wavelength=img_io.wavelength,
-                                         azimuth_offset=azimuth_offset,
-                                         circularity=circularity,
-                                         binning=binning)
+                                         bg_method        = img_io.bg_method,
+                                         n_slice_local_bg = n_slice_local_bg,
+                                         poly_fit_order   = local_fit_order,
+                                         swing            = img_io.swing,
+                                         wavelength       = img_io.wavelength,
+                                         azimuth_offset   = azimuth_offset,
+                                         circularity      = circularity,
+                                         binning          = binning,
+                                         use_gpu          = use_gpu,
+                                         gpu_id           = gpu_id)
+
     if img_io.bg_correct:
         background_stokes = img_reconstructor.compute_stokes(ImgRawBg)
         background_stokes_normalized = img_reconstructor.stokes_normalization(background_stokes)
@@ -210,6 +217,69 @@ def process_background(img_io, img_io_bg, config):
     # img_reconstructor.stokes_param_bg_tm = stokes_param_bg_tm
     # return img_io, img_reconstructor
     return background_stokes_normalized, img_reconstructor
+
+def phase_reconstructor_initializer(img_io: Union[mManagerReader, PolAcquReader],
+                                    config: ConfigReader):
+    
+    '''
+    
+    draw parameters from metadata and config file to inialize phase reconstructor
+    
+    Parameters
+    ----------
+    
+        img_io   : object
+                   mManagerReader object that holds the image parameters
+                
+        config   : object
+                   ConfigReader object that holds the user input config parameters
+    
+    Returns
+    -------
+        
+        ph_recon : object
+                   phase_reconstructor object that enables phase reconstruction
+    
+    '''
+    
+    lambda_illu  = img_io.wavelength*1e-3
+    mag          = config.processing.magnification
+    ps           = config.processing.pixel_size/mag
+    psz          = img_io.size_z_um
+    NA_obj       = config.processing.NA_objective
+    NA_illu      = config.processing.NA_condenser
+    focus_idx    = config.processing.focus_zidx
+    n_objective_media      = config.processing.n_objective_media
+    pad_z        = config.processing.pad_z
+    phase_deconv = []
+    N_defocus    = img_io.nZ
+
+    
+    if config.dataset.ROI is None:
+        ROI = [0,0, img_io.height, img_io.width]
+    else:
+        ROI = config.dataset.ROI
+        
+    
+    opt_mapping = {'Phase2D': '2D', 'Phase_semi3D': 'semi-3D', 'Phase3D': '3D'}
+    phase_deconv = [opt_mapping[opt] for opt in img_io.chNamesOut if opt in opt_mapping.keys()]
+    
+    ph_recon = phase_reconstructor((ROI[2], ROI[3], N_defocus), lambda_illu, ps, psz, NA_obj, NA_illu, focus_idx = focus_idx, \
+                                   n_objective_media=n_objective_media, phase_deconv=phase_deconv, pad_z=pad_z,\
+                                   use_gpu=config.processing.use_gpu, gpu_id=config.processing.gpu_id)
+
+    ph_recon.Phase_solver_para_setter(denoiser_2D    = config.processing.phase_denoiser_2D, \
+                                      Tik_reg_abs_2D = config.processing.Tik_reg_abs_2D, Tik_reg_ph_2D = config.processing.Tik_reg_ph_2D, \
+                                      TV_reg_abs_2D  = config.processing.TV_reg_abs_2D,  TV_reg_ph_2D  = config.processing.TV_reg_ph_2D,\
+                                      rho_2D         = config.processing.rho_2D,         itr_2D        = config.processing.itr_2D, \
+                                      denoiser_3D    = config.processing.phase_denoiser_3D, \
+                                      Tik_reg_ph_3D  = config.processing.Tik_reg_ph_3D,  TV_reg_ph_3D  = config.processing.TV_reg_ph_3D, \
+                                      rho_3D         = config.processing.rho_3D,         itr_3D        = config.processing.itr_3D, \
+                                      verbose        = False,                            bg_filter     = True)
+    print('Finish phase transfer function computing')
+    
+    return ph_recon
+
 
 
 def compute_flat_field(img_io: Union[mManagerReader, PolAcquReader],
@@ -260,10 +330,13 @@ def compute_flat_field(img_io: Union[mManagerReader, PolAcquReader],
     return img_io
 
 
+
+
 def loopPos(img_io: Union[mManagerReader, PolAcquReader],
             config: ConfigReader,
             img_reconstructor: ImgReconstructor,
-            background_corrected_data=None):
+            background_corrected_data=None,
+            ph_recon=None):
     """
     Loop through each position in the sample metadata, check if it is on the user input
     position list; make separate folder for each position if separate_pos == True
@@ -284,8 +357,10 @@ def loopPos(img_io: Union[mManagerReader, PolAcquReader],
             img_io_bg.pos_name = os.path.join(img_io_bg.ImgSmPath, pos_name)
             img_io_bg.posIdx = posIdx
         img_io.posIdx = posIdx
-
-        img_io = loopT(img_io, config, img_reconstructor, background=background_corrected_data)
+        if ph_recon is None:
+            img_io = loopT(img_io, config, img_reconstructor, background=background_corrected_data)
+        else:
+            img_io = loopT(img_io, config, img_reconstructor, background=background_corrected_data, ph_recon=ph_recon)
 
     return img_io
 
@@ -293,7 +368,8 @@ def loopPos(img_io: Union[mManagerReader, PolAcquReader],
 def loopT(img_io: Union[mManagerReader, PolAcquReader],
           config: ConfigReader,
           img_reconstructor: ImgReconstructor,
-          background=None):
+          background=None,
+          ph_recon=None):
     """
     Loop through each time point supplied in the config, call loopZSm or loopZBg
     depending on the looZ mode
@@ -308,13 +384,18 @@ def loopT(img_io: Union[mManagerReader, PolAcquReader],
         ImgReconstructor object for image reconstruction
     background: BackgroundData
         object of type BackgroundData
+    ph_recon: object
+        phase_reconstructor object that enables phase reconstruction
     -------
 
     """
     for tIdx in img_io.TimeList:
         img_io.tIdx = tIdx
         if img_io.loopZ == 'reconstruct':
-            img_io = loopZSm(img_io, config, img_reconstructor, background=background)
+            if ph_recon is None:
+                img_io = loopZSm(img_io, config, img_reconstructor, background=background)
+            else:
+                img_io = loopZSm(img_io, config, img_reconstructor, background=background, ph_recon=ph_recon)
 
         elif img_io.loopZ == 'flat_field':
             img_io = loopZBg(img_io, config)
@@ -324,7 +405,8 @@ def loopT(img_io: Union[mManagerReader, PolAcquReader],
 def loopZSm(img_io: Union[mManagerReader, PolAcquReader],
             config: ConfigReader,
             img_reconstructor: ImgReconstructor,
-            background=None):
+            background=None,
+            ph_recon=None):
     """
     Loop through each z supplied in the config; computes and export only images in the
     supplied output channels (stokes, birefringence, background corrected raw pol images);
@@ -339,37 +421,43 @@ def loopZSm(img_io: Union[mManagerReader, PolAcquReader],
         ImgReconstructor object for image reconstruction
     background: BackgroundData
         BackgroundData object containing normalized stokes images
+    ph_recon: object
+        phase_reconstructor object that enables phase reconstruction
     -------
     """
 
-    t_idx = img_io.tIdx
-    pos_idx = img_io.posIdx
-    z_list = img_io.ZList
+    t_idx            = img_io.tIdx
+    pos_idx          = img_io.posIdx
+    z_list           = img_io.ZList
     n_slice_local_bg = img_reconstructor.n_slice_local_bg
-    binning = config.processing.binning
-    norm = config.plotting.normalize_color_images
-    save_fig = config.plotting.save_birefringence_fig
-    save_stokes_fig = config.plotting.save_stokes_fig
-    save_pol_fig = config.plotting.save_polarization_fig
-    save_mm_fig = config.plotting.save_micromanager_fig
+    binning          = config.processing.binning
+    norm             = config.plotting.normalize_color_images
+    save_fig         = config.plotting.save_birefringence_fig
+    save_stokes_fig  = config.plotting.save_stokes_fig
+    save_pol_fig     = config.plotting.save_polarization_fig
+    save_mm_fig      = config.plotting.save_micromanager_fig
+    
 
     # 1) define allowed config values
-    pol_names = ['Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4']
-    stokes_names = ['Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3']
+    pol_names       = ['Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4']
+    stokes_names    = ['Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3']
     stokes_names_sm = [x + '_sm' for x in stokes_names]
     birefring_names = ['Brightfield_computed', 'Retardance', 'Orientation', 'Transmission', 'Polarization',
                        'Retardance+Orientation', 'Polarization+Orientation', 'Brightfield+Retardance+Orientation',
                        'Brightfield_computed+Retardance+Orientation',
                        'Retardance+Fluorescence', 'Retardance+Fluorescence_all']
-    fluor_names = ['405', '488', '568', '640', 'ex561em700']
+    phase_names     = ['Phase2D', 'Phase_semi3D', 'Phase3D']
+    fluor_names     = ['405', '488', '568', '640', 'ex561em700']
 
     # 2 )set flags based on names defined in 1)
-    save_stokes = any(chan in stokes_names + stokes_names_sm for chan in img_io.chNamesOut) \
-                  or any([save_stokes_fig, save_mm_fig])
-    save_birefring = any(chan in birefring_names for chan in img_io.chNamesOut) or save_fig
-    save_BF = 'Brightfield' in img_io.chNamesOut
-    save_pol = any(chan in pol_names for chan in img_io.chNamesOut) or save_pol_fig
-    save_fluor = any(chan in fluor_names for chan in img_io.chNamesOut)
+    save_stokes    = any(chan in stokes_names + stokes_names_sm for chan in img_io.chNamesOut) \
+                     or any([save_stokes_fig, save_mm_fig])
+    save_phase     = any(chan in phase_names for chan in img_io.chNamesOut)
+    save_birefring = any(chan in birefring_names for chan in img_io.chNamesOut) or save_fig or save_phase
+    save_BF        = 'Brightfield' in img_io.chNamesOut
+    save_pol       = any(chan in pol_names for chan in img_io.chNamesOut) or save_pol_fig
+    save_fluor     = any(chan in fluor_names for chan in img_io.chNamesOut)
+
 
     for z_stack_idx in range(0, len(z_list), n_slice_local_bg):
 
@@ -383,7 +471,8 @@ def loopZSm(img_io: Union[mManagerReader, PolAcquReader],
             img_io.zIdx = z_idx
 
             # load raw intensity data
-            ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
+            ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io, config.dataset.ROI)
+
             if isinstance(ImgFluor, np.ndarray):
                 ImgFluor = mean_pooling_2d_stack(ImgFluor, binning)
             if isinstance(ImgBF, np.ndarray):
@@ -442,6 +531,25 @@ def loopZSm(img_io: Union[mManagerReader, PolAcquReader],
                 norm_sample = img_reconstructor.correct_background(norm_sample, background)
 
             physical_data = img_reconstructor.reconstruct_birefringence(norm_sample)
+            
+            print('Finish birefringence reconstruction')
+            if save_phase:
+                
+        
+                for deconv_dim in ph_recon.phase_deconv:
+                    
+                    if deconv_dim == '2D':
+                        physical_data.absorption_2D, physical_data.phase_2D = ph_recon.Phase_recon_2D(norm_sample)
+                        print('Finish 2D phase reconstruction')
+                    if deconv_dim == 'semi-3D':
+                        physical_data.absorption_semi3D, physical_data.phase_semi3D = ph_recon.Phase_recon_semi_3D(norm_sample)
+                        print('Finish semi3D phase reconstruction')
+                    if deconv_dim == '3D':
+                        physical_data.phase_3D = ph_recon.Phase_recon_3D(norm_sample)
+                        print('Finish 3D phase reconstruction')
+                    
+                
+
 
             img_dict = {}
             for z_idx in range(z_stack_idx, z_stack_idx + n_slice_local_bg):
@@ -450,13 +558,14 @@ def loopZSm(img_io: Union[mManagerReader, PolAcquReader],
                 z_sub_idx = z_idx - z_stack_idx
 
                 # extract the relevant z slice out of the data
-                s0 = physical_data.I_trans[..., z_sub_idx]
-                retard = physical_data.retard[..., z_sub_idx]
-                azimuth = physical_data.azimuth[..., z_sub_idx]
+                s0           = physical_data.I_trans[..., z_sub_idx]
+                retard       = physical_data.retard[..., z_sub_idx]
+                azimuth      = physical_data.azimuth[..., z_sub_idx]
                 polarization = physical_data.polarization[..., z_sub_idx]
-                s1 = (norm_sample.s1_norm * norm_sample.s3)[..., z_sub_idx]
-                s2 = (norm_sample.s2_norm * norm_sample.s3)[..., z_sub_idx]
-                s3 = (norm_sample.s3)[..., z_sub_idx]
+                s1           = (norm_sample.s1_norm * norm_sample.s3)[..., z_sub_idx]
+                s2           = (norm_sample.s2_norm * norm_sample.s3)[..., z_sub_idx]
+                s3           = (norm_sample.s3)[..., z_sub_idx]
+
 
                 ImgFluor = fluor_list[z_sub_idx]
 
@@ -467,19 +576,39 @@ def loopZSm(img_io: Union[mManagerReader, PolAcquReader],
                     img_io, img_dict = render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=8, zoomin=False,
                                                                  dpi=200,
                                                                  norm=norm, plot=save_fig)
+                    
+                if save_phase:
+                    
+                    for channel in list(set(phase_names) & set(img_io.chNamesOut)):
+
+                    
+                        if ph_recon.focus_idx == z_sub_idx and channel == 'Phase2D':
+                            img = imBitConvert(physical_data.phase_2D*config.plotting.phase_2D_scaling, bit=16, norm=True, limit=[-5, 5])
+                            img_dict[channel] = img.copy()
+                        elif channel == 'Phase_semi3D':
+                            img = imBitConvert(physical_data.phase_semi3D[..., z_sub_idx]*config.plotting.phase_2D_scaling, bit=16, norm=True, limit=[-5, 5])
+                            img_dict[channel] = img.copy()
+                        elif channel == 'Phase3D':
+                            img = imBitConvert(physical_data.phase_3D[..., z_sub_idx]*config.plotting.phase_3D_scaling, bit=16, norm=True, limit=[-5, 5])
+                            img_dict[channel] = img.copy()
+                            
+                    
+                        
+                        
                 if save_stokes:
                     img_stokes = [s0, s1, s2, s3]
                     img_stokes_sm = [stack[..., z_sub_idx] for stack in norm_sample.data]
 
                     if save_stokes_fig:
                         plot_stokes(img_io, img_stokes, img_stokes_sm)
-                    img_stokes = [x.astype(np.float32, copy=False) for x in img_stokes]
-                    img_stokes_sm = [x.astype(np.float32, copy=False) for x in img_stokes_sm]
-                    img_stokes_dict = dict(zip(stokes_names, img_stokes))
+                    img_stokes         = [x.astype(np.float32, copy=False) for x in img_stokes]
+                    img_stokes_sm      = [x.astype(np.float32, copy=False) for x in img_stokes_sm]
+                    img_stokes_dict    = dict(zip(stokes_names, img_stokes))
                     img_stokes_sm_dict = dict(zip(stokes_names_sm, img_stokes_sm))
                     img_dict.update(img_stokes_dict)
                     img_dict.update(img_stokes_sm_dict)
                 exportImg(img_io, img_dict)
+            print('Finish plotting')
 
     return img_io
 
@@ -503,7 +632,7 @@ def loopZBg(img_io, config):
     binning = config.processing.binning
     for zIdx in range(0, 1):  # only use the first z
         img_io.zIdx = zIdx
-        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io)
+        ImgRawSm, ImgProcSm, ImgFluor, ImgBF = parse_tiff_input(img_io, config.dataset.ROI)
         if isinstance(ImgFluor, np.ndarray):
             ImgFluor = mean_pooling_2d_stack(ImgFluor, binning)
         for i in range(ImgFluor.shape[0]):

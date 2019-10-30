@@ -56,6 +56,7 @@ def test_basic_constructor_memap(setup_temp_data):
     assert_array_equal(int_data.data, np.array([mm, 2*mm, 3*mm, 4*mm, 5*mm]))
 
 
+
 def test_basic_constructor_with_names():
     """
     test construction with channel names
@@ -140,6 +141,7 @@ def test_private_access(setup_intensity_data):
 
 # ==== test methods =====
 
+
 # replace_image method
 def test_replace_image_shape(setup_intensity_data):
     int_data, a, b, c, d, e = setup_intensity_data
@@ -157,12 +159,14 @@ def test_replace_image_dtype(setup_intensity_data):
         int_data.replace_image(newim, 0)
 
 
+
 def test_replace_image_by_index(setup_intensity_data):
     int_data, a, b, c, d, e = setup_intensity_data
 
     newim = np.ones((512, 512))
     int_data.replace_image(newim, 0)
     assert_array_equal(int_data.data[0], newim)
+
 
 
 def test_replace_image_by_string(setup_intensity_data):
@@ -182,6 +186,7 @@ def test_channel_names(setup_intensity_data):
     names = ['a','b','c','d','e']
 
     int_data.channel_names = names
+
 
 
 # get_image method
@@ -223,6 +228,7 @@ def test_get_image_int(setup_intensity_data):
     dat = int_data.get_image(4)
     assert(dat.shape, (512,512))
     assert(dat[0][0], 5)
+
 
 
 # axis_names property
