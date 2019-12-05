@@ -19,6 +19,59 @@ class ConfigReader:
 
     """
 
+    # all keys are in format of {key : value} = {"configfile name" : "class attribute"}
+    # if you want the configfile name to differ from the class attribute (for example, something more readable), change
+    #   the KEY not the VALUE.
+    DATASET_KEYS = {'data_dir': 'data_dir',
+                    'processed_dir': 'processed_dir',
+                    'samples': 'samples',
+                    'positions': 'positions',
+                    'ROI': 'ROI',
+                    'z_slices': 'z_slices',
+                    'timepoints': 'timepoints',
+                    'background': 'background'}
+
+    PROCESSING_KEYS = {'output_channels': 'output_channels',
+                       'circularity': 'circularity',
+                       'background_correction': 'background_correction',
+                       'flatfield_correction': 'flatfield_correction',
+                       'azimuth_offset': 'azimuth_offset',
+                       'separate_positions': 'separate_positions',
+                       'n_slice_local_bg': 'n_slice_local_bg',
+                       'local_fit_order': 'local_fit_order',
+                       'binning': 'binning',
+                       'use_gpu': 'use_gpu',
+                       'gpu_id': 'gpu_id',
+                       'pixel_size': 'pixel_size',
+                       'magnification': 'magnification',
+                       'NA_objective': 'NA_objective',
+                       'NA_condenser': 'NA_condenser',
+                       'n_objective_media': 'n_objective_media',
+                       'focus_zidx': 'focus_zidx',
+                       'phase_denoiser_2D': 'phase_denoiser_2D',
+                       'Tik_reg_abs_2D': 'Tik_reg_abs_2D',
+                       'Tik_reg_ph_2D': 'Tik_reg_ph_2D',
+                       'rho_2D': 'rho_2D',
+                       'itr_2D': 'itr_2D',
+                       'TV_reg_abs_2D': 'TV_reg_abs_2D',
+                       'TV_reg_ph_2D': 'TV_reg_ph_2D',
+                       'phase_denoiser_3D': 'phase_denoiser_3D',
+                       'rho_3D': 'rho_3D',
+                       'itr_3D': 'itr_3D',
+                       'Tik_reg_ph_3D': 'Tik_reg_ph_3D',
+                       'TV_reg_ph_3D': 'TV_reg_ph_3D',
+                       'pad_z': 'pad_z'}
+
+    PLOTTING_KEYS = {'normalize_color_images': 'normalize_color_images',
+                     'retardance_scaling': 'retardance_scaling',
+                     'transmission_scaling': 'transmission_scaling',
+                     'phase_2D_scaling': 'phase_2D_scaling',
+                     'phase_3D_scaling': 'phase_3D_scaling',
+                     'save_birefringence_fig': 'save_birefringence_fig',
+                     'save_stokes_fig': 'save_stokes_fig',
+                     'save_polarization_fig': 'save_polarization_fig',
+                     'save_micromanager_fig': 'save_micromanager_fig'}
+
     def __init__(self, path=[]):
         """
         ConfigReader __init__ method.
@@ -39,10 +92,12 @@ class ConfigReader:
         self.processing = Processing()
         self.plotting   = Plotting()
 
+        self.yaml_config = None
+
         if path:
             self.read_config(path)
         
-    def read_config(self,path):
+    def read_config(self, path):
         """
         Reads yaml config file provided in `path`
 
@@ -70,183 +125,110 @@ class ConfigReader:
         self.dataset.data_dir      = self.yaml_config['dataset']['data_dir']
         self.dataset.processed_dir = self.yaml_config['dataset']['processed_dir']
 
+        # DATASET
         for (key, value) in self.yaml_config['dataset'].items():
-            if key == 'samples':
-                if value == 'all':
-                    self.dataset.samples = GetSubDirName(self.dataset.data_dir)
-                else:
-                    self.dataset.samples = value
-            elif key == 'positions':
-                self.dataset.positions = value
-            elif key == 'ROI':
-                self.dataset.ROI = value
-            elif key == 'z_slices':
-                self.dataset.z_slices = value
-            elif key == 'timepoints':
-                self.dataset.timepoints = value
-            elif key == 'background':
-                self.dataset.background = value
-            elif key not in ('data_dir', 'processed_dir'):
-                raise NameError('Unrecognized configfile field:{}, key:{}'.format('dataset', key))
-             
-        if 'processing' in self.yaml_config:
-            for (key, value) in self.yaml_config['processing'].items():
-                if key == 'output_channels':
-                    self.processing.output_channels = value
-                    if 'Phase2D' in value or 'Phase_semi3D' in value  or 'Phase3D' in value:
-                        phase_processing = True
-                    else:
-                        phase_processing = False
-                elif key == 'circularity':
-                    self.processing.circularity = value
-                elif key == 'background_correction':
-                    self.processing.background_correction = value
-                elif key == 'flatfield_correction':
-                    self.processing.flatfield_correction = value
-                elif key == 'azimuth_offset':
-                    self.processing.azimuth_offset = value
-                elif key == 'separate_positions':
-                    self.processing.separate_positions = value
-                elif key == 'n_slice_local_bg':
-                    self.processing.n_slice_local_bg = value
-                elif key == 'local_fit_order':
-                    self.processing.local_fit_order = value
-                elif key == 'binning':
-                    self.processing.binning = value
-                elif key == 'use_gpu':
-                    self.processing.use_gpu = value
-                elif key == 'gpu_id':
-                    self.processing.gpu_id = value
-                elif key == 'pixel_size':
-                    self.processing.pixel_size = value
-                elif key == 'magnification':
-                    self.processing.magnification = value
-                elif key == 'NA_objective':
-                    self.processing.NA_objective = value
-                elif key == 'NA_condenser':
-                    self.processing.NA_condenser = value
-                elif key == 'n_objective_media':
-                    self.processing.n_objective_media = value
-                elif key == 'focus_zidx':
-                    self.processing.focus_zidx = value
-                elif key == 'phase_denoiser_2D':
-                    self.processing.phase_denoiser_2D = value
-                elif key == 'Tik_reg_abs_2D':
-                    self.processing.Tik_reg_abs_2D = value
-                elif key == 'Tik_reg_ph_2D':
-                    self.processing.Tik_reg_ph_2D = value
-                elif key == 'rho_2D':
-                    self.processing.rho_2D = value
-                elif key == 'itr_2D':
-                    self.processing.itr_2D = value
-                elif key == 'TV_reg_abs_2D':
-                    self.processing.TV_reg_abs_2D = value
-                elif key == 'TV_reg_ph_2D':
-                    self.processing.TV_reg_ph_2D = value
-                elif key == 'phase_denoiser_3D':
-                    self.processing.phase_denoiser_3D = value
-                elif key == 'rho_3D':
-                    self.processing.rho_3D = value
-                elif key == 'itr_3D':
-                    self.processing.itr_3D = value
-                elif key == 'Tik_reg_ph_3D':
-                    self.processing.Tik_reg_ph_3D = value
-                elif key == 'TV_reg_ph_3D':
-                    self.processing.TV_reg_ph_3D = value
-                elif key == 'pad_z':
-                    self.pad_z = value
-                else:
-                    raise NameError('Unrecognized configfile field:{}, key:{}'.format('processing', key))
-                    
-            if phase_processing:
-                
-                assert self.processing.pixel_size is not None, \
-                "pixel_size (camera pixel size) has to be specified to run phase reconstruction"
-                
-                assert self.processing.magnification is not None, \
-                "magnification (microscope magnification) has to be specified to run phase reconstruction"
-                
-                assert self.processing.NA_objective is not None, \
-                "NA_objective (numerical aperture of the objective) has to be specified to run phase reconstruction"
-                
-                assert self.processing.NA_condenser is not None, \
-                "NA_condenser (numerical aperture of the condenser) has to be specified to run phase reconstruction"
-                
-                assert self.processing.n_objective_media is not None, \
-                "n_objective_media (refractive index of the immersing media) has to be specified to run phase reconstruction"
-                
-                assert self.processing.n_objective_media >= self.processing.NA_objective and self.processing.n_objective_media >= self.processing.NA_condenser, \
-                "n_objective_media (refractive index of the immersing media) has to be larger than the NA of the objective and condenser"
-                
-                assert self.processing.n_slice_local_bg == 'all', \
-                "n_slice_local_bg has to be 'all' in order to run phase reconstruction properly"
-                
-                assert self.dataset.z_slices[0] == 'all', \
-                "z_slices has to be 'all' in order to run phase reconstruction properly"
-                
-            
-            if 'Phase2D' in self.processing.output_channels:
-                
-                assert self.processing.focus_zidx is not None, \
-                "focus_zidx has to be specified to run 2D phase reconstruction"
-                    
-                
-                
+            if key in self.DATASET_KEYS:
+                try:
+                    self.dataset.__setattr__(self.DATASET_KEYS[key], value)
+                except Exception as ex:
+                    raise ex
+            else:
+                raise NameError(f"Unrecognized configfile field: 'dataset'', key: {key}")
 
-        if 'plotting' in self.yaml_config:
-            for (key, value) in self.yaml_config['plotting'].items():
-                if key == 'normalize_color_images':
-                    self.plotting.normalize_color_images = value
-                elif key == 'retardance_scaling':
-                    self.plotting.retardance_scaling = float(value)
-                elif key == 'transmission_scaling':
-                    self.plotting.transmission_scaling = float(value)
-                elif key == 'phase_2D_scaling':
-                    self.plotting.phase_2D_scaling = float(value)
-                elif key == 'phase_3D_scaling':
-                    self.plotting.phase_3D_scaling = float(value)
-                elif key == 'save_birefringence_fig':
-                    self.plotting.save_birefringence_fig = value
-                elif key == 'save_stokes_fig':
-                    self.plotting.save_stokes_fig = value
-                elif key == 'save_polarization_fig':
-                    self.plotting.save_polarization_fig = value
-                elif key == 'save_micromanager_fig':
-                    self.plotting.save_micromanager_fig = value
+        if self.dataset.samples == 'all':
+            self.dataset.samples = GetSubDirName(self.dataset.data_dir)
+
+        # PROCESSING
+        if 'processing' in self.yaml_config:
+
+            for (key, value) in self.yaml_config['processing'].items():
+                if key in self.PROCESSING_KEYS:
+                    try:
+                        self.processing.__setattr__(self.PROCESSING_KEYS[key], value)
+                    except Exception as ex:
+                        raise ex
                 else:
-                    raise NameError('Unrecognized configfile field:{}, key:{}'.format('plotting', key))
+                    raise NameError(f"Unrecognized configfile field: 'processing'', key: {key}")
+                    
+            if 'Phase2D' in self.processing.output_channels or \
+                    'Phase_semi3D' in self.processing.output_channels or \
+                    'Phase3D' in self.processing.output_channels:
+                assert self.processing.pixel_size is not None, \
+                    "pixel_size (camera pixel size) has to be specified to run phase reconstruction"
+
+                assert self.processing.magnification is not None, \
+                    "magnification (microscope magnification) has to be specified to run phase reconstruction"
+
+                assert self.processing.NA_objective is not None, \
+                    "NA_objective (numerical aperture of the objective) has to be specified to run phase reconstruction"
+
+                assert self.processing.NA_condenser is not None, \
+                    "NA_condenser (numerical aperture of the condenser) has to be specified to run phase reconstruction"
+
+                assert self.processing.n_objective_media is not None, \
+                    "n_objective_media (refractive index of the immersing media) has \
+                    to be specified to run phase reconstruction"
+
+                assert self.processing.n_objective_media >= self.processing.NA_objective and \
+                       self.processing.n_objective_media >= self.processing.NA_condenser, \
+                    "n_objective_media (refractive index of the immersing media) \
+                    has to be larger than the NA of the objective and condenser"
+
+                assert self.processing.n_slice_local_bg == 'all', \
+                    "n_slice_local_bg has to be 'all' in order to run phase reconstruction properly"
+
+                assert self.dataset.z_slices[0] == 'all', \
+                    "z_slices has to be 'all' in order to run phase reconstruction properly"
+
+            if 'Phase2D' in self.processing.output_channels:
+                assert self.processing.focus_zidx is not None, \
+                    "focus_zidx has to be specified to run 2D phase reconstruction"
+
+        # PLOTTING
+        if 'plotting' in self.yaml_config:
+
+            for (key, value) in self.yaml_config['plotting'].items():
+                if key in self.PLOTTING_KEYS:
+                    try:
+                        # todo: make sure scale factors are in float
+                        self.plotting.__setattr__(self.PLOTTING_KEYS[key], value)
+                    except Exception as ex:
+                        raise ex
+                else:
+                    raise NameError(f"Unrecognized configfile field: 'plotting'', key: {key}")
 
         self.__check_input_consistency__()
 
     def __check_input_consistency__(self):
         if self.dataset.background and 'processing' not in self.yaml_config \
-            or 'background_correction' not in self.yaml_config['processing']:
+                or 'background_correction' not in self.yaml_config['processing']:
             self.processing.background_correction = 'Input'
             
         if not any(isinstance(i, list) for i in self.dataset.positions):
             self.dataset.positions = [self.dataset.positions]*len(self.dataset.samples)
         else:
             assert all(isinstance(i, list) for i in self.dataset.positions),\
-            'Positions input must be a list of lists'
+                'Positions input must be a list of lists'
 
         if not any(isinstance(i, list) for i in self.dataset.z_slices):
             self.dataset.z_slices = [self.dataset.z_slices]*len(self.dataset.samples)
         else:
             assert all(isinstance(i, list) for i in self.dataset.z_slices),\
-            'z_slices input must be a list of lists'
+                'z_slices input must be a list of lists'
 
         if not any(isinstance(i, list) for i in self.dataset.timepoints):
             self.dataset.timepoints = [self.dataset.timepoints]*len(self.dataset.samples)
         else:
             assert all(isinstance(i, list) for i in self.dataset.timepoints),\
-            'timepoints input must be a list of lists'
+                'timepoints input must be a list of lists'
             
         if len(self.dataset.background) == 1:
             self.dataset.background = self.dataset.background * len(self.dataset.samples)
                 
         assert len(self.dataset.samples) == len(self.dataset.background) == len(self.dataset.positions) == \
-                len(self.dataset.z_slices) == len(self.dataset.timepoints), \
-                'Please provide equal number of samples and lists with corresponding background, positions, z_slices, and timepoints'
+               len(self.dataset.z_slices) == len(self.dataset.timepoints),\
+            'Please provide equal number of samples and lists with ' \
+            'corresponding background, positions, z_slices, and timepoints'
 
     def write_config(self,path):
         """
