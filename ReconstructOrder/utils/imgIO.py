@@ -16,7 +16,7 @@ def GetSubDirName(ImgPath):
 
     Parameters
     ----------
-    ImgPath: str
+    ImgPath: str, list
         Path to the input directory
 
     Returns
