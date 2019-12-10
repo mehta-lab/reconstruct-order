@@ -6,3 +6,5 @@ matplotlib>=3.0.3
 scikit-image>=0.15
 scipy>=1.2.1
 pytest>=5.0.0
+tifffile>=0.15.1
+googledrivedownloader>=0.4
