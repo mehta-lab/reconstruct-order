@@ -24,5 +24,5 @@ There are two ways to run reconstruction:
     .. code-block:: python
 
         import ReconstructOrder.workflow as wf
-        wf.reconstructBatch('path-and-name-to-your-config.yml')
+        wf.reconstruct_batch('path-and-name-to-your-config.yml')
 

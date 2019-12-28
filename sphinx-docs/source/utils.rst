@@ -12,6 +12,6 @@ Subpackages
     :show-inheritance:
 
 .. automodule:: ReconstructOrder.utils.imgIO
-    :members: GetSubDirName, FindDirContainPos
+    :members: get_sub_dirs, FindDirContain_pos
     :undoc-members:
     :show-inheritance:

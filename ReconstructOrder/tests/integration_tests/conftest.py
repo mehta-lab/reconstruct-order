@@ -163,7 +163,7 @@ def setup_reconstructed_data(setup_gdrive_src_data):
     bg_dat, sm_dat = setup_gdrive_src_data
 
     # compute initial reconstructor using background data
-    img_reconstructor = ImgReconstructor(bg_dat.data.shape,
+    img_reconstructor = ImgReconstructor(bg_dat,
                                          swing=0.03,
                                          wavelength=532)
     bg_stokes = img_reconstructor.compute_stokes(bg_dat)

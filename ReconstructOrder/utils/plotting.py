@@ -7,7 +7,7 @@ from matplotlib import cm
 import cv2
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-from ..utils.imgProcessing import nanRobustBlur, imadjust, imBitConvert, imClip
+from ..utils.imgProcessing import nanRobustBlur, imadjust, im_bit_convert, imClip
 from ..utils.imgProcessing import imcrop
 
 
@@ -114,7 +114,7 @@ def plotVectorField(img,
 def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
     """ Parses transmission, retardance, orientation, and polarization images, scale and render them for export.  """
 
-    outputChann = img_io.chNamesOut
+    outputChann = img_io.output_chans
     chann_scale = [0.25, 1, 0.05, 1, 1]  # scale fluor channels for composite images when norm=False
     
     I_trans,retard, azimuth, polarization, ImgFluor = imgs
@@ -129,16 +129,16 @@ def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoo
     if plot or any(chann in ['Retardance+Orientation', 'Polarization+Orientation', 'Brightfield+Retardance+Orientation']
                    for chann in outputChann):
         I_azi_ret_trans, I_azi_ret, I_azi_scat = PolColor(I_trans, retard, azimuth_degree, polarization, norm=norm)
-        tIdx = img_io.tIdx; zIdx = img_io.zIdx; posIdx = img_io.posIdx
+        t_idx = img_io.t_idx; z_idx = img_io.z_idx; pos_idx = img_io.pos_idx
         if plot:
             plot_recon_images(I_trans, retard, azimuth, polarization, I_azi_ret, I_azi_scat, zoomin=False, spacing=spacing,
                               vectorScl=vectorScl, dpi=dpi)
             if zoomin:
                 figName = 'Retardance+Retardance+Orientation_Zoomin.jpg'
             else:
-                figName = 'Retardance+Retardance+Orientation_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
+                figName = 'Retardance+Retardance+Orientation_t%03d_p%03d_z%03d.jpg' % (t_idx, pos_idx, z_idx)
     
-            plt.savefig(os.path.join(img_io.ImgOutPath, figName), dpi=dpi, bbox_inches='tight')
+            plt.savefig(os.path.join(img_io.img_output_path, figName), dpi=dpi, bbox_inches='tight')
      
     # Compute Retardance+Fluorescence and Retardance+Fluorescence_all overlays
     # Very slow
@@ -154,24 +154,24 @@ def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoo
     imgDict = {}
     for chann in outputChann:
         if chann == 'Brightfield_computed':
-            img = imBitConvert(I_trans * config.plotting.transmission_scaling, bit=16, norm=False)  # AU, set norm to False for tiling images
+            img = im_bit_convert(I_trans * config.plotting.transmission_scaling, bit=16, norm=False)  # AU, set norm to False for tiling images
             
         elif chann == 'Retardance':
-            img = imBitConvert(retard * config.plotting.retardance_scaling, bit=16)  # scale to pm
+            img = im_bit_convert(retard * config.plotting.retardance_scaling, bit=16)  # scale to pm
             
         elif chann == 'Orientation':
-            img = imBitConvert(azimuth_degree * 100, bit=16)  # scale to [0, 18000], 100*degree
+            img = im_bit_convert(azimuth_degree * 100, bit=16)  # scale to [0, 18000], 100*degree
             
         elif chann == 'Polarization':
-            img = imBitConvert(polarization * 50000, bit=16)
+            img = im_bit_convert(polarization * 50000, bit=16)
         
         elif chann == 'Orientation_x':
             azimuth_x = np.cos(2 * azimuth)
-            img = imBitConvert((azimuth_x+1) * 1000, bit=16) # scale to [0, 1000]
+            img = im_bit_convert((azimuth_x + 1) * 1000, bit=16) # scale to [0, 1000]
         
         elif chann == 'Orientation_y':
             azimuth_y = np.sin(2 * azimuth)
-            img = imBitConvert((azimuth_y+1) * 1000, bit=16)  # scale to [0, 1000]
+            img = im_bit_convert((azimuth_y + 1) * 1000, bit=16)  # scale to [0, 1000]
         elif chann == 'Retardance+Orientation':
             img = I_azi_ret
             
@@ -193,7 +193,7 @@ def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoo
             
         imgDict[chann] = img
         
-    img_io.chNames = outputChann
+    img_io.channels = outputChann
     img_io.nChann = len(outputChann)
     return img_io, imgDict
 
@@ -245,7 +245,7 @@ def CompositeImg(images, norm=True):
         if norm:
             img_one_chann = imadjust(img, tol=0.01, bit=8)
         else:
-            img_one_chann = imBitConvert(img, bit=8, norm=False)
+            img_one_chann = im_bit_convert(img, bit=8, norm=False)
 
         img_one_chann = img_one_chann.astype(np.float32,
                                              copy=False)  # convert to float32 without making a copy to save memory
@@ -256,7 +256,7 @@ def CompositeImg(images, norm=True):
         idx += 1
     ImgColor = np.stack(ImgColor)
     ImgColor = np.sum(ImgColor, axis=0)
-    ImgColor = imBitConvert(ImgColor, bit=8, norm=False)
+    ImgColor = im_bit_convert(ImgColor, bit=8, norm=False)
 
     return ImgColor
 
@@ -329,35 +329,25 @@ def plot_recon_images(s0, retard, azimuth, polarization, I_azi_ret, I_azi_scat, 
 
 
 def plot_stokes(img_io, img_stokes, img_stokes_sm):
-    tIdx = img_io.tIdx
-    zIdx = img_io.zIdx
-    posIdx = img_io.posIdx
+    t_idx = img_io.t_idx
+    z_idx = img_io.z_idx
+    pos_idx = img_io.pos_idx
     titles = ['s0', 's1', 's2', 's3']
-    fig_name = 'stokes_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
-    plot_sub_images(img_stokes, titles, img_io.ImgOutPath, fig_name, colorbar=True)
-    fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
-    plot_sub_images(img_stokes_sm, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+    fig_name = 'stokes_t%03d_p%03d_z%03d.jpg' % (t_idx, pos_idx, z_idx)
+    plot_sub_images(img_stokes, titles, img_io.img_output_path, fig_name, colorbar=True)
+    fig_name = 'stokes_sm_t%03d_p%03d_z%03d.jpg' % (t_idx, pos_idx, z_idx)
+    plot_sub_images(img_stokes_sm, titles, img_io.img_output_path, fig_name, colorbar=True)
 
 
 def plot_pol_imgs(img_io, imgs_pol, titles):
-    tIdx = img_io.tIdx
-    zIdx = img_io.zIdx
-    posIdx = img_io.posIdx
-    fig_name = 'imgs_pol_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
-    plot_sub_images(imgs_pol, titles, img_io.ImgOutPath, fig_name, colorbar=True)
+    t_idx = img_io.t_idx
+    z_idx = img_io.z_idx
+    pos_idx = img_io.pos_idx
+    fig_name = 'imgs_pol_t%03d_p%03d_z%03d.jpg' % (t_idx, pos_idx, z_idx)
+    plot_sub_images(imgs_pol, titles, img_io.img_output_path, fig_name, colorbar=True)
 
 
-def plot_Polacquisition_imgs(img_io, imgs_mm_py):
-    """compare python v.s. Polacquisition output"""
-    tIdx = img_io.tIdx
-    zIdx = img_io.zIdx
-    posIdx = img_io.posIdx
-    titles = ['Retardance (MM)','Orientation (MM)','Retardance (Py)','Orientation (Py)']
-    fig_name = 'imgs_mm_py_t%03d_p%03d_z%03d.jpg' % (tIdx, posIdx, zIdx)
-    plot_sub_images(imgs_mm_py, titles, img_io.ImgOutPath, fig_name, colorbar=True)
-
-
-def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
+def plot_sub_images(images,titles, img_output_path, figName, colorbar=False):
     n_imgs = len(images)
     n_rows = 2
     n_cols = np.ceil(n_imgs/n_rows).astype(np.uint32)
@@ -379,7 +369,7 @@ def plot_sub_images(images,titles, ImgOutPath, figName, colorbar=False):
             cax = divider.append_axes('right', size='5%', pad=0.05)
             cbar = plt.colorbar(ax_img, cax=cax, orientation='vertical')
         axis_count += 1
-    fig.savefig(os.path.join(ImgOutPath, figName), dpi=300, bbox_inches='tight')
+    fig.savefig(os.path.join(img_output_path, figName), dpi=300, bbox_inches='tight')
 
 
 

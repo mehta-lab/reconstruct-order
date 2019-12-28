@@ -69,7 +69,7 @@ class ImgReconstructor:
     """
 
     def __init__(self,
-                 img_shape,
+                 int_obj: IntensityData,
                  bg_method        = 'Global',
                  n_slice_local_bg = 1,
                  swing            = None,
@@ -78,13 +78,15 @@ class ImgReconstructor:
                  poly_fit_order   = 2,
                  azimuth_offset   = 0,
                  circularity      = 'rcp',
-                 binning          = 1,
                  use_gpu          = False,
                  gpu_id           = 0):
 
         # image params
-        self.img_shape        = img_shape
-
+        self._n_chann = 4
+        if 'I0' in int_obj.channel_names and isinstance(int_obj.get_image('I0'), np.ndarray):
+            self._n_chann = 5
+        img_shape = int_obj.get_image('IExt').shape
+        self.img_shape = [self._n_chann] + list(img_shape)
         self.bg_method        = bg_method
         self.n_slice_local_bg = n_slice_local_bg
         self.swing            = swing * 2 * np.pi # covert swing from fraction of wavelength to radian
@@ -127,7 +129,6 @@ class ImgReconstructor:
 
         # self.stokes_param_bg_local_tm = []
         self.circularity = circularity
-        self.binning = binning
 
     @property
     def img_shape(self):
@@ -151,7 +152,7 @@ class ImgReconstructor:
         Parameters
         ----------
         int_obj : IntensityData
-            input image with shape (channel, y, x) or (channel, z, y, x)
+            input image with shape (channel, y, x) or (channel, y, x, z)
 
         Returns
         -------
@@ -162,13 +163,8 @@ class ImgReconstructor:
         if not isinstance(int_obj, IntensityData):
             raise TypeError("Incorrect Data Type: must be IntensityData")
 
-        # handle mean_pooling np.array return
-        int_obj_array = mean_pooling_2d_stack(int_obj.data, self.binning)
-        for idx, image in enumerate(int_obj.data):
-            int_obj.replace_image(int_obj_array[idx], idx)
-
         # check that dims match instrument matrix dims
-        if self.img_shape != np.shape(int_obj.data):
+        if self.img_shape[1:] != list(np.shape(int_obj.get_image('IExt'))):
             raise ValueError("Instrument matrix dimensions do not match supplied intensity dimensions")
 
         if self._n_chann == 4:
@@ -188,7 +184,7 @@ class ImgReconstructor:
         # calculate stokes
         img_raw_flat = np.reshape(img_raw, (self._n_chann, -1))
         img_stokes_flat = np.dot(self.inst_mat_inv, img_raw_flat)
-        img_stokes = np.reshape(img_stokes_flat, (4,) + self.img_shape[1:])
+        img_stokes = np.reshape(img_stokes_flat, [4,] + self.img_shape[1:])
 
         out = StokesData()
         [out.s0,

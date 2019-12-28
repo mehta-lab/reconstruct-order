@@ -3,7 +3,8 @@
 
 from ReconstructOrder.compute.reconstruct import ImgReconstructor
 from ..testMetrics import mse
-from numpy import array_equal
+import numpy as np
+
 
 
 def test_complete_reconstruction(setup_gdrive_src_data):
@@ -24,7 +25,7 @@ def test_complete_reconstruction(setup_gdrive_src_data):
     bg_dat, sm_dat = setup_gdrive_src_data
 
     # compute initial reconstructor using background data
-    img_reconstructor = ImgReconstructor(bg_dat.data.shape,
+    img_reconstructor = ImgReconstructor(bg_dat,
                                          swing=0.03,
                                          wavelength=532)
     bg_stokes = img_reconstructor.compute_stokes(bg_dat)
@@ -85,32 +86,10 @@ def test_recon_mse(setup_reconstructed_data, setup_gdrive_target_data):
     recon_data = setup_reconstructed_data
     target_dat = setup_gdrive_target_data
     
-    assert mse(recon_data.I_trans, target_dat.I_trans) == 0
-    assert mse(recon_data.retard, target_dat.retard) == 0
-    assert mse(recon_data.azimuth, target_dat.azimuth) == 0
-    assert mse(recon_data.polarization, target_dat.polarization) == 0
-
-
-def test_recon_array_equal(setup_reconstructed_data, setup_gdrive_target_data):
-    """
-    test array by comparing element-wise equality
-
-    Parameters
-    ----------
-    setup_reconstructed_data
-    setup_gdrive_target_data
-
-    Returns
-    -------
-
-    """
-    recon_data = setup_reconstructed_data
-    target_dat = setup_gdrive_target_data
-
-    assert array_equal(recon_data.I_trans, target_dat.I_trans)
-    assert array_equal(recon_data.retard, target_dat.retard)
-    assert array_equal(recon_data.azimuth, target_dat.azimuth)
-    assert array_equal(recon_data.polarization, target_dat.polarization)
+    assert mse(recon_data.I_trans, target_dat.I_trans) < np.finfo(np.float32).eps
+    assert mse(recon_data.retard, target_dat.retard) < np.finfo(np.float32).eps
+    assert mse(recon_data.azimuth, target_dat.azimuth) < np.finfo(np.float32).eps
+    assert mse(recon_data.polarization, target_dat.polarization) < np.finfo(np.float32).eps
 
 
 

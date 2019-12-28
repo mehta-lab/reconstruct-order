@@ -96,7 +96,7 @@ by doing :
 >>   If you are writing your own code and want to use the ReconstructOrder library, you can reconstruct as follows:
 >>   ```buildoutcfg
 >>   import ReconstructOrder.workflow as wf
->>   wf.reconstructBatch('path-and-name-to-your-config.yml')
+>>   wf.reconstruct_batch('path-and-name-to-your-config.yml')
 >>   ```
 
 

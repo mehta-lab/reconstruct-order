@@ -5,7 +5,7 @@ Module to read yaml config file and return python object after input parameter c
 import yaml
 import os.path
 from collections.abc import Iterable
-from .imgIO import GetSubDirName
+from .imgIO import get_sub_dirs
 
 
 class ConfigReader:
@@ -73,7 +73,7 @@ class ConfigReader:
         for (key, value) in self.yaml_config['dataset'].items():
             if key == 'samples':
                 if value == 'all':
-                    self.dataset.samples = GetSubDirName(self.dataset.data_dir)
+                    self.dataset.samples = get_sub_dirs(self.dataset.data_dir)
                 else:
                     self.dataset.samples = value
             elif key == 'positions':

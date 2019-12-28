@@ -104,25 +104,25 @@ def translate_3D(images,
 
 def imshow_xy_xz_slice(img_stacks, img_io, y_crop_range, z_crop_range,
                        y_plot_range, z_plot_range):
-    for zIdx in range(z_plot_range[0], z_plot_range[1]):
-        img_io.zIdx = zIdx
-        output_chan = img_io.chNamesOut
-        img_stack = [img[zIdx - z_crop_range[0], :, :] for img in img_stacks]
-        fig_name = 'img_pair_z%03d.png' % (zIdx)
-        imshow_pair(img_stack, output_chan, OutputPath, fig_name)
-        fig_name = 'img_pair_z%03d_2.png' % (zIdx)
+    for z_idx in range(z_plot_range[0], z_plot_range[1]):
+        img_io.z_idx = z_idx
+        output_chan = img_io.output_chans
+        img_stack = [img[z_idx - z_crop_range[0], :, :] for img in img_stacks]
+        fig_name = 'img_pair_z%03d.png' % (z_idx)
+        imshow_pair(img_stack, output_chan, img_io.img_output_path, fig_name)
+        fig_name = 'img_pair_z%03d_2.png' % (z_idx)
         imshow_pair(img_stack[1:] + [img_stack[0]],
-                    output_chan[1:] + [output_chan[0]], OutputPath, fig_name)
+                    output_chan[1:] + [output_chan[0]], img_io.img_output_path, fig_name)
         plt.close("all")
 
     for yIdx in range(y_plot_range[0], y_plot_range[1]):
         img_io.yIdx = yIdx
         img_stack = [img[:, yIdx - y_crop_range[0], :] for img in img_stacks]
         fig_name = 'img_pair_y%03d.png' % (yIdx)
-        imshow_pair(img_stack, output_chan, OutputPath, fig_name)
+        imshow_pair(img_stack, output_chan, img_io.img_output_path, fig_name)
         fig_name = 'img_pair_y%03d_2.png' % (yIdx)
         imshow_pair(img_stack[1:] + [img_stack[0]],
-                    output_chan[1:] + [output_chan[0]], OutputPath, fig_name)
+                    output_chan[1:] + [output_chan[0]], img_io.img_output_path, fig_name)
         plt.close("all")
 
 def edge_filter_2D(img):
@@ -135,34 +135,40 @@ def edge_filter_2D(img):
 
 
 if __name__ == '__main__':
-    # RawDataPath = '//flexo/MicroscopyData/ComputationalMicroscopy\SpinningDisk\RawData/Dragonfly_Calibration'
-    # ProcessedPath = '/flexo/ComputationalMicroscopy/Projects/Dragonfly_Calibration'
-    RawDataPath = r'Z:/ComputationalMicroscopy/SpinningDisk/RawData/Dragonfly_Calibration'
-    ProcessedPath = r'Z:/ComputationalMicroscopy/Projects/Dragonfly_Calibration'
-    ImgDir = '2019_05_20_Argolight_10X_widefield_zyla'
-    SmDir = 'SMS_052019_1842_1_SMS_052019_1842_1_fit_order2'
-    input_chan = output_chan = ['640', 'Retardance', 'Brightfield_computed', '405', '488', '568'] # first channel is the reference channel
+    RawDataPath = r'Y:/SpinningDisk/RawData/Dragonfly_Calibration'
+    ProcessedPath = r'Y:/Projects/Dragonfly_Calibration'
+    # ImgDir = '2019_05_20_Argolight_10X_widefield_zyla'
+    # SmDir = 'SMS_052019_1842_1_SMS_052019_1842_1_fit_order2'
+    ImgDir = 'BFalignment_20191114_CG'
+    SmDir = 'BF_Confocal-DAPI-GFP-RFP-IFP_1'
+    # input_chan = output_chan = ['640', 'Retardance', 'Brightfield_computed', '405', '488', '568'] # first channel is the reference channel
+    input_chan = output_chan = ["EMCCD_Confocal40_RFP",
+                                "EMCCD_BF_Confocal",
+                                "EMCCD_Confocal40_DAPI",
+                                "EMCCD_Confocal40_GFP",
+                                "EMCCD_Confocal40_IFP"]  # first channel is the reference channel
 
-    z_crop_range = [0, 1]
-    x_crop_range = [0, 1281]
-    y_crop_range = [0, 1262]
-    z_plot_range = [0, 1]
-    y_plot_range = [0, 1]
-    ImgSmPath = os.path.join(ProcessedPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
-    OutputPath = os.path.join(ImgSmPath,'registration', 'raw')
-    shift_file_path = os.path.join(ImgSmPath, 'registration', 'registration_param_10X.json')
-    img_io = mManagerReader(ImgSmPath, OutputPath, input_chan=input_chan, output_chan=output_chan)
-    img_io.posIdx = 0
-    img_io.tIdx = 0
+    z_crop_range = [0, 161]
+    x_crop_range = [0, 460]
+    y_crop_range = [0, 383]
+    z_plot_range = [0, 161]
+    y_plot_range = [0, 383]
+    img_sm_path = os.path.join(RawDataPath, ImgDir, SmDir) # Sample image folder path, of form 'SM_yyyy_mmdd_hhmm_X'
+    OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir,'registration', 'raw')
+    shift_file_path = os.path.join(ProcessedPath, ImgDir, SmDir, 'registration', 'registration_param_63X.json')
+    img_io = mManagerReader(img_sm_path, OutputPath, input_chans=input_chan, output_chans=output_chan)
+    img_io.pos_idx = 0
+    img_io.t_idx = 0
+    img_io.binning = 1
     target_images = img_io.read_multi_chan_img_stack(z_range=z_crop_range)
-    os.makedirs(img_io.ImgOutPath, exist_ok=True)
+    os.makedirs(img_io.img_output_path, exist_ok=True)
 
     target_images_cropped = [target_image[:, y_crop_range[0]:y_crop_range[1],
                              x_crop_range[0]:x_crop_range[1]] for target_image in target_images]
     # use edge filter to change BF image to positive contrast (doesn't work for noisy images)
     target_images_filtered = []
     for chan, img in zip(input_chan, target_images_cropped):
-        if chan in ['Transmission', 'Brightfield', 'Brightfield_computed']:
+        if any([name in chan for name in ['Transmission', 'Brightfield', 'BF']]):
             imgs_filtered = []
             for z_idx in range(img.shape[2]):
                 img_filtered = edge_filter_2D(img[:, :, z_idx])
@@ -176,14 +182,18 @@ if __name__ == '__main__':
     registration_params = channel_register(target_images_filtered, output_chan)
     registration_params['size_z_um'] = size_z_um = img_io.size_z_um
 
-    target_images_warped = translate_3D(target_images_filtered, output_chan, registration_params, size_z_um)
+    with open(shift_file_path, 'w') as f:
+        json.dump(registration_params, f, indent=4)
 
-    OutputPath = os.path.join(ImgSmPath,'registration', 'processed')
-    img_io.ImgOutPath = OutputPath
-    os.makedirs(img_io.ImgOutPath, exist_ok=True)
+    target_images_warped = translate_3D(target_images_filtered,
+                                        output_chan,
+                                        registration_params,
+                                        size_z_um,
+                                        img_io.binning)
+
+    img_io.img_output_path = os.path.join(ProcessedPath, ImgDir, SmDir,'registration', 'processed')
+    os.makedirs(img_io.img_output_path, exist_ok=True)
 
     imshow_xy_xz_slice(target_images_warped, img_io, y_crop_range, z_crop_range,
                        y_plot_range, z_plot_range)
 
-    with open(shift_file_path, 'w') as f:
-        json.dump(registration_params, f, indent=4)

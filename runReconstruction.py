@@ -16,7 +16,7 @@ Returns
 
 import argparse
 
-from ReconstructOrder.workflow import reconstructBatch
+from ReconstructOrder.workflow import reconstruct_batch
 
 
 def parse_args():
@@ -37,7 +37,7 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    reconstructBatch(args.config)
+    reconstruct_batch(args.config)
 
 
 
