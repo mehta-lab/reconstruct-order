@@ -96,6 +96,8 @@ class mManagerReader(object):
             sub_dir = sub_dirs[0] # pos0
             if 'Pos' in sub_dir: # mManager 1.4.22 and 2.0 multi-position format
                 pos_path = os.path.join(img_sample_path, sub_dir)
+            else:
+                pos_path = os.path.join(img_sample_path, sub_dir)
 
         metadata_path = os.path.join(pos_path, 'metadata.txt')
         with open(metadata_path, 'r') as f:
