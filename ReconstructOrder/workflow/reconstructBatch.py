@@ -1,5 +1,5 @@
 from ..workflow.multiDimProcess import process_background, process_sample_imgs, read_metadata, parse_bg_options, phase_reconstructor_initializer
-from ..utils.ConfigReader import ConfigReader
+from ReconstructOrder.metadata.ConfigReader import ConfigReader
 from ..utils.flat_field import FlatFieldCorrector
 from ..datastructures import IntensityDataCreator
 import os

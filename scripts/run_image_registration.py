@@ -1,7 +1,7 @@
 import sys
 sys.path.append("..") # Adds parent directory to python search path.
 import os
-from ReconstructOrder.utils.mManagerIO import mManagerReader
+from ReconstructOrder.metadata.mManagerIO import mManagerReader
 import argparse
 import yaml
 from scripts.channel_registration_3D import translate_3D

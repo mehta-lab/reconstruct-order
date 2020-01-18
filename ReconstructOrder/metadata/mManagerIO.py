@@ -5,8 +5,8 @@ import json, os
 import numpy as np
 import pandas as pd
 import cv2
-from ..utils.imgIO import get_sub_dirs, get_sorted_names
-
+from ReconstructOrder.utils.imgIO import get_sub_dirs, get_sorted_names
+from ReconstructOrder.metadata.MicromanagerMetdata import mm1_meta_parser, mm2_beta_meta_parser, mm2_gamma_meta_parser
 
 
 class mManagerReader(object):
@@ -99,14 +99,23 @@ class mManagerReader(object):
 
         metadata_path = os.path.join(pos_path, 'metadata.txt')
         with open(metadata_path, 'r') as f:
-            input_meta_file = json.load(f)
+            self.input_meta_file = json.load(f)
 
-        self.input_meta_file = input_meta_file
-        self.mm_version = input_meta_file['Summary']['MicroManagerVersion']
-        if self.mm_version == '1.4.22':
-            self.meta_parser = self._mm1_meta_parser
-        elif '2.0' in self.mm_version:
-            self.meta_parser = self._mm2_meta_parser
+        self.mm_version = self.input_meta_file['Summary']['MicroManagerVersion']
+
+        # get version specific information
+        if '1.4.22' in self.mm_version:
+            self._meta_pos_list, self.width, self.height, self.time_stamp = mm1_meta_parser(self.input_meta_file)
+            self._pos_list = self._meta_pos_list
+
+        elif 'beta' in self.mm_version:
+            self._meta_pos_list, self.width, self.height, self.time_stamp = mm2_beta_meta_parser(self.input_meta_file)
+            self._pos_list = self._meta_pos_list
+
+        elif 'gamma' in self.mm_version:
+            self._meta_pos_list, self.width, self.height, self.time_stamp = mm2_gamma_meta_parser(self.input_meta_file)
+            self._pos_list = self._meta_pos_list
+
         else:
             raise ValueError(
                 'Current MicroManager reader only supports version 1.4.22 and 2.0 but {} was detected'.
@@ -118,7 +127,7 @@ class mManagerReader(object):
         self.img_name_format = None
         self._detect_img_name_format()
         self.img_output_path = img_output_path
-        self.input_chans = self.channels = input_meta_file['Summary']['ChNames']
+        self.input_chans = self.channels = self.input_meta_file['Summary']['ChNames']
         if input_chans:
             self.input_chans = input_chans
         self.n_input_chans = len(input_chans)
@@ -126,13 +135,13 @@ class mManagerReader(object):
         self.n_output_chans = len(output_chans)
         self.output_meta_file = []
         self.binning = binning
-        self.name = input_meta_file["Summary"]["Prefix"]
-        self.n_pos = input_meta_file['Summary']['Positions']
-        self.n_time = input_meta_file['Summary']['Frames']
-        self.n_z = input_meta_file['Summary']['Slices']
+        self.name = self.input_meta_file["Summary"]["Prefix"]
+        self.n_pos = self.input_meta_file['Summary']['Positions']
+        self.n_time = self.input_meta_file['Summary']['Frames']
+        self.n_z = self.input_meta_file['Summary']['Slices']
         self._t_list = self._meta_t_list = list(range(0, self.n_time))
         self._z_list = self._meta_z_list = list(range(0, self.n_z))
-        self.size_z_um = input_meta_file['Summary']['z-step_um']
+        self.size_z_um = self.input_meta_file['Summary']['z-step_um']
         self.pos_idx = 0  # assuming only single image for background
         self.t_idx = 0
         self.z_idx = 0
@@ -140,29 +149,30 @@ class mManagerReader(object):
         self.bg = 'No Background'
         self.bg_method = 'Global'
         self.bg_correct = True
-        self.meta_parser()
 
-    def _mm1_meta_parser(self):
-        input_meta_file = self.input_meta_file
-        self._meta_pos_list = ['Pos0']
-        pos_dict_list = self.input_meta_file['Summary']['InitialPositionList']
-        if pos_dict_list:
-            self._meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
-        self._pos_list = self._meta_pos_list
-        self.width = input_meta_file['Summary']['Width']
-        self.height = input_meta_file['Summary']['Height']
-        self.time_stamp = input_meta_file['Summary']['Time']
+        # self.meta_parser()
 
-    def _mm2_meta_parser(self):
-        input_meta_file = self.input_meta_file
-        self._meta_pos_list = ['']
-        if 'StagePositions' in self.input_meta_file['Summary']:
-            pos_dict_list = self.input_meta_file['Summary']['StagePositions']
-            self._meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
-        self._pos_list = self._meta_pos_list
-        self.width = int(input_meta_file['Summary']['UserData']['Width']['PropVal'])
-        self.height = int(input_meta_file['Summary']['UserData']['Height']['PropVal'])
-        self.time_stamp = input_meta_file['Summary']['StartTime']
+    # def _mm1_meta_parser(self):
+    #     input_meta_file = self.input_meta_file
+    #     self._meta_pos_list = ['Pos0']
+    #     pos_dict_list = self.input_meta_file['Summary']['InitialPositionList']
+    #     if pos_dict_list:
+    #         self._meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
+    #     self._pos_list = self._meta_pos_list
+    #     self.width = input_meta_file['Summary']['Width']
+    #     self.height = input_meta_file['Summary']['Height']
+    #     self.time_stamp = input_meta_file['Summary']['Time']
+    #
+    # def _mm2_meta_parser(self):
+    #     input_meta_file = self.input_meta_file
+    #     self._meta_pos_list = ['']
+    #     if 'StagePositions' in self.input_meta_file['Summary']:
+    #         pos_dict_list = self.input_meta_file['Summary']['StagePositions']
+    #         self._meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
+    #     self._pos_list = self._meta_pos_list
+    #     self.width = int(input_meta_file['Summary']['UserData']['Width']['PropVal'])
+    #     self.height = int(input_meta_file['Summary']['UserData']['Height']['PropVal'])
+    #     self.time_stamp = input_meta_file['Summary']['StartTime']
 
     @property
     def pos_list(self):
@@ -297,6 +307,7 @@ class mManagerReader(object):
         df_pos = pd.DataFrame(list(enumerate(self.pos_list)),
                           columns=['pos idx', 'pos dir'])
         df_pos.to_csv(df_pos_path, sep=',')
+
 
 class PolAcquReader(mManagerReader):
     """PolAcquistion mManager metadata and image reader

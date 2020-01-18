@@ -1,6 +1,6 @@
 import numpy as np
 from ReconstructOrder.datastructures import IntensityData
-from ..utils.mManagerIO import mManagerReader
+from ReconstructOrder.metadata.mManagerIO import mManagerReader
 from ..utils.imgProcessing import mean_pooling_2d
 
 

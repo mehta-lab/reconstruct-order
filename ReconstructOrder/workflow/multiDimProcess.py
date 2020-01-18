@@ -11,9 +11,9 @@ from ..compute.reconstruct import ImgReconstructor
 from ..compute.reconstruct_phase import phase_reconstructor
 from ..utils.imgProcessing import im_bit_convert
 from ..utils.plotting import render_birefringence_imgs, plot_stokes, plot_pol_imgs
-from ..utils.mManagerIO import mManagerReader, PolAcquReader
+from ReconstructOrder.metadata.mManagerIO import mManagerReader, PolAcquReader
 from ..datastructures import StokesData, IntensityDataCreator, IntensityData
-from ..utils.ConfigReader import ConfigReader
+from ReconstructOrder.metadata.ConfigReader import ConfigReader
 from ..utils.flat_field import FlatFieldCorrector
 from ..utils.aux_utils import loop_pt
 from typing import Union

@@ -7,7 +7,7 @@ import os
 import json
 import numpy as np
 import matplotlib.pyplot as plt
-from ReconstructOrder.utils.mManagerIO import mManagerReader
+from ReconstructOrder.metadata.mManagerIO import mManagerReader
 from ReconstructOrder.utils.plotting import CompositeImg, plot_sub_images
 
 def imshow_pair(images, chann_names, OutputPath, fig_name):
