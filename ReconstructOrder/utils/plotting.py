@@ -70,7 +70,7 @@ def plotVectorField(img,
     U, V =  anisotropy*linelength * np.cos(2 * orientation), anisotropy*linelength * np.sin(2 * orientation)
     USmooth = nanRobustBlur(U, (window, window)) # plot smoothed vector field
     VSmooth = nanRobustBlur(V, (window, window)) # plot smoothed vector field
-    azimuthSmooth = 0.5*np.arctan2(VSmooth,USmooth)
+    azimuthSmooth = (0.5*np.arctan2(VSmooth,USmooth)) % np.pi
     RSmooth = np.sqrt(USmooth**2+VSmooth**2)
     USmooth, VSmooth = RSmooth*np.cos(azimuthSmooth), RSmooth*np.sin(azimuthSmooth)
 
@@ -108,7 +108,7 @@ def plotVectorField(img,
                    headwidth = 0, headlength = 0, headaxislength = 0,
                    scale_units = 'xy',scale = 1, angles = 'uv', pivot = 'mid')
 
-    return im_ax
+    return im_ax, RSmooth, azimuthSmooth
 
 
 def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
