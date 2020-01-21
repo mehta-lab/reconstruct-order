@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import cv2
 from ReconstructOrder.utils.imgIO import get_sub_dirs, get_sorted_names
-from ReconstructOrder.metadata.MicromanagerMetdata import mm1_meta_parser, mm2_beta_meta_parser, mm2_gamma_meta_parser
+from ReconstructOrder.metadata.MicromanagerMetadata import mm1_meta_parser, mm2_beta_meta_parser, mm2_gamma_meta_parser
 
 
 class mManagerReader(object):
@@ -89,6 +89,7 @@ class mManagerReader(object):
     """
 
     def __init__(self, img_sample_path, img_output_path=None, input_chans=[], output_chans=[], binning=1):
+        print(f"SAMPLE PATH = {img_sample_path}")
 
         pos_path = img_sample_path # mManager 2.0 single position format
         sub_dirs = get_sub_dirs(img_sample_path)
@@ -102,6 +103,7 @@ class mManagerReader(object):
             self.input_meta_file = json.load(f)
 
         self.mm_version = self.input_meta_file['Summary']['MicroManagerVersion']
+        print(f"\tMM VERSION = {self.mm_version}")
 
         # get version specific information
         if '1.4.22' in self.mm_version:

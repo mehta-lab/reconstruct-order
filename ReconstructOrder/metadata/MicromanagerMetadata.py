@@ -2,6 +2,13 @@
 
 
 def mm1_meta_parser(metafile):
+    """
+    for 1.4.22 metadata
+    - copied from SM's original parsing schema
+
+    :param metafile:
+    :return:
+    """
     try:
         pos_dict_list = metafile['Summary']['InitialPositionList']
         if pos_dict_list:
@@ -9,7 +16,7 @@ def mm1_meta_parser(metafile):
         else:
             meta_pos_list = ['Pos0']
     except KeyError:
-        print("WARNING: no InitialPositionList found in metadata.txt, setting to Pos0")
+        print("WARNING mm1.4.22: no InitialPositionList found in metadata.txt, setting to Pos0")
         meta_pos_list = ['Pos0']
 
     try:
@@ -17,7 +24,7 @@ def mm1_meta_parser(metafile):
         height = metafile['Summary']['Height']
         time_stamp = metafile['Summary']['Time']
     except KeyError:
-        print("WARNING: no width, height, or Time found in metadata.txt, setting to default")
+        print("WARNING mm1.4.22: no width, height, or Time found in metadata.txt, setting to default")
         width = 2048
         height = 2048
         time_stamp = 1
@@ -26,52 +33,72 @@ def mm1_meta_parser(metafile):
 
 
 def mm2_beta_meta_parser(metafile):
+    """
+    for 2.0-beta
+    - copied from SM's original parsing schema
+
+    :param metafile:
+    :return:
+    """
     try:
         if 'StagePositions' in metafile['Summary']:
             pos_dict_list = metafile['Summary']['StagePositions']
-            _meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
+            meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
         else:
-            _meta_pos_list = ['']
+            meta_pos_list = ['']
     except KeyError:
-        print("WARNING: no InitialPositionList found in metadata.txt, setting to Pos0")
-        _meta_pos_list = ['']
+        print("WARNING mm2.0-beta: no InitialPositionList found in metadata.txt, setting to ''")
+        meta_pos_list = ['']
 
     try:
         width = int(metafile['Summary']['UserData']['Width']['PropVal'])
         height = int(metafile['Summary']['UserData']['Height']['PropVal'])
         time_stamp = metafile['Summary']['StartTime']
     except KeyError:
-        print("WARNING: no width, height, or Time found in metadata.txt, setting to default")
+        print("WARNING mm2.0-beta: no width, height, or Time found in metadata.txt, setting to default")
         width = 2048
         height = 2048
         time_stamp = 1
 
-    return _meta_pos_list, width, height, time_stamp
+    return meta_pos_list, width, height, time_stamp
 
 
 def mm2_gamma_meta_parser(metafile):
+    """
+    for 2.0-gamma
+        Schema is:
+        metadata = {'Summary": ___,
+
+
+    :param metafile:
+    :return:
+    """
 
     try:
         if 'StagePositions' in metafile['Summary']:
             pos_dict_list = metafile['Summary']['StagePositions']
-            _meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
+            meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
         else:
-            _meta_pos_list = ['']
+            meta_pos_list = ['']
     except KeyError:
-        print("WARNING: no InitialPositionList found in metadata.txt, setting to Pos0")
-        _meta_pos_list = ['']
+        print("WARNING mm2.0-gamma: no InitialPositionList found in metadata.txt, setting to ''")
+        meta_pos_list = ['']
+
+    # every image in gamma has a corresponding "Coords" and "Metadata" dict in metadata.txt
+    #   the "Metadata" dictionary contains width and height info"
 
     try:
-        width = metafile['Summary']['Width']
-        height = metafile['Summary']['Height']
-        time_stamp = metafile['Summary']['StartTime']
+        first_metadata = [k for k, v in metafile.items() if "Metadata" in k][0]
+        width = metafile[first_metadata]['Width']
+        height = metafile[first_metadata]['Height']
+        time_stamp = metafile["Summary"]['StartTime']
     except KeyError:
-        print("WARNING: no width, height, or Time found in metadata.txt, setting to default")
+        print("WARNING mm2.0-gamma: no width, height, or Time found in metadata.txt, setting to default")
         width = 2048
         height = 2048
         time_stamp = 1
 
-    return _meta_pos_list, width, height, time_stamp
+    return meta_pos_list, width, height, time_stamp
 
 
 """
