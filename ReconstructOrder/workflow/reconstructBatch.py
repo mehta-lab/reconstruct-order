@@ -112,7 +112,7 @@ def _process_one_acqu(img_obj, bg_obj, config):
     """
     ph_recon = None
     print('Processing ' + img_obj.name + ' ....')
-    img_int_creator = IntensityDataCreator(ROI=config.dataset.ROI,
+    img_int_creator_bg = IntensityDataCreator(ROI=config.dataset.ROI,
                                            binning=config.processing.binning)
 
     # Write metadata in processed folder
@@ -122,7 +122,7 @@ def _process_one_acqu(img_obj, bg_obj, config):
     config.write_config(os.path.join(img_obj.img_output_path, 'config.yml'))  # save the config file in the processed folder
 
     # img_obj, img_reconstructor = process_background(img_obj, bg_obj, config)
-    stokes_bg_norm, int_bg, img_reconstructor = process_background(img_obj, bg_obj, config, img_int_creator)
+    stokes_bg_norm, int_bg, img_reconstructor = process_background(img_obj, bg_obj, config, img_int_creator_bg)
 
     ff_corrector = FlatFieldCorrector(img_obj, config, method='open')
     flatField = config.processing.flatfield_correction
@@ -133,10 +133,15 @@ def _process_one_acqu(img_obj, bg_obj, config):
     save_phase = any(chan in phase_names for chan in img_obj.output_chans)
     if save_phase:
         ph_recon = phase_reconstructor_initializer(img_obj, config)
+
+    # old int_creator object has bg-channels assigned.  Need to create a new one
+    img_int_creator_sm = IntensityDataCreator(ROI=config.dataset.ROI,
+                                           binning=config.processing.binning)
+
     process_sample_imgs(img_io=img_obj,
                         config=config,
                         img_reconstructor=img_reconstructor,
-                        img_int_creator=img_int_creator,
+                        img_int_creator=img_int_creator_sm,
                         ff_corrector=ff_corrector,
                         int_bg=int_bg,
                         stokes_bg=stokes_bg_norm,
