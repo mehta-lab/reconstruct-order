@@ -11,93 +11,14 @@ from ..compute.reconstruct import ImgReconstructor
 from ..compute.reconstruct_phase import phase_reconstructor
 from ..utils.imgProcessing import im_bit_convert
 from ..utils.plotting import render_birefringence_imgs, plot_stokes, plot_pol_imgs
-from ReconstructOrder.metadata.mManagerIO import mManagerReader, PolAcquReader
+from ..metadata.mManagerIO import mManagerReader, PolAcquReader
 from ..datastructures import StokesData, IntensityDataCreator, IntensityData
-from ReconstructOrder.metadata.ConfigReader import ConfigReader
+from ..metadata.ConfigReader import ConfigReader
 from ..utils.flat_field import FlatFieldCorrector
 from ..utils.aux_utils import loop_pt
 from typing import Union
 
 matplotlib.use('Agg')
-
-
-def create_metadata_object(data_path, config):
-    """
-    Reads PolAcquisition metadata, if possible. Otherwise, reads MicroManager metadata.
-    TODO: move to imgIO?
-
-    Parameters
-    __________
-    data_path : str
-        Path to data directory
-    config : obj
-        ConfigReader object
-
-    Returns
-    _______
-    obj
-        Metadata object
-    """
-
-    try:
-        img_obj = PolAcquReader(data_path,
-                                output_chans=config.processing.output_channels,
-                                binning=config.processing.binning
-                                )
-    except:
-        img_obj = mManagerReader(data_path,
-                                 output_chans=config.processing.output_channels,
-                                 binning=config.processing.binning)
-    return img_obj
-
-
-def read_metadata(config):
-    """
-    Reads the metadata for the sample and background data sets. Passes some
-    of the parameters (e.g. swing, wavelength, back level, etc.) from the
-    background metadata object into the sample metadata object
-    TODO: move to imgIO?
-
-    Parameters
-    __________
-    config : obj
-        ConfigReader object
-
-    Returns
-    _______
-    obj
-        Metadata object
-    """
-
-    img_obj_list = []
-    bg_obj_list = []
-
-    # If one background is used for all samples, read only once
-    if len(set(config.dataset.background)) <= 1:
-        background_path = os.path.join(config.dataset.data_dir,config.dataset.background[0])
-        bg_obj = create_metadata_object(background_path, config)
-        bg_obj_list.append(bg_obj)
-    else:
-        for background in config.dataset.background:
-            background_path = os.path.join(config.dataset.data_dir, background)
-            bg_obj = create_metadata_object(background_path, config)
-            bg_obj_list.append(bg_obj)
-
-    for sample in config.dataset.samples:
-        sample_path = os.path.join(config.dataset.data_dir, sample)
-        img_obj = create_metadata_object(sample_path, config)
-        img_obj_list.append(img_obj)
-
-    if len(bg_obj_list) == 1:
-        bg_obj_list = bg_obj_list*len(img_obj_list)
-
-    for i in range(len(config.dataset.samples)):
-        img_obj_list[i].bg = bg_obj_list[i].bg
-        img_obj_list[i].swing = bg_obj_list[i].swing
-        img_obj_list[i].wavelength = bg_obj_list[i].wavelength
-        img_obj_list[i].blackLevel = bg_obj_list[i].blackLevel
-
-    return img_obj_list, bg_obj_list
 
 
 def parse_bg_options(img_obj_list, config):
@@ -179,7 +100,14 @@ def process_background(img_io, img_io_bg, config, img_int_creator: IntensityData
     """
     Read background images, initiate ImgReconstructor to compute background stokes parameters
 
+    :param img_io:
+    :param img_io_bg:
+    :param config:
+    :param img_int_creator:
+    :return:
     """
+
+    print("COMPUTING BACKGROUND DATA")
     img_int_bg         = img_int_creator.get_data_object(img_io_bg)
     circularity      = config.processing.circularity
     azimuth_offset   = config.processing.azimuth_offset
@@ -213,6 +141,7 @@ def process_background(img_io, img_io_bg, config, img_int_creator: IntensityData
         background_stokes_normalized = None
 
     return background_stokes_normalized, img_int_bg, img_reconstructor
+
 
 def phase_reconstructor_initializer(img_io: Union[mManagerReader, PolAcquReader],
                                     config: ConfigReader):
@@ -313,7 +242,12 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
     save_fig         = config.plotting.save_birefringence_fig
     save_stokes_fig  = config.plotting.save_stokes_fig
     save_pol_fig     = config.plotting.save_polarization_fig
-    
+
+    # sanity checks
+    if img_reconstructor.img_shape[1] != img_io.height or img_reconstructor.img_shape[2] != img_io.width:
+        raise AttributeError("background data must have the same dimensions as the sample data\n\t"
+                             f"bg (height, width) = {img_reconstructor.img_shape[1]},{img_reconstructor.img_shape[2]}\n"
+                             f"\tsm (height, width) = {img_io.height},{img_io.width}")
 
     # 1) define allowed config values
     #TODO: move the flag parser to ConfigReader and make flags part of the config attributes
@@ -347,6 +281,7 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
             plt.close("all")  # close all the figures from the last run
             img_io.z_idx = z_idx
 
+            print("\t"+img_io.img_in_pos_path)
             # load raw intensity data
             img_int_sm = img_int_creator.get_data_object(img_io)
             img_int_sm = ff_corrector.correct_flat_field(img_int_sm)

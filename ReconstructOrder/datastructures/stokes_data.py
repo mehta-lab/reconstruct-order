@@ -1,5 +1,5 @@
 import numpy as np
-from ReconstructOrder.datastructures.intensity_data import IntensityData
+from ..datastructures.intensity_data import IntensityData
 
 
 class StokesData(object):

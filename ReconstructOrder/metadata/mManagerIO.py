@@ -1,16 +1,39 @@
 """
 Class to read mManager format images saved separately and their metadata (JSON) .
 """
-import json, os
+import json, os, fnmatch
 import numpy as np
 import pandas as pd
 import cv2
-from ReconstructOrder.utils.imgIO import get_sub_dirs, get_sorted_names
-from ReconstructOrder.metadata.MicromanagerMetadata import mm1_meta_parser, mm2_beta_meta_parser, mm2_gamma_meta_parser
+from ..utils.imgIO import get_sub_dirs, get_sorted_names
+from ..metadata.MicromanagerMetadata import mm1_meta_parser, mm2_beta_meta_parser, mm2_gamma_meta_parser
+
+"""
+mManagerReader:
+- Represents a single Sample as defined by the "samples" field in the configfile
+- A single Sample can contain:
+    - multiple positions, channels, timepoints, z slices
+    
+1 mManagerReader maintains lists of folders or paths (?) referring to all the above
+2 mManagerReader stores parsed metadata from the acquisition's outputted metadata.txt file
+3 mManagerReader maintains some (?) ConfigReader parameters relevant to processing such as:
+    - output_chan
+    - bg_correct
+    - bg_method
+4 as image processing advances, attributes within mManagerReader are adjusted to reflect the state of image processing:
+    - for example, during coordinate looping, the self.t_idx, self.z_idx etc.. are incremented
+
+1-3 describe a highly static nature of mManagerReader
+4 describes a highly stateful nature of mManagerReader
+
+"""
+#Todo: for often adjusted attributes, create property setters/getters
+#todo: consider for "final" attributes, should we use property setter/getters to "lock" the values?
 
 
 class mManagerReader(object):
-    """General mManager metadata and image reader for data saved as separate 2D tiff files
+    """
+    General mManager metadata and image reader for data saved as separate 2D tiff files
 
     Parameters
     ----------
@@ -233,30 +256,66 @@ class mManagerReader(object):
         self._z_list = value
 
     def _detect_img_name_format(self):
+        # *Bryant 1-21-2020: we will use the same convention as in the constructor to identify micro-manager format
+        #   will no longer use string parsing to ID mm format
+
         img_name = self.img_names[0]
-        if 'img_000000' in img_name:
+
+        # if 'img_000000' in img_name:
+        #     self.img_name_format = 'mm_1_4_22'
+        # elif 'position' in img_name:
+        #     self.img_name_format = 'mm_2_0'
+        # elif 'img_' in img_name:
+        #     self.img_name_format = 'recon_order'
+        # else:
+        #     raise ValueError('Unknown image name format')
+
+        if '1.4.22' in self.mm_version:
             self.img_name_format = 'mm_1_4_22'
-        elif 'position' in img_name:
+        elif 'beta' in self.mm_version:
+            self.img_name_format = 'mm_2_0'
+        elif 'gamma' in self.mm_version:
             self.img_name_format = 'mm_2_0'
         elif 'img_' in img_name:
             self.img_name_format = 'recon_order'
         else:
-            raise ValueError('Unknown image name format')
+            raise ValueError("Unknown image name format")
 
     def get_chan_name(self):
         return self.input_chans[self.chan_idx]
 
     def get_img_name(self):
+        """
+        mm2.0 file names contain position index that does not obviously map to the position list folder name
+            therefore, we have to do a search for matching strings based on parameters Channel, Time, Z
+
+        :return: string: image name
+        """
+        img_name = None
+
         if self.img_name_format == 'mm_1_4_22':
             img_name = 'img_000000{:03d}_{}_{:03d}.tif'.\
                 format(self.t_idx, self.get_chan_name(), self.z_idx)
+
         elif self.img_name_format == 'mm_2_0':
             chan_meta_idx = self.channels.index(self.get_chan_name())
-            img_name = 'img_channel{:03d}_position{:03d}_time{:09d}_z{:03d}.tif'.\
-                format(chan_meta_idx, self.t_idx, self.pos_idx, self.z_idx)
+
+            # could do binary search but might have to parameterize the list
+            for file in sorted(os.listdir(self.img_in_pos_path)):
+                if fnmatch.fnmatch(file, 'img_channel{:03d}_position*_time{:09d}_z{:03d}.tif'.format(
+                        chan_meta_idx, self.t_idx, self.z_idx)):
+                    img_name = file
+                    print("\t\tFOUND FNMATCH, file = "+img_name)
+
+            if img_name is None:
+                img_name = 'img_channel{:03d}_position{:03d}_time{:09d}_z{:03d}.tif'. \
+                    format(chan_meta_idx, self.pos_idx, self.t_idx, self.z_idx)
+                print("\t\tNO FNMATCH, Guessing file name = " + img_name)
+
         elif self.img_name_format == 'recon_order':
             img_name = 'img_{}_t{:03d}_p{:03d}_z{:03d}.tif'.\
                 format(self.t_idx, self.pos_idx, self.z_idx, self.get_chan_name())
+
         else:
             raise ValueError('Undefined image name format')
         return img_name

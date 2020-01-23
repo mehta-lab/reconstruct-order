@@ -5,5 +5,6 @@
 __all__ = ["workflow",
            "utils",
            "compute",
-           "datastructures"
+           "datastructures",
+           "metadata"
            ]

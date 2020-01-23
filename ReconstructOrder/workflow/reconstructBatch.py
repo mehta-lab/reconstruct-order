@@ -1,5 +1,8 @@
-from ..workflow.multiDimProcess import process_background, process_sample_imgs, read_metadata, parse_bg_options, phase_reconstructor_initializer
-from ReconstructOrder.metadata.ConfigReader import ConfigReader
+from ..workflow.multiDimProcess import process_background, process_sample_imgs, parse_bg_options, phase_reconstructor_initializer
+# from ReconstructOrder.metadata.MicromanagerMetadata import read_metadata
+# from ReconstructOrder.metadata.ConfigReader import ConfigReader
+from ..metadata.MicromanagerMetadata import read_metadata
+from ..metadata.ConfigReader import ConfigReader
 from ..utils.flat_field import FlatFieldCorrector
 from ..datastructures import IntensityDataCreator
 import os
@@ -138,6 +141,7 @@ def _process_one_acqu(img_obj, bg_obj, config):
     img_int_creator_sm = IntensityDataCreator(ROI=config.dataset.ROI,
                                            binning=config.processing.binning)
 
+    print("COMPUTING SAMPLE DATA")
     process_sample_imgs(img_io=img_obj,
                         config=config,
                         img_reconstructor=img_reconstructor,
@@ -154,11 +158,13 @@ def reconstruct_batch(configfile):
     config = ConfigReader()
     config.read_config(configfile)
 
-    # read meta data
+    # read meta data, create list of mManagerIO objects (one object per sample)
+    # curate the list of mManagerIO objects based on supplied config values
     img_obj_list, bg_obj_list = read_metadata(config)
     img_obj_list = process_position_list(img_obj_list, config)
     img_obj_list = process_z_slice_list(img_obj_list, config)
     img_obj_list = process_timepoint_list(img_obj_list, config)
+
     # process background options
     img_obj_list = parse_bg_options(img_obj_list, config)
 

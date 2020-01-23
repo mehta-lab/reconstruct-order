@@ -193,8 +193,8 @@ def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoo
             
         imgDict[chann] = img
         
-    img_io.channels = outputChann
-    img_io.nChann = len(outputChann)
+    # img_io.channels = outputChann
+    # img_io.nChann = len(outputChann)
     return img_io, imgDict
 
 

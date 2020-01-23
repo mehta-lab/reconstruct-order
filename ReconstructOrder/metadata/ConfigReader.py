@@ -5,7 +5,7 @@ Module to read yaml config file and return python object after input parameter c
 import yaml
 import os.path
 from collections.abc import Iterable
-from ReconstructOrder.utils.imgIO import get_sub_dirs
+from ..utils.imgIO import get_sub_dirs
 
 
 class ConfigReader:
