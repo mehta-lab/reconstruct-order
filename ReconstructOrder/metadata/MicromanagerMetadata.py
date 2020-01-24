@@ -80,9 +80,9 @@ def mm2_gamma_meta_parser(metafile):
             pos_dict_list = metafile['Summary']['StagePositions']
             meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
         else:
-            meta_pos_list = ['']
-    except KeyError:
-        print("WARNING mm2.0-gamma: no InitialPositionList found in metadata.txt, setting to ''")
+            raise KeyError("WARNING mm2.0-gamma: no InitialPositionList found in metadata.txt, setting to ''")
+    except KeyError as k:
+        print(k)
         meta_pos_list = ['']
 
     # every image in gamma has a corresponding "Coords" and "Metadata" dict in metadata.txt
@@ -120,6 +120,7 @@ def create_metadata_object(data_path, config):
         Metadata object
     """
     # import here to avoid circular imports
+    # but actually, this fails because "from" requires "." to be initialized before import
     from . import mManagerReader, PolAcquReader
 
     try:

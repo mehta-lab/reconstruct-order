@@ -244,10 +244,10 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
     save_pol_fig     = config.plotting.save_polarization_fig
 
     # sanity checks
-    if img_reconstructor.img_shape[1] != img_io.height or img_reconstructor.img_shape[2] != img_io.width:
-        raise AttributeError("background data must have the same dimensions as the sample data\n\t"
-                             f"bg (height, width) = {img_reconstructor.img_shape[1]},{img_reconstructor.img_shape[2]}\n"
-                             f"\tsm (height, width) = {img_io.height},{img_io.width}")
+    # if img_reconstructor.img_shape[1] != img_io.height or img_reconstructor.img_shape[2] != img_io.width:
+    #     raise AttributeError("background data must have the same dimensions as the sample data\n\t"
+    #                          f"bg (height, width) = {img_reconstructor.img_shape[1]},{img_reconstructor.img_shape[2]}\n"
+    #                          f"\tsm (height, width) = {img_io.height},{img_io.width}")
 
     # 1) define allowed config values
     #TODO: move the flag parser to ConfigReader and make flags part of the config attributes
@@ -285,6 +285,13 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
             # load raw intensity data
             img_int_sm = img_int_creator.get_data_object(img_io)
             img_int_sm = ff_corrector.correct_flat_field(img_int_sm)
+
+            if img_reconstructor.img_shape[1] != img_int_sm.get_image(0).shape[0] \
+                    or img_reconstructor.img_shape[2] != img_int_sm.get_image(0).shape[1]:
+                raise AttributeError("background data must have the same dimensions as the sample data\n\t"
+                                     f"bg (height, width) = {img_reconstructor.img_shape[1]},"
+                                     f"{img_reconstructor.img_shape[2]}\n"
+                                     f"\tsm (height, width) = {img_io.height},{img_io.width}")
 
             img_dict = {}
             if save_stokes or save_birefring:

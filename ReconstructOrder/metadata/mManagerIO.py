@@ -112,16 +112,25 @@ class mManagerReader(object):
     """
 
     def __init__(self, img_sample_path, img_output_path=None, input_chans=[], output_chans=[], binning=1):
-        print(f"SAMPLE PATH = {img_sample_path}")
-
+        self._pos_list = None
         pos_path = img_sample_path # mManager 2.0 single position format
         sub_dirs = get_sub_dirs(img_sample_path)
         if sub_dirs:
             sub_dir = sub_dirs[0] # pos0
-            if 'Pos' in sub_dir: # mManager 1.4.22 and 2.0 multi-position format
+            # mManager 1.4.22
+            if 'Pos' in sub_dir:
                 pos_path = os.path.join(img_sample_path, sub_dir)
+            # mManager 2.0 single position format
+            elif len(sub_dirs) == 1 and sub_dirs[0] == 'Default':
+                """
+                Single position data does not produce a "position list" from the metadata
+                We can assign it here
+                """
+                pos_path = os.path.join(img_sample_path, sub_dir)
+                self._pos_list = [sub_dirs[0]]
             else:
                 pos_path = os.path.join(img_sample_path, sub_dir)
+        print(f"SAMPLE PATH = {pos_path}")
 
         metadata_path = os.path.join(pos_path, 'metadata.txt')
         with open(metadata_path, 'r') as f:
@@ -131,17 +140,21 @@ class mManagerReader(object):
         print(f"\tMM VERSION = {self.mm_version}")
 
         # get version specific information
+        #   position list, image width and height
         if '1.4.22' in self.mm_version:
             self._meta_pos_list, self.width, self.height, self.time_stamp = mm1_meta_parser(self.input_meta_file)
-            self._pos_list = self._meta_pos_list
+            if self._pos_list is None:
+                self._pos_list = self._meta_pos_list
 
         elif 'beta' in self.mm_version:
             self._meta_pos_list, self.width, self.height, self.time_stamp = mm2_beta_meta_parser(self.input_meta_file)
-            self._pos_list = self._meta_pos_list
+            if self._pos_list is None:
+                self._pos_list = self._meta_pos_list
 
         elif 'gamma' in self.mm_version:
             self._meta_pos_list, self.width, self.height, self.time_stamp = mm2_gamma_meta_parser(self.input_meta_file)
-            self._pos_list = self._meta_pos_list
+            if self._pos_list is None:
+                self._pos_list = self._meta_pos_list
 
         else:
             raise ValueError(
@@ -176,30 +189,6 @@ class mManagerReader(object):
         self.bg = 'No Background'
         self.bg_method = 'Global'
         self.bg_correct = True
-
-        # self.meta_parser()
-
-    # def _mm1_meta_parser(self):
-    #     input_meta_file = self.input_meta_file
-    #     self._meta_pos_list = ['Pos0']
-    #     pos_dict_list = self.input_meta_file['Summary']['InitialPositionList']
-    #     if pos_dict_list:
-    #         self._meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
-    #     self._pos_list = self._meta_pos_list
-    #     self.width = input_meta_file['Summary']['Width']
-    #     self.height = input_meta_file['Summary']['Height']
-    #     self.time_stamp = input_meta_file['Summary']['Time']
-    #
-    # def _mm2_meta_parser(self):
-    #     input_meta_file = self.input_meta_file
-    #     self._meta_pos_list = ['']
-    #     if 'StagePositions' in self.input_meta_file['Summary']:
-    #         pos_dict_list = self.input_meta_file['Summary']['StagePositions']
-    #         self._meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
-    #     self._pos_list = self._meta_pos_list
-    #     self.width = int(input_meta_file['Summary']['UserData']['Width']['PropVal'])
-    #     self.height = int(input_meta_file['Summary']['UserData']['Height']['PropVal'])
-    #     self.time_stamp = input_meta_file['Summary']['StartTime']
 
     @property
     def pos_list(self):
@@ -300,7 +289,7 @@ class mManagerReader(object):
         elif self.img_name_format == 'mm_2_0':
             chan_meta_idx = self.channels.index(self.get_chan_name())
 
-            # could do binary search but might have to parameterize the list
+            # could do binary search but might have to parameterize the list because list is str
             for file in sorted(os.listdir(self.img_in_pos_path)):
                 if fnmatch.fnmatch(file, 'img_channel{:03d}_position*_time{:09d}_z{:03d}.tif'.format(
                         chan_meta_idx, self.t_idx, self.z_idx)):

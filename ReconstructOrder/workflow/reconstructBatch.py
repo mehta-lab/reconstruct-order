@@ -114,7 +114,7 @@ def _process_one_acqu(img_obj, bg_obj, config):
 
     """
     ph_recon = None
-    print('Processing ' + img_obj.name + ' ....')
+    print('Processing SAMPLE = ' + img_obj.name + ' ....')
     img_int_creator_bg = IntensityDataCreator(ROI=config.dataset.ROI,
                                            binning=config.processing.binning)
 
