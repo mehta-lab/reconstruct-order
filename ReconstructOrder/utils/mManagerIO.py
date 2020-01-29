@@ -93,10 +93,9 @@ class mManagerReader(object):
         pos_path = img_sample_path # mManager 2.0 single position format
         sub_dirs = get_sub_dirs(img_sample_path)
         if sub_dirs:
-            sub_dir = sub_dirs[0] # pos0
-            if 'Pos' in sub_dir: # mManager 1.4.22 and 2.0 multi-position format
-                pos_path = os.path.join(img_sample_path, sub_dir)
-
+            sub_dir = sub_dirs[0] # assume all the folders in the sample folder are position folders
+            pos_path = os.path.join(img_sample_path, sub_dir)
+            ##TODO: check the behavior of 2.0 gamma
         metadata_path = os.path.join(pos_path, 'metadata.txt')
         with open(metadata_path, 'r') as f:
             input_meta_file = json.load(f)
