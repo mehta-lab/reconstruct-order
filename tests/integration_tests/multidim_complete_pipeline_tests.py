@@ -10,6 +10,7 @@ from ReconstructOrder.workflow.reconstructBatch import reconstructBatch
 import os, glob
 import tifffile as tf
 import pytest
+import numpy as np
 from ..testMetrics import mse
 
 
@@ -48,6 +49,9 @@ def test_src_target_mse(setup_multidim_src, setup_multidim_target):
         predict = tf.imread(file)
         target = tf.imread(target_match)
 
-        print(f"MSE relative = {mse(predict, target)}")
-        assert mse(predict, target) == 0.0
-
+        try:
+            assert mse(predict, target) == np.finfo(np.float32).eps
+        except AssertionError as ae:
+            print(f"MSE relative = {mse(predict, target)}")
+            print(f"MSE FAIL ON FILE = "+file)
+            print(f"MSE FAIL ON TARGET MATCH = "+target_match[0])
