@@ -48,5 +48,6 @@ def test_src_target_mse(setup_multidim_src, setup_multidim_target):
         predict = tf.imread(file)
         target = tf.imread(target_match)
 
-        assert mse(predict, target) == 0
+        print(f"MSE relative = {mse(predict, target)}")
+        assert mse(predict, target) == 0.0
 
