@@ -20,8 +20,6 @@ class IntensityDataCreator(object):
         binning (or pooling) size for the images
     """
 
-
-
     def __init__(self, input_chans=None, int_obj_chans=None, ROI=None, binning=1):
         self.input_chans = input_chans
         self.roi = ROI
@@ -46,15 +44,17 @@ class IntensityDataCreator(object):
             images from polarization, fluorescence, bright-field channels
 
         """
-
-        imgs = IntensityData(channel_names=self.int_obj_chans)
-        for chan_name in _fluor_chan_names:
-            imgs.replace_image(np.zeros((img_io.height, img_io.width)), chan_name)
         if self.roi is None:
             self.roi = [0, 0, img_io.height, img_io.width]
+        else:
+            assert self.roi[0] + self.roi[2] <= img_io.height and self.roi[1] + self.roi[3] <= img_io.width, \
+                "Region of interest is beyond the size of the actual image"
 
-        assert self.roi[0] + self.roi[2] <= img_io.height and self.roi[1] + self.roi[3] <= img_io.width, \
-            "Region of interest is beyond the size of the actual image"
+        imgs = IntensityData(channel_names=self.int_obj_chans)
+        # assign blank data
+        for chan_name in _fluor_chan_names:
+            imgs.replace_image(np.zeros((self.roi[2], self.roi[3])), chan_name)
+
         if self.input_chans is None:
             self.input_chans = img_io.input_chans
         for chan_name in self.input_chans:
