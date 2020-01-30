@@ -1,32 +1,7 @@
 # bchhun, {2019-12-12}
 
-"""
-these tests will download a zip file from GDD
-the zip file contains a configuration yaml and sample data
 
-dataset:
-    data_dir: './temp/src'
-    processed_dir: './temp/predict'
-    samples: ['SM_2019_0612_20x_1']
-    positions: ['B3-Site_1']
-    z_slices: 'all'
-    timepoints: [0,1,2]
-    ROI: [0, 0, 256, 256] # [Ny_start, Nx_start, number_of_pixel_in_y, number_of_pixel_in_x]
-    background: 'BG_2019_0612_1515_1'
-
-processing:
-    output_channels: ['Brightfield_computed', 'Retardance', 'Orientation', 'Polarization', 'Phase2D', 'Phase3D']
-    circularity: 'rcp'
-    background_correction: 'Input'
-    flatfield_correction: False
-    n_slice_local_bg: all
-    azimuth_offset: 0
-    separate_positions: True
-
-    use_gpu: True
-    gpu_id: 0
-"""
-from ReconstructOrder.workflow.reconstructBatch import reconstructBatch
+from ReconstructOrder.workflow.reconstructBatch import reconstruct_batch
 import os, glob
 import tifffile as tf
 import pytest
@@ -35,16 +10,30 @@ from ..testMetrics import mse
 
 
 def test_reconstruct_source(setup_multidim_src):
+    """
+    Runs a full multidim reconstruction based on supplied config files
+
+    :param setup_multidim_src:
+    :return:
+    """
     config = setup_multidim_src
     try:
-        reconstructBatch(config)
+        reconstruct_batch(config)
     except Exception as ex:
         pytest.fail("Exception thrown during reconstruction = "+str(ex))
 
 
 def test_src_target_mse(setup_multidim_src, setup_multidim_target):
+    """
+
+    Runs a comparison between reconstruction from config and target
+
+    :param setup_multidim_src: fixture that returns PATH to config
+    :param setup_multidim_target: fixture that returns PATH to .tif files
+    :return:
+    """
     config = setup_multidim_src
-    reconstructBatch(config)
+    reconstruct_batch(config)
 
     processed_folder = os.getcwd() + '/temp/predict/src/SM_2019_0612_20x_1_BG_2019_0612_1515_1/B3-Site_1'
     processed_files = glob.glob(processed_folder+'/*.tif')
@@ -67,10 +56,14 @@ def test_src_target_mse(setup_multidim_src, setup_multidim_target):
             try:
                 assert mse(predict, target) <= np.finfo(np.float32).eps
             except AssertionError as ae:
-                print(f"MSE relative = {mse(predict, target)}")
-                print(f"MSE FAIL ON PREDICT = " + file)
-                print(f"MSE FAIL ON TARGET  = " + target + "\n")
                 if 'img_Phase' in target:
+                    print(f" ====  KNOWN error in Phase Reconstruction ==== ")
+                    print(f"MSE relative = {mse(predict, target)}")
+                    print(f"MSE FAIL ON PREDICT = " + file)
+                    print(f"MSE FAIL ON TARGET  = " + target + "\n")
                     continue
                 else:
+                    print(f"MSE relative = {mse(predict, target)}")
+                    print(f"MSE FAIL ON PREDICT = " + file)
+                    print(f"MSE FAIL ON TARGET  = " + target + "\n")
                     pytest.fail("Assertion Error = " + str(ae))

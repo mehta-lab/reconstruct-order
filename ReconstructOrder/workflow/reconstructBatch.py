@@ -84,7 +84,7 @@ def process_timepoint_list(img_obj_list, config):
         list of modified mManagerReader instances
     """
     for idx, io_obj in enumerate(img_obj_list):
-        config_t_list = config.dataset.positions[idx]
+        config_t_list = config.dataset.timepoints[idx]
 
         if not config_t_list[0] == 'all':
             try:

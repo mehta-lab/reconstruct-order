@@ -24,7 +24,7 @@ def test_complete_reconstruction(setup_gdrive_src_data_small):
     bg_dat, sm_dat = setup_gdrive_src_data_small
 
     # compute initial reconstructor using background data
-    img_reconstructor = ImgReconstructor(bg_dat.data.shape,
+    img_reconstructor = ImgReconstructor(bg_dat,
                                          swing=0.03,
                                          wavelength=532)
     bg_stokes = img_reconstructor.compute_stokes(bg_dat)

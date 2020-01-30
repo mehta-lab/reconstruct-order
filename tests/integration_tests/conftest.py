@@ -10,10 +10,19 @@ from ReconstructOrder.datastructures import IntensityData, PhysicalData
 from ReconstructOrder.compute.reconstruct import ImgReconstructor
 
 
+# ==================================================================================================
+# ============================= Single frame Sample and background =================================
+# ==================================================================================================
+
+
+# ============================= SOURCE DATA ========================================================
 @pytest.fixture(scope="session")
 def setup_gdrive_src_data_small():
     """
     load 5-polstate intensity images of background and sample from google drive
+
+    SIZE: 512 x 512
+    TYPE: .tif
 
     Data is of microglia extracted from primary brain tissue:
     https://drive.google.com/drive/folders/1u4YQ4j3QjbFXLAoFRro2XTYDcwa4-X76?usp=sharing
@@ -103,6 +112,9 @@ def setup_gdrive_src_data_large():
     """
     load 5-polstate intensity images of background and sample from google drive
 
+    SIZE: 2048 x 2048
+    TYPE: .tif
+
     Data is of microglia extracted from primary brain tissue:
     https://drive.google.com/drive/folders/1u4YQ4j3QjbFXLAoFRro2XTYDcwa4-X76?usp=sharing
     SM_2019_0612_20x_1
@@ -187,10 +199,14 @@ def setup_gdrive_src_data_large():
         print("temp folder is not empty")
 
 
+# ============================= TARGET DATA ========================================================
 @pytest.fixture(scope="session")
 def setup_gdrive_target_data_large_tif():
     """
     load physical data object populated from above reconstructions.
+
+    SIZE: 2048 x 2048
+    TYPE: .tif
 
     https://drive.google.com/drive/folders/1hyBwSZ3IXiWkE_sHkSKr8X8pC5kjJr9C?usp=sharing
 
@@ -255,6 +271,9 @@ def setup_gdrive_target_data_large_tif():
 def setup_gdrive_target_data_small_tif():
     """
     load physical data object populated from above reconstructions.
+
+    SIZE: 512 x 512
+    TYPE: .tif
 
     https://drive.google.com/drive/folders/1hyBwSZ3IXiWkE_sHkSKr8X8pC5kjJr9C?usp=sharing
 
@@ -322,6 +341,9 @@ def setup_gdrive_target_data_large_npy():
     """
     load physical data object populated from above reconstructions.
 
+    SIZE: 2048 x 2048
+    TYPE: .npy
+
     https://drive.google.com/drive/folders/1hyBwSZ3IXiWkE_sHkSKr8X8pC5kjJr9C?usp=sharing
 
     Returns
@@ -388,6 +410,9 @@ def setup_gdrive_target_data_small_npy():
     """
     load physical data object populated from above reconstructions.
 
+    SIZE: 512 x 512
+    TYPE: .npy
+
     https://drive.google.com/drive/folders/1hyBwSZ3IXiWkE_sHkSKr8X8pC5kjJr9C?usp=sharing
 
     Returns
@@ -448,17 +473,27 @@ def setup_gdrive_target_data_small_npy():
         print("temp folder is not empty")
 
 
+# ==================================================================================================
+# ====================== Single frame Sample and background RECONSTRUCTIONS ========================
+# ==================================================================================================
+
+# todo: figure out parameterized fixtures so that much of the below repeated code can be eliminated
+
 @pytest.fixture(scope="session")
 def setup_reconstructed_data_npy(setup_gdrive_src_data_small):
     """
-    to compare against gdd target data
+    Loads AND Reconstructs SOURCE data.
+
+    SIZE: 512 x 512
+    TYPE: .tif
+
     :param setup_gdrive_src_data_small:
     :return: physical data object containing reconstructed data
     """
     bg_dat, sm_dat = setup_gdrive_src_data_small
 
     # compute initial reconstructor using background data
-    img_reconstructor = ImgReconstructor(bg_dat.data.shape,
+    img_reconstructor = ImgReconstructor(bg_dat,
                                          swing=0.03,
                                          wavelength=532)
     bg_stokes = img_reconstructor.compute_stokes(bg_dat)
@@ -477,14 +512,18 @@ def setup_reconstructed_data_npy(setup_gdrive_src_data_small):
 @pytest.fixture(scope="session")
 def setup_reconstructed_data_large_tif(setup_gdrive_src_data_large):
     """
-    to compare against gdd target data
+    Loads AND Reconstructs SOURCE data.
+
+    SIZE: 2048 x 2048
+    TYPE: .tif
+
     :param setup_gdrive_src_data_large:
     :return: physical data object containing reconstructed data
     """
     bg_dat, sm_dat = setup_gdrive_src_data_large
 
     # compute initial reconstructor using background data
-    img_reconstructor = ImgReconstructor(bg_dat.data.shape,
+    img_reconstructor = ImgReconstructor(bg_dat,
                                          swing=0.03,
                                          wavelength=532)
     bg_stokes = img_reconstructor.compute_stokes(bg_dat)
@@ -518,14 +557,18 @@ def setup_reconstructed_data_large_tif(setup_gdrive_src_data_large):
 @pytest.fixture(scope="session")
 def setup_reconstructed_data_small_tif(setup_gdrive_src_data_small):
     """
-    to compare against gdd target data
+    Loads AND Reconstructs SOURCE data.
+
+    SIZE: 512 x 512
+    TYPE: .tif
+
     :param setup_gdrive_src_data_small:
     :return: physical data object containing reconstructed data
     """
     bg_dat, sm_dat = setup_gdrive_src_data_small
 
     # compute initial reconstructor using background data
-    img_reconstructor = ImgReconstructor(bg_dat.data.shape,
+    img_reconstructor = ImgReconstructor(bg_dat,
                                          swing=0.03,
                                          wavelength=532)
     bg_stokes = img_reconstructor.compute_stokes(bg_dat)
@@ -559,14 +602,18 @@ def setup_reconstructed_data_small_tif(setup_gdrive_src_data_small):
 @pytest.fixture(scope="session")
 def setup_reconstructed_data_large_npy(setup_gdrive_src_data_large):
     """
-    to compare against gdd target data
+    Loads AND Reconstructs SOURCE data.
+
+    SIZE: 2048 x 2048
+    TYPE: .npy
+
     :param setup_gdrive_src_data_large:
     :return: physical data object containing reconstructed data
     """
     bg_dat, sm_dat = setup_gdrive_src_data_large
 
     # compute initial reconstructor using background data
-    img_reconstructor = ImgReconstructor(bg_dat.data.shape,
+    img_reconstructor = ImgReconstructor(bg_dat,
                                          swing=0.03,
                                          wavelength=532)
     bg_stokes = img_reconstructor.compute_stokes(bg_dat)
@@ -585,14 +632,18 @@ def setup_reconstructed_data_large_npy(setup_gdrive_src_data_large):
 @pytest.fixture(scope="session")
 def setup_reconstructed_data_small_npy(setup_gdrive_src_data_small):
     """
-    to compare against gdd target data
+    Loads AND Reconstructs SOURCE data.
+
+    SIZE: 512 x 512
+    TYPE: .npy
+
     :param setup_gdrive_src_data_small:
     :return: physical data object containing reconstructed data
     """
     bg_dat, sm_dat = setup_gdrive_src_data_small
 
     # compute initial reconstructor using background data
-    img_reconstructor = ImgReconstructor(bg_dat.data.shape,
+    img_reconstructor = ImgReconstructor(bg_dat,
                                          swing=0.03,
                                          wavelength=532)
     bg_stokes = img_reconstructor.compute_stokes(bg_dat)
@@ -607,18 +658,46 @@ def setup_reconstructed_data_small_npy(setup_gdrive_src_data_small):
 
     yield reconstructed_birefring
 
-#todo: figure out parameterized fixtures so that much of the above repeated code can be eliminated
 
 # ==================================================================================================
-# ========= MULTI-DIM complete test ================================================================
+# ================================== MULTI-DIM complete test =======================================
+# ==================================================================================================
 
 
 @pytest.fixture(scope="session")
 def setup_multidim_src():
     """
+    Downloads and unzips a folder containing MULTIDIM SOURCE data
 
-    :return:
+    Microglia coculture with neurons and progenitor cells
+    acquired on micro-manager 1.4.22
+
+    dataset:
+        data_dir: './temp/src'
+        processed_dir: './temp/predict'
+        samples: ['SM_2019_0612_20x_1']
+        positions: ['B3-Site_1']
+        z_slices: 'all'
+        timepoints: [0,1,2]
+        ROI: [0, 0, 256, 256] # [Ny_start, Nx_start, number_of_pixel_in_y, number_of_pixel_in_x]
+        background: 'BG_2019_0612_1515_1'
+
+    processing:
+        output_channels: ['Brightfield_computed', 'Retardance', 'Orientation', 'Polarization', 'Phase2D', 'Phase3D']
+        circularity: 'rcp'
+        background_correction: 'Input'
+        flatfield_correction: False
+        n_slice_local_bg: all
+        azimuth_offset: 0
+        separate_positions: True
+
+        use_gpu: True
+        gpu_id: 0
+
+    :return: str
+        path to configuration file (.yml)
     """
+
     temp_folder = os.getcwd() + '/temp'
     if not os.path.isdir(temp_folder):
         os.mkdir(temp_folder)
@@ -654,6 +733,12 @@ def setup_multidim_src():
 
 @pytest.fixture(scope="session")
 def setup_multidim_target():
+    """
+    Same as SOURCE data but reconstructed using standard ReconstructOrder pipeline
+
+    :return: str
+        path to target .tif files
+    """
 
     temp_folder = os.getcwd() + '/temp'
     if not os.path.isdir(temp_folder):
@@ -674,11 +759,9 @@ def setup_multidim_target():
 
     yield temp_folder + '/target'
 
+    # this breakdown will destroy the temp_folder, which may contain fixtures for other tests
     # breakdown files
     # import shutil
     # # print("breaking down temp files in "+temp_folder)
     # # if os.path.isdir(temp_folder):
     # #     shutil.rmtree(temp_folder)
-
-
-#todo: write a fixture to replicate simulated data
