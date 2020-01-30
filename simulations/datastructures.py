@@ -91,7 +91,7 @@ sample_physical_local_filter = img_reconstructor.reconstruct_birefringence(sampl
 sample_physical_global = img_reconstructor.reconstruct_birefringence(sample_bg_corrected_global)
 
 #%%
-from ReconstructOrder.utils.plotting import imBitConvert
+from ReconstructOrder.utils.plotting import im_bit_convert
 
 print('calculate mse')
 target_retardance = tf.imread(
@@ -107,36 +107,36 @@ def mse(x, Y):
 
 
 print("MSE local fit retardance = "+str(mse(
-    imBitConvert(sample_physical_local_fit.retard * 1E4, bit=16, norm=False),
+    im_bit_convert(sample_physical_local_fit.retard * 1E4, bit=16, norm=False),
     target_retardance)))
 
 print("MSE local fit orientation = "+str(mse(
-    imBitConvert(sample_physical_local_fit.azimuth * 1E4, bit=16, norm=False),
+    im_bit_convert(sample_physical_local_fit.azimuth * 1E4, bit=16, norm=False),
     target_retardance)))
 
 print("MSE local fit polarization = "+str(mse(
-    imBitConvert(sample_physical_local_fit.polarization * 1E4, bit=16, norm=False),
+    im_bit_convert(sample_physical_local_fit.polarization * 1E4, bit=16, norm=False),
     target_retardance)))
 
 
 #%%
 print('writing data to disk')
-from ReconstructOrder.utils.plotting import imBitConvert
+from ReconstructOrder.utils.plotting import im_bit_convert
 
 
 def write_birefring(sample_data:PhysicalData, path):
 
     # 'Brightfield_computed'
-    tf.imsave(path+"_bf_computed.tif", imBitConvert(sample_data.I_trans * 1E4, bit=16, norm=False)) # AU, set norm to False for tiling images
+    tf.imsave(path +"_bf_computed.tif", im_bit_convert(sample_data.I_trans * 1E4, bit=16, norm=False)) # AU, set norm to False for tiling images
 
     # 'Retardance'
-    tf.imsave(path+"_retardance.tif", imBitConvert(sample_data.retard * 1E3, bit=16))  # scale to pm
+    tf.imsave(path +"_retardance.tif", im_bit_convert(sample_data.retard * 1E3, bit=16))  # scale to pm
 
     # 'Orientation'
-    tf.imsave(path+"_orientation.tif", imBitConvert(sample_data.azimuth * 100, bit=16))  # scale to [0, 18000], 100*degree
+    tf.imsave(path +"_orientation.tif", im_bit_convert(sample_data.azimuth * 100, bit=16))  # scale to [0, 18000], 100*degree
 
     # 'Polarization':
-    tf.imsave(path+"_polarization.tif", imBitConvert(sample_data.polarization * 50000, bit=16))
+    tf.imsave(path +"_polarization.tif", im_bit_convert(sample_data.polarization * 50000, bit=16))
 
 
 TARGET_FILE_FOLDER = '/Users/bryant.chhun/Desktop/Data/ForDataStructuresTests/Raw/untitled folder'

@@ -4,14 +4,24 @@ Read and write Tiff in mManager format. Will be replaced by mManagerIO.py
 import os
 import numpy as np
 import glob
-import re
 import cv2
 from shutil import copy2
+import natsort
 
-from ReconstructOrder.datastructures import IntensityData
 
 
-def GetSubDirName(ImgPath):
+def get_sorted_names(dir_name):
+    """
+    Get image names in directory and sort them by their indices
+
+    :param str dir_name: Image directory name
+    :return list of strs im_names: Image names sorted according to indices
+    """
+    im_names = [f for f in os.listdir(dir_name) if f.startswith('im')]
+    # Sort image names according to indices
+    return natsort.natsorted(im_names)
+
+def get_sub_dirs(ImgPath):
     """Return sub-directory names in a directory
 
     Parameters
@@ -31,7 +41,7 @@ def GetSubDirName(ImgPath):
     return subDirName
 
 
-def FindDirContainPos(ImgPath):
+def FindDirContain_pos(ImgPath):
     """Recursively find the parent directory of "Pos#" directory
     Parameters
     ----------
@@ -44,110 +54,17 @@ def FindDirContainPos(ImgPath):
         Path to the parent directory of "Pos#" directory
 
     """
-    subDirName = GetSubDirName(ImgPath)
+    subDirName = get_sub_dirs(ImgPath)
     assert subDirName, 'No "Pos" directories found. Check if the input folder contains "Pos"'
     subDir = subDirName[0]  # get pos0 if it exists
     ImgSubPath = os.path.join(ImgPath, subDir)
     if 'Pos' not in subDir:
-        ImgPath = FindDirContainPos(ImgSubPath)
+        ImgPath = FindDirContain_pos(ImgSubPath)
         return ImgPath
     else:
         return ImgPath
 
 
-def process_position_list(img_obj_list, config):
-    """Make sure all members of positions are part of io_obj.
-    If positions = 'all', replace with actual list of positions
-
-    Parameters
-    ----------
-    img_obj_list: list
-        list of mManagerReader instances
-    config: obj
-        ConfigReader instance
-
-    Returns
-    -------
-        img_obj_list: list
-        list of modified mManagerReader instances
-
-    """
-    for idx, io_obj in enumerate(img_obj_list):
-        config_pos_list = config.dataset.positions[idx]
-
-        if not config_pos_list[0] == 'all':
-            try:
-                img_obj_list[idx].pos_list = config_pos_list
-            except Exception as e:
-                print('Position list {} for sample in {} is invalid'.format(config_pos_list, io_obj.ImgSmPath))
-                ValueError(e)
-    return img_obj_list
-
-
-def process_z_slice_list(img_obj_list, config):
-    """Make sure all members of z_slices are part of io_obj.
-    If z_slices = 'all', replace with actual list of z_slices
-
-      Parameters
-    ----------
-    img_obj_list: list
-        list of mManagerReader instances
-    config: obj
-        ConfigReader instance
-
-    Returns
-    -------
-        img_obj_list: list
-        list of modified mManagerReader instances
-
-    """
-    n_slice_local_bg = config.processing.n_slice_local_bg
-    for idx, io_obj in enumerate(img_obj_list):
-        config_z_list = config.dataset.z_slices[idx]
-        metadata_z_list = range(io_obj.nZ)
-        if config_z_list[0] == 'all':
-            z_list = metadata_z_list
-        else:
-            assert set(config_z_list).issubset(metadata_z_list), \
-            'z_slice list {} for sample in {} is invalid'.format(config_z_list, io_obj.ImgSmPath)
-            z_list = config_z_list
-
-        if not n_slice_local_bg == 'all':
-            # adjust slice number to be multiple of n_slice_local_bg
-            z_list = z_list[0:len(z_list)//n_slice_local_bg * n_slice_local_bg]
-        img_obj_list[idx].ZList = z_list
-    return img_obj_list
-
-
-def process_timepoint_list(img_obj_list, config):
-    """Make sure all members of timepoints are part of io_obj.
-    If timepoints = 'all', replace with actual list of timepoints
-
-      Parameters
-    ----------
-    img_obj_list: list
-        list of mManagerReader instances
-    config: obj
-        ConfigReader instance
-
-    Returns
-    -------
-        img_obj_list: list
-        list of modified mManagerReader instances
-    """
-    for idx, io_obj in enumerate(img_obj_list):
-        config_t_list = config.dataset.timepoints[idx]
-        metadata_t_list = range(io_obj.nTime)
-        if config_t_list[0] == 'all':
-            t_list = metadata_t_list
-        else:
-            assert set(config_t_list).issubset(metadata_t_list), \
-            'timepoint list {} for sample in {} is invalid'.format(config_t_list, io_obj.ImgSmPath)
-            t_list = config_t_list
-        
-        img_obj_list[idx].TimeList = t_list
-
-    return img_obj_list
 
 
 def copy_files_in_sub_dirs(input_path, output_path):
@@ -191,110 +108,8 @@ def loadTiff(acquDirPath, acquFiles):
     TiffFile = os.path.join(acquDirPath, acquFiles)
     img = cv2.imread(TiffFile,-1) # flag -1 to preserve the bit dept of the raw image
     img = img.astype(np.float32, copy=False) # convert to float32 without making a copy to save memory
-    # img = img.reshape(img.shape[0], img.shape[1],1)
     return img
 
-
-def parse_tiff_input(img_io, ROI=None):
-    """Parse tiff file name following mManager/Polacquisition output format
-    return images parsed based on their imaging modalities with shape (channel, height,
-    width)
-
-    Parameters
-    ----------
-    img_io : obj
-        mManagerReader instance
-        
-    ROI    : list
-        region of interest for reconstruction in format of [n_start_y, n_start_x, Ny, Nx]
-        
-
-    Returns
-    -------
-    ImgPol : 3d float32 arrays
-        images from polarization state channels
-    ImgProc : 3d float32 arrays
-        Polacquisition processed images. Retardance and slow axis
-    ImgFluor : 3d float32 arrays
-        images from fluorescence channels. Currently only parse '405', '488', '568', '640' channels
-    ImgBF : 3d float32 arrays
-        images from bright-field channels
-
-    """
-    acquDirPath = img_io.img_in_pos_path
-    acquFiles = os.listdir(acquDirPath)
-
-    # ImgPol = np.zeros((4, img_io.height,img_io.width)) # pol channels has minimum 4 channels
-    ImgPol = IntensityData()
-    ImgPol.channel_names = ['IExt', 'I90', 'I135', 'I45', 'I0']
-    
-    if ROI is None:
-        ROI = [0,0, img_io.height, img_io.width]
-    
-    assert ROI[0]+ROI[2] <= img_io.height and ROI[1]+ROI[3] <= img_io.width, \
-    "Region of interest is beyond the size of the actual image"
-        
-
-    ImgProc = []
-    ImgBF = []
-    ImgFluor = np.zeros((5, ROI[2], ROI[3])) # assuming 4 flour channels for now
-
-
-    tIdx = img_io.tIdx
-    zIdx = img_io.zIdx
-    for fileName in acquFiles: # load raw images with Sigma0, 1, 2, 3 states, and processed images
-        matchObj = re.match( r'img_000000%03d_(.*)_%03d.tif'%(tIdx,zIdx), fileName, re.M|re.I) # read images with "state" string in the filename
-        if matchObj:
-            img = loadTiff(acquDirPath, fileName)[ROI[0]:ROI[0]+ROI[2],ROI[1]:ROI[1]+ROI[3]]
-            img -= img_io.blackLevel
-            if any(substring in matchObj.group(1) for substring in ['State', 'state', 'Pol']):
-
-                if '0' in matchObj.group(1):
-                    # ImgPol[0, :, :] = img
-                    ImgPol.replace_image(img, 'IExt')
-
-                elif '1' in matchObj.group(1):
-                    # ImgPol[1, :, :] = img
-                    ImgPol.replace_image(img, 'I90')
-
-                elif '2' in matchObj.group(1):
-                    # ImgPol[2, :, :] = img
-                    ImgPol.replace_image(img, 'I135')
-
-                elif '3' in matchObj.group(1):
-                    # ImgPol[3, :, :] = img
-                    ImgPol.replace_image(img, 'I45')
-
-                elif '4' in matchObj.group(1):
-                    # img = np.reshape(img, (1, img_io.height, img_io.width))
-                    # ImgPol = np.concatenate((ImgPol, img))
-                    ImgPol.replace_image(img, 'I0')
-
-
-            elif any(substring in matchObj.group(1) for substring in ['Computed Image']):
-                ImgProc += [img]
-            elif any(substring in matchObj.group(1) for substring in
-                     ['Confocal40','Confocal_40', 'Widefield', 'widefield', 'Fluor']):
-                if any(substring in matchObj.group(1) for substring in ['DAPI', '405', '405nm']):
-                    ImgFluor[0,:,:] = img
-                elif any(substring in matchObj.group(1) for substring in ['GFP', '488', '488nm']):
-                    ImgFluor[1,:,:] = img
-                elif any(substring in matchObj.group(1) for substring in ['TxR', 'TXR', 'TX', '568', '561', '560']):
-                    ImgFluor[2,:,:] = img
-                elif any(substring in matchObj.group(1) for substring in ['Cy5', 'IFP', '640', '637']):
-                    ImgFluor[3,:,:] = img
-                elif any(substring in matchObj.group(1) for substring in ['FM464', 'fm464']):
-                    ImgFluor[4,:,:] = img
-            elif any(substring in matchObj.group(1) for substring in ['BF']):
-                ImgBF += [img]
-
-    # ImgPol = sort_pol_channels(ImgPol)
-    if ImgProc:
-        ImgProc = np.stack(ImgProc)
-    if ImgBF:
-        ImgBF = np.stack(ImgBF)
-
-    return ImgPol, ImgProc, ImgFluor, ImgBF
 
 
 def sort_pol_channels(img_pol):
@@ -323,7 +138,7 @@ def sort_pol_channels(img_pol):
     return img_pol
 
 
-def exportImg(img_io, img_dict):
+def export_img(img_io, img_dict, separate_pos=False):
     """export images in tiff format
 
     Parameters
@@ -332,16 +147,24 @@ def exportImg(img_io, img_dict):
         mManagerReader instance
     img_dict:  dict
         dictionary of images with (key, value) = (channel, image array)
+    separate_pos: bool
+        save images from different positions in separate folders if True
     -------
 
     """
-    tIdx = img_io.tIdx
-    zIdx = img_io.zIdx
-    posIdx = img_io.posIdx
-    output_path = img_io.img_out_pos_path
+    t_idx = img_io.t_idx
+    z_idx = img_io.z_idx
+    pos_idx = img_io.pos_idx
+    if separate_pos:
+        pos_name = img_io.pos_list[pos_idx]
+        output_path = os.path.join(img_io.img_output_path, pos_name)
+        os.makedirs(output_path, exist_ok=True)  # create folder for processed images
+    else:
+        output_path = img_io.img_output_path
+
     for tiffName in img_dict:
-        if tiffName in img_io.chNamesOut:
-            fileName = 'img_'+tiffName+'_t%03d_p%03d_z%03d.tif'%(tIdx, posIdx, zIdx)
+        if tiffName in img_io.output_chans:
+            fileName = 'img_'+tiffName+'_t%03d_p%03d_z%03d.tif'%(t_idx, pos_idx, z_idx)
             if len(img_dict[tiffName].shape)<3:
                 cv2.imwrite(os.path.join(output_path, fileName), img_dict[tiffName])
             else:

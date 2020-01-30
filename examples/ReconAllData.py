@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     for configfile in configfiles:
         print(configfile + '\n--------------')
-        wf.reconstructBatch(configfile)
+        wf.reconstruct_batch(configfile)
         print('\n--------------')
 
 

@@ -6,7 +6,7 @@ import argparse
 import yaml
 from scripts.channel_registration_3D import translate_3D
 import json
-from ReconstructOrder.utils.imgProcessing import imBitConvert
+from ReconstructOrder.utils.imgProcessing import im_bit_convert
 
 def parse_args():
     """Parse command line arguments
@@ -44,26 +44,26 @@ def run_action(args):
     input_chan = output_chan = config['processing']['output_chan']
     binning = config['processing']['binning']
 
-    ImgSmPath = os.path.join(RawDataPath, ImgDir, SmDir)
+    img_sm_path = os.path.join(RawDataPath, ImgDir, SmDir)
 
     OutputPath = os.path.join(ProcessedPath, ImgDir, SmDir+'_registered')
-    img_io = mManagerReader(ImgSmPath, OutputPath, input_chan=input_chan, output_chan=output_chan)
+    img_io = mManagerReader(img_sm_path, OutputPath, input_chans=input_chan, output_chans=output_chan)
     size_z_um = img_io.size_z_um
-    z_ids = list(range(0, img_io.nZ))
+    z_ids = list(range(0, img_io.n_z))
     if 'z_ids' in config['processing']:
         z_ids = config['processing']['z_ids']
     with open(registration_params_path, 'r') as f:
         registration_params = json.load(f)
 
-    if not os.path.exists(img_io.ImgSmPath):
+    if not os.path.exists(img_io.img_sm_path):
         raise FileNotFoundError(
-            "image file doesn't exist at:", img_io.ImgSmPath
+            "image file doesn't exist at:", img_io.img_sm_path
         )
-    os.makedirs(img_io.ImgOutPath, exist_ok=True)
-    for t_idx in range(img_io.nTime):
-        img_io.tIdx = t_idx
-        for pos_idx in range(img_io.nPos):  # nXY
-            img_io.posIdx = pos_idx
+    os.makedirs(img_io.img_output_path, exist_ok=True)
+    for t_idx in range(img_io.n_time):
+        img_io.t_idx = t_idx
+        for pos_idx in range(img_io.n_pos):  # nXY
+            img_io.pos_idx = pos_idx
             print('Processing position %03d, time %03d ...' % (pos_idx, t_idx))
             images = img_io.read_multi_chan_img_stack(z_ids=z_ids)
             images_registered = translate_3D(images,
@@ -73,10 +73,10 @@ def run_action(args):
                                              binning)
 
             for chan_idx, images in enumerate(images_registered):
-                img_io.chanIdx = chan_idx
+                img_io.chan_idx = chan_idx
                 for idx, z_idx in enumerate(z_ids):
-                    img_io.zIdx = z_idx
-                    image = imBitConvert(images[idx], bit=16, norm=False)
+                    img_io.z_idx = z_idx
+                    image = im_bit_convert(images[idx], bit=16, norm=False)
                     img_io.write_img(image)
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@ The workflow package contains methods to iterate through your data and compute l
 Subpackages
 -----------
 
-.. automodule:: ReconstructOrder.workflow.reconstructBatch
-    :members: reconstructBatch
+.. automodule:: ReconstructOrder.workflow.reconstruct_batch
+    :members: reconstruct_batch
     :undoc-members:
     :show-inheritance:

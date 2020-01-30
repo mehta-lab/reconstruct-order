@@ -83,7 +83,7 @@ def histequal(ImgSm0):
     return ImgAd
 
 
-def imBitConvert(im,bit=16, norm=False, limit=None):
+def im_bit_convert(im, bit=16, norm=False, limit=None):
     """covert bit depth of the image
 
     Parameters
@@ -118,6 +118,8 @@ def imBitConvert(im,bit=16, norm=False, limit=None):
     return im
 
 def mean_pooling_2d(im, block_size):
+    if len(im) == 0 or block_size == 1:
+        return im
     width, height = im.shape
     width_new = width // block_size
     height_new = height // block_size
@@ -164,11 +166,11 @@ def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
     if src.dtype == 'uint8':
         bit = 8
 
-    src = imBitConvert(src, norm=True) # rescale to 16 bit       
+    src = im_bit_convert(src, norm=True) # rescale to 16 bit
     srcOri = np.copy(src) # make a copy of source image
     if len(src.shape) > 2:    
         src = np.mean(src, axis=2)
-        src = imBitConvert(src, norm=True) # rescale to 16 bit                    
+        src = im_bit_convert(src, norm=True) # rescale to 16 bit
     
     tol = max(0, min(100, tol))
 
@@ -206,7 +208,7 @@ def imadjust(src, tol=1, bit=16,vin=[0,2**16-1]):
         else:
             vd = linScale(src,vin, vout)
             dst = vd
-    dst = imBitConvert(dst,bit=bit, norm=True)
+    dst = im_bit_convert(dst, bit=bit, norm=True)
     return dst
 
 
@@ -294,28 +296,6 @@ def removeBubbles(I, kernelSize = (11,11)):
     plt.show()    
     
     return INoBub
-
-
-def correct_flat_field(img_io, ImgFluor):
-    """
-    flat-field correction for fluorescence channels
-    Parameters
-    ----------
-    img_io: object
-        mManagerReader object that holds the image parameters
-    ImgFluor: float32 array
-        stack of fluorescence images with with shape (channel, y, x)
-
-    Returns
-    -------
-    ImgFluor: array
-        flat-field corrected fluorescence images
-    """
-
-    for i in range(ImgFluor.shape[0]):
-        if np.any(ImgFluor[i, :, :]):  # if the flour channel exists
-            ImgFluor[i, :, :] = ImgFluor[i, :, :] / img_io.img_fluor_bg[i, :, :]
-    return ImgFluor
 
 
 def imcrop(imList, imV):  # interactively select an ROI in imV, crop the same ROI for each image in imList
