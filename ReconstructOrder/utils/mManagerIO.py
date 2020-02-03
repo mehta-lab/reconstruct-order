@@ -5,7 +5,10 @@ import json, os
 import numpy as np
 import pandas as pd
 import cv2
+import warnings
+
 from ..utils.imgIO import get_sub_dirs, get_sorted_names
+ 
 
 
 
@@ -245,14 +248,18 @@ class mManagerReader(object):
         else:
             raise ValueError('Undefined image name format')
         return img_name
-
+    
     def read_img(self):
         """read a single image at (c,t,p,z)"""
         img_name = self.get_img_name()
         img_file = os.path.join(self.img_in_pos_path, img_name)
         img = cv2.imread(img_file, -1) # flag -1 to preserve the bit dept of the raw image
-        img = img.astype(np.float32, copy=False)  # convert to float32 without making a copy to save memory
+        if img is None:
+            warnings.warn('image "{}" cannot be found. Return None instead.'.format(img_name))
+        else:
+            img = img.astype(np.float32, copy=False)  # convert to float32 without making a copy to save memory
         return img
+
 
     def read_multi_chan_img_stack(self, z_range=None):
         """read multi-channel image stack at a given (t,p)"""
