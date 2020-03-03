@@ -153,6 +153,7 @@ def _process_one_acqu(img_obj, bg_obj, config):
 def reconstruct_batch(configfile):
     config = ConfigReader()
     config.read_config(configfile)
+    
 
     # read meta data
     img_obj_list, bg_obj_list = read_metadata(config)

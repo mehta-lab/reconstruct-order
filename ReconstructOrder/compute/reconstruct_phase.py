@@ -113,7 +113,7 @@ class phase_reconstructor:
                 
         # select either 2D or 3D model for deconvolution
         self.phase_deconv_setup(self.phase_deconv, ph_deconv_layer)
-        
+                        
         
     def phase_deconv_setup(self, phase_deconv, ph_deconv_layer):
         
@@ -532,7 +532,15 @@ class phase_reconstructor:
         if self.pad_z == 0:
             S0_stack = inten_normalization(S0_stack, type='3D')
         else:
-            S0_stack = inten_normalization(np.pad(S0_stack,((0,0),(0,0),(self.pad_z,self.pad_z)), mode='constant',constant_values=S0_stack.mean()), type='3D')
+            S0_pad = np.pad(S0_stack,((0,0),(0,0),(self.pad_z,self.pad_z)), mode='constant',constant_values=S0_stack.mean())
+            if self.pad_z < self.N_defocus:
+                S0_pad[:,:,:self.pad_z] = (S0_stack[:,:,:self.pad_z])[:,:,::-1]
+                S0_pad[:,:,-self.pad_z:] = (S0_stack[:,:,-self.pad_z:])[:,:,::-1]
+            else:
+                print('pad_z is larger than number of z-slices, use mean value padding (not effective) instead of reflection padding')
+            
+            S0_stack = inten_normalization(S0_pad, type='3D')
+            
             
             
         H_eff = self.H_re + absorption_ratio*self.H_im
@@ -553,7 +561,7 @@ class phase_reconstructor:
 
 
         if self.pad_z != 0:
-            f_real = f_real[:,:,self.pad_z//2:-(self.pad_z//2)]
+            f_real = f_real[:,:,self.pad_z:-(self.pad_z)]
         
         
         return -f_real*self.psz/(4*np.pi/self.lambda_illu)

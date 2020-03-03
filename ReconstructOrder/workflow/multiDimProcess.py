@@ -249,7 +249,6 @@ def phase_reconstructor_initializer(img_io: Union[mManagerReader, PolAcquReader]
     pad_z        = config.processing.pad_z
     phase_deconv = []
     N_defocus    = img_io.n_z
-
     
     if config.dataset.ROI is None:
         ROI = [0,0, img_io.height, img_io.width]
