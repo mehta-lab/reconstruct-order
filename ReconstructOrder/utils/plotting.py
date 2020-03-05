@@ -122,14 +122,16 @@ def angular_hist(orientation,
     Parameters
     ----------
     orientation: nparray
-        orientation image in radian
+        orientation image in radian. Smoothed orientation output by
+        plotVectorField is recommended to remove peaks from edge birefringence
     n_bins: int
         number of bins for plotting the histogram
     weighted: bool
         plot retardance-weighted orientation histogram (True) or
         the plain orientation histogram
     retardance: nparray
-        retardance or anisotropy image
+        retardance or anisotropy image. Smoothed retardance output by
+        plotVectorField is recommended to remove peaks from edge birefringence
     Returns
     -------
     im_ax: obj
