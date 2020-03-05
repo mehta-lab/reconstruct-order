@@ -1,4 +1,6 @@
 import numpy as np
+import warnings
+
 from ReconstructOrder.datastructures import IntensityData
 from ..utils.mManagerIO import mManagerReader
 from ..utils.imgProcessing import mean_pooling_2d
@@ -20,8 +22,6 @@ class IntensityDataCreator(object):
         binning (or pooling) size for the images
     """
 
-
-
     def __init__(self, input_chans=None, int_obj_chans=None, ROI=None, binning=1):
         self.input_chans = input_chans
         self.roi = ROI
@@ -30,12 +30,11 @@ class IntensityDataCreator(object):
                          '405', '488', '568', '640', 'ex561em700']
         if int_obj_chans is not None:
             self.int_obj_chans = int_obj_chans
-
+            
     def get_data_object(self, img_io: mManagerReader) -> IntensityData:
         """Parse tiff file name following mManager/Polacquisition output format
         return intensity data objects with images assigned to corresponding channels
         based on the file name
-
         Parameters
         ----------
         img_io : obj
@@ -44,28 +43,34 @@ class IntensityDataCreator(object):
         -------
         imgs : IntensityData
             images from polarization, fluorescence, bright-field channels
-
         """
 
         imgs = IntensityData(channel_names=self.int_obj_chans)
+        
         for chan_name in _fluor_chan_names:
             imgs.replace_image(np.zeros((img_io.height, img_io.width)), chan_name)
         if self.roi is None:
             self.roi = [0, 0, img_io.height, img_io.width]
-
         assert self.roi[0] + self.roi[2] <= img_io.height and self.roi[1] + self.roi[3] <= img_io.width, \
             "Region of interest is beyond the size of the actual image"
+
         if self.input_chans is None:
             self.input_chans = img_io.input_chans
         for chan_name in self.input_chans:
             img_io.chan_idx = img_io.input_chans.index(chan_name)
             img = img_io.read_img()
-            img = img[self.roi[0]:self.roi[0] + self.roi[2], self.roi[1]:self.roi[1] + self.roi[3]]
-            img -= img_io.blackLevel
-            img = mean_pooling_2d(img, self.binning)
-            imgs = IntensityDataCreator.chan_name_parser(imgs, img, chan_name)
-
+            if img is None:
+                warnings.warn('image "{}" cannot be found. Skipped.'.format(chan_name))
+            else:
+                img = img[self.roi[0]:self.roi[0] + self.roi[2], self.roi[1]:self.roi[1] + self.roi[3]]
+                img -= img_io.blackLevel
+                img = mean_pooling_2d(img, self.binning)
+                imgs = IntensityDataCreator.chan_name_parser(imgs, img, chan_name)
         return imgs
+    
+    
+        
+
 
     @staticmethod
     def chan_name_parser(imgs, img, chan_name):

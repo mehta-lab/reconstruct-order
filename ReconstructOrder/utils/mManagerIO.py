@@ -5,7 +5,10 @@ import json, os
 import numpy as np
 import pandas as pd
 import cv2
+import warnings
+
 from ..utils.imgIO import get_sub_dirs, get_sorted_names
+ 
 
 
 
@@ -93,10 +96,9 @@ class mManagerReader(object):
         pos_path = img_sample_path # mManager 2.0 single position format
         sub_dirs = get_sub_dirs(img_sample_path)
         if sub_dirs:
-            sub_dir = sub_dirs[0] # pos0
-            if 'Pos' in sub_dir: # mManager 1.4.22 and 2.0 multi-position format
-                pos_path = os.path.join(img_sample_path, sub_dir)
-
+            sub_dir = sub_dirs[0] # assume all the folders in the sample folder are position folders
+            pos_path = os.path.join(img_sample_path, sub_dir)
+            ##TODO: check the behavior of 2.0 gamma
         metadata_path = os.path.join(pos_path, 'metadata.txt')
         with open(metadata_path, 'r') as f:
             input_meta_file = json.load(f)
@@ -246,14 +248,18 @@ class mManagerReader(object):
         else:
             raise ValueError('Undefined image name format')
         return img_name
-
+    
     def read_img(self):
         """read a single image at (c,t,p,z)"""
         img_name = self.get_img_name()
         img_file = os.path.join(self.img_in_pos_path, img_name)
         img = cv2.imread(img_file, -1) # flag -1 to preserve the bit dept of the raw image
-        img = img.astype(np.float32, copy=False)  # convert to float32 without making a copy to save memory
+        if img is None:
+            warnings.warn('image "{}" cannot be found. Return None instead.'.format(img_name))
+        else:
+            img = img.astype(np.float32, copy=False)  # convert to float32 without making a copy to save memory
         return img
+
 
     def read_multi_chan_img_stack(self, z_range=None):
         """read multi-channel image stack at a given (t,p)"""

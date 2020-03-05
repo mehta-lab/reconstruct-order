@@ -1,10 +1,19 @@
 # ReconstructOrder
-Reconstruct birefringence, slow axis, bright-field, and degree of polarization from polarization-resolved images. The core algorithm employs Stokes representation for reconstruction and background correction. The repository also provides utilities for batch analysis of multi-dimensional datasets acquired with Micro-Manager (https://micro-manager.org/) and OpenPolScope acquisition plugin (https://openpolscope.org/).
+
+Analyze density (bright-field, phase), anisotropy (birefringence, slow axis), and degree of polarization of specimens from polarization-resolved and depth-resolved images. The acquisition, calibration, background correction, and reconstruction algorithms are described in the following preprint:
+
+Guo, S.-M., Yeh, L.-H., Folkesson, J.,..., Mehta, S. B. (2019). [Revealing architectural order with quantitative label-free imaging and deep learning.](https://doi.org/10.1101/631101) BioRxiv 631101.
+
+As an illustration, following figure shows inputs and outputs of the ReconstructOrder for polarization-resolved data acquired at 21 consecutive focal planes with 2D phase reconstruction algorithm.
+
+![Data_flow](Fig_Readme.png)
+
+ReconstructOrder currently supports data format acquired using Micro-Manager 1.4.22 multi-dimension acquisition ([link](https://micro-manager.org/)) and OpenPolScope acquisition plugin ([link](https://openpolscope.org/)). We will add support for Micro-Manager 2.0 format in the next release.
 
 ## Installation
 
 ### Create a new conda environment (optional, but recommended)
->Install conda package management system by installing anaconda or miniconda (https://conda.io/). 
+>Install conda package management system by installing anaconda or miniconda ([link](https://conda.io/)). 
 >Creating a conda environment dedicated to ReconstructOrder will avoid version conflicts among packages required by ReconstructOrder and packages required by other python software.
 >
 >```buildoutcfg
@@ -22,33 +31,44 @@ Reconstruct birefringence, slow axis, bright-field, and degree of polarization f
 >```
 
 ### Option 2: install developer version via git
->Install the git version control system git : https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+>Install the git version control system git : [link](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 >
 >Use git to clone this repository to your current directory:
 >```buildoutcfg
->git clone https://github.com/czbiohub/ReconstructOrder.git
+>git clone https://github.com/mehta-lab/reconstruct-order.git
 >```
-
-> * #### install dependencies
->  You have two options to install dependencies: via pip (python index package) or via docker
->
->>  * ##### install dependencies via pip
->>    If you are running ReconstructOrder on your own machine, navigate to the cloned repository 
->>  and install python library dependencies:
+You cab install dependencies via pip (python index package) or run ReconstructOrder inside a docker container with the dependencies pre-installed
+> * #### install dependencies via pip
+>  
+>>    If you are running ReconstructOrder on your own machine, <br>
+>>
+>>    a) navigate to the cloned repository:
+>>
+>>    ```buildoutcfg
+>>    cd reconstruct-order
+>>    ```
+>>    <br>
+>>    b) install python library dependencies:
 >>
 >>    ```buildoutcfg
 >>    pip install -r requirements.txt
 >>    ```
-
->>  * ##### install dependencies via docker
+>>    <br>
+>>    c) Create a symbolic library link with setup.py:
 >>
->>    If you are running ReconstructOrder on a compute node (e.g., fry2@czbiohub), it is recommended to run it in 
-a Docker container. 
-Docker is the virtual environment with all the required libraries pre-installed so you can run your copy of 
-ReconstructOrder without recreating the environment.
-The docker image for ReconstructOrder has been built on fry2@czbiohub. 
-If you are running ReconstructOrder on other servers, you can build the docker image after cloning the repository 
-by doing :    
+>>    ```buildoutcfg
+>>    python setup.py develop
+>>    ```
+
+> * #### Running inside a docker container
+>
+> If you are running ReconstructOrder on a compute node (e.g., fry2@czbiohub), it is recommended to run it in 
+> a Docker container. 
+> Docker is the virtual environment with all the required libraries pre-installed so you can run your copy of 
+> ReconstructOrder without recreating the environment.
+> The docker image for ReconstructOrder has been built on fry2@czbiohub. 
+> If you are running ReconstructOrder on other servers, you can build the docker image after cloning the repository 
+> by doing :    
 
 >>    ```buildoutcfg
 >>    docker build -t reconstruct_order:py37 -f Dockerfile.ReconstructOrder .
@@ -59,26 +79,14 @@ by doing :
 >>    docker run -it  -v /data/<your data dir>/:<data dir name inside docker>/ -v ~/ReconstructOrder:/ReconstructOrder reconstruct_order:py37 bash
 >>    ```
 
->> * Demo
->>
->> To test that the developer version works as expected, run the following script:
->>   ```buildoutcfg
->>   python runReconstruction.py --config examples/example_configs/config_MouseBrainSlice_demo.yml
->>   ```
->> Check that there are newly created files and folders in examples/example_data/reconData.
 
+*ReconstructOrder supports NVIDIA GPU computation through cupy package, please follow [here](https://github.com/cupy/cupy) for installation (check cupy is properly installed by ```import cupy```). To enable gpu processing, set ```processing: use_gpu: True``` in the configuration file.*
 
 ## Usage
->To run reconstruction, you will need to create a configuration file.  The configuration file is a .yml file and specifies parameters for:
-> * 'dataset'
-> * 'processing'
-> * 'plotting'
+>The reconstruction parameters are specified in the configuration file.  
+> Configuration file template(```config_example.yml```) can be found [here](https://github.com/mehta-lab/reconstruct-order) under ```examples``` folder, which incluides detailed explanation of parameters for running ReconstructOrder in different modes
 >
-> Examples can be found https://github.com/czbiohub/ReconstructOrder under "examples/example_configs" folder
-> 
-> See /ReconstructOrder/config/config_example.yml for an example config file with detailed explanation of parameters. 
->
-> Before running, you should modify the dataset:data_dir and dataset:processed_dir paths to point to source data path and output path, respectively.  Example data is located at examples/example_data 
+> To use the configuration file template for your data, you need to at least modify ```dataset: data_dir``` and ```dataset: processed_dir``` to point to source data path and output path. See the template docstrings for the usage of other parameters.
 >
 > #### There are two ways to run reconstruction:
 >>* #### from command line
@@ -87,19 +95,44 @@ by doing :
 >>   runReconstruction --config path-and-name-to-your-config.yml
 >>   ```
 >>
->>   If you cloned the developer repo, navigate to the repo and call the script:
+>>   or 
 >>   ```buildoutcfg
->>   (C:\ReconstructOrder\) python runReconstruction.py --config path-and-name-to-your-config.yml
+>>   python runReconstruction.py --config path-and-name-to-your-config.yml
 >>   ```
+>>   if you the symlink wasn't set up. 
 >
->>* #### from IPython
->>   If you are writing your own code and want to use the ReconstructOrder library, you can reconstruct as follows:
+>>* #### Inside Python scripts 
+>>   To call ReconstructOrder as a library in your own script to run reconstruction:
 >>   ```buildoutcfg
 >>   import ReconstructOrder.workflow as wf
 >>   wf.reconstruct_batch('path-and-name-to-your-config.yml')
 >>   ```
 
+## Example
+In the following, we demonstrate how to download our example dataset (hosted [here](https://drive.google.com/drive/u/3/folders/1axmPgQVNi22ZqGLXzHGHIuP9kA93K9zH)) and run ReconstructOrder on it to get birefringence and phase images. This instruction should work for installation from both Option 1 and 2. <br>
 
+a) In the terminal, switch to the environment with ReconstructOrder installed 
+>  ```buildoutcfg
+>  conda activate <your-environment-name>
+>  ```
+
+b) Navigate to the repository folder:
+>  ```buildoutcfg
+>  cd reconstruct-order
+>  ```
+
+c) Download example dataset:
+>  ```buildoutcfg
+>  python DownloadExample.py
+
+The example datasets will be downloaded and upzipped in the ```data_downloaded``` folder, together with the configuration files. <br>
+
+d) Run ReconstructOrder on the downloaded dataset, e.g. MouseBrain dataset:
+>   ```buildoutcfg
+>  python runReconstruction.py --config ./data_downloaded/MouseBrain/config.yml
+    
+e) The reconstructed images will be saved the ```data_downloaded``` folder. You can reconstruct other downloaded datasets following the above steps, or change the parameters in the configuration file and observe the changes in the output images.
+    
 ## License
 Chan Zuckerberg Biohub Software License
 
