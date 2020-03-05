@@ -102,7 +102,7 @@ class IntensityDataCreator(object):
             elif any(substring in chan_name for substring in ['GFP', '488', '488nm']):
                 imgs.replace_image(img, '488')
             elif any(substring in chan_name for substring in
-                     ['TxR', 'TXR', 'TX', '568', '561', '560']):
+                     ['TxR', 'TXR', 'TX', 'RHO', '568', '561', '560']):
                 imgs.replace_image(img, '568')
             elif any(substring in chan_name for substring in ['Cy5', 'IFP', '640', '637']):
                 imgs.replace_image(img, '640')

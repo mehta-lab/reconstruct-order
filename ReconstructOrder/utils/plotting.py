@@ -97,7 +97,7 @@ def plotVectorField(img,
                    Plotting_U[Plotting_thres==1], Plotting_V[Plotting_thres==1], Plotting_orien[Plotting_thres==1],
                    cmap=cmapOrient,
                    edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=linewidth,
-                   headwidth = 0, headlength = 0, headaxislength = 0,
+                   headwidth=0, headlength=0, headaxislength=0,
                    scale_units = 'xy',scale = 1, angles = 'uv', pivot = 'mid')
     else:
         im_ax = plt.imshow(img, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
@@ -110,6 +110,48 @@ def plotVectorField(img,
 
     return im_ax, RSmooth, azimuthSmooth
 
+def angular_hist(orientation,
+                 n_bins=20,
+                 weighted=True,
+                 retardance=None,
+                 ):
+
+    """Plot angular histogram of orientation.
+    The histogram is weighted by retardance
+
+    Parameters
+    ----------
+    orientation: nparray
+        orientation image in radian
+    n_bins: int
+        number of bins for plotting the histogram
+    weighted: bool
+        plot retardance-weighted orientation histogram (True) or
+        the plain orientation histogram
+    retardance: nparray
+        retardance or anisotropy image
+    Returns
+    -------
+    im_ax: obj
+        matplotlib plot axes
+    bars: obj
+        histogram object
+    """
+    # Compute pie slices
+    theta = np.linspace(0.0, np.pi, n_bins + 1, endpoint=True)
+    width = np.pi / n_bins
+    # get bin index for each pixel
+    ori_bin_idx = np.digitize(orientation, theta) - 1
+    if weighted:
+        assert retardance is not None, \
+            'Retardance is required to compute weighted histograms'
+        counts = [np.sum(retardance[ori_bin_idx == ind]) for ind in range(n_bins)]
+    else:
+        counts = [np.sum(ori_bin_idx == ind) for ind in range(n_bins)]
+    ax = plt.subplot(111, projection='polar')
+    bars = ax.bar(theta[:-1], counts, width=width, bottom=0.0, align='edge')
+    ax.axes.yaxis.set_ticklabels([])
+    return ax, bars
 
 def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
     """ Parses transmission, retardance, orientation, and polarization images, scale and render them for export.  """
