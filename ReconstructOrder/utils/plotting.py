@@ -12,20 +12,21 @@ from ..utils.imgProcessing import imcrop
 
 
 
-def plotVectorField(img,
-                    orientation,
-                    anisotropy=1,
-                    spacing=20,
-                    window=20,
-                    linelength=20,
-                    linewidth=3,
-                    linecolor='g',
-                    colorOrient=True,
-                    cmapOrient='hsv',
-                    threshold=None,
-                    alpha=1,
-                    clim=[None, None],
-                    cmapImage='gray'):
+def plot_vectorfield(img,
+                     orientation,
+                     anisotropy=1,
+                     spacing=20,
+                     window=20,
+                     linelength=20,
+                     linewidth=3,
+                     linecolor='g',
+                     colorOrient=True,
+                     cmapOrient='hsv',
+                     threshold=None,
+                     alpha=1,
+                     clim=[None, None],
+                     cmapImage='gray',
+                     showPlot=True):
     """Overlays orientation field on the image. Returns matplotlib image axes.
 
     Options:
@@ -70,46 +71,105 @@ def plotVectorField(img,
     U, V =  anisotropy*linelength * np.cos(2 * orientation), anisotropy*linelength * np.sin(2 * orientation)
     USmooth = nanRobustBlur(U, (window, window)) # plot smoothed vector field
     VSmooth = nanRobustBlur(V, (window, window)) # plot smoothed vector field
-    azimuthSmooth = 0.5*np.arctan2(VSmooth,USmooth)
+    azimuthSmooth = (0.5*np.arctan2(VSmooth,USmooth)) % np.pi
     RSmooth = np.sqrt(USmooth**2+VSmooth**2)
     USmooth, VSmooth = RSmooth*np.cos(azimuthSmooth), RSmooth*np.sin(azimuthSmooth)
 
     nY, nX = img.shape
     Y, X = np.mgrid[0:nY,0:nX] # notice the reversed order of X and Y
     
-    # Plot sparsely sampled vector lines
+    # Sample variables at the specified spacing.
     Plotting_X = X[::spacing, ::spacing]
     Plotting_Y = Y[::spacing, ::spacing]
     Plotting_U = linelength * USmooth[::spacing, ::spacing]
     Plotting_V = linelength * VSmooth[::spacing, ::spacing]
     Plotting_R = RSmooth[::spacing, ::spacing]
-    
+
+    # Threshold the vector lines if specified.
     if threshold is None:
         threshold = np.ones_like(X) # no threshold
     Plotting_thres = threshold[::spacing, ::spacing]
-    Plotting_orien = ((azimuthSmooth[::spacing, ::spacing])%np.pi)*180/np.pi
-    
-    
-    if colorOrient:
-        im_ax = plt.imshow(img, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
-        plt.title('Orientation map')
-        plt.quiver(Plotting_X[Plotting_thres==1], Plotting_Y[Plotting_thres==1],
-                   Plotting_U[Plotting_thres==1], Plotting_V[Plotting_thres==1], Plotting_orien[Plotting_thres==1],
-                   cmap=cmapOrient,
-                   edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=linewidth,
-                   headwidth = 0, headlength = 0, headaxislength = 0,
-                   scale_units = 'xy',scale = 1, angles = 'uv', pivot = 'mid')
+    Plotting_orient=azimuthSmooth[::spacing, ::spacing]
+
+    thresholdIdx = Plotting_thres==1
+    Plotting_X=Plotting_X[thresholdIdx]
+    Plotting_Y=Plotting_Y[thresholdIdx]
+    Plotting_U=Plotting_U[thresholdIdx]
+    Plotting_V=Plotting_V[thresholdIdx]
+    Plotting_orient=Plotting_orient[thresholdIdx]
+    Plotting_R=Plotting_R[thresholdIdx]
+    Plotting_color=Plotting_orient * (180/np.pi)
+
+
+    if showPlot:
+        if colorOrient:
+            im_ax = plt.imshow(img, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
+            plt.title('Orientation map')
+            plt.quiver(Plotting_X, Plotting_Y,
+                       Plotting_U, Plotting_V, Plotting_color,
+                       cmap=cmapOrient,
+                       edgecolor=linecolor, facecolor=linecolor, units='xy', alpha=alpha, width=linewidth,
+                       headwidth=0, headlength=0, headaxislength=0,
+                       scale_units = 'xy', scale = 1, angles = 'uv', pivot = 'mid')
+        else:
+            im_ax = plt.imshow(img, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
+            plt.title('Orientation map')
+            plt.quiver(Plotting_X, Plotting_Y,
+                       Plotting_U, Plotting_V,
+                       edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=linewidth,
+                       headwidth = 0, headlength = 0, headaxislength = 0,
+                       scale_units = 'xy',scale = 1, angles = 'uv', pivot = 'mid')
     else:
-        im_ax = plt.imshow(img, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
-        plt.title('Orientation map')
-        plt.quiver(Plotting_X[Plotting_thres==1], Plotting_Y[Plotting_thres==1],
-                   Plotting_U[Plotting_thres==1], Plotting_V[Plotting_thres==1],
-                   edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=linewidth,
-                   headwidth = 0, headlength = 0, headaxislength = 0,
-                   scale_units = 'xy',scale = 1, angles = 'uv', pivot = 'mid')
+        im_ax=None
 
-    return im_ax
+    return im_ax, Plotting_R, Plotting_orient, Plotting_X, Plotting_Y, Plotting_U, Plotting_V
 
+def angular_hist(orientation,
+                 n_bins=20,
+                 weighted=True,
+                 retardance=None,
+                 ):
+
+    """Plot angular histogram of orientation.
+    The histogram is weighted by retardance
+
+    Parameters
+    ----------
+    orientation: nparray
+        orientation image in radian. Smoothed orientation output by
+        plot_vectorfield is recommended to remove peaks from edge birefringence
+    n_bins: int
+        number of bins for plotting the histogram
+    weighted: bool
+        plot retardance-weighted orientation histogram (True) or
+        the plain orientation histogram
+    retardance: nparray
+        retardance or anisotropy image. Smoothed retardance output by
+        plot_vectorfield is recommended to remove peaks from edge birefringence
+    Returns
+    -------
+    im_ax: obj
+        matplotlib plot axes
+    bars: obj
+        histogram object
+    """
+    # Compute pie slices
+    theta = np.linspace(0.0, np.pi, n_bins + 1, endpoint=True)
+    width = np.pi / n_bins
+    # get bin index for each pixel
+    ori_bin_idx = np.digitize(orientation, theta) - 1
+    if weighted:
+        assert retardance is not None, \
+            'Retardance is required to compute weighted histograms'
+        counts = [np.sum(retardance[ori_bin_idx == ind]) for ind in range(n_bins)]
+    else:
+        counts = [np.sum(ori_bin_idx == ind) for ind in range(n_bins)]
+    ax = plt.subplot(111, projection='polar')
+    bars = ax.bar(theta[:-1], counts, width=width, bottom=0.0, align='edge')
+    ax.axes.yaxis.set_ticklabels([])
+    ax.set_thetamin(0)
+    ax.set_thetamax(180)
+    return ax, bars
 
 def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
     """ Parses transmission, retardance, orientation, and polarization images, scale and render them for export.  """
@@ -128,7 +188,7 @@ def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoo
     # Optionally, plot results in tiled image
     if plot or any(chann in ['Retardance+Orientation', 'Polarization+Orientation', 'Brightfield+Retardance+Orientation']
                    for chann in outputChann):
-        I_azi_ret_trans, I_azi_ret, I_azi_scat = PolColor(I_trans, retard, azimuth_degree, polarization, norm=norm)
+        I_azi_ret_trans, I_azi_ret, I_azi_scat = aniso2hsv(I_trans, retard, azimuth_degree, polarization, norm=norm)
         t_idx = img_io.t_idx; z_idx = img_io.z_idx; pos_idx = img_io.pos_idx
         if plot:
             plot_recon_images(I_trans, retard, azimuth, polarization, I_azi_ret, I_azi_scat, zoomin=False, spacing=spacing,
@@ -198,7 +258,7 @@ def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoo
     return img_io, imgDict
 
 
-def PolColor(s0, retardance, orientation, polarization, norm=True):
+def aniso2hsv(s0, retardance, orientation, polarization, norm=True):
     """ Generate colormaps with following mappings, where H is Hue, S is Saturation, and V is Value.
         I_azi_ret_trans: H=Orientation, S=retardance, V=Brightfield.
         I_azi_ret: H=Orientation, V=Retardance.
@@ -310,7 +370,7 @@ def plot_recon_images(s0, retard, azimuth, polarization, I_azi_ret, I_azi_scat, 
     #    plt.show()
 
     ax5 = plt.subplot(2, 3, 5)
-    im_ax = plotVectorField(imClip(retard / 1000, tol=1), azimuth, anisotropy=anisotropy, spacing=spacing)
+    im_ax = plot_vectorfield(imClip(retard / 1000, tol=1), azimuth, anisotropy=anisotropy, spacing=spacing)
     plt.tick_params(labelbottom=False, labelleft=False)  # labels along the bottom edge are off
     plt.title('Retardance(nm)+Orientation')
     plt.xticks([]), plt.yticks([])

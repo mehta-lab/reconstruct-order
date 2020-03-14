@@ -320,7 +320,8 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
     pol_names       = ['Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4']
     stokes_names    = ['Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3']
     stokes_names_sm = [x + '_sm' for x in stokes_names]
-    birefring_names = ['Brightfield_computed', 'Retardance', 'Orientation', 'Transmission', 'Polarization',
+    birefring_names = ['Brightfield_computed', 'Retardance', 'Orientation', 'Orientation_x', 'Orientation_y',
+                       'Transmission', 'Polarization',
                        'Retardance+Orientation', 'Polarization+Orientation', 'Brightfield+Retardance+Orientation',
                        'Brightfield_computed+Retardance+Orientation',
                        'Retardance+Fluorescence', 'Retardance+Fluorescence_all']
