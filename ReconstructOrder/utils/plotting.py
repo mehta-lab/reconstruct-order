@@ -12,21 +12,21 @@ from ..utils.imgProcessing import imcrop
 
 
 
-def plotVectorField(img,
-                    orientation,
-                    anisotropy=1,
-                    spacing=20,
-                    window=20,
-                    linelength=20,
-                    linewidth=3,
-                    linecolor='g',
-                    colorOrient=True,
-                    cmapOrient='hsv',
-                    threshold=None,
-                    alpha=1,
-                    clim=[None, None],
-                    cmapImage='gray',
-                    showPlot=True):
+def plot_vectorfield(img,
+                     orientation,
+                     anisotropy=1,
+                     spacing=20,
+                     window=20,
+                     linelength=20,
+                     linewidth=3,
+                     linecolor='g',
+                     colorOrient=True,
+                     cmapOrient='hsv',
+                     threshold=None,
+                     alpha=1,
+                     clim=[None, None],
+                     cmapImage='gray',
+                     showPlot=True):
     """Overlays orientation field on the image. Returns matplotlib image axes.
 
     Options:
@@ -137,7 +137,7 @@ def angular_hist(orientation,
     ----------
     orientation: nparray
         orientation image in radian. Smoothed orientation output by
-        plotVectorField is recommended to remove peaks from edge birefringence
+        plot_vectorfield is recommended to remove peaks from edge birefringence
     n_bins: int
         number of bins for plotting the histogram
     weighted: bool
@@ -145,7 +145,7 @@ def angular_hist(orientation,
         the plain orientation histogram
     retardance: nparray
         retardance or anisotropy image. Smoothed retardance output by
-        plotVectorField is recommended to remove peaks from edge birefringence
+        plot_vectorfield is recommended to remove peaks from edge birefringence
     Returns
     -------
     im_ax: obj
@@ -186,7 +186,7 @@ def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoo
     # Optionally, plot results in tiled image
     if plot or any(chann in ['Retardance+Orientation', 'Polarization+Orientation', 'Brightfield+Retardance+Orientation']
                    for chann in outputChann):
-        I_azi_ret_trans, I_azi_ret, I_azi_scat = PolColor(I_trans, retard, azimuth_degree, polarization, norm=norm)
+        I_azi_ret_trans, I_azi_ret, I_azi_scat = aniso2hsv(I_trans, retard, azimuth_degree, polarization, norm=norm)
         t_idx = img_io.t_idx; z_idx = img_io.z_idx; pos_idx = img_io.pos_idx
         if plot:
             plot_recon_images(I_trans, retard, azimuth, polarization, I_azi_ret, I_azi_scat, zoomin=False, spacing=spacing,
@@ -256,7 +256,7 @@ def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoo
     return img_io, imgDict
 
 
-def PolColor(s0, retardance, orientation, polarization, norm=True):
+def aniso2hsv(s0, retardance, orientation, polarization, norm=True):
     """ Generate colormaps with following mappings, where H is Hue, S is Saturation, and V is Value.
         I_azi_ret_trans: H=Orientation, S=retardance, V=Brightfield.
         I_azi_ret: H=Orientation, V=Retardance.
@@ -368,7 +368,7 @@ def plot_recon_images(s0, retard, azimuth, polarization, I_azi_ret, I_azi_scat, 
     #    plt.show()
 
     ax5 = plt.subplot(2, 3, 5)
-    im_ax = plotVectorField(imClip(retard / 1000, tol=1), azimuth, anisotropy=anisotropy, spacing=spacing)
+    im_ax = plot_vectorfield(imClip(retard / 1000, tol=1), azimuth, anisotropy=anisotropy, spacing=spacing)
     plt.tick_params(labelbottom=False, labelleft=False)  # labels along the bottom edge are off
     plt.title('Retardance(nm)+Orientation')
     plt.xticks([]), plt.yticks([])
