@@ -25,7 +25,8 @@ def plotVectorField(img,
                     threshold=None,
                     alpha=1,
                     clim=[None, None],
-                    cmapImage='gray'):
+                    cmapImage='gray',
+                    showPlot=True):
     """Overlays orientation field on the image. Returns matplotlib image axes.
 
     Options:
@@ -77,38 +78,51 @@ def plotVectorField(img,
     nY, nX = img.shape
     Y, X = np.mgrid[0:nY,0:nX] # notice the reversed order of X and Y
     
-    # Plot sparsely sampled vector lines
+    # Sample variables at the specified spacing.
     Plotting_X = X[::spacing, ::spacing]
     Plotting_Y = Y[::spacing, ::spacing]
     Plotting_U = linelength * USmooth[::spacing, ::spacing]
     Plotting_V = linelength * VSmooth[::spacing, ::spacing]
     Plotting_R = RSmooth[::spacing, ::spacing]
-    
+
+    # Threshold the vector lines if specified.
     if threshold is None:
         threshold = np.ones_like(X) # no threshold
     Plotting_thres = threshold[::spacing, ::spacing]
-    Plotting_orien = ((azimuthSmooth[::spacing, ::spacing])%np.pi)*180/np.pi
-    
-    
-    if colorOrient:
-        im_ax = plt.imshow(img, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
-        plt.title('Orientation map')
-        plt.quiver(Plotting_X[Plotting_thres==1], Plotting_Y[Plotting_thres==1],
-                   Plotting_U[Plotting_thres==1], Plotting_V[Plotting_thres==1], Plotting_orien[Plotting_thres==1],
-                   cmap=cmapOrient,
-                   edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=linewidth,
-                   headwidth=0, headlength=0, headaxislength=0,
-                   scale_units = 'xy',scale = 1, angles = 'uv', pivot = 'mid')
-    else:
-        im_ax = plt.imshow(img, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
-        plt.title('Orientation map')
-        plt.quiver(Plotting_X[Plotting_thres==1], Plotting_Y[Plotting_thres==1],
-                   Plotting_U[Plotting_thres==1], Plotting_V[Plotting_thres==1],
-                   edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=linewidth,
-                   headwidth = 0, headlength = 0, headaxislength = 0,
-                   scale_units = 'xy',scale = 1, angles = 'uv', pivot = 'mid')
+    Plotting_orient=azimuthSmooth[::spacing, ::spacing]
 
-    return im_ax, RSmooth, azimuthSmooth
+    thresholdIdx = Plotting_thres==1
+    Plotting_X=Plotting_X[thresholdIdx]
+    Plotting_Y=Plotting_Y[thresholdIdx]
+    Plotting_U=Plotting_U[thresholdIdx]
+    Plotting_V=Plotting_V[thresholdIdx]
+    Plotting_orient=Plotting_orient[thresholdIdx]
+    Plotting_R=Plotting_R[thresholdIdx]
+    Plotting_color=Plotting_orient * (180/np.pi)
+
+
+    if showPlot:
+        if colorOrient:
+            im_ax = plt.imshow(img, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
+            plt.title('Orientation map')
+            plt.quiver(Plotting_X, Plotting_Y,
+                       Plotting_U, Plotting_V, Plotting_color,
+                       cmap=cmapOrient,
+                       edgecolor=linecolor, facecolor=linecolor, units='xy', alpha=alpha, width=linewidth,
+                       headwidth=0, headlength=0, headaxislength=0,
+                       scale_units = 'xy', scale = 1, angles = 'uv', pivot = 'mid')
+        else:
+            im_ax = plt.imshow(img, cmap=cmapImage, vmin=clim[0], vmax=clim[1])
+            plt.title('Orientation map')
+            plt.quiver(Plotting_X, Plotting_Y,
+                       Plotting_U, Plotting_V,
+                       edgecolor=linecolor,facecolor=linecolor,units='xy', alpha=alpha, width=linewidth,
+                       headwidth = 0, headlength = 0, headaxislength = 0,
+                       scale_units = 'xy',scale = 1, angles = 'uv', pivot = 'mid')
+    else:
+        im_ax=None
+
+    return im_ax, Plotting_R, Plotting_orient, Plotting_X, Plotting_Y, Plotting_U, Plotting_V
 
 def angular_hist(orientation,
                  n_bins=20,
