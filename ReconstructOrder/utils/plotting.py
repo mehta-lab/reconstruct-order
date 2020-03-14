@@ -167,6 +167,8 @@ def angular_hist(orientation,
     ax = plt.subplot(111, projection='polar')
     bars = ax.bar(theta[:-1], counts, width=width, bottom=0.0, align='edge')
     ax.axes.yaxis.set_ticklabels([])
+    ax.set_thetamin(0)
+    ax.set_thetamax(180)
     return ax, bars
 
 def render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=5, zoomin=False, dpi=300, norm=True, plot=True):
