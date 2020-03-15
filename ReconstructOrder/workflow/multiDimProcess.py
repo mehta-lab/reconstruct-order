@@ -5,6 +5,7 @@ Process data collected over multiple positions, timepoints and z slices
 import os
 import numpy as np
 import matplotlib
+import time
 import matplotlib.pyplot as plt
 from ..utils.imgIO import export_img
 from ..compute.reconstruct import ImgReconstructor
@@ -254,8 +255,10 @@ def phase_reconstructor_initializer(img_io: Union[mManagerReader, PolAcquReader]
         ROI = [0,0, img_io.height, img_io.width]
     else:
         ROI = config.dataset.ROI
-        
-    
+
+    start_time=time.time()
+    print('Computing phase transfer function (t=0 min)')
+
     opt_mapping = {'Phase2D': '2D', 'Phase_semi3D': 'semi-3D', 'Phase3D': '3D'}
     phase_deconv = [opt_mapping[opt] for opt in img_io.output_chans if opt in opt_mapping.keys()]
     
@@ -271,7 +274,9 @@ def phase_reconstructor_initializer(img_io: Union[mManagerReader, PolAcquReader]
                                       Tik_reg_ph_3D  = config.processing.Tik_reg_ph_3D,  TV_reg_ph_3D  = config.processing.TV_reg_ph_3D, \
                                       rho_3D         = config.processing.rho_3D,         itr_3D        = config.processing.itr_3D, \
                                       verbose        = False,                            bg_filter     = True)
-    print('Finish phase transfer function computing')
+
+    elapsed_time=(time.time()-start_time)/60
+    print('Finished computing phase transfer function (t=%3.2f min)'% elapsed_time)
     
     return ph_recon
 
@@ -335,7 +340,8 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
     save_pol       = any(chan in pol_names for chan in img_io.output_chans) or save_pol_fig
     save_fluor     = any(chan in fluor_names for chan in img_io.output_chans)
 
-    print('Processing position %03d, time %03d ...' % (pos_idx, t_idx))
+    print('Processing position %03d, time %03d ... (t=0 min)' % (pos_idx, t_idx))
+    start_time=time.time()
     for z_stack_idx in range(0, len(z_list), n_slice_local_bg):
         stokes_param_sm_stack = [[] for i in range(len(stokes_names))]
         fluor_stack_list = []
@@ -394,21 +400,41 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
             if img_io.bg_correct:
                 norm_sample = img_reconstructor.correct_background(norm_sample, stokes_bg)
 
+            elapsed_time=(time.time()-start_time)/60
+            print('Reconstructing retardance and orientation (t=%3.2f min)' % elapsed_time)
+
             physical_data = img_reconstructor.reconstruct_birefringence(norm_sample)
-            
-            print('Finish birefringence reconstruction')
+
+            elapsed_time=(time.time()-start_time)/60
+            print('Finished reconstructing retardance and orientation (t=%3.2f min)' % elapsed_time)
+
             if ph_recon:
                 for deconv_dim in ph_recon.phase_deconv:
                     
                     if deconv_dim == '2D':
+                        elapsed_time = (time.time() - start_time) / 60
+                        print('Reconstructing 2D phase (t=%3.2f min)' % elapsed_time)
+
                         physical_data.absorption_2D, physical_data.phase_2D = ph_recon.Phase_recon_2D(norm_sample)
-                        print('Finish 2D phase reconstruction')
+
+                        elapsed_time = (time.time() - start_time) / 60
+                        print('Finished reconstructing 2D phase (t=%3.2f min)' % elapsed_time)
                     if deconv_dim == 'semi-3D':
+                        elapsed_time = (time.time() - start_time) / 60
+                        print('Reconstructing semi-3D phase (t=%3.2f min)' % elapsed_time)
+
                         physical_data.absorption_semi3D, physical_data.phase_semi3D = ph_recon.Phase_recon_semi_3D(norm_sample)
-                        print('Finish semi3D phase reconstruction')
+
+                        elapsed_time = (time.time() - start_time) / 60
+                        print('Finished reconstructing semi-3D phase (t=%3.2f min)' % elapsed_time)
                     if deconv_dim == '3D':
+                        elapsed_time = (time.time() - start_time) / 60
+                        print('Reconstructing 3D phase (t=%3.2f min)' % elapsed_time)
+
                         physical_data.phase_3D = ph_recon.Phase_recon_3D(norm_sample)
-                        print('Finish 3D phase reconstruction')
+
+                        elapsed_time = (time.time() - start_time) / 60
+                        print('Finished reconstructing 3D phase (t=%3.2f min)' % elapsed_time)
 
 
             img_dict = {}
@@ -458,8 +484,11 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
                     img_stokes_sm_dict = dict(zip(stokes_names_sm, img_stokes_sm))
                     img_dict.update(img_stokes_dict)
                     img_dict.update(img_stokes_sm_dict)
+
                 export_img(img_io, img_dict, separate_pos)
-            print('Finish plotting')
+
+            elapsed_time=time.time()-start_time
+            print('Finish processing and exporting (t=%3.2f min)' % elapsed_time)
 
 
 

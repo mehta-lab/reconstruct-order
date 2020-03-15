@@ -73,6 +73,7 @@ class phase_reconstructor:
             try:
                 globals()['cp'] = __import__("cupy")
                 cp.cuda.Device(self.gpu_id).use()
+                print("cupy found, using GPU")
             except ModuleNotFoundError:
                 print("cupy not installed, using CPU instead")
                 self.use_gpu = False
