@@ -90,6 +90,7 @@ class ConfigReader:
                 raise NameError('Unrecognized configfile field:{}, key:{}'.format('dataset', key))
              
         if 'processing' in self.yaml_config:
+                        
             for (key, value) in self.yaml_config['processing'].items():
                 if key == 'output_channels':
                     self.processing.output_channels = value
@@ -154,7 +155,7 @@ class ConfigReader:
                 elif key == 'TV_reg_ph_3D':
                     self.processing.TV_reg_ph_3D = value
                 elif key == 'pad_z':
-                    self.pad_z = value
+                    self.processing.pad_z = value
                 else:
                     raise NameError('Unrecognized configfile field:{}, key:{}'.format('processing', key))
                     
