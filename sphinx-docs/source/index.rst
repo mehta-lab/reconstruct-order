@@ -73,12 +73,18 @@ FROM COMMAND LINE
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    introduction
    installation
+   usage
    compute
+   datastructures
+   plotting
+   utils
+   workflow
+   LICENSE
 
 
 Thanks

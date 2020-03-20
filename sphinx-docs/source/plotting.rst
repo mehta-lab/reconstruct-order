@@ -1,12 +1,9 @@
-compute
+Plotting
 ==============
 
 contains methods to calculate stokes and physical images from intensity images
 
-Subpackages
------------
-
-.. automodule:: compute.reconstruct
-    :members: ImgReconstructor
+.. automodule:: ReconstructOrder.utils.plotting
+    :members:
     :undoc-members:
     :show-inheritance:
