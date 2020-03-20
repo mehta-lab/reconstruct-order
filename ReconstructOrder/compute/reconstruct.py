@@ -38,34 +38,6 @@ class ImgReconstructor:
          ('lcp' or 'rcp') the circularity of the analyzer looking from the detector's point of view.
         Changing this flag will flip the slow axis horizontally.
 
-    Attributes
-    ----------
-    img_shape : tuple
-        Shape of the input image (channel, y, x)
-    bg_method : str
-        "Global" or "Local". Type of background correction. "Global" will correct each image
-         using the same background. "Local" will do correction with locally estimated
-         background in addition to global background
-    n_slice_local_bg : int
-        Number of slices averaged for local background estimation
-    swing : float
-        swing of the elliptical polarization states in unit of radian
-    wavelength : int
-        wavelenhth of the illumination light
-    kernel_size : int
-        size of the Gaussian kernel for local background estimation
-    azimuth_offset : float
-        offset of the orientation reference axis
-    circularity : str
-         ('lcp' or 'rcp') the circularity of the analyzer looking from the detector's point of view.
-        Changing this flag will flip the slow axis horizontally.
-    inst_mat_inv : 2d array
-        inverse of the instrument matrix
-    stokes_param_bg_tm :
-        transformed global background Stokes parameters
-    stokes_param_bg_local_tm :
-        transformed local background Stokes parameters
-
     """
 
     def __init__(self,
@@ -136,6 +108,16 @@ class ImgReconstructor:
 
     @img_shape.setter
     def img_shape(self, shape):
+        """
+
+        Parameters
+        ----------
+        shape
+
+        Returns
+        -------
+
+        """
         assert len(shape) == 3 or 4, \
             'ImgReconstructor only supports 2D image or 3D stack'
         self._img_shape = shape
