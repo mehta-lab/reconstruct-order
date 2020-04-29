@@ -115,7 +115,7 @@ class IntensityDataCreator(object):
                 imgs.replace_image(img, '640')
             elif any(substring in chan_name for substring in ['FM464', 'fm464']):
                 imgs.replace_image(img, 'ex561em700')
-        elif any(substring in chan_name for substring in ['BF', 'BrightField']):
+        elif any(substring in chan_name for substring in ['BF', 'BrightField', 'Default']):
             imgs.replace_image(img, 'BF')
 
         return imgs

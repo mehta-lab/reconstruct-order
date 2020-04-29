@@ -49,7 +49,7 @@ processing:
 
   # (list) Any combination of the following values.
   ##    'Brightfield', 'Brightfield_computed', 'Retardance', 'Orientation', 'Polarization',
-  ##    'Orientation_x', 'Orientation_y', 'Phase2D', 'Phase3D',
+  ##    'Orientation_x', 'Orientation_y', 'Phase2D', 'Absorption2D', 'Phase3D',
   ##    'Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
   ##    'Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3',
   ##    '405', '488', '568', '640', 'ex561em700'
@@ -203,6 +203,10 @@ plotting:
   phase_2D_scaling: 1  
   # (float) scaling factor of 2D phase images
   ##   when scaling is 1, phase is plotted from -5 to 5 radian
+  
+  absorption_2D_scaling: 1  
+  # (float) scaling factor of 2D absorption images
+  ##   when scaling is 1, absorption is plotted from -1 to 1
   
   phase_3D_scaling: 1  
   # (float) scaling factor of 3D phase images
