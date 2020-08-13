@@ -55,7 +55,7 @@ def plotEllipse(ellipt, orient, size=5, axes=None):
     plt.ylim(-1, 1)
     
     
-def plotEllipse2(S1, S2, S3, S4, size=5, axes=None):
+def plotEllipseStokes(S0, S1, S2, S3, size=5, axes=None):
     def add_arrow(line, size=20, color='k'):
         """
         add an arrow to a line.
@@ -85,7 +85,7 @@ def plotEllipse2(S1, S2, S3, S4, size=5, axes=None):
                            arrowprops=dict(arrowstyle="->", color=color),
                            size=size)
 
-    Stokes = np.array([S1,S2,S3,S4])
+    Stokes = np.array([S0,S1,S2,S3])
     
     ellipt, orient = stokes2ellipse(Stokes)
     
