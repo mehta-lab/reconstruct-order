@@ -110,9 +110,9 @@ class ImgReconstructor:
         chi = self.swing
         if self._n_chann == 4:  # if the images were taken using 4-frame scheme
             inst_mat = np.array([[1, 0, 0, -1],
-                                 [1, 0, np.sin(chi), -np.cos(chi)],
-                                 [1, -np.sin(chi), 0, -np.cos(chi)],
-                                 [1, 0, -np.sin(chi), -np.cos(chi)]])
+                                 [1, np.sin(2*np.pi*chi), 0, -np.cos(2*np.pi*chi)],
+                                 [1, -0.5*np.sin(2*np.pi*chi), np.sqrt(3)*np.cos(np.pi*chi)*np.sin(np.pi*chi), -np.cos(2*np.pi*chi)],
+                                 [1, -0.5*np.sin(2*np.pi*chi), -np.sqrt(3)/2*np.sin(2*np.pi*chi), -np.cos(2*np.pi*chi)]])
         elif self._n_chann == 5:  # if the images were taken using 5-frame scheme
             inst_mat = np.array([[1, 0, 0, -1],
                                  [1, np.sin(chi), 0, -np.cos(chi)],

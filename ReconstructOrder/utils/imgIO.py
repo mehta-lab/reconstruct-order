@@ -127,11 +127,11 @@ def sort_pol_channels(img_pol):
 
     """
     I_ext = img_pol[0, :, :]  # Sigma0 in Fig.2
-    I_90 = img_pol[1, :, :]  # Sigma2 in Fig.2
-    I_135 = img_pol[2, :, :]  # Sigma4 in Fig.2
-    I_45 = img_pol[3, :, :]  # Sigma3 in Fig.2
+    I_0 = img_pol[1, :, :]  # Sigma2 in Fig.2
+    I_60 = img_pol[2, :, :]  # Sigma4 in Fig.2
+    I_120 = img_pol[3, :, :]  # Sigma3 in Fig.2
     if img_pol.shape[0] == 4:  # if the images were taken using 4-frame scheme
-        img_pol = np.stack((I_ext, I_45, I_90, I_135))  # order the channel following stokes calculus convention
+        img_pol = np.stack((I_ext, I_0, I_60, I_120))  # order the channel following stokes calculus convention
     elif img_pol.shape[0] == 5:  # if the images were taken using 5-frame scheme
         I_0 = img_pol[4, :, :]
         img_pol = np.stack((I_ext, I_0, I_45, I_90, I_135))  # order the channel following stokes calculus convention
