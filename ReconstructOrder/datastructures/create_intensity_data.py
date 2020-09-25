@@ -99,7 +99,7 @@ class IntensityDataCreator(object):
             elif '2' in chan_name:
                 imgs.replace_image(img, 'I135')
             elif '3' in chan_name:
-                imgs.replace_image(img, 'I455')
+                imgs.replace_image(img, 'I45')
             elif '4' in chan_name:
                 imgs.replace_image(img, 'I0')
         elif any(substring in chan_name for substring in
