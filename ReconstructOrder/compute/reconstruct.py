@@ -89,7 +89,7 @@ class ImgReconstructor:
         self.img_shape = [self._n_chann] + list(img_shape)
         self.bg_method        = bg_method
         self.n_slice_local_bg = n_slice_local_bg
-        self.swing            = swing * 2 * np.pi # covert swing from fraction of wavelength to radian
+        self.swing            = swing # covert swing from fraction of wavelength to radian
         self.wavelength       = wavelength
         self.kernel_size      = kernel_size
         self.poly_fit_order   = poly_fit_order

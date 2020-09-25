@@ -95,13 +95,13 @@ class IntensityDataCreator(object):
             if '0' in chan_name:
                 imgs.replace_image(img, 'IExt')
             elif '1' in chan_name:
-                imgs.replace_image(img, 'I0')
-            elif '2' in chan_name:
-                imgs.replace_image(img, 'I45')
-            elif '3' in chan_name:
-                imgs.replace_image(img, 'I135')
-            elif '4' in chan_name:
                 imgs.replace_image(img, 'I90')
+            elif '2' in chan_name:
+                imgs.replace_image(img, 'I135')
+            elif '3' in chan_name:
+                imgs.replace_image(img, 'I455')
+            elif '4' in chan_name:
+                imgs.replace_image(img, 'I0')
         elif any(substring in chan_name for substring in
                  ['Confocal40', 'Confocal_40', 'Widefield', 'widefield', 'Fluor']):
             if any(substring in chan_name for substring in ['DAPI', '405', '405nm']):
