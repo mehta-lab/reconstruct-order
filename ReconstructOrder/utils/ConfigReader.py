@@ -100,6 +100,8 @@ class ConfigReader:
                         phase_processing = False
                 elif key == 'circularity':
                     self.processing.circularity = value
+                elif key == 'calibration_scheme':
+                    self.processing.calibration_scheme = value
                 elif key == 'background_correction':
                     self.processing.background_correction = value
                 elif key == 'flatfield_correction':
@@ -393,12 +395,14 @@ class Processing:
                                 'Brightfield+Retardance+Orientation',
                                 'Retardance+Fluorescence', 'Retardance+Fluorescence_all']  
     _allowed_circularity_values = ['rcp', 'lcp']
+    _allowed_calibration_schemes = ['5-State', '4-State', '4-State Extinction']
     _allowed_background_correction_values = ['None', 'Input', 'Local_filter', 'Local_fit', 'Local_defocus', 'Auto']
     _allowed_phase_denoiser_values = ['Tikhonov', 'TV']
     
     def __init__(self):
         self._output_channels       = ['Brightfield', 'Retardance', 'Orientation', 'Polarization']
         self._circularity           = 'rcp'
+        self._calibration_scheme    = None
         self._background_correction = 'None'
         self._flatfield_correction  = False
         self._azimuth_offset        = 0
@@ -444,6 +448,10 @@ class Processing:
     @property
     def circularity(self):
         return self._circularity
+
+    @property
+    def calibration_scheme(self):
+        return self._calibration_scheme
     
     @property
     def background_correction(self):
@@ -570,6 +578,11 @@ class Processing:
     def circularity(self, value):     
         assert value in self._allowed_circularity_values, "{} is not an allowed circularity setting".format(value)
         self._circularity = value
+
+    @calibration_scheme.setter
+    def calibration_scheme(self, value):
+        assert value in self._allowed_calibration_schemes, "{} is not an allowed calibration scheme".format(value)
+        self._calibration_scheme = value
         
     @background_correction.setter
     def background_correction(self, value):     

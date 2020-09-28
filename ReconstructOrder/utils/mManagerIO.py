@@ -99,16 +99,22 @@ class mManagerReader(object):
             sub_dir = sub_dirs[0] # assume all the folders in the sample folder are position folders
             pos_path = os.path.join(img_sample_path, sub_dir)
             ##TODO: check the behavior of 2.0 gamma
-        metadata_path = os.path.join(pos_path, 'metadata.txt')
+
+        # Perform check for new MM2.0 gamma metadata files
+        for dirs, folders, files in os.walk(pos_path):
+            for file in files:
+                if 'metadata' or 'Metadata' in file:
+                    metadata_path = os.path.join(pos_path, file)
         with open(metadata_path, 'r') as f:
             input_meta_file = json.load(f)
-
         self.input_meta_file = input_meta_file
         self.mm_version = input_meta_file['Summary']['MicroManagerVersion']
         if self.mm_version == '1.4.22':
             self.meta_parser = self._mm1_meta_parser
-        elif '2.0' in self.mm_version:
+        elif '2.0beta' in self.mm_version:
             self.meta_parser = self._mm2_meta_parser
+        elif 'gamma' in self.mm_version:
+            self.meta_parser = self._mm2gamma_meta_parser
         else:
             raise ValueError(
                 'Current MicroManager reader only supports version 1.4.22 and 2.0 but {} was detected'.
@@ -142,6 +148,8 @@ class mManagerReader(object):
         self.bg = 'No Background'
         self.bg_method = 'Global'
         self.bg_correct = True
+        self.roi = 0
+        self.mirror = 'No'
         self.meta_parser()
 
     def _mm1_meta_parser(self):
@@ -165,6 +173,25 @@ class mManagerReader(object):
         self.width = int(input_meta_file['Summary']['UserData']['Width']['PropVal'])
         self.height = int(input_meta_file['Summary']['UserData']['Height']['PropVal'])
         self.time_stamp = input_meta_file['Summary']['StartTime']
+
+    def _mm2gamma_meta_parser(self):
+        input_meta_file = self.input_meta_file
+        self._meta_pos_list = ['']
+        self.time_stamp = input_meta_file['Summary']['StartTime']
+        if 'StagePositions' in self.input_meta_file['Summary']:
+            pos_dict_list = self.input_meta_file['Summary']['StagePositions']
+            self._meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
+        self._pos_list = self._meta_pos_list
+        keys_list = list(input_meta_file.keys())
+        if 'FrameKey-0-0-0' in keys_list[1]:
+            roi_string = input_meta_file[keys_list[1]]['ROI']
+            self.width = int(roi_string.split('-')[2])
+            self.height = int(roi_string.split('-')[3])
+        elif 'Metadata-Default' in keys_list[2]:
+            self.width = input_meta_file[keys_list[2]]['Width']
+            self.height = input_meta_file[keys_list[2]]['Height']
+        else:
+            raise ValueError('Metadata file incompatible with metadata reader')
 
     @property
     def pos_list(self):
@@ -333,9 +360,9 @@ class PolAcquReader(mManagerReader):
         mManagerReader.__init__(self, img_sample_path, img_output_path, input_chans, output_chans, binning)
         metaFile = self.input_meta_file
         self.acquScheme = metaFile['Summary']['~ Acquired Using']
-        self.bg = metaFile['Summary']['~ Background']
+        # self.bg = metaFile['Summary']['~ Background']
         self.blackLevel = metaFile['Summary']['~ BlackLevel']
-        self.mirror = metaFile['Summary']['~ Mirror']
+        # self.mirror = metaFile['Summary']['~ Mirror']
         self.swing = metaFile['Summary']['~ Swing (fraction)']
         self.wavelength = metaFile['Summary']['~ Wavelength (nm)']
 

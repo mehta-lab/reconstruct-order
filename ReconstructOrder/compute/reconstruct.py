@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 from ..utils.background_estimator import BackgroundEstimator2D
+from ..utils.ConfigReader import ConfigReader
 from ..utils.imgProcessing import mean_pooling_2d_stack
 
 from ..datastructures import IntensityData, StokesData, PhysicalData
@@ -70,6 +71,7 @@ class ImgReconstructor:
 
     def __init__(self,
                  int_obj: IntensityData,
+                 config: ConfigReader,
                  bg_method        = 'Global',
                  n_slice_local_bg = 1,
                  swing            = None,
@@ -83,7 +85,7 @@ class ImgReconstructor:
 
         # image params
         self._n_chann = 4
-        if 'I0' in int_obj.channel_names and isinstance(int_obj.get_image('I0'), np.ndarray):
+        if '5-State' in config.processing.calibration_scheme:
             self._n_chann = 5
         img_shape = int_obj.get_image('IExt').shape
         self.img_shape = [self._n_chann] + list(img_shape)
@@ -108,17 +110,25 @@ class ImgReconstructor:
 
         # compute instrument matrix only once
         chi = self.swing
-        if self._n_chann == 4:  # if the images were taken using 4-frame scheme
+        if config.processing.calibration_scheme == '5-State' or config.processing.calibration_scheme == '4-State':
+            if self._n_chann == 4:  # if the images were taken using 4-frame scheme (0, 45, 90, 135)
+                inst_mat = np.array([[1, 0, 0, -1],
+                                     [1, 0, np.sin(chi), -np.cos(chi)],
+                                     [1, -np.sin(chi), 0, -np.cos(chi)],
+                                     [1, 0, -np.sin(chi), -np.cos(chi)]])
+            elif self._n_chann == 5:  # if the images were taken using 5-frame scheme
+                inst_mat = np.array([[1, 0, 0, -1],
+                                     [1, np.sin(chi), 0, -np.cos(chi)],
+                                     [1, 0, np.sin(chi), -np.cos(chi)],
+                                     [1, -np.sin(chi), 0, -np.cos(chi)],
+                                     [1, 0, -np.sin(chi), -np.cos(chi)]])
+
+        elif config.processing.calibration_scheme == '4-State Extinction': # if the images were taken using 4-frame scheme (Ext, 0, 60, 120)
             inst_mat = np.array([[1, 0, 0, -1],
-                                 [1, np.sin(2*np.pi*chi), 0, -np.cos(2*np.pi*chi)],
-                                 [1, -0.5*np.sin(2*np.pi*chi), np.sqrt(3)*np.cos(np.pi*chi)*np.sin(np.pi*chi), -np.cos(2*np.pi*chi)],
-                                 [1, -0.5*np.sin(2*np.pi*chi), -np.sqrt(3)/2*np.sin(2*np.pi*chi), -np.cos(2*np.pi*chi)]])
-        elif self._n_chann == 5:  # if the images were taken using 5-frame scheme
-            inst_mat = np.array([[1, 0, 0, -1],
-                                 [1, np.sin(chi), 0, -np.cos(chi)],
-                                 [1, 0, np.sin(chi), -np.cos(chi)],
-                                 [1, -np.sin(chi), 0, -np.cos(chi)],
-                                 [1, 0, -np.sin(chi), -np.cos(chi)]])
+                                 [1, np.sin(2 * np.pi * chi), 0, -np.cos(2 * np.pi * chi)],
+                                 [1, -0.5 * np.sin(2 * np.pi * chi), np.sqrt(3) * np.cos(np.pi * chi) * np.sin(np.pi * chi), -np.cos(2 * np.pi * chi)],
+                                 [1, -0.5 * np.sin(2 * np.pi * chi), -np.sqrt(3) / 2 * np.sin(2 * np.pi * chi), -np.cos(2 * np.pi * chi)]])
+
         else:
             raise Exception('Expected image shape is (channel, y, x, z)...'
                             'The number of channels is {}, but allowed values are 4 or 5'.format(self._n_chann))
@@ -145,7 +155,7 @@ class ImgReconstructor:
         else:
             [self._n_chann, self._height, self._width, self._depth] = shape
 
-    def compute_stokes(self, int_obj: IntensityData) -> StokesData:
+    def compute_stokes(self, config: ConfigReader, int_obj: IntensityData) -> StokesData:
         """
         Given raw polarization images, compute stokes images
 
@@ -167,11 +177,17 @@ class ImgReconstructor:
         if self.img_shape[1:] != list(np.shape(int_obj.get_image('IExt'))):
             raise ValueError("Instrument matrix dimensions do not match supplied intensity dimensions")
 
-        if self._n_chann == 4:
+        if self._n_chann == 4 and config.processing.calibration_scheme == '4-State':
             img_raw = np.stack((int_obj.get_image('IExt'),
                                 int_obj.get_image('I45'),
                                 int_obj.get_image('I90'),
                                 int_obj.get_image('I135')))  # order the channel following stokes calculus convention
+
+        elif self._n_chann == 4 and config.processing.calibration_scheme == '4-State':
+            img_raw = np.stack((int_obj.get_image('IExt'),
+                                int_obj.get_image('I0'),
+                                int_obj.get_image('I60'),
+                                int_obj.get_image('I120')))  # order the channel following stokes calculus convention
         elif self._n_chann == 5:
             img_raw = np.stack((int_obj.get_image('IExt'),
                                 int_obj.get_image('I0'),

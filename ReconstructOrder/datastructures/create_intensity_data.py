@@ -2,6 +2,7 @@ import numpy as np
 import warnings
 
 from ReconstructOrder.datastructures import IntensityData
+from ReconstructOrder.utils.ConfigReader import ConfigReader
 from ..utils.mManagerIO import mManagerReader
 from ..utils.imgProcessing import mean_pooling_2d
 
@@ -26,7 +27,7 @@ class IntensityDataCreator(object):
         self.input_chans = input_chans
         self.roi = ROI
         self.binning = binning
-        self.int_obj_chans = ['IExt', 'I90', 'I135', 'I45', 'I0', 'BF',
+        self.int_obj_chans = ['IExt', 'I90', 'I135', 'I45', 'I0', 'I60', 'I120', 'BF',
                          '405', '488', '568', '640', 'ex561em700']
         if int_obj_chans is not None:
             self.int_obj_chans = int_obj_chans
@@ -75,7 +76,7 @@ class IntensityDataCreator(object):
 
 
     @staticmethod
-    def chan_name_parser(imgs, img, chan_name):
+    def chan_name_parser(imgs, img, chan_name, img_io: mManagerReader, config: ConfigReader):
         """Parse the image channel name and assign the image to
         the channel in the intensity data object
 
@@ -91,17 +92,30 @@ class IntensityDataCreator(object):
         imgs : IntensityData
             images from polarization, fluorescence, bright-field channels
         """
+
         if any(substring in chan_name for substring in ['State', 'state', 'Pol']):
-            if '0' in chan_name:
-                imgs.replace_image(img, 'IExt')
-            elif '1' in chan_name:
-                imgs.replace_image(img, 'I90')
-            elif '2' in chan_name:
-                imgs.replace_image(img, 'I135')
-            elif '3' in chan_name:
-                imgs.replace_image(img, 'I45')
-            elif '4' in chan_name:
-                imgs.replace_image(img, 'I0')
+            if config.processing.calibration_scheme == '5-State' or config.processing.calibration_scheme == '4-State':
+                if '0' in chan_name:
+                    imgs.replace_image(img, 'IExt')
+                elif '1' in chan_name:
+                    imgs.replace_image(img, 'I90')
+                elif '2' in chan_name:
+                    imgs.replace_image(img, 'I135')
+                elif '3' in chan_name:
+                    imgs.replace_image(img, 'I45')
+                elif '4' in chan_name:
+                    imgs.replace_image(img, 'I0')
+            elif config.processing.calibration_scheme == '4-State Extinction':
+                if '0' in chan_name:
+                    imgs.replace_image(img, 'IExt')
+                elif '1' in chan_name:
+                    imgs.replace_image(img, 'I0')
+                elif '2' in chan_name:
+                    imgs.replace_image(img, 'I60')
+                elif '3' in chan_name:
+                    imgs.replace_image(img, 'I120')
+            else:
+                raise ValueError('Calibration Scheme Not Defined')
         elif any(substring in chan_name for substring in
                  ['Confocal40', 'Confocal_40', 'Widefield', 'widefield', 'Fluor']):
             if any(substring in chan_name for substring in ['DAPI', '405', '405nm']):

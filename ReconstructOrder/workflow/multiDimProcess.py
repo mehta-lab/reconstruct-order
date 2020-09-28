@@ -488,7 +488,7 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
 
                 export_img(img_io, img_dict, separate_pos)
 
-            elapsed_time=time.time()-start_time
+            elapsed_time = (time.time()-start_time) / 60
             print('Finish processing and exporting (t=%3.2f min)' % elapsed_time)
 
 
