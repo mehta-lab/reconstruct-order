@@ -174,6 +174,7 @@ class mManagerReader(object):
         self.height = int(input_meta_file['Summary']['UserData']['Height']['PropVal'])
         self.time_stamp = input_meta_file['Summary']['StartTime']
 
+
     def _mm2gamma_meta_parser(self):
         input_meta_file = self.input_meta_file
         self._meta_pos_list = ['']
@@ -255,6 +256,8 @@ class mManagerReader(object):
             self.img_name_format = 'mm_2_0'
         elif 'img_' in img_name:
             self.img_name_format = 'recon_order'
+        elif 'State' in img_name:
+            self.img_name_format = 'notebook'
         else:
             raise ValueError('Unknown image name format')
 
@@ -272,6 +275,9 @@ class mManagerReader(object):
         elif self.img_name_format == 'recon_order':
             img_name = 'img_{}_t{:03d}_p{:03d}_z{:03d}.tif'.\
                 format(self.t_idx, self.pos_idx, self.z_idx, self.get_chan_name())
+        elif self.img_name_format == 'notebook':
+            chan_meta = self.get_chan_name()
+            img_name = f'{chan_meta}.tif'
         else:
             raise ValueError('Undefined image name format')
         return img_name

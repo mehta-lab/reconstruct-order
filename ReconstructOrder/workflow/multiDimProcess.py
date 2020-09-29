@@ -49,6 +49,11 @@ def create_metadata_object(data_path, config):
         img_obj = mManagerReader(data_path,
                                  output_chans=config.processing.output_channels,
                                  binning=config.processing.binning)
+
+    # img_obj = PolAcquReader(data_path,
+    #                         output_chans=config.processing.output_channels,
+    #                         binning=config.processing.binning
+    #                         )
     return img_obj
 
 
@@ -176,12 +181,12 @@ def parse_bg_options(img_obj_list, config):
     return img_obj_list
 
 
-def process_background(img_io, img_io_bg, config, img_int_creator: IntensityDataCreator):
+def process_background(img_io, img_io_bg, config: ConfigReader, img_int_creator: IntensityDataCreator):
     """
     Read background images, initiate ImgReconstructor to compute background stokes parameters
 
     """
-    img_int_bg         = img_int_creator.get_data_object(img_io_bg)
+    img_int_bg         = img_int_creator.get_data_object(config, img_io_bg)
     circularity      = config.processing.circularity
     azimuth_offset   = config.processing.azimuth_offset
     n_slice_local_bg = config.processing.n_slice_local_bg
@@ -193,6 +198,7 @@ def process_background(img_io, img_io_bg, config, img_int_creator: IntensityData
         n_slice_local_bg = len(img_io.z_list)
 
     img_reconstructor = ImgReconstructor(img_int_bg,
+                                         config           = config,
                                          bg_method        = img_io.bg_method,
                                          n_slice_local_bg = n_slice_local_bg,
                                          poly_fit_order   = local_fit_order,
@@ -204,7 +210,7 @@ def process_background(img_io, img_io_bg, config, img_int_creator: IntensityData
                                          gpu_id           = gpu_id)
 
     if img_io.bg_correct:
-        background_stokes = img_reconstructor.compute_stokes(img_int_bg)
+        background_stokes = img_reconstructor.compute_stokes(config, img_int_bg)
         background_stokes_normalized = img_reconstructor.stokes_normalization(background_stokes)
         # print('denoising the background...')
         # img_stokes_bg = [denoise_tv_chambolle(img, weight=10**6) for img in img_stokes_bg]
@@ -354,13 +360,13 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
             img_io.z_idx = z_idx
 
             # load raw intensity data
-            img_int_sm = img_int_creator.get_data_object(img_io)
+            img_int_sm = img_int_creator.get_data_object(config, img_io)
             img_int_sm = ff_corrector.correct_flat_field(img_int_sm)
 
             img_dict = {}
             if save_stokes or save_birefring:
                 # compute stokes
-                stokes_param_sm = img_reconstructor.compute_stokes(img_int_sm)
+                stokes_param_sm = img_reconstructor.compute_stokes(config, img_int_sm)
                 for stack, img in zip(stokes_param_sm_stack, stokes_param_sm.data):
                     stack.append(img)
                 # retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images

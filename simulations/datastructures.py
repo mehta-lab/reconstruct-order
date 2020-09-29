@@ -2,6 +2,7 @@
 from ReconstructOrder.compute.reconstruct import ImgReconstructor
 from ReconstructOrder.datastructures import PhysicalData
 from ReconstructOrder.datastructures.intensity_data import IntensityData
+from ReconstructOrder.utils.ConfigReader import ConfigReader
 import numpy as np
 
 #%%
@@ -24,6 +25,8 @@ import os
 import tifffile as tf
 
 int_dat = IntensityData()
+config = ConfigReader()
+
 int_dat.channel_names = ['IExt','I90','I135','I45','I0']
 
 raw_data_path = "/Users/bryant.chhun/Desktop/Data/ForDataStructuresTests/Raw/Sample/Pos0"
@@ -59,7 +62,7 @@ img_reconstructor = ImgReconstructor(bg_int.data.shape,
 #%%
 
 print('computing background')
-background_stokes = img_reconstructor.compute_stokes(bg_int)
+background_stokes = img_reconstructor.compute_stokes(config, bg_int)
 background_normalized = img_reconstructor.stokes_normalization(background_stokes)
 
 #%%

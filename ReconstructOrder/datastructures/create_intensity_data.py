@@ -32,7 +32,7 @@ class IntensityDataCreator(object):
         if int_obj_chans is not None:
             self.int_obj_chans = int_obj_chans
             
-    def get_data_object(self, img_io: mManagerReader) -> IntensityData:
+    def get_data_object(self, config: ConfigReader, img_io: mManagerReader) -> IntensityData:
         """Parse tiff file name following mManager/Polacquisition output format
         return intensity data objects with images assigned to corresponding channels
         based on the file name
@@ -68,7 +68,7 @@ class IntensityDataCreator(object):
                 img = img[self.roi[0]:self.roi[0] + self.roi[2], self.roi[1]:self.roi[1] + self.roi[3]]
                 img -= img_io.blackLevel
                 img = mean_pooling_2d(img, self.binning)
-                imgs = IntensityDataCreator.chan_name_parser(imgs, img, chan_name)
+                imgs = IntensityDataCreator.chan_name_parser(imgs, img, chan_name, config)
         return imgs
     
     
@@ -76,7 +76,7 @@ class IntensityDataCreator(object):
 
 
     @staticmethod
-    def chan_name_parser(imgs, img, chan_name, img_io: mManagerReader, config: ConfigReader):
+    def chan_name_parser(imgs, img, chan_name, config: ConfigReader):
         """Parse the image channel name and assign the image to
         the channel in the intensity data object
 

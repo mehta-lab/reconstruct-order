@@ -95,12 +95,13 @@ class FlatFieldCorrector(object):
 
     @loop_pt
     def _compute_ff_helper(self,
+                           config: ConfigReader,
                            img_io: Union[mManagerReader, PolAcquReader]=None,
                            ):
 
         for z_idx in range(0, 1):  # only use the first z
             img_io.z_idx = z_idx
-            img_int_raw = self.img_int_creator.get_data_object(img_io)
+            img_int_raw = self.img_int_creator.get_data_object(config, img_io)
             for chan_idx, chan_name in enumerate(self._fluor_chan_names):
                 img = img_int_raw.get_image(chan_name)
                 if np.any(img):  # if the flour channel exists

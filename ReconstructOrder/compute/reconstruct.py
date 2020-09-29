@@ -109,8 +109,9 @@ class ImgReconstructor:
 
 
         # compute instrument matrix only once
-        chi = self.swing
+
         if config.processing.calibration_scheme == '5-State' or config.processing.calibration_scheme == '4-State':
+            chi = self.swing * 2 * np.pi
             if self._n_chann == 4:  # if the images were taken using 4-frame scheme (0, 45, 90, 135)
                 inst_mat = np.array([[1, 0, 0, -1],
                                      [1, 0, np.sin(chi), -np.cos(chi)],
@@ -124,6 +125,7 @@ class ImgReconstructor:
                                      [1, 0, -np.sin(chi), -np.cos(chi)]])
 
         elif config.processing.calibration_scheme == '4-State Extinction': # if the images were taken using 4-frame scheme (Ext, 0, 60, 120)
+            chi = self.swing
             inst_mat = np.array([[1, 0, 0, -1],
                                  [1, np.sin(2 * np.pi * chi), 0, -np.cos(2 * np.pi * chi)],
                                  [1, -0.5 * np.sin(2 * np.pi * chi), np.sqrt(3) * np.cos(np.pi * chi) * np.sin(np.pi * chi), -np.cos(2 * np.pi * chi)],
@@ -183,7 +185,7 @@ class ImgReconstructor:
                                 int_obj.get_image('I90'),
                                 int_obj.get_image('I135')))  # order the channel following stokes calculus convention
 
-        elif self._n_chann == 4 and config.processing.calibration_scheme == '4-State':
+        elif self._n_chann == 4 and config.processing.calibration_scheme == '4-State Extinction':
             img_raw = np.stack((int_obj.get_image('IExt'),
                                 int_obj.get_image('I0'),
                                 int_obj.get_image('I60'),
