@@ -204,6 +204,8 @@ class ConfigReader:
                     self.plotting.transmission_scaling = float(value)
                 elif key == 'phase_2D_scaling':
                     self.plotting.phase_2D_scaling = float(value)
+                elif key == 'absorption_2D_scaling':
+                    self.plotting.absorption_2D_scaling = float(value)
                 elif key == 'phase_3D_scaling':
                     self.plotting.phase_3D_scaling = float(value)
                 elif key == 'save_birefringence_fig':
@@ -382,8 +384,9 @@ class Dataset:
 
 
 class Processing:
-    _allowed_output_channels = ['Brightfield', 'Brightfield_computed', 'Retardance', 'Orientation', 'Polarization',
+    _allowed_output_channels = ['Brightfield', 'Brightfield_computed', 'Retardance', 'Orientation', 'Polarization', 'RetardanceZavg', 'OrientationZavg',
                                 'Phase2D', 'Phase_semi3D', 'Phase3D',
+                                'Absorption2D', 'Absorption_semi3D',
                                 'Orientation_x', 'Orientation_y',
                                 'Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
                                 'Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3',
@@ -746,6 +749,7 @@ class Plotting:
         self.transmission_scaling   = 1E4
         self.retardance_scaling     = 1E3
         self.phase_2D_scaling       = 1
+        self.absorption_2D_scaling  = 1
         self.phase_3D_scaling       = 1
         self.save_birefringence_fig = False
         self.save_stokes_fig        = False
