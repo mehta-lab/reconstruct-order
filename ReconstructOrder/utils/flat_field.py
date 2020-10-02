@@ -1,5 +1,5 @@
-from .mManagerIO import mManagerReader, PolAcquReader
-from ..datastructures import StokesData, IntensityDataCreator, IntensityData
+from ReconstructOrder.utils.mManagerIO import mManagerReader, PolAcquReader
+from ..datastructures import IntensityDataCreator, IntensityData
 from .ConfigReader import ConfigReader
 from .imgProcessing import ImgMin
 from .aux_utils import loop_pt

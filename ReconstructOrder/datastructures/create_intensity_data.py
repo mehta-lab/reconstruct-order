@@ -3,7 +3,7 @@ import warnings
 
 from ReconstructOrder.datastructures import IntensityData
 from ReconstructOrder.utils.ConfigReader import ConfigReader
-from ..utils.mManagerIO import mManagerReader
+from ReconstructOrder.utils.mManagerIO import mManagerReader
 from ..utils.imgProcessing import mean_pooling_2d
 
 

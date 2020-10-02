@@ -7,7 +7,7 @@ import pandas as pd
 import cv2
 import warnings
 
-from ..utils.imgIO import get_sub_dirs, get_sorted_names
+from ReconstructOrder.utils.imgIO import get_sub_dirs, get_sorted_names
  
 
 
@@ -103,8 +103,11 @@ class mManagerReader(object):
         # Perform check for new MM2.0 gamma metadata files
         for dirs, folders, files in os.walk(pos_path):
             for file in files:
-                if 'metadata' or 'Metadata' in file:
+                if 'metadata' in file or 'Metadata' in file:
                     metadata_path = os.path.join(pos_path, file)
+                    print(metadata_path)
+                else:
+                    continue
         with open(metadata_path, 'r') as f:
             input_meta_file = json.load(f)
         self.input_meta_file = input_meta_file
@@ -156,8 +159,8 @@ class mManagerReader(object):
         input_meta_file = self.input_meta_file
         self._meta_pos_list = ['Pos0']
         pos_dict_list = self.input_meta_file['Summary']['InitialPositionList']
-        if pos_dict_list:
-            self._meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
+        # if pos_dict_list:
+        #     self._meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
         self._pos_list = self._meta_pos_list
         self.width = input_meta_file['Summary']['Width']
         self.height = input_meta_file['Summary']['Height']
