@@ -77,7 +77,6 @@ def read_metadata(config):
 
     img_obj_list = []
     bg_obj_list = []
-
     # If one background is used for all samples, read only once
     if len(set(config.dataset.background)) <= 1:
         background_path = os.path.join(config.dataset.data_dir,config.dataset.background[0])
@@ -98,6 +97,7 @@ def read_metadata(config):
         bg_obj_list = bg_obj_list*len(img_obj_list)
 
     for i in range(len(config.dataset.samples)):
+
         img_obj_list[i].bg = bg_obj_list[i].bg
         img_obj_list[i].swing = bg_obj_list[i].swing
         img_obj_list[i].wavelength = bg_obj_list[i].wavelength

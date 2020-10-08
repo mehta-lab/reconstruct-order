@@ -69,6 +69,7 @@ class ConfigReader:
         # and background directories
         self.dataset.data_dir      = self.yaml_config['dataset']['data_dir']
         self.dataset.processed_dir = self.yaml_config['dataset']['processed_dir']
+        # self.dataset.inst_matrix_dir = self.yaml_config['dataset']['inst_matrix_dir']
 
         for (key, value) in self.yaml_config['dataset'].items():
             if key == 'samples':
@@ -395,7 +396,7 @@ class Processing:
                                 'Brightfield+Retardance+Orientation',
                                 'Retardance+Fluorescence', 'Retardance+Fluorescence_all']  
     _allowed_circularity_values = ['rcp', 'lcp']
-    _allowed_calibration_schemes = ['5-State', '4-State', '4-State Extinction']
+    _allowed_calibration_schemes = ['5-State', '4-State', '4-State Extinction', 'Custom Instrument Matrix']
     _allowed_background_correction_values = ['None', 'Input', 'Local_filter', 'Local_fit', 'Local_defocus', 'Auto']
     _allowed_phase_denoiser_values = ['Tikhonov', 'TV']
     

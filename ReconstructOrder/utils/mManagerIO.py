@@ -101,13 +101,14 @@ class mManagerReader(object):
             ##TODO: check the behavior of 2.0 gamma
 
         # Perform check for new MM2.0 gamma metadata files
-        for dirs, folders, files in os.walk(pos_path):
-            for file in files:
-                if 'metadata' in file or 'Metadata' in file:
-                    metadata_path = os.path.join(pos_path, file)
-                    print(metadata_path)
-                else:
-                    continue
+        # for dirs, folders, files in os.walk(pos_path):
+        #     for file in files:
+        #         if 'metadata' in file or 'Metadata' in file:
+        #             metadata_path = os.path.join(pos_path, file)
+        #             print(metadata_path)
+        #         else:
+        #             continue
+        metadata_path = os.path.join(pos_path, 'metadata.txt')
         with open(metadata_path, 'r') as f:
             input_meta_file = json.load(f)
         self.input_meta_file = input_meta_file
@@ -365,7 +366,6 @@ class PolAcquReader(mManagerReader):
 
     """
     def __init__(self, img_sample_path, img_output_path=None, input_chans=[], output_chans=[], binning=1):
-
         mManagerReader.__init__(self, img_sample_path, img_output_path, input_chans, output_chans, binning)
         metaFile = self.input_meta_file
         self.acquScheme = metaFile['Summary']['~ Acquired Using']
@@ -374,4 +374,3 @@ class PolAcquReader(mManagerReader):
         # self.mirror = metaFile['Summary']['~ Mirror']
         self.swing = metaFile['Summary']['~ Swing (fraction)']
         self.wavelength = metaFile['Summary']['~ Wavelength (nm)']
-

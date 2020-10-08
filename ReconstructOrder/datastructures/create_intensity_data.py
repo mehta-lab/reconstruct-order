@@ -105,7 +105,7 @@ class IntensityDataCreator(object):
                     imgs.replace_image(img, 'I45')
                 elif '4' in chan_name:
                     imgs.replace_image(img, 'I0')
-            elif config.processing.calibration_scheme == '4-State Extinction':
+            elif config.processing.calibration_scheme == '4-State Extinction' or 'Custom Instrument Matrix':
                 if '0' in chan_name:
                     imgs.replace_image(img, 'IExt')
                 elif '1' in chan_name:
