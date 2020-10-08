@@ -1,10 +1,5 @@
-numpy>=1.10.0
-opencv-python>=3.4.2.16
-pandas>=0.24.2
-pyyaml>=3.13
-matplotlib>=3.0.3
-scikit-image>=0.15
-scipy>=1.2.1
+
+
 tifffile>=0.15.1
 googledrivedownloader>=0.4
 natsort>=7

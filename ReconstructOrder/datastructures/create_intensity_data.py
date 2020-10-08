@@ -102,19 +102,17 @@ class IntensityDataCreator(object):
                 imgs.replace_image(img, 'I45')
             elif '4' in chan_name:
                 imgs.replace_image(img, 'I0')
+        elif any(substring in chan_name for substring in ['DAPI', '405', '405nm']):
+            imgs.replace_image(img, '405')
+        elif any(substring in chan_name for substring in ['GFP', '488', '488nm']):
+            imgs.replace_image(img, '488')
         elif any(substring in chan_name for substring in
-                 ['Confocal40', 'Confocal_40', 'Widefield', 'widefield', 'Fluor']):
-            if any(substring in chan_name for substring in ['DAPI', '405', '405nm']):
-                imgs.replace_image(img, '405')
-            elif any(substring in chan_name for substring in ['GFP', '488', '488nm']):
-                imgs.replace_image(img, '488')
-            elif any(substring in chan_name for substring in
-                     ['TxR', 'TXR', 'TX', 'RHO', '568', '561', '560']):
-                imgs.replace_image(img, '568')
-            elif any(substring in chan_name for substring in ['Cy5', 'IFP', '640', '637']):
-                imgs.replace_image(img, '640')
-            elif any(substring in chan_name for substring in ['FM464', 'fm464']):
-                imgs.replace_image(img, 'ex561em700')
+                 ['TxR', 'TXR', 'TX', 'RHO', '568', '561', '560']):
+            imgs.replace_image(img, '568')
+        elif any(substring in chan_name for substring in ['Cy5', 'IFP', '640', '637']):
+            imgs.replace_image(img, '640')
+        elif any(substring in chan_name for substring in ['FM464', 'fm464']):
+            imgs.replace_image(img, 'ex561em700')
         elif any(substring in chan_name for substring in ['BF', 'BrightField', 'Default']):
             imgs.replace_image(img, 'BF')
 
