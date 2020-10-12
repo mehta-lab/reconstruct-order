@@ -124,18 +124,18 @@ class ImgReconstructor:
                                      [1, -np.sin(chi), 0, -np.cos(chi)],
                                      [1, 0, -np.sin(chi), -np.cos(chi)]])
 
-        # elif config.processing.calibration_scheme == '4-State Extinction': # if the images were taken using 4-frame scheme (Ext, 0, 60, 120)
-        #     chi = self.swing
-        #     inst_mat = np.array([[1, 0, 0, -1],
-        #                          [1, np.sin(2 * np.pi * chi), 0, -np.cos(2 * np.pi * chi)],
-        #                          [1, -0.5 * np.sin(2 * np.pi * chi), np.sqrt(3) * np.cos(np.pi * chi) * np.sin(np.pi * chi), -np.cos(2 * np.pi * chi)],
-        #                          [1, -0.5 * np.sin(2 * np.pi * chi), -np.sqrt(3) / 2 * np.sin(2 * np.pi * chi), -np.cos(2 * np.pi * chi)]])
+        elif config.processing.calibration_scheme == '4-State Extinction': # if the images were taken using 4-frame scheme (Ext, 0, 60, 120)
+            chi = self.swing
+            inst_mat = np.array([[1, 0, 0, -1],
+                                 [1, np.sin(2 * np.pi * chi), 0, -np.cos(2 * np.pi * chi)],
+                                 [1, -0.5 * np.sin(2 * np.pi * chi), np.sqrt(3) * np.cos(np.pi * chi) * np.sin(np.pi * chi), -np.cos(2 * np.pi * chi)],
+                                 [1, -0.5 * np.sin(2 * np.pi * chi), -np.sqrt(3) / 2 * np.sin(2 * np.pi * chi), -np.cos(2 * np.pi * chi)]])
 
         elif config.processing.calibration_scheme == 'Custom Instrument Matrix':
-            inst_mat = np.array([[14541.13892768, 2493.84173652, 137.15423626, 13835.89220096],
-                                 [14465.83056869,  -482.60117711,   296.56283376, 14123.72926784],
-                                 [14522.80863789, 4001.74229617, -2630.26067572, 13189.01289908],
-                                 [14625.77370797,  3255.19760298,  3131.31035722, 13234.56457124]])
+            inst_mat = np.array([[0.87748035, -0.15764741, 0.01443716, 0.84560896],
+                                 [0.87164145, -0.07295123, 0.02570547, 0.86200442],
+                                 [0.87584449, 0.25430803, -0.18959074, 0.79716254],
+                                 [0.88591626, 0.26916106, 0.20602451, 0.783428]])
         else:
             raise Exception('Expected image shape is (channel, y, x, z)...'
                             'The number of channels is {}, but allowed values are 4 or 5'.format(self._n_chann))
@@ -190,12 +190,13 @@ class ImgReconstructor:
                                 int_obj.get_image('I90'),
                                 int_obj.get_image('I135')))  # order the channel following stokes calculus convention
 
-        elif self._n_chann == 4 and config.processing.calibration_scheme == '4-State Extinction' or 'Custom Instrument Matrix':
+        elif self._n_chann == 4 and config.processing.calibration_scheme == '4-State Extinction' or config.processing.calibration_scheme == 'Custom Instrument Matrix':
             img_raw = np.stack((int_obj.get_image('IExt'),
                                 int_obj.get_image('I0'),
                                 int_obj.get_image('I60'),
                                 int_obj.get_image('I120')))  # order the channel following stokes calculus convention
-        elif self._n_chann == 5:
+
+        elif self._n_chann == 5 or config.processing.calibration_scheme == '5-State':
             img_raw = np.stack((int_obj.get_image('IExt'),
                                 int_obj.get_image('I0'),
                                 int_obj.get_image('I45'),

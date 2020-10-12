@@ -126,6 +126,8 @@ class mManagerReader(object):
 
         self.img_sm_path = img_sample_path
         self.img_in_pos_path = pos_path
+        print('here')
+        print(self.img_in_pos_path)
         self.img_names = get_sorted_names(pos_path)
         self.img_name_format = None
         self._detect_img_name_format()
