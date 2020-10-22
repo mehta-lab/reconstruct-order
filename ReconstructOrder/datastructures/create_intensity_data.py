@@ -2,11 +2,12 @@ import numpy as np
 import warnings
 
 from ReconstructOrder.datastructures import IntensityData
-from ..utils.mManagerIO import mManagerReader
+from ..metadata.mManagerIO import mManagerReader
 from ..utils.imgProcessing import mean_pooling_2d
 
 
 _fluor_chan_names = ['405', '488', '568', '640', 'ex561em700']
+
 
 class IntensityDataCreator(object):
     """Create IntensityData objects from images in mManager/Polacquisition data format
