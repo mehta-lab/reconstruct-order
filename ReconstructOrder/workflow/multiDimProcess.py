@@ -4,6 +4,7 @@ Process data collected over multiple positions, timepoints and z slices
 
 import os
 import numpy as np
+import time
 import matplotlib
 import matplotlib.pyplot as plt
 from ..utils.imgIO import export_img
@@ -178,14 +179,15 @@ def phase_reconstructor_initializer(img_io: Union[mManagerReader, PolAcquReader]
     pad_z        = config.processing.pad_z
     phase_deconv = []
     N_defocus    = img_io.n_z
-
     
     if config.dataset.ROI is None:
         ROI = [0,0, img_io.height, img_io.width]
     else:
         ROI = config.dataset.ROI
-        
-    
+
+    start_time=time.time()
+    print('Computing phase transfer function (t=0 min)')
+
     opt_mapping = {'Phase2D': '2D', 'Phase_semi3D': 'semi-3D', 'Phase3D': '3D'}
     phase_deconv = [opt_mapping[opt] for opt in img_io.output_chans if opt in opt_mapping.keys()]
     
@@ -201,7 +203,9 @@ def phase_reconstructor_initializer(img_io: Union[mManagerReader, PolAcquReader]
                                       Tik_reg_ph_3D  = config.processing.Tik_reg_ph_3D,  TV_reg_ph_3D  = config.processing.TV_reg_ph_3D, \
                                       rho_3D         = config.processing.rho_3D,         itr_3D        = config.processing.itr_3D, \
                                       verbose        = False,                            bg_filter     = True)
-    print('Finish phase transfer function computing')
+
+    elapsed_time=(time.time()-start_time)/60
+    print('Finished computing phase transfer function (t=%3.2f min)'% elapsed_time)
     
     return ph_recon
 
@@ -254,26 +258,37 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
     pol_names       = ['Pol_State_0', 'Pol_State_1', 'Pol_State_2', 'Pol_State_3', 'Pol_State_4']
     stokes_names    = ['Stokes_0', 'Stokes_1', 'Stokes_2', 'Stokes_3']
     stokes_names_sm = [x + '_sm' for x in stokes_names]
-    birefring_names = ['Brightfield_computed', 'Retardance', 'Orientation', 'Transmission', 'Polarization',
+    birefring_names = ['Brightfield_computed', 'Retardance', 'Orientation', 'Orientation_x', 'Orientation_y',
+                       'Transmission', 'Polarization',
                        'Retardance+Orientation', 'Polarization+Orientation', 'Brightfield+Retardance+Orientation',
                        'Brightfield_computed+Retardance+Orientation',
                        'Retardance+Fluorescence', 'Retardance+Fluorescence_all']
-    phase_names     = ['Phase2D', 'Phase_semi3D', 'Phase3D']
+    ret_Zavg_names  = ['RetardanceZavg', 'OrientationZavg']
+    phase_names     = ['Phase2D', 'Phase_semi3D', 'Phase3D', 'Absorption2D', 'Absorption_semi3D']
     fluor_names     = ['405', '488', '568', '640', 'ex561em700']
+
 
     # 2 )set flags based on names defined in 1)
     save_stokes    = any(chan in stokes_names + stokes_names_sm for chan in img_io.output_chans) \
-                     or save_stokes_fig
+                 or save_stokes_fig
     save_phase     = any(chan in phase_names for chan in img_io.output_chans)
-    save_birefring = any(chan in birefring_names for chan in img_io.output_chans) or save_fig or save_phase
+    save_ret_Zavg  = any(chan in img_io.output_chans for chan in ret_Zavg_names)
+    save_birefring = any(chan in birefring_names for chan in img_io.output_chans) or save_fig or save_phase or save_ret_Zavg
     save_BF        = 'Brightfield' in img_io.output_chans
     save_pol       = any(chan in pol_names for chan in img_io.output_chans) or save_pol_fig
     save_fluor     = any(chan in fluor_names for chan in img_io.output_chans)
 
-    print('Processing position %03d, time %03d ...' % (pos_idx, t_idx))
+    have_pol_data = any([any([substring in chan_name for substring in ['State', 'state', 'Pol']])\
+                         for chan_name in img_io.input_chans])
+    if not have_pol_data:
+        save_birefring = False
+
+    print('Processing position %03d, time %03d ... (t=0 min)' % (pos_idx, t_idx))
+    start_time=time.time()
     for z_stack_idx in range(0, len(z_list), n_slice_local_bg):
         stokes_param_sm_stack = [[] for i in range(len(stokes_names))]
         fluor_stack_list = []
+        BF_stack = []
 
         for z_list_idx in range(z_stack_idx, z_stack_idx + n_slice_local_bg):
             z_idx = z_list[z_list_idx]
@@ -301,6 +316,8 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
                     stack.append(img)
                 # retard = removeBubbles(retard)     # remove bright speckles in mounted brain slice images
             img_bf = img_int_sm.get_image('BF')
+            if save_phase and not have_pol_data:
+                BF_stack.append(img_bf)
             if save_BF and isinstance(img_bf, np.ndarray):
                 img_bf = img_bf / stokes_bg.s0  # flat-field correction
                 img_bf = im_bit_convert(img_bf * config.plotting.transmission_scaling, bit=16, norm=False)
@@ -337,21 +354,25 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
             if img_io.bg_correct:
                 norm_sample = img_reconstructor.correct_background(norm_sample, stokes_bg)
 
+            if save_ret_Zavg:
+                stk_attribute_name = ['s0', 's1_norm', 's2_norm', 's3', 'polarization']
+                norm_sample_Zavg = StokesData()
+                [norm_sample_Zavg.s0,
+                 norm_sample_Zavg.s1_norm,
+                 norm_sample_Zavg.s2_norm,
+                 norm_sample_Zavg.s3,
+                 norm_sample_Zavg.polarization] = [np.mean(stack, axis=2) for stack in
+                                                  [norm_sample.__getattribute__(stack_name) for stack_name in stk_attribute_name]]
+
+                physical_data_Zavg = img_reconstructor.reconstruct_birefringence(norm_sample_Zavg)
+
+            elapsed_time=(time.time()-start_time)/60
+            print('Reconstructing retardance and orientation (t=%3.2f min)' % elapsed_time)
+
             physical_data = img_reconstructor.reconstruct_birefringence(norm_sample)
-            
-            print('Finish birefringence reconstruction')
-            if ph_recon:
-                for deconv_dim in ph_recon.phase_deconv:
-                    
-                    if deconv_dim == '2D':
-                        physical_data.absorption_2D, physical_data.phase_2D = ph_recon.Phase_recon_2D(norm_sample)
-                        print('Finish 2D phase reconstruction')
-                    if deconv_dim == 'semi-3D':
-                        physical_data.absorption_semi3D, physical_data.phase_semi3D = ph_recon.Phase_recon_semi_3D(norm_sample)
-                        print('Finish semi3D phase reconstruction')
-                    if deconv_dim == '3D':
-                        physical_data.phase_3D = ph_recon.Phase_recon_3D(norm_sample)
-                        print('Finish 3D phase reconstruction')
+
+            elapsed_time=(time.time()-start_time)/60
+            print('Finished reconstructing retardance and orientation (t=%3.2f min)' % elapsed_time)
 
 
             img_dict = {}
@@ -377,18 +398,7 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
                     img_io, img_dict = render_birefringence_imgs(img_io, imgs, config, spacing=20, vectorScl=8, zoomin=False,
                                                                  dpi=200,
                                                                  norm=norm, plot=save_fig)
-                if save_phase:
-                    for channel in list(set(phase_names) & set(img_io.output_chans)):
-                        if ph_recon.focus_idx == z_sub_idx and channel == 'Phase2D':
-                            img = im_bit_convert(physical_data.phase_2D * config.plotting.phase_2D_scaling, bit=16, norm=True, limit=[-5, 5])
-                            img_dict[channel] = img.copy()
-                        elif channel == 'Phase_semi3D':
-                            img = im_bit_convert(physical_data.phase_semi3D[..., z_sub_idx] * config.plotting.phase_2D_scaling, bit=16, norm=True, limit=[-5, 5])
-                            img_dict[channel] = img.copy()
-                        elif channel == 'Phase3D':
-                            img = im_bit_convert(physical_data.phase_3D[..., z_sub_idx] * config.plotting.phase_3D_scaling, bit=16, norm=True, limit=[-5, 5])
-                            img_dict[channel] = img.copy()
-                        
+
                 if save_stokes:
                     img_stokes = [s0, s1, s2, s3]
                     img_stokes_sm = [stack[..., z_sub_idx] for stack in norm_sample.data]
@@ -401,8 +411,91 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
                     img_stokes_sm_dict = dict(zip(stokes_names_sm, img_stokes_sm))
                     img_dict.update(img_stokes_dict)
                     img_dict.update(img_stokes_sm_dict)
+
                 export_img(img_io, img_dict, separate_pos)
-            print('Finish plotting')
+
+            if save_ret_Zavg:
+                plt.close("all")  # close all the figures from the last run
+                img_io.z_idx = z_list[0]
+                img_dict = {}
+                retard   = physical_data_Zavg.retard
+                azimuth  = physical_data_Zavg.azimuth
+                for channel in list(set(ret_Zavg_names) & set(img_io.output_chans)):
+                    if channel == 'RetardanceZavg':
+                        img = im_bit_convert(retard * config.plotting.retardance_scaling, bit=16)
+                        img_dict[channel] = img.copy()
+                    elif channel == 'OrientationZavg':
+                        azimuth_degree = azimuth/np.pi*180
+                        img = im_bit_convert(azimuth_degree * 100, bit=16)
+                        img_dict[channel] = img.copy()
+                export_img(img_io, img_dict, separate_pos)
+
+
+            elapsed_time=(time.time()-start_time) / 60
+            print('Finish exporting birefringent reconstruction (t=%3.2f min)' % elapsed_time)
+
+        if save_phase:
+
+            if not have_pol_data:
+                norm_sample = StokesData()
+                norm_sample.s0 = np.stack(BF_stack, axis=-1)
+                physical_data = PhysicalData()
+            for deconv_dim in ph_recon.phase_deconv:
+
+                if deconv_dim == '2D':
+                    elapsed_time = (time.time() - start_time) / 60
+                    print('Reconstructing 2D phase (t=%3.2f min)' % elapsed_time)
+
+                    physical_data.absorption_2D, physical_data.phase_2D = ph_recon.Phase_recon_2D(norm_sample)
+
+                    elapsed_time = (time.time() - start_time) / 60
+                    print('Finished reconstructing 2D phase (t=%3.2f min)' % elapsed_time)
+                if deconv_dim == 'semi-3D':
+                    elapsed_time = (time.time() - start_time) / 60
+                    print('Reconstructing semi-3D phase (t=%3.2f min)' % elapsed_time)
+
+                    physical_data.absorption_semi3D, physical_data.phase_semi3D = ph_recon.Phase_recon_semi_3D(norm_sample)
+
+                    elapsed_time = (time.time() - start_time) / 60
+                    print('Finished reconstructing semi-3D phase (t=%3.2f min)' % elapsed_time)
+                if deconv_dim == '3D':
+                    elapsed_time = (time.time() - start_time) / 60
+                    print('Reconstructing 3D phase (t=%3.2f min)' % elapsed_time)
+
+                    physical_data.phase_3D = ph_recon.Phase_recon_3D(norm_sample)
+
+                    elapsed_time = (time.time() - start_time) / 60
+                    print('Finished reconstructing 3D phase (t=%3.2f min)' % elapsed_time)
+
+
+            for z_idx in range(z_stack_idx, z_stack_idx + n_slice_local_bg):
+                plt.close("all")  # close all the figures from the last run
+                img_io.z_idx = z_list[z_idx]
+                z_sub_idx = z_idx - z_stack_idx
+
+                img_dict = {}
+                for channel in list(set(phase_names) & set(img_io.output_chans)):
+                    if ph_recon.focus_idx == z_sub_idx and channel == 'Phase2D':
+                        img = im_bit_convert(physical_data.phase_2D * config.plotting.phase_2D_scaling, bit=16, norm=True, limit=[-5, 5])
+                        img_dict[channel] = img.copy()
+                    elif ph_recon.focus_idx == z_sub_idx and channel == 'Absorption2D':
+                        img = im_bit_convert(physical_data.absorption_2D * config.plotting.absorption_2D_scaling, bit=16, norm=True, limit=[-1, 1])
+                        img_dict[channel] = img.copy()
+                    elif channel == 'Phase_semi3D':
+                        img = im_bit_convert(physical_data.phase_semi3D[..., z_sub_idx] * config.plotting.phase_2D_scaling, bit=16, norm=True, limit=[-5, 5])
+                        img_dict[channel] = img.copy()
+                    elif channel == 'Absorption_semi3D':
+                        img = im_bit_convert(physical_data.absorption_semi3D[..., z_sub_idx] * config.plotting.absorption_2D_scaling, bit=16, norm=True, limit=[-1, 1])
+                        img_dict[channel] = img.copy()
+                    elif channel == 'Phase3D':
+                        img = im_bit_convert(physical_data.phase_3D[..., z_sub_idx] * config.plotting.phase_3D_scaling, bit=16, norm=True, limit=[-5, 5])
+                        img_dict[channel] = img.copy()
+
+                export_img(img_io, img_dict, separate_pos)
+
+
+        elapsed_time=(time.time()-start_time) / 60
+        print('Finish processing and exporting all reconstructions (t=%3.2f min)' % elapsed_time)
 
 
 

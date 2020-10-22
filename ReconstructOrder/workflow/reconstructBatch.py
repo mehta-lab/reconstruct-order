@@ -157,6 +157,7 @@ def _process_one_acqu(img_obj, bg_obj, config):
 def reconstruct_batch(configfile):
     config = ConfigReader()
     config.read_config(configfile)
+    
 
     # read meta data, create list of mManagerIO objects (one object per sample)
     # curate the list of mManagerIO objects based on supplied config values

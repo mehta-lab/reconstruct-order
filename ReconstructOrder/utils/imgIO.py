@@ -38,7 +38,7 @@ def get_sub_dirs(ImgPath):
     subDirPath = glob.glob(os.path.join(ImgPath, '*/'))    
     subDirName = [os.path.split(subdir[:-1])[1] for subdir in subDirPath]
 #    assert subDirName, 'No sub directories found'
-    return subDirName
+    return natsort.natsorted(subDirName)
 
 
 def FindDirContain_pos(ImgPath):
