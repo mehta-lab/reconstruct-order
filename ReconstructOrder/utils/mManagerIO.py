@@ -244,7 +244,7 @@ class mManagerReader(object):
                 format(chan_meta_idx, self.t_idx, self.pos_idx, self.z_idx)
         elif self.img_name_format == 'recon_order':
             img_name = 'img_{}_t{:03d}_p{:03d}_z{:03d}.tif'.\
-                format(self.t_idx, self.pos_idx, self.z_idx, self.get_chan_name())
+                format(self.get_chan_name(), self.t_idx, self.pos_idx, self.z_idx)
         else:
             raise ValueError('Undefined image name format')
         return img_name
@@ -261,19 +261,19 @@ class mManagerReader(object):
         return img
 
 
-    def read_multi_chan_img_stack(self, z_range=None):
+    def read_multi_chan_img_stack(self, z_ids=None):
         """read multi-channel image stack at a given (t,p)"""
         if not os.path.exists(self.img_sm_path):
             raise FileNotFoundError(
                 "image file doesn't exist at:", self.img_sm_path
             )
-        if not z_range:
-            z_range = [0, self.nZ]
+        if not z_ids:
+            z_ids = list(range(0, self.nZ))
         img_chann = []  # list of 2D or 3D images from different channels
         for chan_idx in range(self.n_input_chans):
             img_stack = []
             self.chan_idx = chan_idx
-            for z_idx in range(z_range[0], z_range[1]):
+            for z_idx in z_ids:
                 self.z_idx = z_idx
                 img = self.read_img()
                 img_stack += [img]

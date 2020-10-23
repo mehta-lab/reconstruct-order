@@ -160,7 +160,7 @@ if __name__ == '__main__':
     img_io.pos_idx = 0
     img_io.t_idx = 0
     img_io.binning = 1
-    target_images = img_io.read_multi_chan_img_stack(z_range=z_crop_range)
+    target_images = img_io.read_multi_chan_img_stack(z_ids=z_crop_range)
     os.makedirs(img_io.img_output_path, exist_ok=True)
 
     target_images_cropped = [target_image[:, y_crop_range[0]:y_crop_range[1],
