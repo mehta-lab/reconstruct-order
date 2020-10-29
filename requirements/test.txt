@@ -1,3 +1,5 @@
 pytest>=5.0.0
 googledrivedownloader>=0.4
 requests>=2.22.0
+
+#pip install git+https://github.com/czbiohub/aicsimageio.git@feature/micromanager_reader

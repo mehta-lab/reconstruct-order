@@ -2,6 +2,7 @@ from ..workflow.multiDimProcess import process_background, process_sample_imgs, 
 from ..utils.ConfigReader import ConfigReader
 from ..utils.flat_field import FlatFieldCorrector
 from ..datastructures import IntensityDataCreator
+from ..metadata.mManager2_IO import create_stack_object
 import os
 
 
@@ -111,14 +112,18 @@ def _process_one_acqu(img_obj, bg_obj, config):
 
     """
     ph_recon = None
+
+    #TODO: Figure out how to print sample name here
     print('Processing ' + img_obj.name + ' ....')
     img_int_creator_bg = IntensityDataCreator(ROI=config.dataset.ROI,
                                            binning=config.processing.binning)
 
     # Write metadata in processed folder
+    #TODO: Get rid of this or replace?
     img_obj.writeMetaData()
 
     # Write config file in processed folder
+    # TODO: Get rid of this or replace?
     config.write_config(os.path.join(img_obj.img_output_path, 'config.yml'))  # save the config file in the processed folder
 
     # img_obj, img_reconstructor = process_background(img_obj, bg_obj, config)
@@ -155,13 +160,17 @@ def reconstruct_batch(configfile):
     config.read_config(configfile)
     
 
-    # read meta data
-    img_obj_list, bg_obj_list = read_metadata(config)
-    img_obj_list = process_position_list(img_obj_list, config)
-    img_obj_list = process_z_slice_list(img_obj_list, config)
-    img_obj_list = process_timepoint_list(img_obj_list, config)
+    # read sample paths
+    img_obj_list = []
+    for sample in config.dataset.samples:
+        sample_dir = os.path.join(config.dataset.data_dir, sample)
+        img_obj_list.append(create_stack_object(sample_dir))
+
+    #TODO: Figure out how to integrate background reader with new format
+    bg_obj_list = read_metadata(config)
 
     # process background options
+    #TODO: Get rid of this?
     img_obj_list = parse_bg_options(img_obj_list, config)
 
     for img_obj, bg_obj in zip(img_obj_list, bg_obj_list):
