@@ -155,6 +155,9 @@ def export_img(img_io, img_dict, separate_pos=False):
     t_idx = img_io.t_idx
     z_idx = img_io.z_idx
     pos_idx = img_io.pos_idx
+
+    # img_io.pos_list=['Pos0']
+    # print(img_io.pos_list)
     if separate_pos:
         pos_name = img_io.pos_list[pos_idx]
         output_path = os.path.join(img_io.img_output_path, pos_name)

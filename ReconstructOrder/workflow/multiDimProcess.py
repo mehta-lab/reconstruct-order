@@ -286,7 +286,7 @@ def phase_reconstructor_initializer(img_io: Union[mManagerReader, PolAcquReader]
     
     return ph_recon
 
-@loop_pt
+# @loop_pt
 def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
                         config: ConfigReader=None,
                         img_reconstructor: ImgReconstructor=None,
@@ -390,6 +390,7 @@ def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
             fluor_stack_list.append(img_fluor)
             if save_fluor:
                 img_dict.update(dict(zip(fluor_names, img_fluor_list)))
+
 
             export_img(img_io, img_dict, separate_pos)
 

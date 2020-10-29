@@ -53,7 +53,7 @@ class IntensityDataCreator(object):
         
         for chan_name in _fluor_chan_names:
             imgs.replace_image(np.zeros((self.roi[2], self.roi[3])), chan_name)
-        
+
         assert self.roi[0] + self.roi[2] <= img_io.height and self.roi[1] + self.roi[3] <= img_io.width, \
             "Region of interest is beyond the size of the actual image"
 

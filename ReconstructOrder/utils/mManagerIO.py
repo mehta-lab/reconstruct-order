@@ -132,7 +132,14 @@ class mManagerReader(object):
         self.img_name_format = None
         self._detect_img_name_format()
         self.img_output_path = img_output_path
-        self.input_chans = self.channels = input_meta_file['Summary']['ChNames']
+
+        temp = []
+        for channel in input_meta_file['Summary']['ChNames']:
+            if 'State' in channel:
+                temp.append(channel)
+        print(temp)
+        self.input_chans = self.channels = temp
+
         if input_chans:
             self.input_chans = input_chans
         self.n_input_chans = len(input_chans)
@@ -180,21 +187,21 @@ class mManagerReader(object):
         self.height = int(input_meta_file['Summary']['UserData']['Height']['PropVal'])
         self.time_stamp = input_meta_file['Summary']['StartTime']
 
-
     def _mm2gamma_meta_parser(self):
         input_meta_file = self.input_meta_file
         self._meta_pos_list = ['']
-        self.time_stamp = input_meta_file['Summary']['StartTime']
+        # self.time_stamp = input_meta_file['Summary']['StartTime']
         if 'StagePositions' in self.input_meta_file['Summary']:
             pos_dict_list = self.input_meta_file['Summary']['StagePositions']
             self._meta_pos_list = [pos_dict['Label'] for pos_dict in pos_dict_list]
         self._pos_list = self._meta_pos_list
         keys_list = list(input_meta_file.keys())
+        # print(keys_list)
         if 'FrameKey-0-0-0' in keys_list[1]:
             roi_string = input_meta_file[keys_list[1]]['ROI']
             self.width = int(roi_string.split('-')[2])
             self.height = int(roi_string.split('-')[3])
-        elif 'Metadata-Default' in keys_list[2]:
+        elif 'Metadata-' in keys_list[2]:
             self.width = input_meta_file[keys_list[2]]['Width']
             self.height = input_meta_file[keys_list[2]]['Height']
         else:
@@ -275,9 +282,9 @@ class mManagerReader(object):
             img_name = 'img_000000{:03d}_{}_{:03d}.tif'.\
                 format(self.t_idx, self.get_chan_name(), self.z_idx)
         elif self.img_name_format == 'mm_2_0':
-            chan_meta_idx = self.channels.index(self.get_chan_name())
+            chan_meta_idx = self.input_chans.index(self.get_chan_name())
             img_name = 'img_channel{:03d}_position{:03d}_time{:09d}_z{:03d}.tif'.\
-                format(chan_meta_idx, self.t_idx, self.pos_idx, self.z_idx)
+                        format(chan_meta_idx, self.pos_idx, self.t_idx, self.z_idx)
         elif self.img_name_format == 'recon_order':
             img_name = 'img_{}_t{:03d}_p{:03d}_z{:03d}.tif'.\
                 format(self.t_idx, self.pos_idx, self.z_idx, self.get_chan_name())
