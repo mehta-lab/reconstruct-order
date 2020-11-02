@@ -59,6 +59,8 @@ class IntensityDataCreator(object):
 
         if self.input_chans is None:
             self.input_chans = img_io.input_chans
+
+
         for chan_name in self.input_chans:
             img_io.chan_idx = img_io.input_chans.index(chan_name)
             img = img_io.read_img()

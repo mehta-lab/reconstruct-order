@@ -27,7 +27,6 @@ def process_position_list(img_obj_list, config):
         if not config_pos_list[0] == 'all':
             try:
                 img_obj_list[idx].pos_list = config_pos_list
-                print(img_obj_list[idx].pos_list)
             except Exception as e:
                 print('Position list {} for sample in {} is invalid'.format(config_pos_list, io_obj.img_sm_path))
                 ValueError(e)

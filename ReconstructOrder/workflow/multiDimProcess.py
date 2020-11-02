@@ -286,7 +286,7 @@ def phase_reconstructor_initializer(img_io: Union[mManagerReader, PolAcquReader]
     
     return ph_recon
 
-# @loop_pt
+@loop_pt
 def process_sample_imgs(img_io: Union[mManagerReader, PolAcquReader]=None,
                         config: ConfigReader=None,
                         img_reconstructor: ImgReconstructor=None,

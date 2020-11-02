@@ -126,8 +126,6 @@ class mManagerReader(object):
 
         self.img_sm_path = img_sample_path
         self.img_in_pos_path = pos_path
-        print('here')
-        print(self.img_in_pos_path)
         self.img_names = get_sorted_names(pos_path)
         self.img_name_format = None
         self._detect_img_name_format()
@@ -137,7 +135,7 @@ class mManagerReader(object):
         for channel in input_meta_file['Summary']['ChNames']:
             if 'State' in channel:
                 temp.append(channel)
-        print(temp)
+        # print(temp)
         self.input_chans = self.channels = temp
 
         if input_chans:
@@ -299,6 +297,7 @@ class mManagerReader(object):
         """read a single image at (c,t,p,z)"""
         img_name = self.get_img_name()
         img_file = os.path.join(self.img_in_pos_path, img_name)
+        # print(img_file)
         img = cv2.imread(img_file, -1) # flag -1 to preserve the bit dept of the raw image
         if img is None:
             warnings.warn('image "{}" cannot be found. Return None instead.'.format(img_name))
