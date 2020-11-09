@@ -247,8 +247,11 @@ class ImgReconstructor:
             s3 = cp.array(s3)
             
             # set norm_dat's normalized data
-            norm_dat.s1_norm      = cp.asnumpy(s1 / s3)
-            norm_dat.s2_norm      = cp.asnumpy(s2 / s3)
+            # norm_dat.s1_norm      = cp.asnumpy(s1 / s3)
+            norm_dat.s1_norm = cp.asnumpy(s1 / s0)
+            # norm_dat.s2_norm      = cp.asnumpy(s2 / s3)
+            norm_dat.s2_norm = cp.asnumpy(s2 / s0)
+            norm_dat.s3 = cp.asnumpy(s3 / s0)
             norm_dat.polarization = cp.asnumpy(cp.sqrt(s1 ** 2 + s2 ** 2 + s3 ** 2) / s0)
             
         else:
@@ -258,7 +261,7 @@ class ImgReconstructor:
             norm_dat.s1_norm = s1 / s0
             # norm_dat.s2_norm      = s2 / s3
             norm_dat.s2_norm = s2 / s0
-            norm_dat.s2_norm = s3 / s0
+            norm_dat.s3 = s3 / s0
             norm_dat.polarization = np.sqrt(s1 ** 2 + s2 ** 2 + s3 ** 2) / s0
 
 
