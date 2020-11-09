@@ -79,6 +79,7 @@ class IntensityData(object):
         if self.__current_shape == ():
             return True
 
+
         # check for shape consistency
         if input_shape and input_shape != self.__current_shape:
             return False

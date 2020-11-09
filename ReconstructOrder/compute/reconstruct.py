@@ -254,8 +254,11 @@ class ImgReconstructor:
         else:
             
             # set norm_dat's normalized data
-            norm_dat.s1_norm      = s1 / s3
-            norm_dat.s2_norm      = s2 / s3
+            # norm_dat.s1_norm      = s1 / s3
+            norm_dat.s1_norm = s1 / s0
+            # norm_dat.s2_norm      = s2 / s3
+            norm_dat.s2_norm = s2 / s0
+            norm_dat.s2_norm = s3 / s0
             norm_dat.polarization = np.sqrt(s1 ** 2 + s2 ** 2 + s3 ** 2) / s0
 
 
