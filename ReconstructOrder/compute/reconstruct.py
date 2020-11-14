@@ -182,6 +182,8 @@ class ImgReconstructor:
 
         # check that dims match instrument matrix dims
         if self.img_shape[1:] != list(np.shape(int_obj.get_image('IExt'))):
+            # print(self.img_shape[1:])
+            # print(np.shape(int_obj.get_image('IExt')))
             raise ValueError("Instrument matrix dimensions do not match supplied intensity dimensions")
 
         if self._n_chann == 4 and config.processing.calibration_scheme == '4-State':
@@ -257,11 +259,11 @@ class ImgReconstructor:
         else:
             
             # set norm_dat's normalized data
-            # norm_dat.s1_norm      = s1 / s3
-            norm_dat.s1_norm = s1 / s0
-            # norm_dat.s2_norm      = s2 / s3
-            norm_dat.s2_norm = s2 / s0
-            norm_dat.s3 = s3 / s0
+            norm_dat.s1_norm      = s1 / s3
+            # norm_dat.s1_norm = s1 / s0
+            norm_dat.s2_norm      = s2 / s3
+            # norm_dat.s2_norm = s2 / s0
+            # norm_dat.s3 = s3 / s0
             norm_dat.polarization = np.sqrt(s1 ** 2 + s2 ** 2 + s3 ** 2) / s0
 
 
