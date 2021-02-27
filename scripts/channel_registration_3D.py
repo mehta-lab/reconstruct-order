@@ -18,7 +18,7 @@ def imshow_pair(images, chann_names, OutputPath, fig_name):
     for image, chann_name in zip(images[1:], chann_names[1:]):
         image_pair = [image_ref, image]
         title = ['{}_{}'.format(chann_names_ref, chann_name)]
-        # plot_sub_images(image_pairs, ['0', '1'], OutputPath, fig_name, colorbar=False)
+        # plot_sub_images(image_pairs, ['0', '1'], output_path, fig_name, colorbar=False)
         image_pair_rgb = CompositeImg(image_pair, norm=True)
         image_pairs += [image_pair_rgb]
         titles += title

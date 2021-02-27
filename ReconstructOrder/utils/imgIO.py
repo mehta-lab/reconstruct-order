@@ -17,7 +17,7 @@ def get_sorted_names(dir_name):
     :param str dir_name: Image directory name
     :return list of strs im_names: Image names sorted according to indices
     """
-    im_names = [f for f in os.listdir(dir_name) if f.startswith('im')]
+    im_names = [f for f in os.listdir(dir_name) if f.startswith('img')]
     # Sort image names according to indices
     return natsort.natsorted(im_names)
 

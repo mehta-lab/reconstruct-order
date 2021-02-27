@@ -91,13 +91,13 @@ class mManagerReader(object):
 
     """
 
-    def __init__(self, img_sample_path, img_output_path=None, input_chans=[], output_chans=[], binning=1):
-
-        pos_path = img_sample_path # mManager 2.0 single position format
-        sub_dirs = get_sub_dirs(img_sample_path)
-        if sub_dirs:
-            sub_dir = sub_dirs[0] # assume all the folders in the sample folder are position folders
-            pos_path = os.path.join(img_sample_path, sub_dir)
+    def __init__(self, img_sample_path, img_output_path=None, pos_path=None, input_chans=[], output_chans=[], binning=1):
+        if pos_path is None:
+            pos_path = img_sample_path  # mManager 2.0 single position format
+        # sub_dirs = get_sub_dirs(img_sample_path)
+        # if sub_dirs:
+        #     sub_dir = sub_dirs[0] # assume all the folders in the sample folder are position folders
+        #     pos_path = os.path.join(img_sample_path, sub_dir)
             ##TODO: check the behavior of 2.0 gamma
         metadata_path = os.path.join(pos_path, 'metadata.txt')
         with open(metadata_path, 'r') as f:
@@ -255,7 +255,7 @@ class mManagerReader(object):
         img_file = os.path.join(self.img_in_pos_path, img_name)
         img = cv2.imread(img_file, -1) # flag -1 to preserve the bit dept of the raw image
         if img is None:
-            warnings.warn('image "{}" cannot be found. Return None instead.'.format(img_name))
+            warnings.warn('image "{}" cannot be found. Return None instead.'.format(img_file))
         else:
             img = img.astype(np.float32, copy=False)  # convert to float32 without making a copy to save memory
         return img
