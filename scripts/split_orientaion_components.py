@@ -1,5 +1,7 @@
 import os
 import numpy as np
+
+import scripts.dynamorph_input
 from ReconstructOrder.utils import mManagerReader
 from ReconstructOrder.utils import imBitConvert
 
@@ -22,7 +24,7 @@ if __name__ == '__main__':
                 print('Processing position %03d, time %03d z %03d ...' % (pos_idx, t_idx, z_idx))
                 img_io.z_idx = z_idx
                 img_io.chan_idx = 0
-                azimuth_degree = img_io.read_img()
+                azimuth_degree = scripts.dynamorph_input.read_img()
                 azimuth = azimuth_degree/18000*np.pi
                 azimuth_imgs = [np.cos(2 * azimuth), np.sin(2 * azimuth)]
                 azimuth_imgs = [imBitConvert((img + 1) * 1000, bit=16) for img in azimuth_imgs]  # scale to [0, 1000]

@@ -78,8 +78,11 @@ def translate_3D(images,
                     'Orientation_y', 'Polarization', 'Scattering',
                     'Pol_State_0', 'Pol_State_1',
                     'Pol_State_2', 'Pol_State_3', 'Pol_State_4',
-                    'Transmission', 'Brightfield', 'Brightfield_computed', 'phase']:
+                    'Transmission', 'Brightfield', 'Brightfield_computed',
+                    'phase', 'Phase3D']:
             chan = 'Retardance'
+        elif chan == 'GFP':
+            chan = '488'
         elif chan == 'ex561em700':
             chan = '640'
 

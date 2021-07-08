@@ -67,7 +67,7 @@ def FindDirContain_pos(ImgPath):
 
 
 
-def copy_files_in_sub_dirs(input_path, output_path):
+def copy_files_in_sub_dirs(input_path, output_path, sub_dirs=None):
     """copy files in each sub-directory in the input path to
     output path
 
@@ -81,7 +81,10 @@ def copy_files_in_sub_dirs(input_path, output_path):
     """
     assert os.path.exists(input_path), 'Input folder does not exist!'
     os.makedirs(output_path, exist_ok=True)
-    sub_dir_paths = glob.glob(os.path.join(input_path, '*/'))
+    if sub_dirs is None:
+        sub_dir_paths = glob.glob(os.path.join(input_path, '*/'))
+    else:
+        sub_dir_paths = [os.path.join(input_path, sub_dir) for sub_dir in sub_dirs]
     for sub_dir_path in sub_dir_paths:
         src_file_paths = glob.glob(os.path.join(sub_dir_path, '*.*'))
         for src_file_path in src_file_paths:
