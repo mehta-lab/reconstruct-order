@@ -14,21 +14,23 @@ if __name__ == '__main__':
     # input_dir = '/CompMicro/projects/A549/20210209_Falcon_3D_uPTI_A549_RSV'
     # input_dir = '/CompMicro/projects/A549/2021_02_25_40X_04NA_A549_tif'
     # input_dir = '/CompMicro/projects/HEK/2021_04_20_HEK_OC43_63x_04NA_Widefield_tif/2021_04_20_HEK_OC43_widefield'
-    input_dir = '/CompMicro/projects/HEK/2021_05_12_HEK_RSV_20x_055na_TimeLapse_tif'
+    # input_dir = '/CompMicro/projects/HEK/2021_05_12_HEK_RSV_20x_055na_TimeLapse_tif'
     # input_dir = '/CompMicro/projects/HEK/2021_06_04_HEK_Nuclei_DAPI_tif'
+    # input_dir = '/CompMicro/projects/HEK/2021_08_25_LiveHEK_63x_09NA_StainedOrgs_tif'
+    input_dir = '/CompMicro/projects/HEK/2021_07_29_LiveHEK_NoPerf_63x_09NA_tif'
     output_dir = os.path.join(input_dir, '_'.join([os.path.basename(input_dir), 'registered']))
     # ref_chans = ['Phase3D', 'MTub']
     # ref_chans = ['Phase3D', 'DAPI']
     # ref_chans = ['Phase3D', 'GFP']
     ref_chans = ['Phase3D']
     # pol_chans = ['Phase3D']
-    # pol_chans = ['Phase3D', 'Retardance']
-    pol_chans = ['Phase3D', 'Retardance', 'GFP']
+    pol_chans = ['Phase3D', 'Retardance']
+    # pol_chans = ['Phase3D', 'Retardance', 'GFP']
     # fluor_chans = ['DAPI', 'RSV']
     # fluor_chans = ['GFP']
     # fluor_chans = ['MTub', 'DAPI', 'Golgi', 'ER']
     # fluor_chans = ['DAPI']
-    fluor_chans = ['GFP']
+    # fluor_chans = ['DRAQ5']
     # chan_groups = [pol_chans, fluor_chans]
     chan_groups = [pol_chans]
     # conditions = [s for s in get_sub_dirs(input_dir) if s.startswith('Well')]
@@ -36,9 +38,10 @@ if __name__ == '__main__':
     # conditions = [s for s in get_sub_dirs(input_dir)]
     # conditions = ['HEK_Phase3D_Padded']
     # conditions = [x for x in get_sub_dirs(input_dir) if 'Pos' in x]
-    conditions = ['Pos_002']
-    # conditions_new = conditions
-    conditions_new = ['Mock', 'MOI_100', 'MOI_1', 'MOI_0.5', 'MOI_0.1']
+    # conditions = ['Timelapse']
+    conditions = ['']
+    conditions_new = conditions
+    # conditions_new = ['Mock', 'MOI_100', 'MOI_1', 'MOI_0.5', 'MOI_0.1']
     assert len(conditions) == len(conditions_new), 'length mismatch for "conditions" and "conditions_new"'
     condi_mapping = dict(zip(conditions, conditions_new))
     # conditions = ['RSV_IFNL_24']
@@ -99,11 +102,11 @@ if __name__ == '__main__':
         frames_meta['dst_dir'] = dst_dir
         meta_master = meta_master.append(frames_meta)
         # plot focus scores
-        for chan in ref_chans:
-            frames_meta_c = frames_meta[frames_meta['channel_name'] == chan]
-            ax = sns.lineplot(data=frames_meta_c, x='slice_idx', y='focus_score', hue='time_idx')
-            ax.figure.savefig(os.path.join(input_dir, 'focus_scores_{}_{}.png'.format(condition, chan)))
-            plt.close()
+        # for chan in ref_chans:
+        #     frames_meta_c = frames_meta[frames_meta['channel_name'] == chan]
+        #     ax = sns.lineplot(data=frames_meta_c, x='slice_idx', y='focus_score', hue='time_idx')
+        #     ax.figure.savefig(os.path.join(input_dir, 'focus_scores_{}_{}.png'.format(condition, chan)))
+        #     plt.close()
     focus_offset = meta_master['focus_idx'] - int(meta_master['focus_idx'].median())
     z_ids_new = np.arange(z_ids[0] - focus_offset.min(), z_ids[-1] - focus_offset.max() + 1)
     meta_master['slice_idx_new'] = meta_master['slice_idx'] - focus_offset

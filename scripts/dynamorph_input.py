@@ -6,13 +6,13 @@ import numpy as np
 from dynamorph_seg_map import get_sms_im_name
 from ReconstructOrder.utils.imgIO import get_sorted_names, get_sub_dirs
 
-def read_img(dir, img_name):
+def read_img(dir, img_name, to_float=True):
     """read a single image at (c,t,p,z)"""
     img_file = os.path.join(dir, img_name)
     img = cv2.imread(img_file, -1) # flag -1 to preserve the bit dept of the raw image
     if img is None:
-        warnings.warn('image "{}" cannot be found. Return None instead.'.format(img_file))
-    else:
+        raise FileNotFoundError('image "{}" cannot be found'.format(img_file))
+    if to_float:
         img = img.astype(np.float32, copy=False)  # convert to float32 without making a copy to save memory
     return img
 
@@ -45,9 +45,9 @@ def crop2base(im, base=2):
 
 if __name__ == '__main__':
 
-    # input_chan = output_chan = ['phase3D', 'retardance3D']  # first channel is the reference channel
+    input_chan = output_chan = ['Phase3D', 'Retardance']  # first channel is the reference channel
     # input_chan = output_chan = ['Phase3D', 'Retardance', 'GFP']  # first channel is the reference channel
-    input_chan = output_chan = ['Phase3D', 'ER']  # first channel is the reference channel
+    # input_chan = output_chan = ['Phase3D', 'DAPI', 'Golgi', 'ER', 'MTub']  # first channel is the reference channel
     # input_chan = output_chan = ['phase', 'Retardance']  # first channel is the reference channel
     # input_dirs = ['/CompMicro/projects/cardiomyocytes/200721_CM_Mock_SPS_Fluor/20200721_CM_Mock_SPS/SPS_Mock_0.4NA_LF_Fluor_2_SPS_Mock_0.4NA_LF_Fluor_2_registered',
     #               '/CompMicro/projects/cardiomyocytes/20200722CM_LowMOI_SPS_Fluor/20200722 CM_LowMOI_SPS/SPS_LowMOI_0.4NA_LF_Flour_5_SPS_LowMOI_0.4NA_LF_Flour_5_registered',]
@@ -67,7 +67,8 @@ if __name__ == '__main__':
     #               '/CompMicro/projects/HEK/2021_05_12_HEK_RSV_20x_055na_TimeLapse_tif/MOI_1'
     # ]
     exp_dirs = [
-        '/CompMicro/projects/HEK/2021_04_20_HEK_OC43_63x_04NA_Widefield_tif/2021_04_20_HEK_OC43_widefield_registered'
+        # '/CompMicro/projects/HEK/2021_04_20_HEK_OC43_63x_04NA_Widefield_tif/2021_04_20_HEK_OC43_widefield_registered'
+        '/CompMicro/projects/HEK/2021_07_29_LiveHEK_NoPerf_63x_09NA_tif/2021_07_29_LiveHEK_NoPerf_63x_09NA_tif_registered'
     ]
 
     # p_ids_list = [[0, 1, 2, 3, 4, 5, 7, 9], [0, 1, 3, 4, 5, 6, 7, 8, 9], [0, 1, 2, 4, 5, 6, 7, 8, 9],
@@ -76,7 +77,8 @@ if __name__ == '__main__':
     # z_ids_list = [list(range(26, 41))] + [list(range(29, 44))] # CM
     # z_ids_list = [list(range(15, 36))]  # kidney
     # z_ids_list = [list(range(10, 15))]  # HEK 20X
-    z_ids_list = [list(range(32, 51))]  # HEK 63X
+    # z_ids_list = [list(range(32, 51))]  # HEK 63X
+    z_ids_list = [list(range(31, 36))]  # HEK 63X
     swap_tz = False
     # for input_dir, pos_ids, z_ids in zip(input_dirs, p_ids_list, z_ids_list):
     for exp_dir in exp_dirs:

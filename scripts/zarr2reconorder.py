@@ -10,7 +10,7 @@ if __name__ == '__main__':
     output_path = '/CompMicro/projects/A549/2021_02_25_40X_04NA_A549_tif'
     conditions = ['MOCK_IFNA_48', 'RSV_IFNA_24', 'RSV_IFNA_48', 'RSV_IFNL_24']
     channels = ['Phase3D', 'Retardance', 'GFP']
-    exp_paths = glob.glob(os.path.join(input_path, '*/'))
+    # exp_paths = glob.glob(os.path.join(input_path, '*/'))
     for condition in conditions:
         print('processing condition {}...'.format(condition))
         zarr_store = zarr.open(os.path.join(input_path, condition + '.zarr'), mode='r')

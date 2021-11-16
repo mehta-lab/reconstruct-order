@@ -1,7 +1,18 @@
+import cv2
 import os
 import numpy as np
 import argparse
 from ReconstructOrder.utils.imgIO import get_sorted_names, get_sub_dirs
+
+def read_img(dir, img_name, to_float=True):
+    """read a single image at (c,t,p,z)"""
+    img_file = os.path.join(dir, img_name)
+    img = cv2.imread(img_file, -1) # flag -1 to preserve the bit dept of the raw image
+    if img is None:
+        raise FileNotFoundError('image "{}" cannot be found'.format(img_file))
+    if to_float:
+        img = img.astype(np.float32, copy=False)  # convert to float32 without making a copy to save memory
+    return img
 
 def parse_args():
     """
@@ -93,14 +104,18 @@ if __name__ == '__main__':
     #               '/CompMicro/projects/HEK/2021_05_12_HEK_RSV_20x_055na_TimeLapse_tif/MOI_1/HEK_20X_16_256_do20_zoom_1.4_1.6_tilenorm_pt20'
     # ]
     exp_dirs = [
-        '/CompMicro/projects/HEK/2021_04_20_HEK_OC43_63x_04NA_Widefield_tif/2021_04_20_HEK_OC43_widefield_registered'
+        # '/CompMicro/projects/HEK/2021_04_20_HEK_OC43_63x_04NA_Widefield_tif/2021_04_20_HEK_OC43_widefield_registered'
+        '/CompMicro/projects/HEK/2021_07_29_LiveHEK_NoPerf_63x_09NA_tif/2021_07_29_LiveHEK_NoPerf_63x_09NA_tif_registered/'
     ]
-    seg_map_dir = 'HEK_pool_63X_16_256_do20_zoom_1_pt20'
+    output_dir = '/CompMicro/projects/HEK/2021_07_29_LiveHEK_NoPerf_63x_09NA_tif_registered'
+    # seg_map_dir = 'HEK_pool_63X_16_256_do20_zoom_1_pt20'
+    seg_map_dir = 'Mock_seg'
     # p_ids_list = [[0, 1, 2, 3, 4, 5, 7, 9], [0, 1, 3, 4, 5, 6, 7, 8, 9], [0, 1, 2, 4, 5, 6, 7, 8, 9], [1, 2, 3, 4, 5, 6, 7, 8, 9]]
     # z_ids_list = [list(range(37, 45))] + [list(range(28, 36))] * 3
     # z_ids_list = [list(range(15, 36))]  # kidney
     # z_ids_list = [list(range(10, 15))]  # HEK 20X
-    z_ids_list = [list(range(32, 51))]  # HEK 63X
+    # z_ids_list = [list(range(32, 51))]  # HEK 63X
+    z_ids_list = [list(range(31, 36))]  # HEK 63X
     swap_tz = False
     # for input_dir, pos_ids, z_ids in zip(input_dirs, p_ids_list, z_ids_list):
     for exp_dir in exp_dirs:
@@ -110,8 +125,9 @@ if __name__ == '__main__':
             z_ids_list = z_ids_list * len(conditions)
         for condition, z_ids in zip(conditions, z_ids_list):
             input_dir = os.path.join(exp_dir, condition, seg_map_dir)
-            output_dir = os.path.join(exp_dir, condition, 'dnm_input')
-            im_names = [fname.strip('.npy') for fname in os.listdir(input_dir) if 'im' in fname]
+            output_dir = os.path.join(output_dir, condition, 'dnm_input')
+            im_names = [fname.strip('.png') for fname in os.listdir(input_dir) if 'cp_masks' in fname]
+            print(int(im_names[0].split("_")[2].strip('p')))
             pos_ids = set([int(im_name.split("_")[2].strip('p')) for im_name in im_names])
             t_ids = set([int(im_name.split("_")[1].strip('t')) for im_name in im_names])
             # z_ids = list(range(29, 44)) # CM low MOI
@@ -124,7 +140,7 @@ if __name__ == '__main__':
                 )
             os.makedirs(output_dir, exist_ok=True)
 
-            for suffix in ['NNProbabilities']:
+            for suffix in ['NNProbabilities_cp_masks']:
                 for pos_idx in pos_ids:  # nXY
                     imgs_tcz = []
                     for t_idx in t_ids:
@@ -136,26 +152,26 @@ if __name__ == '__main__':
                                 channel_name=None,
                                 slice_idx=z_idx,
                                 pos_idx=pos_idx,
-                                ext='.npy',
+                                ext='.png',
                                 extra_field=suffix,
                             )
-                            imgs = np.load(os.path.join(input_dir, im_name))
+                            imgs = read_img(dir=input_dir, img_name=im_name, to_float=False)
                             # dynamorph segmentation map uses tczyx format
                             imgs_z.append(np.squeeze(imgs))
                         imgs_z = np.stack(imgs_z, axis=0)
                         imgs_cz = imgs_z[np.newaxis, ...]
                         imgs_tcz.append(imgs_cz)
                     imgs_tcz = np.stack(imgs_tcz, axis=0)
-                    imgs_tcz = imgs_tcz.astype(np.float32)
+                    # imgs_tcz = imgs_tcz.astype(np.float32)
                     im_name = get_sms_im_name(
                         time_idx=None,
                         channel_name=None,
                         slice_idx=None,
                         pos_idx=pos_idx,
                         ext='.npy',
-                        extra_field=suffix,
+                        extra_field='NNProbabilities',
                     )
                     if swap_tz:
                         imgs_tcz = np.swapaxes(imgs_tcz, 0, 2)
-                    print(imgs_tcz.shape)
+                    # print(imgs_tcz.shape)
                     np.save(os.path.join(output_dir, im_name), imgs_tcz)
