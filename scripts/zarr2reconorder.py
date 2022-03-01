@@ -2,8 +2,9 @@ import os
 import glob
 import numpy as np
 import zarr
-from dynamorph_seg_map import get_sms_im_name
-from waveorder2reconorder import parse_sms_name, read_img, write_img
+from waveorder2reconorder import parse_sms_name
+from scripts.align_z_focus import read_img
+from scripts.hcszarr2sigle_tif import write_img, get_sms_im_name
 
 if __name__ == '__main__':
     input_path = '/CompMicro/projects/A549/2021_02_25_40X_04NA_A549'

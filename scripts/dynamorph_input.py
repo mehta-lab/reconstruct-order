@@ -3,7 +3,7 @@ import warnings
 import math
 import cv2
 import numpy as np
-from dynamorph_seg_map import get_sms_im_name
+from scripts.hcszarr2sigle_tif import get_sms_im_name
 from ReconstructOrder.utils.imgIO import get_sorted_names, get_sub_dirs
 
 def read_img(dir, img_name, to_float=True):

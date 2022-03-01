@@ -2,7 +2,9 @@ import cv2
 import os
 import numpy as np
 import argparse
-from ReconstructOrder.utils.imgIO import get_sorted_names, get_sub_dirs
+from ReconstructOrder.utils.imgIO import get_sub_dirs
+from scripts.hcszarr2sigle_tif import get_sms_im_name
+
 
 def read_img(dir, img_name, to_float=True):
     """read a single image at (c,t,p,z)"""
@@ -39,46 +41,6 @@ def parse_args():
 
     return parser.parse_args()
 
-
-def get_sms_im_name(time_idx=None,
-                    channel_name=None,
-                    slice_idx=None,
-                    pos_idx=None,
-                    extra_field=None,
-                    ext='.npy',
-                    int2str_len=3):
-    """
-    Create an image name given parameters and extension
-    This function is custom for the computational microscopy (SMS)
-    group, who has the following file naming convention:
-    File naming convention is assumed to be:
-        img_channelname_t***_p***_z***.tif
-    This function will alter list and dict in place.
-
-    :param int time_idx: Time index
-    :param str channel_name: Channel name
-    :param int slice_idx: Slice (z) index
-    :param int pos_idx: Position (FOV) index
-    :param str extra_field: Any extra string you want to include in the name
-    :param str ext: Extension, e.g. '.png'
-    :param int int2str_len: Length of string of the converted integers
-    :return st im_name: Image file name
-    """
-
-    im_name = "img"
-    if channel_name is not None:
-        im_name += "_" + str(channel_name)
-    if time_idx is not None:
-        im_name += "_t" + str(time_idx).zfill(int2str_len)
-    if pos_idx is not None:
-        im_name += "_p" + str(pos_idx).zfill(int2str_len)
-    if slice_idx is not None:
-        im_name += "_z" + str(slice_idx).zfill(int2str_len)
-    if extra_field is not None:
-        im_name += "_" + extra_field
-    im_name += ext
-
-    return im_name
 
 if __name__ == '__main__':
     # parsed_args = parse_args()

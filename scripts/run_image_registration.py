@@ -9,8 +9,8 @@ import pandas as pd
 from scripts.channel_registration_3D import translate_3D
 import json
 from ReconstructOrder.utils.imgProcessing import im_bit_convert
-from waveorder2reconorder import read_img, write_img
-from dynamorph_seg_map import get_sms_im_name
+from scripts.align_z_focus import read_img
+from scripts.hcszarr2sigle_tif import write_img, get_sms_im_name
 from ReconstructOrder.utils.imgIO import get_sub_dirs
 
 def parse_args():

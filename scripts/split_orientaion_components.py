@@ -2,6 +2,7 @@ import os
 import numpy as np
 
 import scripts.dynamorph_input
+import scripts.hcszarr2sigle_tif
 from ReconstructOrder.utils import mManagerReader
 from ReconstructOrder.utils import imBitConvert
 
@@ -30,7 +31,7 @@ if __name__ == '__main__':
                 azimuth_imgs = [imBitConvert((img + 1) * 1000, bit=16) for img in azimuth_imgs]  # scale to [0, 1000]
                 for chan_idx, image in enumerate(azimuth_imgs):
                     img_io.chan_idx = chan_idx
-                    img_io.write_img(image)
+                    scripts.hcszarr2sigle_tif.write_img(image)
 
 
 

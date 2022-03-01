@@ -1,12 +1,12 @@
 import os
 import glob
 import numpy as np
-import cv2
-import warnings
 from shutil import copy
 from ReconstructOrder.utils.imgProcessing import im_bit_convert
 from ReconstructOrder.utils.imgIO import get_sorted_names
-from dynamorph_seg_map import get_sms_im_name
+from scripts.align_z_focus import read_img
+from scripts.hcszarr2sigle_tif import write_img, get_sms_im_name
+
 
 def parse_sms_name(im_name):
     """
@@ -34,24 +34,6 @@ def parse_sms_name(im_name):
         elif s.find("z") == 0:
             slice_idx = int(s[1:])
     return channel_name, time_idx, pos_idx, slice_idx
-
-def read_img(img_file):
-    """read a single image at (c,t,p,z)"""
-    img = cv2.imread(img_file, -1) # flag -1 to preserve the bit dept of the raw image
-    if img is None:
-        warnings.warn('image "{}" cannot be found. Return None instead.'.format(img_file))
-    else:
-        img = img.astype(np.float32, copy=False)  # convert to float32 without making a copy to save memory
-    return img
-
-def write_img(img, output_dir, img_name):
-    """only supports recon_order image name format currently"""
-    if not os.path.exists(output_dir):  # create folder for processed images
-        os.makedirs(output_dir)
-    if len(img.shape) < 3:
-        cv2.imwrite(os.path.join(output_dir, img_name), img)
-    else:
-        cv2.imwrite(os.path.join(output_dir, img_name), cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
 
 
 def split_azimuth(azimuth_degree):

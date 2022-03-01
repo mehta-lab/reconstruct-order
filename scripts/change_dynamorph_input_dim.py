@@ -1,7 +1,7 @@
 """Change array dimension to 5d (tczyx)"""
 import os
 import numpy as np
-from dynamorph_seg_map import get_sms_im_name
+from scripts.hcszarr2sigle_tif import get_sms_im_name
 from ReconstructOrder.utils.imgIO import get_sorted_names, get_sub_dirs
 
 def make_dim_5d(array):
