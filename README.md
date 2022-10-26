@@ -1,14 +1,29 @@
 # ReconstructOrder
 
-Analyze density (bright-field, phase), anisotropy (birefringence, slow axis), and degree of polarization of specimens from polarization-resolved and depth-resolved images. The acquisition, calibration, background correction, and reconstruction algorithms are described in the following preprint:
+Analyze density (bright-field, phase), anisotropy (birefringence, slow axis), and degree of polarization of specimens from polarization-resolved and depth-resolved images. The acquisition, calibration, background correction, and reconstruction algorithms are described in the following preprint and paper:
 
+```
 Guo, S.-M., Yeh, L.-H., Folkesson, J.,..., Mehta, S. B. (2019). [Revealing architectural order with quantitative label-free imaging and deep learning.](https://doi.org/10.1101/631101) BioRxiv 631101.
+```
+
+```
+Syuan-Ming Guo, Li-Hao Yeh, Jenny Folkesson, Ivan E Ivanov, Anitha P Krishnan, Matthew G Keefe, Ezzat Hashemi, David Shin, Bryant B Chhun, Nathan H Cho, Manuel D Leonetti, May H Han, Tomasz J Nowakowski, Shalin B Mehta, "Revealing architectural order with quantitative label-free imaging and deep learning," eLife 2020;9:e55502 DOI: 10.7554/eLife.55502 (2020).
+```
+
+
+## Updated software
+
+We have now added support for Micro-Manager 2.0 and developed a [napari plugin](https://www.napari-hub.org/plugins/recOrder-napari) for QLIPP. The corresponding GitHub repository is [recOrder](https://github.com/mehta-lab/recOrder). 
+
+## Introduction 
 
 As an illustration, following figure shows inputs and outputs of the ReconstructOrder for polarization-resolved data acquired at 21 consecutive focal planes with 2D phase reconstruction algorithm.
 
 ![Data_flow](Fig_Readme.png)
 
 ReconstructOrder currently supports data format acquired using Micro-Manager 1.4.22 multi-dimension acquisition ([link](https://micro-manager.org/)) and OpenPolScope acquisition plugin ([link](https://openpolscope.org/)). We will add support for Micro-Manager 2.0 format in the next release.
+
+
 
 ## Installation
 
