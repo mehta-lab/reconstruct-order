@@ -13,7 +13,7 @@ Syuan-Ming Guo, Li-Hao Yeh, Jenny Folkesson, Ivan E Ivanov, Anitha P Krishnan, M
 
 ## Updated software
 
-We have now added support for Micro-Manager 2.0 and developed a [napari plugin](https://www.napari-hub.org/plugins/recOrder-napari) for QLIPP. The corresponding GitHub repository is [recOrder](https://github.com/mehta-lab/recOrder). 
+We have now added support for Micro-Manager 2.0 and developed a [napari plugin](https://www.napari-hub.org/plugins/recOrder-napari) for QLIPP. The corresponding GitHub repository is [recOrder](https://github.com/mehta-lab/recOrder). `reconstruct-order` is no longer maintained.
 
 ## Introduction 
 
